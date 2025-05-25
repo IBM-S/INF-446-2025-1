@@ -1,0 +1,36 @@
+Combinación de implementación de MOEAD disponible en: https://sites.google.com/view/moead/resources
+con lectura de caso de prueba de ejemplo en "formato ampl".
+Para compilar use: 
+make clean
+make
+Para ejecutar el ejemplo haga:
+make exe
+
+De momento el algoritmo compila y se ejecuta.
+1) Lee la instancia de ejemplo y la carga en memomoria.
+2) Genera soluciones como vectores de valores reales de acuerdo a los hiperparámetros definidos en el main.
+3) Evalua las soluciones de acuerdo a ZDT1, pero está definido dentro de una función con otro nonmbre.
+
+
+Por hacer:
+- codificacion/decodificacion de soluciones
+- función de evaluación /computo de funciones objetivo
+- restricciones
+- inicializacion (poblacion)
+- operador de mutacion 
+- operador de cruzamiento.
+---
+
+
+solucion factible
+- sin nada instalado (min = 0) 
+    |- P%%c1 numero de aeds a instalar. 
+- con algo instalada (min = x)
+    |- solo reubicar 
+    |- reubicar e instalar
+    |- instalar y reubicar
+    |- solo instalar
+
+
+00000000000000 
+00001000000000 desfibrildaor < max
