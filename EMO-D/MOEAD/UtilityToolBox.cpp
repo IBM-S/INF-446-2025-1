@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "UtilityToolBox.h"
+#include <iostream>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -295,7 +296,7 @@ void CUtilityToolBox::PolynomialMutation(vector<double>& x_var, double rate)
     return;
 }
 
-void CUtilityToolBox::CruzamientoUniformeModificado(vector<int> &x_var1, vector<int> &x_var2, vector<int> &child, int max_instalaciones) {
+void CUtilityToolBox::CruzamientoUniformeModificado(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, int max_instalaciones) {
     int nvar = x_var1.size();
     child.assign(nvar, 0); // inicializa en 0s
 
@@ -306,16 +307,22 @@ void CUtilityToolBox::CruzamientoUniformeModificado(vector<int> &x_var1, vector<
     for (int i = 0; i < nvar && instalaciones < max_instalaciones; ++i) {
         int idx = (start + i) % nvar;
 
+		//std::cout << "Revisando índice idx = " << idx << std::endl;
         // Si el padre1 tiene un 1, lo tomamos
         if (x_var1[idx] == 1) {
-			child[idx] = 1;
-			instalaciones++;
-		}
-		else if (x_var2[idx] == 1) {
-			child[idx] = 1;
-			instalaciones++;
-		}
-        // Si ambos tienen 0, no hacemos nada y seguimos
+            child[idx] = 1;
+            instalaciones++;
+            //std::cout << "→ Se tomó de padre1 en idx = " << idx << std::endl;
+        }
+        else if (x_var2[idx] == 1) {
+            child[idx] = 1;
+            instalaciones++;
+            //std::cout << "→ Se tomó de padre2 en idx = " << idx << std::endl;
+        }
+        // Si ambos son 0, se imprime pero no se instala
+        else {
+            //std::cout << "→ Ninguno tiene AED en idx = " << idx << std::endl;
+        }
     }
 }
 

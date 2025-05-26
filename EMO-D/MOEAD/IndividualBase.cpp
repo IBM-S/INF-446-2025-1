@@ -38,19 +38,35 @@ void CIndividualBase::Randomize()
 // el presupuesto.
 
 void CIndividualBase::GenerateSimpleFeasibleSolution(int num_AEDs, int total_locations)
-{
+{	
+	//std::cout << "x_var.size() = " << x_var.size() << ", total_locations = " << total_locations << ", num_AEDs = " << num_AEDs << std::endl;
+
 	// Inicializa todo en 0
     std::fill(x_var.begin(), x_var.end(), 0.0);
 
-    for (int i = 0; i < num_AEDs && i < total_locations; ++i) {
-        // Elegimos un ID aleatorio de los filtrados
-        int idx_filtrado = rand() % total_locations;  // Índice aleatorio entre [0, tamaño de ids_filtrados-1]
-        int id = idx_filtrado;  // Obtenemos el ID filtrado
-		int pos = id;
-        x_var[pos] = 1.0;
+	// 1. Crear lista de IDs
+    std::vector<int> ids(total_locations);
+    for (int i = 0; i < total_locations; ++i) {
+        ids[i] = i;
     }
 
-    //this->Evaluate(); // Muy importante
+	// 2. Revolver los IDs
+    std::random_shuffle(ids.begin(), ids.end()); // usa srand() antes si quieres control
+
+	/* std::cout << "IDs mezclados: ";
+	for (int id : ids) {
+		std::cout << id << " ";
+	}
+	std::cout << std::endl; */
+
+
+    // 3. Seleccionar los primeros `num_AEDs`
+    for (int i = 0; i < num_AEDs && i < total_locations; ++i) {
+        int pos = ids[i];
+        x_var[pos] = 1.0;
+		//std::cout << "i = " << i << std::endl;
+
+    }
 }
 
 void CIndividualBase::Evaluate()

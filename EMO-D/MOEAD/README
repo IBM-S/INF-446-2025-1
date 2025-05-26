@@ -28,9 +28,14 @@ solucion factible
 - con algo instalada (min = x)
     |- solo reubicar 
     |- reubicar e instalar
-    |- instalar y reubicar
+    |- instalar e reubicar
     |- solo instalar
 
+000100000010000   P = 2.2
+000100100010000 desfibrildaor < max   P = 1.2
+000100100000100  P = 1.0
 
-00000000000000 
-00001000000000 desfibrildaor < max
+generar solucion y si queda infactible restar instalados.
+
+
+en la posicion 3 y  11 hay instlados AEDs

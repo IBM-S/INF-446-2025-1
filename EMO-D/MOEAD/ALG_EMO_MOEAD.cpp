@@ -129,13 +129,29 @@ void CALG_EMO_MOEAD::InitializePopulation()
 	{
 		CSubProblemBase SP;
 
-		int num_AEDs = static_cast<int>(floor(problemInstance->getP() / problemInstance->getC1()));
-        int total_locations = 23;
+		int total_locations = 1000;
+
+		//int num_AEDs = static_cast<int>(floor(problemInstance->getP() / problemInstance->getC1()));
+        // int num_AEDs = 10;
+		int num_AEDs = rand() % (total_locations + 1); // genera número entre 0 y total_locations
+
 		SP.m_BestIndividual.problemInstance = this->problemInstance;
 
 		SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
 		SP.m_BestIndividual.Evaluate();
 		s_Fevals_Count++;
+
+		/* std::cout << "Individuo #" << i << ": ";
+		for (double val : SP.m_BestIndividual.x_var) {
+			std::cout << val << " ";
+		}
+		std::cout << std::endl;
+
+		std::cout << "f_obj = ";
+		for (double f : SP.m_BestIndividual.f_obj) {
+			std::cout << f << " ";
+		}
+		std::cout << std::endl; */
 
 		UpdateReference(SP.m_BestIndividual.f_obj);    // update reference point
 
@@ -366,11 +382,42 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		SelectMatingPool(mating_pool, id_c, 2);
 		p1 = mating_pool[0]; p2 = mating_pool[1]; mating_pool.clear();
 
-		UtilityToolBox.SimulatedBinaryCrossover(m_PopulationSOP[p1].m_BestIndividual.x_var,
-			                                    m_PopulationSOP[p2].m_BestIndividual.x_var,
-												child.x_var);
+		//std::cout << "\n=== Reproducción " << s << " ===" << std::endl;
+		/*
+		std::cout << "Padre 1 (ID " << p1 << "): ";
+		for (double val : m_PopulationSOP[p1].m_BestIndividual.x_var) {
+			std::cout << val << " ";
+		}
+		std::cout << std::endl;
 
-		UtilityToolBox.PolynomialMutation(child.x_var, 1.0/NumberOfVariables);
+		std::cout << "Padre 2 (ID " << p2 << "): ";
+		for (double val : m_PopulationSOP[p2].m_BestIndividual.x_var) {
+			std::cout << val << " ";
+		}
+		std::cout << std::endl; */
+
+
+		UtilityToolBox.CruzamientoUniformeModificado(m_PopulationSOP[p1].m_BestIndividual.x_var,
+			                                    m_PopulationSOP[p2].m_BestIndividual.x_var,
+												child.x_var, 10);
+
+		child.problemInstance = this->problemInstance;
+
+		/* std::cout << "Hijo generado antes de la mutacion:   ";
+		for (double val : child.x_var) {
+			std::cout << val << " ";
+		}
+		std::cout << std::endl; */
+
+
+		UtilityToolBox.MutacionModificada(child.x_var, 1.0);
+		
+
+		/* std::cout << "Hijo generado despues de la mutacion: ";
+		for (double val : child.x_var) {
+			std::cout << val << " ";
+		}
+		std::cout << std::endl; */
 
 		/* 
 		Aqui modificar Utility Box y agregar la mutation y crossover
@@ -380,6 +427,13 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		*/
 		
 		child.Evaluate();   s_Fevals_Count++;
+
+		/* std::cout << "hijo f_obj = ";
+		for (double f : child.f_obj) {
+			std::cout << f << " ";
+		}
+		std::cout << std::endl; */
+
 
 		//this->NormalizeIndividual(child);
 

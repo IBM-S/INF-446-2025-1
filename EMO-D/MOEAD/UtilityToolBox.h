@@ -62,7 +62,7 @@ public:
 								 vector<double> &child, 
 								 double rate);
 	
-	void CruzamientoUniformeModificado(vector<int> &x_var1, vector<int> &x_var2, vector<int> &child, int max_instalaciones);
+	void CruzamientoUniformeModificado(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, int max_instalaciones);
 
 	void MutacionModificada(vector<double>& x_var, double rate);
 

@@ -40,7 +40,7 @@ void CTestInstance::fdvrp(vector<double> &x, vector<double> &f, const unsigned i
 
 void CTestInstance::DRP_Evaluate(const vector<double>& x, vector<double>& f, ProblemInstance* instance)
 {
-	double costo_total = 0.0;
+	double aeds_totales = 0.0;
     double cobertura_total = 0.0;
 
     const auto& nodos = instance->getNodes();
@@ -50,7 +50,7 @@ void CTestInstance::DRP_Evaluate(const vector<double>& x, vector<double>& f, Pro
     // Calcular costo total
     for (size_t i = 0; i < x.size(); ++i) {
         if (x[i] >= 0.5) {
-            costo_total += c1;
+            aeds_totales += c1;
         }
     }
 
@@ -82,7 +82,7 @@ void CTestInstance::DRP_Evaluate(const vector<double>& x, vector<double>& f, Pro
         }
     }
 
-    f[0] = costo_total;
+    f[0] = aeds_totales;
     f[1] = -cobertura_total;  // usar negativo si vas a minimizar ambos objetivos
 }
 

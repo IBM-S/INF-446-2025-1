@@ -5,7 +5,7 @@ OBJS = Node_DRP.o DRP_ProblemInstance.o Reader_DRP.o GlobalObject.o GlobalVariab
 
 CFLAGS = -std=c++1y -O3 -g -ggdb -fprofile-use
 
-instance=b-Instancia14_cap2_relacion7UnoUnoUnoTodosDistintos.dat
+instance=1000-88_4.dat
 seed=123
 ARGS = $(instance) $(seed)
 
