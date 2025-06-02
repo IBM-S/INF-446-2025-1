@@ -47,14 +47,16 @@ void Reader::findDef(string def) {
     while (true) {
         input >> word;
         if (word.find(def) != std::string::npos) {
-            std::cout << "Leí la línea: " << def << std::endl;
+            //std::cout << "Leí la línea: " << def << std::endl;
             break;
         }
     }
 }
 
 void Reader::readSet(ProblemInstance *problemInstance) {
-    input >> problemInstance->N;
+    int N;
+    input >> N;
+    problemInstance->setN(N);
 
     // Leer punto y coma final
     std::string dummy;
@@ -89,11 +91,11 @@ void Reader::readOHCAs(ProblemInstance *problemInstance) {
 
     while (true) {
         input >> id;
-        std::cout << "Leí la línea: " << id << std::endl;
+        //std::cout << "Leí la línea: " << id << std::endl;
         if (input.peek() == ';') break;
 
         input >> x >> y >> flag >> prob;
-        std::cout << "Leí la línea: " << x << " " << y << " " << flag << " " << prob << std::endl;
+        //std::cout << "Leí la línea: " << x << " " << y << " " << flag << " " << prob << std::endl;
         
         std::vector<Node*>& nodes = problemInstance->getNodes();
         if (id > 0 && id <= nodes.size()) {

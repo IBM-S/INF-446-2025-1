@@ -41,6 +41,8 @@ public:
 
 public:
 
+	ProblemInstance* problemInstance;
+
     vector <CSubProblemBase> m_PopulationSOP; 
 	vector <double>      v_ReferencePoint;       
 

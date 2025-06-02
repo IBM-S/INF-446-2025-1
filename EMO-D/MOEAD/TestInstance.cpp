@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "TestInstance.h"
+#include <iostream>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -40,8 +41,8 @@ void CTestInstance::fdvrp(vector<double> &x, vector<double> &f, const unsigned i
 
 void CTestInstance::DRP_Evaluate(const vector<double>& x, vector<double>& f, ProblemInstance* instance)
 {
+	double cobertura_total = 0.0;
 	double aeds_totales = 0.0;
-    double cobertura_total = 0.0;
 
     const auto& nodos = instance->getNodes();
     int R = instance->getR();
@@ -82,10 +83,80 @@ void CTestInstance::DRP_Evaluate(const vector<double>& x, vector<double>& f, Pro
         }
     }
 
-    f[0] = aeds_totales;
-    f[1] = -cobertura_total;  // usar negativo si vas a minimizar ambos objetivos
+    f[0] = -cobertura_total;
+    f[1] = aeds_totales;  // usar negativo si vas a minimizar ambos objetivos
 }
 
+void CTestInstance::DRP_Evaluate_v2(const vector<double>& x, vector<double>& f, ProblemInstance* instance)
+{
+	double cobertura_total = 0.0;
+	double aeds_totales = 0.0;
+
+    const auto& nodos = instance->getNodes();
+    int R = instance->getR();
+    double c1 = instance->getC1();
+    double c2 = instance->getC2();
+
+	std::vector<int> removidos; // AEDs preinstalados que ya no están
+	std::vector<int> nuevos;    // AEDs nuevos que no estaban antes
+
+	// Paso 1: identificar removidos y nuevos
+	for (size_t i = 0; i < x.size(); ++i) {
+		if (nodos[i]->getFlag() == 1 && x[i] < 0.5) {
+			removidos.push_back(i); // Se quitó un AED preinstalado
+		}
+		if (nodos[i]->getFlag() == 0 && x[i] >= 0.5) {
+			nuevos.push_back(i); // Se instaló un nuevo AED
+		}
+	}
+
+	// Paso 2: calcular reubicaciones
+	int reubicaciones = std::min(removidos.size(), nuevos.size());
+	int solo_nuevos = nuevos.size() - reubicaciones;
+
+	aeds_totales += reubicaciones * c2;  // Reubicación = solo c2
+	aeds_totales += solo_nuevos * c1;    // Nuevas instalaciones reales
+	/* std::cout << aeds_totales << " ";
+	std::cout << std::endl; */
+
+    // Para cada nodo con OHCA, verificar si está cubierto por algún AED
+    for (auto* nodo_ohca : nodos) {
+        if (nodo_ohca->getProbOhca() <= 0.0) continue;
+
+        double px = nodo_ohca->getX();
+        double py = nodo_ohca->getY();
+
+        bool cubierto = false;
+
+        for (size_t i = 0; i < x.size(); ++i) {
+            if (x[i] >= 0.5) {
+                Node* aed = nodos[i];
+                double dx = px - aed->getX();
+                double dy = py - aed->getY();
+                double distancia = sqrt(dx*dx + dy*dy);
+
+                if (distancia <= R) {
+                    cubierto = true;
+                    break;
+                }
+            }
+        }
+
+        if (cubierto) {
+            cobertura_total += nodo_ohca->getProbOhca();  // o simplemente +1
+        }
+    }
+
+	/* double budget = instance->getP(); // Supón que lo tienes definido en tu instancia
+	if (aeds_totales > budget) {
+		f[0] = 1e9;         // Pésima cobertura
+		f[1] = 1e9;         // Costo altísimo para forzar descarte
+		return;
+	} */
+
+    f[0] = -cobertura_total;
+    f[1] = aeds_totales;  // usar negativo si vas a minimizar ambos objetivos
+}
 
 void CTestInstance::DTLZ1(vector<double> &x, vector<double> &f, const unsigned int nx)
 {

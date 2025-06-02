@@ -1,0 +1,426 @@
+./MOEAD 100-3.dat 123
+Reading: 100-3.dat
+Reading: 100-3.dat
+Leí la línea: N:=
+End readSet! 
+Leí la línea: P:=
+Leí la línea: R:=
+Leí la línea: c1:=
+Leí la línea: c2:=
+Leí la línea: prob_ohca:=
+Total de ubicaciones (N): 100
+Leí la línea: 1
+Leí la línea: 409154 435528 0 0.11
+Total de ubicaciones (N): 100
+Leí la línea: 2
+Leí la línea: 409151 435683 0 0.61
+Total de ubicaciones (N): 100
+Leí la línea: 3
+Leí la línea: 409277 435420 0 0.12
+Total de ubicaciones (N): 100
+Leí la línea: 4
+Leí la línea: 409260 435538 0 0.84
+Total de ubicaciones (N): 100
+Leí la línea: 5
+Leí la línea: 409240 435695 0 0.7
+Total de ubicaciones (N): 100
+Leí la línea: 6
+Leí la línea: 409213 435897 0 0.25
+Total de ubicaciones (N): 100
+Leí la línea: 7
+Leí la línea: 409199 435982 0 0.65
+Total de ubicaciones (N): 100
+Leí la línea: 8
+Leí la línea: 409178 436078 0 0.69
+Total de ubicaciones (N): 100
+Leí la línea: 9
+Leí la línea: 409174 436171 0 0.68
+Total de ubicaciones (N): 100
+Leí la línea: 10
+Leí la línea: 409147 436256 0 0.15
+Total de ubicaciones (N): 100
+Leí la línea: 11
+Leí la línea: 409469 435389 0 0.88
+Total de ubicaciones (N): 100
+Leí la línea: 12
+Leí la línea: 409378 435463 0 0.36
+Total de ubicaciones (N): 100
+Leí la línea: 13
+Leí la línea: 409378 435563 0 0.82
+Total de ubicaciones (N): 100
+Leí la línea: 14
+Leí la línea: 409351 435734 0 0.29
+Total de ubicaciones (N): 100
+Leí la línea: 15
+Leí la línea: 409328 435891 0 0.88
+Total de ubicaciones (N): 100
+Leí la línea: 16
+Leí la línea: 409275 435982 0 0.38
+Total de ubicaciones (N): 100
+Leí la línea: 17
+Leí la línea: 409289 436065 0 0.95
+Total de ubicaciones (N): 100
+Leí la línea: 18
+Leí la línea: 409272 436188 0 0.65
+Total de ubicaciones (N): 100
+Leí la línea: 19
+Leí la línea: 409208 436263 0 0.4
+Total de ubicaciones (N): 100
+Leí la línea: 20
+Leí la línea: 409754 435326 0 0.98
+Total de ubicaciones (N): 100
+Leí la línea: 21
+Leí la línea: 409609 435201 0 0.96
+Total de ubicaciones (N): 100
+Leí la línea: 22
+Leí la línea: 409565 435307 0 0.87
+Total de ubicaciones (N): 100
+Leí la línea: 23
+Leí la línea: 409577 435510 0 0.98
+Total de ubicaciones (N): 100
+Leí la línea: 24
+Leí la línea: 409515 435614 0 0.8
+Total de ubicaciones (N): 100
+Leí la línea: 25
+Leí la línea: 409478 435707 0 0.66
+Total de ubicaciones (N): 100
+Leí la línea: 26
+Leí la línea: 409442 435810 0 0.63
+Total de ubicaciones (N): 100
+Leí la línea: 27
+Leí la línea: 409442 435913 0 0.52
+Total de ubicaciones (N): 100
+Leí la línea: 28
+Leí la línea: 409408 436075 0 0.99
+Total de ubicaciones (N): 100
+Leí la línea: 29
+Leí la línea: 409344 436201 0 0.24
+Total de ubicaciones (N): 100
+Leí la línea: 30
+Leí la línea: 409398 436213 0 0.17
+Total de ubicaciones (N): 100
+Leí la línea: 31
+Leí la línea: 409638 435143 0 0.96
+Total de ubicaciones (N): 100
+Leí la línea: 32
+Leí la línea: 409683 435349 0 0.36
+Total de ubicaciones (N): 100
+Leí la línea: 33
+Leí la línea: 409670 435514 0 0.87
+Total de ubicaciones (N): 100
+Leí la línea: 34
+Leí la línea: 409620 435615 0 0.72
+Total de ubicaciones (N): 100
+Leí la línea: 35
+Leí la línea: 409688 435618 0 0.29
+Total de ubicaciones (N): 100
+Leí la línea: 36
+Leí la línea: 409624 435752 0 0.38
+Total de ubicaciones (N): 100
+Leí la línea: 37
+Leí la línea: 409570 435942 0 0.25
+Total de ubicaciones (N): 100
+Leí la línea: 38
+Leí la línea: 409541 436090 0 1
+Total de ubicaciones (N): 100
+Leí la línea: 39
+Leí la línea: 409512 436236 0 0.16
+Total de ubicaciones (N): 100
+Leí la línea: 40
+Leí la línea: 409216 435826 0 0.57
+Total de ubicaciones (N): 100
+Leí la línea: 41
+Leí la línea: 409158 435820 0 0.96
+Total de ubicaciones (N): 100
+Leí la línea: 42
+Leí la línea: 408777 434870 0 0.99
+Total de ubicaciones (N): 100
+Leí la línea: 43
+Leí la línea: 408731 434657 0 0.48
+Total de ubicaciones (N): 100
+Leí la línea: 44
+Leí la línea: 408808 434639 0 0.69
+Total de ubicaciones (N): 100
+Leí la línea: 45
+Leí la línea: 408840 435022 0 0.17
+Total de ubicaciones (N): 100
+Leí la línea: 46
+Leí la línea: 408932 434976 0 0.25
+Total de ubicaciones (N): 100
+Leí la línea: 47
+Leí la línea: 408897 434650 0 0.75
+Total de ubicaciones (N): 100
+Leí la línea: 48
+Leí la línea: 409050 434674 0 0.72
+Total de ubicaciones (N): 100
+Leí la línea: 49
+Leí la línea: 409033 434769 0 0.31
+Total de ubicaciones (N): 100
+Leí la línea: 50
+Leí la línea: 408906 434723 0 0.33
+Total de ubicaciones (N): 100
+Leí la línea: 51
+Leí la línea: 409262 434873 0 0.93
+Total de ubicaciones (N): 100
+Leí la línea: 52
+Leí la línea: 409090 434982 0 0.54
+Total de ubicaciones (N): 100
+Leí la línea: 53
+Leí la línea: 409020 435056 0 0.17
+Total de ubicaciones (N): 100
+Leí la línea: 54
+Leí la línea: 409262 435017 0 0.77
+Total de ubicaciones (N): 100
+Leí la línea: 55
+Leí la línea: 409210 435093 0 0.22
+Total de ubicaciones (N): 100
+Leí la línea: 56
+Leí la línea: 409109 435153 0 0.49
+Total de ubicaciones (N): 100
+Leí la línea: 57
+Leí la línea: 409192 435244 0 0.9
+Total de ubicaciones (N): 100
+Leí la línea: 58
+Leí la línea: 409298 435127 0 0.94
+Total de ubicaciones (N): 100
+Leí la línea: 59
+Leí la línea: 409302 435225 0 0.29
+Total de ubicaciones (N): 100
+Leí la línea: 60
+Leí la línea: 409264 435295 0 0.76
+Total de ubicaciones (N): 100
+Leí la línea: 61
+Leí la línea: 409452 434831 0 0.68
+Total de ubicaciones (N): 100
+Leí la línea: 62
+Leí la línea: 409553 435074 0 0.33
+Total de ubicaciones (N): 100
+Leí la línea: 63
+Leí la línea: 409434 435030 0 0.93
+Total de ubicaciones (N): 100
+Leí la línea: 64
+Leí la línea: 409517 434818 0 0.9
+Total de ubicaciones (N): 100
+Leí la línea: 65
+Leí la línea: 409539 434954 0 0.34
+Total de ubicaciones (N): 100
+Leí la línea: 66
+Leí la línea: 409038 435235 0 0.66
+Total de ubicaciones (N): 100
+Leí la línea: 67
+Leí la línea: 409167 435416 0 0.6
+Total de ubicaciones (N): 100
+Leí la línea: 68
+Leí la línea: 408778 434739 0 0.12
+Total de ubicaciones (N): 100
+Leí la línea: 69
+Leí la línea: 409822 435466 0 0.16
+Total de ubicaciones (N): 100
+Leí la línea: 70
+Leí la línea: 409811 435545 0 0.41
+Total de ubicaciones (N): 100
+Leí la línea: 71
+Leí la línea: 409765 435617 0 0.15
+Total de ubicaciones (N): 100
+Leí la línea: 72
+Leí la línea: 409812 435857 0 0.71
+Total de ubicaciones (N): 100
+Leí la línea: 73
+Leí la línea: 409792 435978 0 0.14
+Total de ubicaciones (N): 100
+Leí la línea: 74
+Leí la línea: 409837 436155 0 0.44
+Total de ubicaciones (N): 100
+Leí la línea: 75
+Leí la línea: 409711 436281 0 0.45
+Total de ubicaciones (N): 100
+Leí la línea: 76
+Leí la línea: 409969 435509 0 0.68
+Total de ubicaciones (N): 100
+Leí la línea: 77
+Leí la línea: 409944 435714 0 0.85
+Total de ubicaciones (N): 100
+Leí la línea: 78
+Leí la línea: 410041 435866 0 0.53
+Total de ubicaciones (N): 100
+Leí la línea: 79
+Leí la línea: 409946 436015 0 0.18
+Total de ubicaciones (N): 100
+Leí la línea: 80
+Leí la línea: 410015 436193 0 0.15
+Total de ubicaciones (N): 100
+Leí la línea: 81
+Leí la línea: 410067 435592 0 0.57
+Total de ubicaciones (N): 100
+Leí la línea: 82
+Leí la línea: 410073 436039 0 0.2
+Total de ubicaciones (N): 100
+Leí la línea: 83
+Leí la línea: 410113 436329 0 0.73
+Total de ubicaciones (N): 100
+Leí la línea: 84
+Leí la línea: 410204 436314 0 0.99
+Total de ubicaciones (N): 100
+Leí la línea: 85
+Leí la línea: 409645 436119 0 0.8
+Total de ubicaciones (N): 100
+Leí la línea: 86
+Leí la línea: 410120 436189 0 0.34
+Total de ubicaciones (N): 100
+Leí la línea: 87
+Leí la línea: 409875 435755 0 0.26
+Total de ubicaciones (N): 100
+Leí la línea: 88
+Leí la línea: 410180 436398 0 0.82
+Total de ubicaciones (N): 100
+Leí la línea: 89
+Leí la línea: 410244 436276 0 0.86
+Total de ubicaciones (N): 100
+Leí la línea: 90
+Leí la línea: 410224 436222 0 0.8
+Total de ubicaciones (N): 100
+Leí la línea: 91
+Leí la línea: 410435 436784 0 0.29
+Total de ubicaciones (N): 100
+Leí la línea: 92
+Leí la línea: 409573 436533 0 0.31
+Total de ubicaciones (N): 100
+Leí la línea: 93
+Leí la línea: 409575 436677 0 0.24
+Total de ubicaciones (N): 100
+Leí la línea: 94
+Leí la línea: 409553 436813 0 0.56
+Total de ubicaciones (N): 100
+Leí la línea: 95
+Leí la línea: 409546 436882 0 0.83
+Total de ubicaciones (N): 100
+Leí la línea: 96
+Leí la línea: 409701 436391 0 0.2
+Total de ubicaciones (N): 100
+Leí la línea: 97
+Leí la línea: 409691 436539 0 0.81
+Total de ubicaciones (N): 100
+Leí la línea: 98
+Leí la línea: 409680 436697 0 0.24
+Total de ubicaciones (N): 100
+Leí la línea: 99
+Leí la línea: 409667 436825 0 0.44
+Total de ubicaciones (N): 100
+Leí la línea: 100
+Leí la línea: 409657 436892 0 0.84
+Total de ubicaciones (N): 100
+Leí la línea: 0
+Leí la línea: 409657 436892 0 0.84
+End readInfoOhca! 
+End Reading! 
+Instancia: 
+Parámetros: P=3, R=800, c1=1, c2=0.2
+
+Nodos:
+ID: 0, Coord: (409154, 435528), Flag: 0, OHCA Prob: 0.11
+ID: 1, Coord: (409151, 435683), Flag: 0, OHCA Prob: 0.61
+ID: 2, Coord: (409277, 435420), Flag: 0, OHCA Prob: 0.12
+ID: 3, Coord: (409260, 435538), Flag: 0, OHCA Prob: 0.84
+ID: 4, Coord: (409240, 435695), Flag: 0, OHCA Prob: 0.7
+ID: 5, Coord: (409213, 435897), Flag: 0, OHCA Prob: 0.25
+ID: 6, Coord: (409199, 435982), Flag: 0, OHCA Prob: 0.65
+ID: 7, Coord: (409178, 436078), Flag: 0, OHCA Prob: 0.69
+ID: 8, Coord: (409174, 436171), Flag: 0, OHCA Prob: 0.68
+ID: 9, Coord: (409147, 436256), Flag: 0, OHCA Prob: 0.15
+ID: 10, Coord: (409469, 435389), Flag: 0, OHCA Prob: 0.88
+ID: 11, Coord: (409378, 435463), Flag: 0, OHCA Prob: 0.36
+ID: 12, Coord: (409378, 435563), Flag: 0, OHCA Prob: 0.82
+ID: 13, Coord: (409351, 435734), Flag: 0, OHCA Prob: 0.29
+ID: 14, Coord: (409328, 435891), Flag: 0, OHCA Prob: 0.88
+ID: 15, Coord: (409275, 435982), Flag: 0, OHCA Prob: 0.38
+ID: 16, Coord: (409289, 436065), Flag: 0, OHCA Prob: 0.95
+ID: 17, Coord: (409272, 436188), Flag: 0, OHCA Prob: 0.65
+ID: 18, Coord: (409208, 436263), Flag: 0, OHCA Prob: 0.4
+ID: 19, Coord: (409754, 435326), Flag: 0, OHCA Prob: 0.98
+ID: 20, Coord: (409609, 435201), Flag: 0, OHCA Prob: 0.96
+ID: 21, Coord: (409565, 435307), Flag: 0, OHCA Prob: 0.87
+ID: 22, Coord: (409577, 435510), Flag: 0, OHCA Prob: 0.98
+ID: 23, Coord: (409515, 435614), Flag: 0, OHCA Prob: 0.8
+ID: 24, Coord: (409478, 435707), Flag: 0, OHCA Prob: 0.66
+ID: 25, Coord: (409442, 435810), Flag: 0, OHCA Prob: 0.63
+ID: 26, Coord: (409442, 435913), Flag: 0, OHCA Prob: 0.52
+ID: 27, Coord: (409408, 436075), Flag: 0, OHCA Prob: 0.99
+ID: 28, Coord: (409344, 436201), Flag: 0, OHCA Prob: 0.24
+ID: 29, Coord: (409398, 436213), Flag: 0, OHCA Prob: 0.17
+ID: 30, Coord: (409638, 435143), Flag: 0, OHCA Prob: 0.96
+ID: 31, Coord: (409683, 435349), Flag: 0, OHCA Prob: 0.36
+ID: 32, Coord: (409670, 435514), Flag: 0, OHCA Prob: 0.87
+ID: 33, Coord: (409620, 435615), Flag: 0, OHCA Prob: 0.72
+ID: 34, Coord: (409688, 435618), Flag: 0, OHCA Prob: 0.29
+ID: 35, Coord: (409624, 435752), Flag: 0, OHCA Prob: 0.38
+ID: 36, Coord: (409570, 435942), Flag: 0, OHCA Prob: 0.25
+ID: 37, Coord: (409541, 436090), Flag: 0, OHCA Prob: 1
+ID: 38, Coord: (409512, 436236), Flag: 0, OHCA Prob: 0.16
+ID: 39, Coord: (409216, 435826), Flag: 0, OHCA Prob: 0.57
+ID: 40, Coord: (409158, 435820), Flag: 0, OHCA Prob: 0.96
+ID: 41, Coord: (408777, 434870), Flag: 0, OHCA Prob: 0.99
+ID: 42, Coord: (408731, 434657), Flag: 0, OHCA Prob: 0.48
+ID: 43, Coord: (408808, 434639), Flag: 0, OHCA Prob: 0.69
+ID: 44, Coord: (408840, 435022), Flag: 0, OHCA Prob: 0.17
+ID: 45, Coord: (408932, 434976), Flag: 0, OHCA Prob: 0.25
+ID: 46, Coord: (408897, 434650), Flag: 0, OHCA Prob: 0.75
+ID: 47, Coord: (409050, 434674), Flag: 0, OHCA Prob: 0.72
+ID: 48, Coord: (409033, 434769), Flag: 0, OHCA Prob: 0.31
+ID: 49, Coord: (408906, 434723), Flag: 0, OHCA Prob: 0.33
+ID: 50, Coord: (409262, 434873), Flag: 0, OHCA Prob: 0.93
+ID: 51, Coord: (409090, 434982), Flag: 0, OHCA Prob: 0.54
+ID: 52, Coord: (409020, 435056), Flag: 0, OHCA Prob: 0.17
+ID: 53, Coord: (409262, 435017), Flag: 0, OHCA Prob: 0.77
+ID: 54, Coord: (409210, 435093), Flag: 0, OHCA Prob: 0.22
+ID: 55, Coord: (409109, 435153), Flag: 0, OHCA Prob: 0.49
+ID: 56, Coord: (409192, 435244), Flag: 0, OHCA Prob: 0.9
+ID: 57, Coord: (409298, 435127), Flag: 0, OHCA Prob: 0.94
+ID: 58, Coord: (409302, 435225), Flag: 0, OHCA Prob: 0.29
+ID: 59, Coord: (409264, 435295), Flag: 0, OHCA Prob: 0.76
+ID: 60, Coord: (409452, 434831), Flag: 0, OHCA Prob: 0.68
+ID: 61, Coord: (409553, 435074), Flag: 0, OHCA Prob: 0.33
+ID: 62, Coord: (409434, 435030), Flag: 0, OHCA Prob: 0.93
+ID: 63, Coord: (409517, 434818), Flag: 0, OHCA Prob: 0.9
+ID: 64, Coord: (409539, 434954), Flag: 0, OHCA Prob: 0.34
+ID: 65, Coord: (409038, 435235), Flag: 0, OHCA Prob: 0.66
+ID: 66, Coord: (409167, 435416), Flag: 0, OHCA Prob: 0.6
+ID: 67, Coord: (408778, 434739), Flag: 0, OHCA Prob: 0.12
+ID: 68, Coord: (409822, 435466), Flag: 0, OHCA Prob: 0.16
+ID: 69, Coord: (409811, 435545), Flag: 0, OHCA Prob: 0.41
+ID: 70, Coord: (409765, 435617), Flag: 0, OHCA Prob: 0.15
+ID: 71, Coord: (409812, 435857), Flag: 0, OHCA Prob: 0.71
+ID: 72, Coord: (409792, 435978), Flag: 0, OHCA Prob: 0.14
+ID: 73, Coord: (409837, 436155), Flag: 0, OHCA Prob: 0.44
+ID: 74, Coord: (409711, 436281), Flag: 0, OHCA Prob: 0.45
+ID: 75, Coord: (409969, 435509), Flag: 0, OHCA Prob: 0.68
+ID: 76, Coord: (409944, 435714), Flag: 0, OHCA Prob: 0.85
+ID: 77, Coord: (410041, 435866), Flag: 0, OHCA Prob: 0.53
+ID: 78, Coord: (409946, 436015), Flag: 0, OHCA Prob: 0.18
+ID: 79, Coord: (410015, 436193), Flag: 0, OHCA Prob: 0.15
+ID: 80, Coord: (410067, 435592), Flag: 0, OHCA Prob: 0.57
+ID: 81, Coord: (410073, 436039), Flag: 0, OHCA Prob: 0.2
+ID: 82, Coord: (410113, 436329), Flag: 0, OHCA Prob: 0.73
+ID: 83, Coord: (410204, 436314), Flag: 0, OHCA Prob: 0.99
+ID: 84, Coord: (409645, 436119), Flag: 0, OHCA Prob: 0.8
+ID: 85, Coord: (410120, 436189), Flag: 0, OHCA Prob: 0.34
+ID: 86, Coord: (409875, 435755), Flag: 0, OHCA Prob: 0.26
+ID: 87, Coord: (410180, 436398), Flag: 0, OHCA Prob: 0.82
+ID: 88, Coord: (410244, 436276), Flag: 0, OHCA Prob: 0.86
+ID: 89, Coord: (410224, 436222), Flag: 0, OHCA Prob: 0.8
+ID: 90, Coord: (410435, 436784), Flag: 0, OHCA Prob: 0.29
+ID: 91, Coord: (409573, 436533), Flag: 0, OHCA Prob: 0.31
+ID: 92, Coord: (409575, 436677), Flag: 0, OHCA Prob: 0.24
+ID: 93, Coord: (409553, 436813), Flag: 0, OHCA Prob: 0.56
+ID: 94, Coord: (409546, 436882), Flag: 0, OHCA Prob: 0.83
+ID: 95, Coord: (409701, 436391), Flag: 0, OHCA Prob: 0.2
+ID: 96, Coord: (409691, 436539), Flag: 0, OHCA Prob: 0.81
+ID: 97, Coord: (409680, 436697), Flag: 0, OHCA Prob: 0.24
+ID: 98, Coord: (409667, 436825), Flag: 0, OHCA Prob: 0.44
+ID: 99, Coord: (409657, 436892), Flag: 0, OHCA Prob: 0.84
+Instance:  100-3.dat  RUN:  1  GEN = 25
+Instance:  100-3.dat  RUN:  1  GEN = 50
+Instance:  100-3.dat  RUN:  1  GEN = 75
+Instance:  100-3.dat  RUN:  1  GEN = 100
+Instance:  100-3.dat  RUN:  1  GEN = 125
+Instance:  100-3.dat  RUN:  1  GEN = 150
+Done!

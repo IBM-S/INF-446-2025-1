@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	//readf>>numOfInstance;
 	//readf>>total_run;
 	NumberOfObjectives = 2;
-	NumberOfVariables = 1000;
+	NumberOfVariables = 0;
 	NumberOfFuncEvals = 50000;
 
 	char  alg_name[1024];
@@ -37,10 +37,12 @@ int main(int argc, char *argv[])
 
 	if(argc < 2){
         cout << "Wrong number of parameters! "<< endl;
+		cout << "Usage: ./MOEAD <instance_file> <random_seed> <num_variables>" << endl;
         return 0;
     }
     char * instance(argv[1]);
     rnd_uni_seed = atoi(argv[2]);
+	NumberOfVariables = atoi(argv[3]);
 
 	Reader r(instance);
 
@@ -51,7 +53,7 @@ int main(int argc, char *argv[])
 	sprintf(strTestInstance,instance);
 
 	clock_t start, temp, finish;
-	double  duration, last = 0;
+	double  last = 0;
 	start = clock();
 				
 	std::fstream fout;
@@ -70,14 +72,28 @@ int main(int argc, char *argv[])
 	if(!strcmp(alg_name,"MOEAD-DE"))
 	{
 		CALG_EMO_MOEAD_DE MOEAD_DE;
+		MOEAD_DE.problemInstance = problemInstance;
 		MOEAD_DE.Execute(1); //Se ejecuta solo una vez
 	}
 
 			
-	temp = clock();
-	duration = (double)(temp - start) / CLOCKS_PER_SEC;
-	fout<<duration - last<<" ";
-	fout<<"\n\n";  	finish = clock();  	fout.close();
+	finish = clock();  // Tiempo final
+	double duration = static_cast<double>(finish - start) / CLOCKS_PER_SEC;
+
+	// Mostrar por consola
+	std::cout << "Tiempo de ejecución: " << duration << " segundos." << std::endl;
+	std::cout << "Semilla: " << rnd_uni_seed << std::endl;
+	std::cout << "Instancia: " << instance << std::endl;
+
+
+
+	// Guardar en archivo
+	std::ofstream fout_time("execution_time.log", std::ios::app);
+	fout_time << "Instancia: " << instance
+			<< ", Semilla: " << rnd_uni_seed
+			<< ", Tiempo (s): " << duration
+			<< std::endl;
+	fout_time.close();
 
 	std::cout << "Done!" << std::endl;
 

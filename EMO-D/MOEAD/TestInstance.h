@@ -21,7 +21,8 @@ public:
 	virtual ~CTestInstance();
 
     void DRP_Evaluate(const vector<double>& x, vector<double>& f, ProblemInstance* instance);
-	
+    void DRP_Evaluate_v2(const vector<double>& x, vector<double>& f, ProblemInstance* instance);
+
     void fdvrp(vector<double> &x, vector<double> &f, const unsigned int nx);
 
 	void DTLZ1(vector<double> &x, vector<double> &f, const unsigned int nx);

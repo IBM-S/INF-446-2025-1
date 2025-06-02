@@ -30,6 +30,8 @@ public:
     int getAlpha();
     int getBeta(); */
 
+    void setN(int n);
+    int getN();
     void setP(double p);
     double getP();
     void setR(int r);

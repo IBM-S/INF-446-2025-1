@@ -4,6 +4,8 @@
 
 #include "UtilityToolBox.h"
 #include <iostream>
+#include <cmath>
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -296,8 +298,21 @@ void CUtilityToolBox::PolynomialMutation(vector<double>& x_var, double rate)
     return;
 }
 
-void CUtilityToolBox::CruzamientoUniformeModificado(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, int max_instalaciones) {
-    int nvar = x_var1.size();
+void CUtilityToolBox::CruzamientoUniformeModificado(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child) {
+    int count1 = std::count(x_var1.begin(), x_var1.end(), 1.0);
+	int count2 = std::count(x_var2.begin(), x_var2.end(), 1.0);
+
+	int min_val = std::min(count1, count2);
+	int max_val = std::max(count1, count2);
+	int max_instalaciones = min_val + rand() % (max_val - min_val + 1);  // incluye ambos extremos
+
+	bool flag = false;
+
+	if (flag){
+		max_instalaciones = static_cast<int>(std::round((count1 + count2) / 2.0));
+	} 
+
+	int nvar = x_var1.size();
     child.assign(nvar, 0); // inicializa en 0s
 
     int instalaciones = 0;

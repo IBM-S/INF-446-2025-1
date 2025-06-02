@@ -129,11 +129,20 @@ void CALG_EMO_MOEAD::InitializePopulation()
 	{
 		CSubProblemBase SP;
 
-		int total_locations = 1000;
+		const auto& nodos = this->problemInstance->getNodes();
 
-		//int num_AEDs = static_cast<int>(floor(problemInstance->getP() / problemInstance->getC1()));
-        // int num_AEDs = 10;
+		int aeds_preinstalados = 0;
+		for (const auto& nodo : nodos) {
+			if (nodo->getFlag() == 1) {
+				aeds_preinstalados++;
+			}
+		}
+
+		int total_locations =  nodos.size() - aeds_preinstalados ;
+	
 		int num_AEDs = rand() % (total_locations + 1); // genera número entre 0 y total_locations
+
+		//int num_AEDs = 1;
 
 		SP.m_BestIndividual.problemInstance = this->problemInstance;
 
@@ -382,8 +391,8 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		SelectMatingPool(mating_pool, id_c, 2);
 		p1 = mating_pool[0]; p2 = mating_pool[1]; mating_pool.clear();
 
-		//std::cout << "\n=== Reproducción " << s << " ===" << std::endl;
-		/*
+		/* std::cout << "\n=== Reproducción " << s << " ===" << std::endl;
+		
 		std::cout << "Padre 1 (ID " << p1 << "): ";
 		for (double val : m_PopulationSOP[p1].m_BestIndividual.x_var) {
 			std::cout << val << " ";
@@ -399,7 +408,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 
 		UtilityToolBox.CruzamientoUniformeModificado(m_PopulationSOP[p1].m_BestIndividual.x_var,
 			                                    m_PopulationSOP[p2].m_BestIndividual.x_var,
-												child.x_var, 10);
+												child.x_var);
 
 		child.problemInstance = this->problemInstance;
 
@@ -474,6 +483,17 @@ void CALG_EMO_MOEAD::SaveObjSpace(char saveFilename[1024])
 		{
 			fout<<m_PopulationSOP[n].m_BestIndividual.f_obj[k]<<"  ";
 		}
+
+		fout << "- IDs instalados: ";
+		const auto& x = m_PopulationSOP[n].m_BestIndividual.x_var;
+		for (unsigned int i = 0; i < x.size(); i++)
+		{
+			if (x[i] >= 0.5) // binario (1 instalado)
+			{
+				fout << i << " ";
+			}
+		}
+
 		fout<<"\n";
 	}
 	fout.close();
@@ -499,7 +519,8 @@ void CALG_EMO_MOEAD::SaveVarSpace(char saveFilename[1024])
 void CALG_EMO_MOEAD::SavePopulation(int run_id)
 {
 	char filename[1024];
-	sprintf(filename,"SAVING/MOEAD/POF/POF_%s_RUN%d.dat",strTestInstance, run_id);
+	//sprintf(filename,"SAVING/MOEAD/POF/POF_%s_RUN%d.dat",strTestInstance, run_id);
+	sprintf(filename,"SAVING/MOEAD/POF/POF_%s_%d.dat", strTestInstance, rnd_uni_seed);
 	SaveObjSpace(filename);//��ǰ��Ⱥ���
 
 	//sprintf_s(filename,"Saving/MOEAD/POS_%s_RUN%d.dat",strTestInstance, run_id);

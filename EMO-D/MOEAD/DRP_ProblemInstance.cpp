@@ -47,6 +47,10 @@ void ProblemInstance::setBeta(int b) { beta = b; }
 int ProblemInstance::getAlpha() { return alpha; }
 int ProblemInstance::getBeta() { return beta; } */
 // Parámetros
+void ProblemInstance::setN(int n) { N = n;}
+
+int ProblemInstance::getN() { return N; }
+
 void ProblemInstance::setP(double p) { P = p; }
 double ProblemInstance::getP() { return P; }
 

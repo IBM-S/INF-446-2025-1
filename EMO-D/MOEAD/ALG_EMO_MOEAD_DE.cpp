@@ -128,9 +128,13 @@ void CALG_EMO_MOEAD_DE::InitializePopulation()
 	{
 		CSubProblemBase SP;
 
-		SP.m_BestIndividual.Randomize();
-		SP.m_BestIndividual.Evaluate();
+		int total_locations =  this->problemInstance->getN();
+		int num_AEDs = rand() % (total_locations + 1); // genera número entre 0 y total_locations
 
+		SP.m_BestIndividual.problemInstance = this->problemInstance;
+
+		SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
+		SP.m_BestIndividual.Evaluate();
 		s_Fevals_Count++;
 
 		UpdateReference(SP.m_BestIndividual.f_obj);    // update reference point
