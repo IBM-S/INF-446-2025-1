@@ -1,0 +1,313 @@
+<!-- Puedes copiar el HTML completo desde aquí: -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Visualizador MOEA/D</title>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+    form { margin-bottom: 20px; }
+    #plot, #hv-plot, #history-plot { width: 90%; margin: auto; }
+    #plot { height: 600px; }
+    #hv-plot { height: 400px; margin-top: 40px; }
+    #history-plot { height: 500px; margin-top: 40px; }
+    #slider-container { margin-top: 20px; width: 80%; margin-left: auto; margin-right: auto; }
+    #slider { width: 100%; }
+    button, label { margin: 5px; padding: 8px 15px; }
+  </style>
+</head>
+<body>
+  <h1>Visualizador MOEA/D</h1>
+  <form id="form">
+    Instancia: 
+    <select name="instancia" value="100-3.dat">
+        <option value="DRP.dat">DRP.dat</option>
+        <option value="100-3.dat">100-3.dat</option>
+        <option value="150-11.dat">150-11.dat</option>  
+        <option value="1000-88_4.dat">1000-88_4.dat</option>
+        <option value="1450-71_4.dat">1450-71_4.dat</option>
+    </select>
+    Semilla: <input name="semilla" value="123">
+    Variables: 
+    <select name="num_var" value="100">
+        <option value="21">21</option>
+        <option value="100">100</option>  
+        <option value="150">150</option>
+        <option value="1000">1000</option>
+        <option value="1450">1450</option>
+    </select>
+    <br><br>
+    <button type="submit">Ejecutar</button>
+  </form>
+
+  <button id="load-btn">Cargar generaciones existentes</button>
+  <label><input type="checkbox" id="fix-scale"> Usar la misma escala para comparar</label>
+
+  <h3 id="status">Esperando ejecución...</h3>
+  <div id="plot"></div>
+  <div id="slider-container" style="display:none;">
+    <input type="range" id="slider" min="0" max="0" value="0">
+    <p>Generación: <span id="gen-num">1</span></p>
+  </div>
+
+  <div id="hv-plot"></div>
+  <div id="history-plot"></div>
+
+  <script>
+    const form = document.getElementById("form");
+    const status = document.getElementById("status");
+    const plotDiv = document.getElementById("plot");
+    const sliderContainer = document.getElementById("slider-container");
+    const slider = document.getElementById("slider");
+    const genNum = document.getElementById("gen-num");
+    const loadBtn = document.getElementById("load-btn");
+    const fixScaleCheckbox = document.getElementById("fix-scale");
+
+    let frames = [];
+    let hvValues = [];
+    let globalXMin = Infinity, globalXMax = -Infinity;
+    let globalYMin = Infinity, globalYMax = -Infinity;
+
+    function findParetoFront(points) {
+        if (!points || !Array.isArray(points) || points.length === 0) return [];
+        const isDominated = new Array(points.length).fill(false);
+        for (let i = 0; i < points.length; i++) {
+          for (let j = 0; j < points.length; j++) {
+            if (i !== j) {
+              if (points[j].x <= points[i].x && points[j].y <= points[i].y &&
+                  (points[j].x < points[i].x || points[j].y < points[i].y)) {
+                isDominated[i] = true;
+                break;
+              }
+            }
+          }
+        }
+        return isDominated.map((dom, i) => !dom);
+      }
+
+
+    function getMultiColor(factor) {
+      const gradientColors = ["#440154", "#3b528b", "#21918c", "#fde725", "#ff7f00"];
+      const scaled = factor * (gradientColors.length - 1);
+      const idx1 = Math.floor(scaled);
+      const idx2 = Math.min(idx1 + 1, gradientColors.length - 1);
+      const localFactor = scaled - idx1;
+      const c1 = gradientColors[idx1].slice(1);
+      const c2 = gradientColors[idx2].slice(1);
+      const r1 = parseInt(c1.slice(0, 2), 16), g1 = parseInt(c1.slice(2, 4), 16), b1 = parseInt(c1.slice(4), 16);
+      const r2 = parseInt(c2.slice(0, 2), 16), g2 = parseInt(c2.slice(2, 4), 16), b2 = parseInt(c2.slice(4), 16);
+      const r = Math.round(r1 + localFactor * (r2 - r1));
+      const g = Math.round(g1 + localFactor * (g2 - g1));
+      const b = Math.round(b1 + localFactor * (b2 - b1));
+      return `rgb(${r},${g},${b})`;
+    }
+
+    async function loadGenerations(files, hvs) {
+      frames = [];
+      hvValues = hvs;
+      globalXMin = Infinity; globalXMax = -Infinity;
+      globalYMin = Infinity; globalYMax = -Infinity;
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const res = await fetch("/get/" + file);
+        const text = await res.text();
+
+        const puntos = text.trim().split("\n").map(line => {
+          const partes = line.split("- IDs instalados:");
+          const [f1, f2] = partes[0].trim().split(/\s+/).map(Number);
+          if (f1 < globalXMin) globalXMin = f1;
+          if (f1 > globalXMax) globalXMax = f1;
+          if (f2 < globalYMin) globalYMin = f2;
+          if (f2 > globalYMax) globalYMax = f2;
+          return {x: f1, y: f2};
+        });
+
+        frames.push(puntos);
+      }
+
+      showGeneration(0);
+      sliderContainer.style.display = "block";
+      slider.max = frames.length - 1;
+      slider.value = 0;
+      genNum.innerText = 1;
+      status.innerText = `Listo: ${frames.length} generaciones cargadas`;
+
+      Plotly.newPlot("hv-plot", [{
+        x: hvValues.map((_, i) => i + 1),
+        y: hvValues,
+        mode: "lines+markers",
+        marker: { color: "green" },
+        line: { color: "green" },
+        name: "Hipervolumen"
+      }], {
+        title: "Evolución del Hipervolumen",
+        xaxis: { title: "Generación" },
+        yaxis: { title: "Hipervolumen" }
+      });
+
+      document.getElementById("hv-plot").on("plotly_click", function(data) {
+        const gen = data.points[0].x;
+        slider.value = gen - 1;
+        genNum.innerText = gen;
+        showGeneration(gen - 1);
+      });
+
+      const animationFrames = frames.map((points, idx) => {
+        const isPareto = findParetoFront(points);
+        const paretoPoints = points.filter((p, i) => isPareto[i]);
+        return {
+          name: `gen${idx}`,
+          data: [{
+            x: paretoPoints.map(p => p.x),
+            y: paretoPoints.map(p => p.y),
+            mode: "markers",
+            marker: { size: 8, color: "red" }
+          }]
+        };
+      });
+
+      if (animationFrames.length === 0) return;
+
+      const initialTrace = {
+        x: animationFrames[0].data[0].x,
+        y: animationFrames[0].data[0].y,
+        mode: "markers",
+        marker: { size: 8, color: "red" }
+      };
+
+      Plotly.newPlot("history-plot", [initialTrace], {
+        title: "Historial Animado de Frentes de Pareto",
+        xaxis: { title: "f1" },
+        yaxis: { title: "f2" },
+        updatemenus: [{
+          type: "buttons",
+          showactive: false,
+          buttons: [
+            {
+              label: "▶️ Play",
+              method: "animate",
+              args: [null, {
+                mode: "immediate",
+                frame: { duration: 50000, redraw: true },
+                transition: { duration: 30000 }
+              }]
+            },
+            {
+              label: "⏸️ Pause",
+              method: "animate",
+              args: [[null], {
+                mode: "immediate",
+                frame: { duration: 0, redraw: false },
+                transition: { duration: 0 }
+              }]
+            }
+          ]
+        }]
+      }, {
+        frames: animationFrames
+      });
+
+      }
+
+
+    
+
+    function showGeneration(index) {
+      const points = frames[index];
+      if (!points || !Array.isArray(points)) return;
+
+      const isPareto = findParetoFront(points);
+      const paretoPoints = points.filter((p, i) => isPareto[i]);
+      const dominatedPoints = points.filter((p, i) => !isPareto[i]);
+
+      const layout = {
+        title: `Frente de Pareto - Generación ${index + 1}`,
+        xaxis: { title: "Minimizar Cobertura Probabilística (f1)" },
+        yaxis: { title: "Minimizar Costos (f2)" },
+        legend: {
+          x: 1, y: 1, xanchor: 'right', yanchor: 'top',
+          bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#ccc', borderwidth: 1
+        }
+      };
+
+      if (fixScaleCheckbox.checked) {
+        const xMargin = (globalXMax - globalXMin) * 0.05;
+        const yMargin = (globalYMax - globalYMin) * 0.05;
+        layout.xaxis.range = [globalXMin - xMargin, globalXMax + xMargin];
+        layout.yaxis.range = [globalYMin - yMargin, globalYMax + yMargin];
+      }
+
+      Plotly.react(plotDiv, [
+        {
+          x: dominatedPoints.map(p => p.x),
+          y: dominatedPoints.map(p => p.y),
+          mode: "markers",
+          marker: { size: 8, color: "blue" },
+          name: "Dominados",
+          showlegend: true
+        },
+        {
+          x: paretoPoints.map(p => p.x),
+          y: paretoPoints.map(p => p.y),
+          mode: "markers",
+          marker: { size: 10, color: "red", symbol: "circle-open" },
+          name: "Frente Pareto",
+          showlegend: true
+        }
+      ], layout);
+    }
+
+    slider.addEventListener("input", () => {
+      const index = parseInt(slider.value);
+      genNum.innerText = index + 1;
+      showGeneration(index);
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.innerText = "Ejecutando MOEA/D...";
+      const data = {
+        instancia: form.instancia.value,
+        semilla: form.semilla.value,
+        num_var: form.num_var.value
+      };
+      const res = await fetch("/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      if (json.files.length === 0) {
+        status.innerText = "⚠️ No se generaron archivos.";
+        return;
+      }
+      await loadGenerations(json.files, json.hv);
+    });
+
+    loadBtn.addEventListener("click", async () => {
+      status.innerText = "Cargando generaciones existentes...";
+      const data = {
+        instancia: form.instancia.value,
+        semilla: form.semilla.value
+      };
+      const res = await fetch("/load", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      if (json.files.length === 0) {
+        status.innerText = "⚠️ No se encontraron generaciones guardadas.";
+        return;
+      }
+      await loadGenerations(json.files, json.hv);
+    });
+
+    fixScaleCheckbox.addEventListener("change", () => {
+      showGeneration(parseInt(slider.value));
+    });
+  </script>
+</body>
+</html>

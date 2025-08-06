@@ -5,9 +5,10 @@ OBJS = Node_DRP.o DRP_ProblemInstance.o Reader_DRP.o GlobalObject.o GlobalVariab
 
 CFLAGS = -std=c++1y -O3 -g -ggdb -fprofile-use
 
-instance=SJC324-3.dat
+instance=DRP.dat
 seed=123
-ARGS = $(instance) $(seed)
+n_variables=21
+ARGS = $(instance) $(seed) $(n_variables)
 
 all: MOEAD
 
