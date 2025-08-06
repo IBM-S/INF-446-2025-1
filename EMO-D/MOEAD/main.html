@@ -19,27 +19,36 @@
 </head>
 <body>
   <h1>Visualizador MOEA/D</h1>
-  <form id="form">
-    Instancia: 
-    <select name="instancia" value="100-3.dat">
-        <option value="DRP.dat">DRP.dat</option>
-        <option value="100-3.dat">100-3.dat</option>
-        <option value="150-11.dat">150-11.dat</option>  
-        <option value="1000-88_4.dat">1000-88_4.dat</option>
-        <option value="1450-71_4.dat">1450-71_4.dat</option>
-    </select>
-    Semilla: <input name="semilla" value="123">
-    Variables: 
-    <select name="num_var" value="100">
-        <option value="21">21</option>
-        <option value="100">100</option>  
-        <option value="150">150</option>
-        <option value="1000">1000</option>
-        <option value="1450">1450</option>
-    </select>
-    <br><br>
-    <button type="submit">Ejecutar</button>
+    <form id="form">
+    <div style="margin-bottom: 10px;">
+      <label style="margin-right: 10px;">Instancia:
+        <select name="instancia" style="margin-right: 20px;">
+          <option value="DRP.dat">DRP.dat</option>
+          <option value="100-3.dat">100-3.dat</option>
+          <option value="150-11.dat">150-11.dat</option>  
+          <option value="1000-88_4.dat">1000-88_4.dat</option>
+          <option value="1450-71_4.dat">1450-71_4.dat</option>
+        </select>
+      </label>
+
+      <label style="margin-right: 10px;">Semilla:
+        <input name="semilla" value="123" style="margin-right: 20px;">
+      </label>
+
+      <label style="margin-right: 10px;">Variables:
+        <select name="num_var" style="margin-right: 20px;">
+          <option value="21">21</option>
+          <option value="100">100</option>  
+          <option value="150">150</option>
+          <option value="1000">1000</option>
+          <option value="1450">1450</option>
+        </select>
+      </label>
+
+      <button type="submit">Ejecutar</button>
+    </div>
   </form>
+
 
   <button id="load-btn">Cargar generaciones existentes</button>
   <label><input type="checkbox" id="fix-scale"> Usar la misma escala para comparar</label>
@@ -154,60 +163,27 @@
         showGeneration(gen - 1);
       });
 
-      const animationFrames = frames.map((points, idx) => {
+      // Generar trazos con colores interpolados
+      const traces = frames.map((points, idx) => {
         const isPareto = findParetoFront(points);
         const paretoPoints = points.filter((p, i) => isPareto[i]);
+        const color = getMultiColor(idx / (frames.length - 1));
         return {
-          name: `gen${idx}`,
-          data: [{
-            x: paretoPoints.map(p => p.x),
-            y: paretoPoints.map(p => p.y),
-            mode: "markers",
-            marker: { size: 8, color: "red" }
-          }]
+          x: paretoPoints.map(p => p.x),
+          y: paretoPoints.map(p => p.y),
+          mode: "markers",
+          marker: { size: 6, color: color },
+          name: `Gen ${idx + 1}`,
+          showlegend: false
         };
       });
 
-      if (animationFrames.length === 0) return;
-
-      const initialTrace = {
-        x: animationFrames[0].data[0].x,
-        y: animationFrames[0].data[0].y,
-        mode: "markers",
-        marker: { size: 8, color: "red" }
-      };
-
-      Plotly.newPlot("history-plot", [initialTrace], {
-        title: "Historial Animado de Frentes de Pareto",
+      Plotly.newPlot("history-plot", traces, {
+        title: "Historial de Frentes de Pareto",
         xaxis: { title: "f1" },
-        yaxis: { title: "f2" },
-        updatemenus: [{
-          type: "buttons",
-          showactive: false,
-          buttons: [
-            {
-              label: "▶️ Play",
-              method: "animate",
-              args: [null, {
-                mode: "immediate",
-                frame: { duration: 50000, redraw: true },
-                transition: { duration: 30000 }
-              }]
-            },
-            {
-              label: "⏸️ Pause",
-              method: "animate",
-              args: [[null], {
-                mode: "immediate",
-                frame: { duration: 0, redraw: false },
-                transition: { duration: 0 }
-              }]
-            }
-          ]
-        }]
-      }, {
-        frames: animationFrames
+        yaxis: { title: "f2" }
       });
+
 
       }
 

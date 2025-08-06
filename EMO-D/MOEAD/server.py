@@ -66,7 +66,7 @@ def run():
     semilla = request.json["semilla"]
     num_var = request.json["num_var"]
 
-    subprocess.run(["./MOEAD", instancia, str(semilla), str(num_var)])
+    subprocess.run(["./MOEAD", os.path.join("INSTANCES", instancia), str(semilla), str(num_var)])
 
     base_name = parse_instance_name(instancia)
     files = sorted(glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat"))
