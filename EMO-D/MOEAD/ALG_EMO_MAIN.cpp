@@ -14,7 +14,7 @@
 #include <time.h>
 #include <string.h>
 #include "DRP_ProblemInstance.h"
-
+#include <libgen.h>
 #include "Reader_DRP.h"
 
 void ResetRandSeed();
@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
 	problemInstance = r.readInputFile();
 	problemInstance->printAll();
 
-	sprintf(strTestInstance, instance);
+	// sprintf(strTestInstance, instance);
+	strcpy(strTestInstance, basename(instance));
 
 	clock_t start, temp, finish;
 	double last = 0;
