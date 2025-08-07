@@ -23,8 +23,7 @@ def parse_instance_name(filename):
 
 def save_front_to_file(points, filepath):
     rounded = [tuple(round(v, 4) for v in p) for p in points]
-    points_ordered = sorted(rounded, key=lambda p: -p[1])  # ordenar por f2 descendente
-    unique_points = list(dict.fromkeys((tuple(p) for p in points_ordered)))
+    unique_points = list(dict.fromkeys(sorted(rounded, key=lambda p: (-p[1], p[0]))))
     with open(filepath, "w") as f:
         f.write("#\n")
         for x, y in unique_points:
@@ -44,7 +43,7 @@ def calculate_hv(filepath, ref_point, gen_number=None):
         return hv
     except ValueError:
         print("Error al interpretar la salida:", result.stdout)
-        return None
+        return 0.0
 
 def calcular_referencia_global(files):
     all_points = []
@@ -57,6 +56,8 @@ def calcular_referencia_global(files):
     max_y = max(p[1] for p in all_points)
     ref_x = max_x + abs(max_x) * 0.001
     ref_y = max_y + abs(max_y) * 0.001
+    if ref_x == 0:
+        ref_x = 0.1
     print(f"Punto de referencia global: ({ref_x}, {ref_y})")
     return (ref_x, ref_y)
 
@@ -66,63 +67,83 @@ def run():
     semilla = request.json["semilla"]
     num_var = request.json["num_var"]
 
-    subprocess.run(["./MOEAD", os.path.join("INSTANCES", instancia), str(semilla), str(num_var)])
+    full_path = os.path.join("INSTANCES", instancia)
+    subprocess.run(["./MOEAD", full_path, str(semilla), str(num_var)])
 
     base_name = parse_instance_name(instancia)
     files = sorted(glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat"))
     hv_results = []
 
-    os.makedirs("FrentesDePareto", exist_ok=True)
+    folder_path = f"FrentesDePareto/{base_name}"
+    os.makedirs(folder_path, exist_ok=True)
+
     ref_point = calcular_referencia_global(files)
+    resumen_path = os.path.join(folder_path, f"{base_name}_HV_summary.txt")
 
-    for i, file in enumerate(files):
-        with open(file) as f:
-            lines = [line for line in f if line.strip() and not line.startswith("#")]
-            points = [list(map(float, line.split()[:2])) for line in lines]
-            nondominated = get_non_dominated(points)
-            if not nondominated:
-                hv_results.append(None)
-                continue
+    with open(resumen_path, "w") as resumen_file:
+        resumen_file.write(f"{ref_point[0]} {ref_point[1]}\n")
+        for i, file in enumerate(files):
+            with open(file) as f:
+                lines = [line for line in f if line.strip() and not line.startswith("#")]
+                points = [list(map(float, line.split()[:2])) for line in lines]
+                nondominated = get_non_dominated(points)
+                output_file = os.path.join(folder_path, f"{base_name}_GEN{i+1}.dat")
 
-            output_file = f"FrentesDePareto/{base_name}_GEN{i+1}.dat"
-            save_front_to_file(nondominated, output_file)
+                if not nondominated:
+                    hv_results.append(0.0)
+                    resumen_file.write(f"GEN{i+1} 0.0\n")
+                    continue
 
-            hv = calculate_hv(output_file, ref_point, gen_number=i+1)
-            hv_results.append(hv)
+                save_front_to_file(nondominated, output_file)
+                hv = calculate_hv(output_file, ref_point, gen_number=i+1)
+                hv = hv if hv is not None else 0.0
+                hv_results.append(hv)
+                resumen_file.write(f"GEN{i+1} {hv:.4f}\n")
+        resumen_file.write("#\n")
 
     return jsonify({"files": files, "hv": hv_results})
 
 @app.route("/load", methods=["POST"])
 def load():
     instancia = request.json["instancia"]
+    recalcular = request.json.get("recalcular", True)
     base_name = parse_instance_name(instancia)
+
     files = sorted(glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat"))
+    subfolder = os.path.join("FrentesDePareto", base_name)
+    resumen_path = os.path.join(subfolder, f"{base_name}_HV_summary.txt")
     hv_results = []
 
-    os.makedirs("FrentesDePareto", exist_ok=True)
-    ref_point = calcular_referencia_global(files)
-
-    for i, file in enumerate(files):
-        output_file = f"FrentesDePareto/{base_name}_GEN{i+1}.dat"
-        if not os.path.exists(output_file):
-            with open(file) as f:
-                lines = [line for line in f if line.strip() and not line.startswith("#")]
-                points = [list(map(float, line.split()[:2])) for line in lines]
-                nondominated = get_non_dominated(points)
-                if not nondominated:
-                    hv_results.append(None)
-                    continue
-
-                save_front_to_file(nondominated, output_file)
-                hv = calculate_hv(output_file, ref_point, gen_number=i+1)
-                hv_results.append(hv)
-        else:
-            # si ya existe, recalcular por consistencia
+    if not recalcular and os.path.exists(resumen_path):
+        with open(resumen_path) as f:
+            lines = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+            if len(lines) > 1:
+                hv_results = [float(line.split()[1]) for line in lines[1:]]
+    else:
+        ref_point = calcular_referencia_global(files)
+        for i, file in enumerate(files):
+            output_file = os.path.join(subfolder, f"{base_name}_GEN{i+1}.dat")
+            if not os.path.exists(output_file):
+                with open(file) as f:
+                    lines = [line for line in f if line.strip() and not line.startswith("#")]
+                    points = [list(map(float, line.split()[:2])) for line in lines]
+                    nondominated = get_non_dominated(points)
+                    if not nondominated:
+                        hv_results.append(0.0)
+                        continue
+                    save_front_to_file(nondominated, output_file)
             with open(output_file) as f:
                 lines = [line for line in f if line.strip() and not line.startswith("#")]
                 points = [list(map(float, line.split()[:2])) for line in lines]
                 hv = calculate_hv(output_file, ref_point, gen_number=i+1)
                 hv_results.append(hv)
+
+        # Guardar el nuevo resumen
+        with open(resumen_path, "w") as f:
+            f.write(f"{ref_point[0]:.3f} {ref_point[1]:.3f}\n")
+            for i, hv in enumerate(hv_results):
+                f.write(f"GEN{i+1} {hv:.4f}\n")
+            f.write("#\n")
 
     return jsonify({"files": files, "hv": hv_results})
 

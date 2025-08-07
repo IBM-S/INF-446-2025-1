@@ -52,6 +52,7 @@
 
   <button id="load-btn">Cargar generaciones existentes</button>
   <label><input type="checkbox" id="fix-scale"> Usar la misma escala para comparar</label>
+  <label><input type="checkbox" id="recalcular-hv" checked>Recalcular hipervolumen al cargar</label>
 
   <h3 id="status">Esperando ejecución...</h3>
   <div id="plot"></div>
@@ -266,7 +267,8 @@
       status.innerText = "Cargando generaciones existentes...";
       const data = {
         instancia: form.instancia.value,
-        semilla: form.semilla.value
+        semilla: form.semilla.value,
+        recalcular: document.getElementById("recalcular-hv").checked
       };
       const res = await fetch("/load", {
         method: "POST",
