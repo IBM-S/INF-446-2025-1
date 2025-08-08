@@ -55,8 +55,19 @@
   <label><input type="checkbox" id="recalcular-hv" checked>Recalcular hipervolumen al cargar</label>
 
   <h3 id="status">Esperando ejecución...</h3>
-  <div id="plot"></div>
-  <div id="slider-container" style="display:none;">
+
+
+  <div id="pareto-map-wrapper" style="display: flex; justify-content: center; align-items: flex-start; gap: 20px; margin-top: 20px;">
+  <div id="plot" style="width: 60%; min-width: 400px;"></div>
+  <div id="map-container" style="display: none; width: 40%; min-width: 300px;">
+    <h3>Configuración seleccionada:</h3>
+    <img id="map-image" src="" alt="Mapa" style="width: 100%; border: 1px solid #ccc;">
+  </div>
+  </div>
+
+  <div id="stats-container" style="white-space: pre; text-align:left; font-family: monospace; margin-top:10px; display:none;"></div>
+
+    <div id="slider-container" style="display:none;">
     <input type="range" id="slider" min="0" max="0" value="0">
     <p>Generación: <span id="gen-num">1</span></p>
   </div>
@@ -64,7 +75,8 @@
   <div id="hv-plot"></div>
   <div id="history-plot"></div>
 
-  <script>
+
+    <script>
     const form = document.getElementById("form");
     const status = document.getElementById("status");
     const plotDiv = document.getElementById("plot");
@@ -80,22 +92,21 @@
     let globalYMin = Infinity, globalYMax = -Infinity;
 
     function findParetoFront(points) {
-        if (!points || !Array.isArray(points) || points.length === 0) return [];
-        const isDominated = new Array(points.length).fill(false);
-        for (let i = 0; i < points.length; i++) {
-          for (let j = 0; j < points.length; j++) {
-            if (i !== j) {
-              if (points[j].x <= points[i].x && points[j].y <= points[i].y &&
-                  (points[j].x < points[i].x || points[j].y < points[i].y)) {
-                isDominated[i] = true;
-                break;
-              }
+      if (!points || !Array.isArray(points) || points.length === 0) return [];
+      const isDominated = new Array(points.length).fill(false);
+      for (let i = 0; i < points.length; i++) {
+        for (let j = 0; j < points.length; j++) {
+          if (i !== j) {
+            if (points[j].x <= points[i].x && points[j].y <= points[i].y &&
+                (points[j].x < points[i].x || points[j].y < points[i].y)) {
+              isDominated[i] = true;
+              break;
             }
           }
         }
-        return isDominated.map((dom, i) => !dom);
       }
-
+      return points.map((p, i) => ({ ...p, isPareto: !isDominated[i] }));
+    }
 
     function getMultiColor(factor) {
       const gradientColors = ["#440154", "#3b528b", "#21918c", "#fde725", "#ff7f00"];
@@ -124,15 +135,38 @@
         const res = await fetch("/get/" + file);
         const text = await res.text();
 
-        const puntos = text.trim().split("\n").map(line => {
-          const partes = line.split("- IDs instalados:");
-          const [f1, f2] = partes[0].trim().split(/\s+/).map(Number);
-          if (f1 < globalXMin) globalXMin = f1;
-          if (f1 > globalXMax) globalXMax = f1;
-          if (f2 < globalYMin) globalYMin = f2;
-          if (f2 > globalYMax) globalYMax = f2;
-          return {x: f1, y: f2};
-        });
+        // Formatos soportados (línea):
+        //  - 'x y P ids...' / 'x y D ids...'
+        //  - 'x y - IDs instalados: ...'
+        //  - 'x y ids...'
+        const puntos = text
+          .trim()
+          .split("\n")
+          .map(l => l.trim())
+          .filter(l => l && !l.startsWith("#"))
+          .map(line => {
+            const toks = line.split(/\s+/);
+            const f1 = parseFloat(toks[0]);
+            const f2 = parseFloat(toks[1]);
+
+            let startIdx = 2;
+            let isPareto; // undefined si no viene bandera
+            if (Number.isNaN(parseFloat(toks[2]))) {
+              // tercer token NO es número => puede ser P/D o "-".
+              if (toks[2] === "P") { isPareto = true;  startIdx = 3; }
+              else if (toks[2] === "D") { isPareto = false; startIdx = 3; }
+              else if (toks[2] === "-" && line.includes("IDs instalados:")) {
+                const right = line.split("IDs instalados:")[1] || "";
+                const ids = right.trim().split(/\s+/).map(Number).filter(n => !Number.isNaN(n));
+                updateRanges(f1, f2);
+                return { x: f1, y: f2, ids, isPareto };
+              }
+            }
+
+            const ids = toks.slice(startIdx).map(n => parseInt(n, 10)).filter(n => !Number.isNaN(n));
+            updateRanges(f1, f2);
+            return { x: f1, y: f2, ids, isPareto };
+          });
 
         frames.push(puntos);
       }
@@ -164,11 +198,12 @@
         showGeneration(gen - 1);
       });
 
-      // Generar trazos con colores interpolados
+      // Historial de frentes (solo Pareto por generación)
       const traces = frames.map((points, idx) => {
-        const isPareto = findParetoFront(points);
-        const paretoPoints = points.filter((p, i) => isPareto[i]);
-        const color = getMultiColor(idx / (frames.length - 1));
+        const hasFlag = points.every(p => typeof p.isPareto === "boolean");
+        const allPoints = hasFlag ? points : findParetoFront(points);
+        const paretoPoints = allPoints.filter(p => p.isPareto);
+        const color = getMultiColor(idx / Math.max(1, (frames.length - 1)));
         return {
           x: paretoPoints.map(p => p.x),
           y: paretoPoints.map(p => p.y),
@@ -185,19 +220,24 @@
         yaxis: { title: "f2" }
       });
 
-
+      function updateRanges(f1, f2) {
+        if (f1 < globalXMin) globalXMin = f1;
+        if (f1 > globalXMax) globalXMax = f1;
+        if (f2 < globalYMin) globalYMin = f2;
+        if (f2 > globalYMax) globalYMax = f2;
       }
-
-
-    
+    }
 
     function showGeneration(index) {
       const points = frames[index];
       if (!points || !Array.isArray(points)) return;
 
-      const isPareto = findParetoFront(points);
-      const paretoPoints = points.filter((p, i) => isPareto[i]);
-      const dominatedPoints = points.filter((p, i) => !isPareto[i]);
+      // Si el archivo trae banderas P/D, úsalo; si no, calcula
+      const hasFlag = points.every(p => typeof p.isPareto === "boolean");
+      const allPoints = hasFlag ? points : findParetoFront(points);
+
+      const paretoPoints = allPoints.filter(p => p.isPareto);
+      const dominatedPoints = allPoints.filter(p => !p.isPareto);
 
       const layout = {
         title: `Frente de Pareto - Generación ${index + 1}`,
@@ -220,6 +260,8 @@
         {
           x: dominatedPoints.map(p => p.x),
           y: dominatedPoints.map(p => p.y),
+          text: dominatedPoints.map(p => `IDs: ${p.ids.join(", ")}`),
+          customdata: dominatedPoints.map(p => p.ids),
           mode: "markers",
           marker: { size: 8, color: "blue" },
           name: "Dominados",
@@ -228,12 +270,40 @@
         {
           x: paretoPoints.map(p => p.x),
           y: paretoPoints.map(p => p.y),
+          text: paretoPoints.map(p => `IDs: ${p.ids.join(", ")}`),
+          customdata: paretoPoints.map(p => p.ids),
           mode: "markers",
           marker: { size: 10, color: "red", symbol: "circle-open" },
           name: "Frente Pareto",
           showlegend: true
         }
       ], layout);
+
+      plotDiv.removeAllListeners?.('plotly_click');
+      plotDiv.on('plotly_click', async function(data) {
+        const idsSeleccionados = data.points[0].customdata || [];
+        const instanciaActual = form.instancia.value;
+
+        const res = await fetch("/map", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ instancia: instanciaActual, ids: idsSeleccionados })
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          const imgURL = "data:image/png;base64," + json.img;
+
+          document.getElementById("map-image").src = imgURL;
+          document.getElementById("map-container").style.display = "block";
+
+          const statsDiv = document.getElementById("stats-container");
+          statsDiv.textContent = json.stats;
+          statsDiv.style.display = "block";
+        } else {
+          alert("❌ No se pudo generar el mapa.");
+        }
+      });
     }
 
     slider.addEventListener("input", () => {
@@ -256,11 +326,11 @@
         body: JSON.stringify(data)
       });
       const json = await res.json();
-      if (json.files.length === 0) {
+      if (!json.files || json.files.length === 0) {
         status.innerText = "⚠️ No se generaron archivos.";
         return;
       }
-      await loadGenerations(json.files, json.hv);
+      await loadGenerations(json.files, json.hv || []);
     });
 
     loadBtn.addEventListener("click", async () => {
@@ -276,11 +346,11 @@
         body: JSON.stringify(data)
       });
       const json = await res.json();
-      if (json.files.length === 0) {
+      if (!json.files || json.files.length === 0) {
         status.innerText = "⚠️ No se encontraron generaciones guardadas.";
         return;
       }
-      await loadGenerations(json.files, json.hv);
+      await loadGenerations(json.files, json.hv || []);
     });
 
     fixScaleCheckbox.addEventListener("change", () => {
