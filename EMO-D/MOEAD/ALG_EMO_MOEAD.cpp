@@ -17,7 +17,7 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 	this->InitializePopulation();
 	this->InitializeNeighborhood();
 
-	int gen = 1;
+	int gen = 0;
 
 	for (;;)
 	{
@@ -478,7 +478,7 @@ void CALG_EMO_MOEAD::SaveObjSpace(char saveFilename[1024])
 		{
 			if (x[i] >= 0.5) // binario (1 instalado)
 			{
-				fout << i << " ";
+				fout << i + 1 << " ";
 			}
 		}
 
