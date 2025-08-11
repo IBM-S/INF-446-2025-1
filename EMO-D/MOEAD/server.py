@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, send_from_directory, send_file
+from flask import Flask, request, jsonify, send_from_directory, send_file, abort
 import subprocess, glob
 import matplotlib.pyplot as plt
 import io
@@ -39,45 +39,6 @@ def save_front_to_file(points, filepath):
             f.write(f"{x:.4f} {y:.4f}\n")
         f.write("#\n")
 
-def save_front_with_ids(entries, filepath):
-    """
-    entries: lista de tuplas (x, y, ids:list[int], is_pareto:bool)
-    Guarda líneas con formato:  x y P ids...   o   x y D ids...
-    Devuelve coords [(x,y)] SOLO de los pareto (para HV).
-    """
-    seen = {}
-    for x, y, ids, is_par in entries:
-        key = (round(x, 4), round(y, 4))
-        if key not in seen:
-            seen[key] = (x, y, list(ids or []), bool(is_par))
-
-    ordered = sorted(seen.values(), key=lambda p: (-p[1], p[0]))
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    with open(filepath, "w") as f:
-        f.write("#\n")
-        for x, y, ids, is_par in ordered:
-            flag = "P" if is_par else "D"
-            tail = (" " + " ".join(map(str, ids))) if ids else ""
-            f.write(f"{x:.4f} {y:.4f} {flag}{tail}\n")
-        f.write("#\n")
-
-    return [(x, y) for x, y, _, is_par in ordered if is_par]
-
-def calculate_hv(filepath, ref_point, gen_number=None):
-    cmd = ["../../material/hv-1.3-src/hv", "-r", f"{ref_point[0]} {ref_point[1]}", filepath]
-    print("Ejecutando:", " ".join(cmd))
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    try:
-        hv = float(result.stdout.strip())
-        if gen_number:
-            print(f"Hipervolumen calculado para generación {gen_number}: {hv}")
-        else:
-            print("Hipervolumen calculado:", hv)
-        return hv
-    except ValueError:
-        print("Error al interpretar la salida:", result.stdout)
-        return 0.0
-
 def calcular_referencia_global(files):
     all_points = []
     for file in files:
@@ -99,18 +60,29 @@ def parse_line_with_ids(line):
     Soporta:
       - 'x y - IDs instalados: 2 3 5'
       - 'x y 2 3 5'
-      - 'x y P 2 3 5' o 'x y D 2 3 5' (al cargar aeds existentes)
-    Retorna (x, y, ids:list[int], flag:str|None)
+      - 'x y P 2 3 5 | 98.00' o 'x y D 2 3 5 | 75.00' (aeds existentes)
+    Retorna (x, y, ids:list[int], flag:str|None, coverage:float|None)
     """
     s = line.strip()
     if not s or s.startswith("#"):
         return None
+
+    coverage = None
+    if "|" in s:
+        left, right = s.split("|", 1)
+        s = left.strip()
+        try:
+            coverage = float(right.strip().split()[0])
+        except Exception:
+            coverage = None
+
     if "- IDs instalados:" in s:
         left, right = s.split("- IDs instalados:", 1)
         nums = left.strip().split()
         x, y = float(nums[0]), float(nums[1])
         ids = [int(tok) for tok in right.strip().split() if tok.isdigit()]
-        return (x, y, ids, None)
+        return (x, y, ids, None, coverage)
+
     toks = s.split()
     x, y = float(toks[0]), float(toks[1])
     flag = None
@@ -125,8 +97,108 @@ def parse_line_with_ids(line):
             ids.append(int(tok))
         except ValueError:
             pass
-    return (x, y, ids, flag)
+    return (x, y, ids, flag, coverage)
 
+def calculate_hv(filepath, ref_point, gen_number=None):
+    cmd = ["../../material/hv-1.3-src/hv", "-r", f"{ref_point[0]} {ref_point[1]}", filepath]
+    print("Ejecutando:", " ".join(cmd))
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        hv = float(result.stdout.strip())
+        if gen_number:
+            print(f"Hipervolumen calculado para generación {gen_number}: {hv}")
+        else:
+            print("Hipervolumen calculado:", hv)
+        return hv
+    except ValueError:
+        print("Error al interpretar la salida:", result.stdout)
+        return 0.0
+
+# --------- helpers para instancias / cobertura ----------
+RADIOS = {
+    "toy_DRP": 10,
+    "100-3": 800,
+    "150-11": 800,
+    "SJC324-3": 800,
+    "DRP": 10,
+    "1000-88_4": 800,
+    "1450-71_4": 800,
+}
+
+def cargar_instancia_coords_y_demanda(instancia_path):
+    """Devuelve (nodes, coords_por_id, demanda, preinstalados, radio)"""
+    base_name = os.path.splitext(os.path.basename(instancia_path))[0]
+    radio = RADIOS.get(base_name, 800)
+
+    nodes, coords = [], {}
+    with open(instancia_path, 'r') as f:
+        for line in f:
+            if re.match(r'^\d+', line):
+                parts = line.split()
+                if len(parts) >= 5:
+                    try:
+                        idx = int(parts[0])
+                        x, y = float(parts[1]), float(parts[2])
+                        flag = int(parts[3])    # 0 demanda, 1 preinstalado
+                        prob = float(parts[4])
+                        nodes.append((idx, x, y, flag, prob))
+                        coords[idx] = (x, y)
+                    except ValueError:
+                        continue
+    demanda = [(x, y, p) for (_, x, y, f, p) in nodes if f == 0]
+    preinstalados = [(x, y) for (_, x, y, f, _) in nodes if f == 1]
+    return nodes, coords, demanda, preinstalados, radio
+
+def cobertura_por_ids(ids_instalados, demanda, preinstalados, radio):
+    """Calcula (n_cubiertos, prob_cubierta, porc) para una lista de ids instalados."""
+    puntos_instalados = ids_instalados  # coords afuera
+    puntos_totales = puntos_instalados + preinstalados
+    r2 = radio * radio
+
+    def cubierto(px, py):
+        for (axc, ayc) in puntos_totales:
+            if (px - axc) * (px - axc) + (py - ayc) * (py - ayc) <= r2:
+                return True
+        return False
+
+    total_prob = sum(p for _, _, p in demanda)
+    nodos_cubiertos = 0
+    prob_cubierta = 0.0
+    for (px, py, p) in demanda:
+        if cubierto(px, py):
+            nodos_cubiertos += 1
+            prob_cubierta += p
+    porc = (prob_cubierta / total_prob * 100.0) if total_prob > 0 else 0.0
+    return nodos_cubiertos, prob_cubierta, porc, total_prob, len(demanda)
+
+def save_aeds_with_flags_and_coverage(entries_all, filepath):
+    """
+    entries_all: lista de tuplas (x, y, ids:list[int], is_pareto:bool, coverage:float)
+    Guarda:
+       x y P ids... | coverage
+       x y D ids... | coverage
+    Devuelve coords [(x,y)] SOLO de los pareto (para HV).
+    """
+    # dedup por coords
+    seen = {}
+    for x, y, ids, is_par, cov in entries_all:
+        key = (round(x, 4), round(y, 4))
+        if key not in seen:
+            seen[key] = (x, y, list(ids or []), bool(is_par), float(cov) if cov is not None else None)
+
+    ordered = sorted(seen.values(), key=lambda p: (-p[1], p[0]))
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    with open(filepath, "w") as f:
+        f.write("#\n")
+        for x, y, ids, is_par, cov in ordered:
+            flag = "P" if is_par else "D"
+            tail = (" " + " ".join(map(str, ids))) if ids else ""
+            cov_str = f" | {cov:.4f}" if cov is not None else ""
+            f.write(f"{x:.4f} {y:.4f} {flag}{tail}{cov_str}\n")
+        f.write("#\n")
+    return [(x, y) for x, y, _, is_par, _ in ordered if is_par]
+
+# ------------------- /run -------------------
 @app.route("/run", methods=["POST"])
 def run():
     instancia = request.json["instancia"]
@@ -145,6 +217,9 @@ def run():
     os.makedirs(fp_folder, exist_ok=True)
     os.makedirs(aeds_folder, exist_ok=True)
 
+    # cargar instancia para cobertura
+    nodes, coords_by_id, demanda, preinst_coords, radio = cargar_instancia_coords_y_demanda(os.path.join("INSTANCES", instancia))
+
     ref_point = calcular_referencia_global(raw_files)
     resumen_path = os.path.join(fp_folder, f"{base_name}_HV_summary.txt")
 
@@ -157,22 +232,29 @@ def run():
                 for ln in f:
                     parsed = parse_line_with_ids(ln)
                     if parsed is not None:
-                        x, y, ids, _ = parsed
-                        entries_raw.append((x, y, ids))  # sin flag
+                        x, y, ids, _, _ = parsed
+                        entries_raw.append((x, y, ids))
 
             if not entries_raw:
                 hv_results.append(0.0)
                 resumen_file.write(f"GEN{i} 0.0\n")
                 continue
 
+            # separar P/D
             nd_idx = get_non_dominated_idx([(x, y) for (x, y, _) in entries_raw])
             nd_set = set(nd_idx)
+            nd_entries  = [(x, y, ids, True)  for k, (x, y, ids) in enumerate(entries_raw) if k in nd_set]
+            dom_entries = [(x, y, ids, False) for k, (x, y, ids) in enumerate(entries_raw) if k not in nd_set]
 
-            nd_entries    = [(x, y, ids, True)  for k, (x, y, ids) in enumerate(entries_raw) if k in nd_set]
-            dom_entries   = [(x, y, ids, False) for k, (x, y, ids) in enumerate(entries_raw) if k not in nd_set]
+            # calcular cobertura para cada punto
+            entries_all = []
+            for (x, y, ids, is_par) in (nd_entries + dom_entries):
+                coords_inst = [coords_by_id[i] for i in ids if i in coords_by_id]
+                _, prob_cov, porc, _, _ = cobertura_por_ids(coords_inst, demanda, preinst_coords, radio)
+                entries_all.append((x, y, ids, is_par, porc))
 
             aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{i}.dat")
-            coords_for_hv = save_front_with_ids(nd_entries + dom_entries, aeds_file)
+            coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
             aed_files.append(aeds_file)
 
             fp_file = os.path.join(fp_folder, f"{base_name}_GEN{i}.dat")
@@ -183,8 +265,14 @@ def run():
             resumen_file.write(f"GEN{i} {hv:.4f}\n")
         resumen_file.write("#\n")
 
+    print("Archivos AEDs que voy a devolver al front:")
+    for f in aed_files:
+        print(f, os.path.exists(f))
+
+
     return jsonify({"files": aed_files, "hv": hv_results})
 
+# ------------------- /load -------------------
 @app.route("/load", methods=["POST"])
 def load():
     instancia = request.json["instancia"]
@@ -208,6 +296,9 @@ def load():
                 hv_results = [float(line.split()[1]) for line in lines[1:]]
         return jsonify({"files": aed_files, "hv": hv_results})
 
+    # recalcular y reescribir aeds/ con cobertura
+    nodes, coords_by_id, demanda, preinst_coords, radio = cargar_instancia_coords_y_demanda(os.path.join("INSTANCES", instancia))
+
     ref_point = calcular_referencia_global(raw_files)
     hv_results = []
     aed_files = []
@@ -220,7 +311,7 @@ def load():
                 for ln in f:
                     parsed = parse_line_with_ids(ln)
                     if parsed is not None:
-                        x, y, ids, _ = parsed
+                        x, y, ids, _, _ = parsed
                         entries_raw.append((x, y, ids))
 
             if not entries_raw:
@@ -230,12 +321,17 @@ def load():
 
             nd_idx = get_non_dominated_idx([(x, y) for (x, y, _) in entries_raw])
             nd_set = set(nd_idx)
-
             nd_entries  = [(x, y, ids, True)  for k, (x, y, ids) in enumerate(entries_raw) if k in nd_set]
             dom_entries = [(x, y, ids, False) for k, (x, y, ids) in enumerate(entries_raw) if k not in nd_set]
 
+            entries_all = []
+            for (x, y, ids, is_par) in (nd_entries + dom_entries):
+                coords_inst = [coords_by_id[i] for i in ids if i in coords_by_id]
+                _, prob_cov, porc, _, _ = cobertura_por_ids(coords_inst, demanda, preinst_coords, radio)
+                entries_all.append((x, y, ids, is_par, porc))
+
             aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{i}.dat")
-            coords_for_hv = save_front_with_ids(nd_entries + dom_entries, aeds_file)
+            coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
             aed_files.append(aeds_file)
 
             fp_file = os.path.join(fp_folder, f"{base_name}_GEN{i}.dat")
@@ -245,13 +341,15 @@ def load():
             hv_results.append(hv)
             resumen_file.write(f"GEN{i} {hv:.4f}\n")
         resumen_file.write("#\n")
+    
+    print("Archivos AEDs que voy a devolver al front:")
+    for f in aed_files:
+        print(f, os.path.exists(f))
+
 
     return jsonify({"files": aed_files, "hv": hv_results})
 
-@app.route("/get/<path:filename>")
-def get_file(filename):
-    return send_from_directory(".", filename)
-
+# ------------------- /map -------------------
 @app.route("/map", methods=["POST"])
 def generar_mapa():
     data = request.json
@@ -266,62 +364,25 @@ def generar_mapa():
     if not os.path.exists(archivo):
         return "Instancia no encontrada", 404
 
-    radio_por_instancia = {
-        "toy_DRP": 10, "100-3": 800, "150-11": 800,
-        "SJC324-3": 800, "DRP": 10
-    }
-    radio = radio_por_instancia.get(base_name, 800)
-
-    def parse_ampl_instance(filepath):
-        nodes, coords = [], {}
-        with open(filepath, 'r') as f:
-            for line in f:
-                if re.match(r'^\d+', line):
-                    parts = line.split()
-                    if len(parts) >= 5:
-                        try:
-                            idx = int(parts[0])
-                            x, y = float(parts[1]), float(parts[2])
-                            flag = int(parts[3])
-                            prob = float(parts[4])
-                            nodes.append((idx, x, y, flag, prob))
-                            coords[idx] = (x, y)
-                        except ValueError:
-                            continue
-        return nodes, coords
-
-    nodes, coords_por_id = parse_ampl_instance(archivo)
+    nodes, coords_por_id, demanda, preinstalados, radio = cargar_instancia_coords_y_demanda(archivo)
     puntos_instalados = [coords_por_id[i] for i in ids_instalados if i in coords_por_id]
-    puntos_preinstalados = [(x, y) for _, x, y, f, _ in nodes if f == 1]
-    puntos_totales = puntos_instalados + puntos_preinstalados
+    puntos_totales = puntos_instalados + preinstalados
 
-    # === Calcular métricas de cobertura ===
-    demanda = [(x, y, p) for (_, x, y, f, p) in nodes if f == 0]
-    total_nodos = len(demanda)
-    total_prob = sum(p for _, _, p in demanda)
+    # métricas
+    nodos_cubiertos, prob_cubierta, porc, total_prob, total_nodos = cobertura_por_ids(
+        puntos_instalados, demanda, preinstalados, radio
+    )
 
-    r2 = radio * radio
-    def cubierto(px, py):
-        for (axc, ayc) in puntos_totales:
-            if (px - axc)**2 + (py - ayc)**2 <= r2:
-                return True
-        return False
-
-    nodos_cubiertos = sum(1 for (px, py, _) in demanda if cubierto(px, py))
-    prob_cubierta = sum(p for (px, py, p) in demanda if cubierto(px, py))
-    porc = (prob_cubierta / total_prob * 100.0) if total_prob > 0 else 0.0
-
-    # Formatear IDs de estaciones manuales con salto cada 40
+    # resumen formateado con IDs en líneas de 40
     ids_str_lines = []
-    for i in range(0, len(ids_instalados), 40):
+    for i in range(0, len(ids_instalados), 30):
         chunk = ids_instalados[i:i+40]
         ids_str_lines.append(", ".join(map(str, chunk)))
-    ids_formateados = "\n   ".join(ids_str_lines)  # con sangría para que se vea alineado
+    ids_formateados = ("\n   " + "\n   ".join(ids_str_lines)) if ids_str_lines else "[]"
 
     resumen = (
         f"📊 {base_name}\n"
-        f" - Estaciones manuales instaladas  : {str(len(ids_instalados)).ljust(4)}"
-        f" - Estaciones preinstaladas        : {len(puntos_preinstalados)}\n"
+        f" - Estaciones manuales instaladas  : {str(len(ids_instalados)).ljust(4)} - Estaciones preinstaladas        : {len(preinstalados)}\n"
         f" - IDs de estaciones manuales      : {ids_formateados}\n"
         f" - Total de nodos y probabilidad   : {str(total_nodos).ljust(4)} - {total_prob:.4f}\n"
         f" - Nodos y probabilidad cubiertos  : {str(nodos_cubiertos).ljust(4)} - {prob_cubierta:.4f} ({porc:.2f}%)"
@@ -372,6 +433,26 @@ def generar_mapa():
 
     img_base64 = base64.b64encode(img_bytes.read()).decode('utf-8')
     return jsonify({"img": img_base64, "stats": resumen})
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+@app.route("/get/<path:filename>")
+def get_file(filename):
+    # Normaliza y evita salirte del proyecto
+    safe_path = os.path.normpath(filename).lstrip(os.sep)
+    full_path = os.path.join(BASE_DIR, safe_path)
+
+    # Log para depurar
+    # print("[/get] filename:", filename, flush=True)
+    # print("[/get] full_path:", full_path, flush=True)
+    # print("[/get] exists?:", os.path.exists(full_path), flush=True)
+
+    if not os.path.exists(full_path):
+        # Dilo fuerte para que aparezca en consola
+        print(f"[/get] 404 -> NO existe: {full_path}", flush=True)
+        abort(404)
+
+    return send_file(full_path)
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
