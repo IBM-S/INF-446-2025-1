@@ -1,12 +1,24 @@
 import os
-from flask import Flask, request, jsonify, send_from_directory, send_file, abort
+from flask import Flask, request, jsonify, send_from_directory, send_file, abort, url_for
 import subprocess, glob
 import matplotlib.pyplot as plt
 import io
 import re
 import base64
+import json
+from werkzeug.utils import secure_filename
 
-app = Flask(__name__, static_url_path='')
+def gen_number_from_path(path: str) -> int:
+    """
+    Extrae el número de generación desde nombres tipo:
+      ...GEN_36.dat, ...GEN36.dat, ..._GEN_36.txt, etc.
+    """
+    base = os.path.basename(path)
+    m = re.search(r'GEN[_-]?(\d+)', base)
+    return int(m.group(1)) if m else 10**9  # grande si no matchea
+
+
+app = Flask(__name__, static_folder="static", static_url_path="/static")
 
 @app.route("/")
 def main():
@@ -28,16 +40,17 @@ def get_non_dominated_idx(points_xy):
                     break
     return [i for i in range(n) if i not in dominated]
 
+
 def save_front_to_file(points, filepath):
-    """Guarda solo coords x y con comentarios # al inicio/fin (para HV)."""
-    rounded = [tuple(round(v, 4) for v in p) for p in points]
-    unique_points = list(dict.fromkeys(sorted(rounded, key=lambda p: (-p[1], p[0]))))
+    """
+    points: lista [(x,y)] ya filtrada (Pareto) y sin duplicados.
+    Ordena por f1 asc, luego f2 asc. Escribe con alta precisión y SIN '#'.
+    """
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    ordered = sorted(points, key=lambda p: (p[0], p[1]))  # f1 asc, f2 asc
     with open(filepath, "w") as f:
-        f.write("#\n")
-        for x, y in unique_points:
-            f.write(f"{x:.4f} {y:.4f}\n")
-        f.write("#\n")
+        for x, y in ordered:
+            f.write(f"{x:.10f} {y:.10f}\n")
 
 def calcular_referencia_global(files):
     all_points = []
@@ -126,9 +139,21 @@ RADIOS = {
 }
 
 def cargar_instancia_coords_y_demanda(instancia_path):
-    """Devuelve (nodes, coords_por_id, demanda, preinstalados, radio)"""
+    """Devuelve (nodes, coords_por_id, demanda, preinstalados, radio)
+       Lee radio R desde INSTANCES/<archivo>.dat.meta.json si existe.
+    """
     base_name = os.path.splitext(os.path.basename(instancia_path))[0]
     radio = RADIOS.get(base_name, 800)
+
+    # --- lee meta si existe ---
+    meta_path = instancia_path + ".meta.json"
+    if os.path.exists(meta_path):
+        try:
+            with open(meta_path) as mf:
+                meta = json.load(mf)
+                radio = float(meta.get("R", radio))
+        except Exception:
+            pass
 
     nodes, coords = [], {}
     with open(instancia_path, 'r') as f:
@@ -148,6 +173,7 @@ def cargar_instancia_coords_y_demanda(instancia_path):
     demanda = [(x, y, p) for (_, x, y, f, p) in nodes if f == 0]
     preinstalados = [(x, y) for (_, x, y, f, _) in nodes if f == 1]
     return nodes, coords, demanda, preinstalados, radio
+
 
 def cobertura_por_ids(ids_instalados, demanda, preinstalados, radio):
     """Calcula (n_cubiertos, prob_cubierta, porc) para una lista de ids instalados."""
@@ -173,20 +199,35 @@ def cobertura_por_ids(ids_instalados, demanda, preinstalados, radio):
 
 def save_aeds_with_flags_and_coverage(entries_all, filepath):
     """
-    entries_all: lista de tuplas (x, y, ids:list[int], is_pareto:bool, coverage:float)
-    Guarda:
-       x y P ids... | coverage
-       x y D ids... | coverage
-    Devuelve coords [(x,y)] SOLO de los pareto (para HV).
+    entries_all: [(x,y, ids:list[int], is_pareto:bool, coverage:float|None)]
+    Regla de desempatado por (x,y):
+      1) P > D
+      2) IDs lexicográficamente menores
+      3) primero que llegó
+    Orden de salida final: f1 asc, luego f2 asc.
+    Devuelve SOLO coordenadas Pareto (ordenadas igual) para HV.
     """
-    # dedup por coords
-    seen = {}
+    best = {}  # key=(x,y) -> (x,y,ids,is_par,cov)
     for x, y, ids, is_par, cov in entries_all:
-        key = (round(x, 4), round(y, 4))
-        if key not in seen:
-            seen[key] = (x, y, list(ids or []), bool(is_par), float(cov) if cov is not None else None)
+        key = (x, y)
+        cand = (x, y, list(ids or []), bool(is_par),
+                float(cov) if cov is not None else None)
+        if key not in best:
+            best[key] = cand
+        else:
+            bx, by, b_ids, b_par, b_cov = best[key]
+            # 1) Pareto primero
+            if (not b_par) and is_par:
+                best[key] = cand
+            elif (b_par == is_par):
+                # 2) IDs lexicográficos menores
+                if tuple(ids or []) < tuple(b_ids or []):
+                    best[key] = cand
+                # 3) else: se queda el existente
 
-    ordered = sorted(seen.values(), key=lambda p: (-p[1], p[0]))
+    # ordenar por f1 asc, f2 asc
+    ordered = sorted(best.values(), key=lambda p: (p[0], p[1]))
+
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, "w") as f:
         f.write("#\n")
@@ -194,9 +235,14 @@ def save_aeds_with_flags_and_coverage(entries_all, filepath):
             flag = "P" if is_par else "D"
             tail = (" " + " ".join(map(str, ids))) if ids else ""
             cov_str = f" | {cov:.4f}" if cov is not None else ""
-            f.write(f"{x:.4f} {y:.4f} {flag}{tail}{cov_str}\n")
+            f.write(f"{x:.10f} {y:.10f} {flag}{tail}{cov_str}\n")
         f.write("#\n")
-    return [(x, y) for x, y, _, is_par, _ in ordered if is_par]
+
+    # coords Pareto en el MISMO orden para el archivo de frente
+    return [(x, y) for (x, y, ids, is_par, cov) in ordered if is_par]
+
+
+
 
 # ------------------- /run -------------------
 @app.route("/run", methods=["POST"])
@@ -209,7 +255,8 @@ def run():
     subprocess.run(["./MOEAD", full_path, str(semilla), str(num_var)])
 
     base_name = parse_instance_name(instancia)
-    raw_files = sorted(glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat"))
+    raw_files = glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat")
+    raw_files = sorted(raw_files, key=gen_number_from_path)
     hv_results = []
 
     fp_folder = os.path.join("FrentesDePareto", base_name)
@@ -279,7 +326,8 @@ def load():
     recalcular = request.json.get("recalcular", True)
     base_name = parse_instance_name(instancia)
 
-    raw_files = sorted(glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat"))
+    raw_files = glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat")
+    raw_files = sorted(raw_files, key=gen_number_from_path)
     fp_folder = os.path.join("FrentesDePareto", base_name)
     aeds_folder = os.path.join("aeds", base_name)
     os.makedirs(fp_folder, exist_ok=True)
@@ -287,7 +335,8 @@ def load():
 
     resumen_path = os.path.join(fp_folder, f"{base_name}_HV_summary.txt")
     hv_results = []
-    aed_files = sorted(glob.glob(os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN*.dat")))
+    aed_files = glob.glob(os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN*.dat"))
+    aed_files = sorted(aed_files, key=gen_number_from_path)
 
     if (not recalcular) and os.path.exists(resumen_path) and aed_files:
         with open(resumen_path) as f:
@@ -453,6 +502,103 @@ def get_file(filename):
         abort(404)
 
     return send_file(full_path)
+
+ALLOWED_IMG = {"png", "jpg", "jpeg", "webp"}
+
+def allowed_img(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_IMG
+
+@app.route("/upload_map", methods=["POST"])
+def upload_map():
+    """
+    Recibe multipart/form-data con 'image' y opcional 'name'.
+    Guarda en static/maps/ y devuelve la URL servible /static/maps/<archivo>.
+    """
+    if "image" not in request.files:
+        return jsonify({"error": "No se envió archivo 'image'"}), 400
+    file = request.files["image"]
+    if file.filename == "":
+        return jsonify({"error": "Archivo vacío"}), 400
+    if not allowed_img(file.filename):
+        return jsonify({"error": "Formato no permitido"}), 400
+
+    raw_name = request.form.get("name", os.path.splitext(file.filename)[0])
+    fname = secure_filename(raw_name) or "map"
+    ext = os.path.splitext(file.filename)[1].lower()
+
+    os.makedirs(os.path.join("static", "maps"), exist_ok=True)
+    out_path = os.path.join("static", "maps", fname + ext)
+    file.save(out_path)
+
+    url = url_for('static', filename=f"maps/{fname}{ext}", _external=False)
+    return jsonify({"url": url}), 200
+
+@app.route("/save_instance", methods=["POST"])
+def save_instance():
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "JSON inválido"}), 400
+
+    name = (data.get("name") or "").strip()
+    points = data.get("points", [])
+    if not name:
+        return jsonify({"error": "Falta 'name'"}), 400
+    if not isinstance(points, list) or not points:
+        return jsonify({"error": "Faltan 'points'"}), 400
+    if not name.endswith(".dat"):
+        name += ".dat"
+
+    # Parámetros adicionales
+    P = float(data.get("presupuesto", 0))
+    R = float(data.get("radio", 800))
+    c1 = float(data.get("c1", 1))
+    c2 = float(data.get("c2", 1))
+    nombre_instancia = name
+
+    # Ordenar por ID
+    rows = []
+    for p in points:
+        pid = int(p["id"])
+        x = float(p["x"])
+        y = float(p["y"])
+        flag = int(p.get("flag", 0))
+        prob = float(p.get("prob", 1.0)) or 1.0
+        rows.append((pid, x, y, flag, prob))
+    rows.sort(key=lambda r: r[0])
+
+    N = len(rows)
+
+    os.makedirs("INSTANCES", exist_ok=True)
+    dat_path = os.path.join("INSTANCES", name)
+
+    with open(dat_path, "w") as f:
+        # Cabecera
+        f.write("/* CONJUNTOS */\n\n")
+        f.write(f"set N:= {N} ;\n\n")
+        f.write("/* PARAMETROS */\n\n")
+        f.write(f"param P:= {P} ;\n\n")
+        f.write(f"param R:= {R} ;\n\n")
+        f.write(f"param c1:= {c1} ;\n\n")
+        f.write(f"param c2:= {c2} ;\n\n")
+        f.write(f'param nombre_instancia := "{nombre_instancia}" ;\n\n')
+
+        # Coordenadas y parámetros
+        f.write("param : coordx coordy flag prob_ohca:=\n")
+        for (pid, x, y, flag, prob) in rows:
+            f.write(f"{pid} {x:.6f} {y:.6f} {flag} {prob:.2f}\n")
+        f.write(";\n")
+
+    return jsonify({"ok": True, "path": dat_path, "filename": name}), 200
+
+
+@app.route("/list_instances", methods=["GET"])
+def list_instances():
+    files = []
+    os.makedirs("INSTANCES", exist_ok=True)
+    for fn in sorted(os.listdir("INSTANCES")):
+        if fn.lower().endswith(".dat"):
+            files.append(fn)
+    return jsonify({"instances": files})
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

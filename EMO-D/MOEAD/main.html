@@ -16,6 +16,13 @@
     #slider { width: 100%; }
     #stats-container { white-space: pre; text-align:left; font-family: monospace; margin:10px auto 0; width:90%; display:none; }
     button, label { margin: 5px; padding: 8px 15px; }
+    .card { width: 90%; margin: 30px auto; padding: 16px; border: 1px solid #ddd; border-radius: 10px; text-align: left; }
+    .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .hint { font-size: 12px; color: #555; }
+    #builder-canvas { width: 100%; max-width: 900px; border: 1px dashed #999; background: #fafafa; cursor: crosshair; }
+    #points-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    #points-table th, #points-table td { border: 1px solid #eee; padding: 6px 8px; text-align: center; }
+    .pill { padding: 4px 8px; border-radius: 999px; border: 1px solid #ccc; }
   </style>
 </head>
 <body>
@@ -29,6 +36,7 @@
           <option value="150-11.dat">150-11.dat</option>
           <option value="1000-88_4.dat">1000-88_4.dat</option>
           <option value="1450-71_4.dat">1450-71_4.dat</option>
+          <option value="bbb.dat">bbb.dat</option>
         </select>
       </label>
 
@@ -106,6 +114,85 @@
     <div id="plot2d-f1cov" style="height:380px;"></div>
     <div id="plot2d-f2cov" style="height:380px;"></div>
   </div>
+
+<!-- =====================  CONSTRUCTOR DE INSTANCIAS  ===================== -->
+<div class="card" id="instance-builder">
+  <h2>Constructor de instancias</h2>
+
+  <div class="row">
+    <div>
+      <label>Nombre de instancia (.dat): </label>
+      <input type="text" id="ib-name" placeholder="Ej: Escuela_A.dat" style="min-width:260px;">
+    </div>
+    <div>
+      <label class="pill">Modo:
+        <select id="ib-mode">
+          <option value="0">Marcar demanda (OHCA)</option>
+          <option value="1">Marcar AED preinstalado</option>
+        </select>
+      </label>
+    </div>
+    <div>
+      <label class="pill">Prob. por defecto (0.1 a 1.0):
+        <input type="number" id="ib-prob" step="0.01" min="0.1" max="1.0" value="1.0" style="width:80px;">
+      </label>
+    </div>
+    <div>
+      <label class="pill">Cuadrícula(px):
+        <input type="number" id="ib-grid" step="5" min="10" value="50" style="width:80px;">
+      </label>
+      <label class="pill">
+        <input type="checkbox" id="ib-grid-on"> Mostrar cuadrícula
+      </label>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:8px;">
+    <input type="file" id="ib-file" accept="image/png,image/jpeg,image/webp">
+    <button id="ib-upload">Subir imagen</button>
+    <span class="hint">Sugerencia: imagen de la escuela/plano. Las coordenadas serán en píxeles de esta imagen.</span>
+  </div>
+
+  <div style="margin-top:10px;">
+    <canvas id="builder-canvas" width="900" height="600"></canvas>
+  </div>
+
+  <div class="row" style="margin-top:8px;">
+    <label class="pill">Presupuesto (P):
+      <input id="ib-P" type="number" step="1" min="0" value="100000" style="width:100px;">
+    </label>
+    <label class="pill">Radio (R):
+      <input id="ib-R" type="number" step="1" min="1" value="800" style="width:100px;">
+    </label>
+    <label class="pill">Costo instalación (c1):
+      <input id="ib-c1" type="number" step="0.01" min="0" value="1.0" style="width:100px;">
+    </label>
+    <label class="pill">Costo reubicación (c2):
+      <input id="ib-c2" type="number" step="0.01" min="0" value="1.0" style="width:100px;">
+    </label>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <button id="ib-undo">Deshacer último punto</button>
+    <button id="ib-clear">Limpiar todo</button>
+    <button id="ib-save">Guardar instancia</button>
+    <button id="ib-add-to-select">Agregar al selector y cargar</button>
+  </div>
+
+  <details style="margin-top:12px;">
+    <summary>Ver puntos</summary>
+    <table id="points-table">
+      <thead>
+        <tr>
+          <th>ID</th><th>X</th><th>Y</th><th>Flag</th><th>Prob</th><th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="points-tbody"></tbody>
+    </table>
+  </details>
+</div>
+
+
 
   <script>
     const form = document.getElementById("form");
@@ -617,6 +704,257 @@ document.getElementById("select-2d-proj").addEventListener("change", (e) => {
   }
 });
 
+// =====================  LÓGICA CONSTRUCTOR  =====================
+const ib = {
+  name: document.getElementById("ib-name"),
+  mode: document.getElementById("ib-mode"),
+  prob: document.getElementById("ib-prob"),
+  grid: document.getElementById("ib-grid"),
+  gridOn: document.getElementById("ib-grid-on"),
+  file: document.getElementById("ib-file"),
+  uploadBtn: document.getElementById("ib-upload"),
+  canvas: document.getElementById("builder-canvas"),
+  ctx: null,
+  img: new Image(),
+  points: [],  // {id, x, y, flag, prob}
+  nextId: 1
+};
+ib.ctx = ib.canvas.getContext("2d");
+
+function drawBuilder() {
+  const ctx = ib.ctx;
+  ctx.clearRect(0,0,ib.canvas.width, ib.canvas.height);
+
+  // fondo: imagen
+  if (ib.img && ib.img.complete) {
+    ctx.drawImage(ib.img, 0, 0, ib.canvas.width, ib.canvas.height);
+  }
+
+  // cuadrícula
+  if (ib.gridOn.checked) {
+    const step = Math.max(10, parseInt(ib.grid.value || "50", 10));
+    ctx.save();
+    ctx.strokeStyle = "#e0e0e0";
+    ctx.lineWidth = 1;
+    for (let x=0; x < ib.canvas.width; x+=step) {
+      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,ib.canvas.height); ctx.stroke();
+    }
+    for (let y=0; y < ib.canvas.height; y+=step) {
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(ib.canvas.width,y); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // puntos
+  for (const p of ib.points) {
+    const color = p.flag === 1 ? "#e53935" : "#1e88e5"; // 1=preinstalado rojo, 0=demanda azul
+    ctx.fillStyle = color;
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = "#000";
+    ctx.font = "12px monospace";
+    ctx.fillText(`${p.id}`, p.x + 8, p.y - 8);
+  }
+}
+
+ib.canvas.addEventListener("click", (ev) => {
+  const rect = ib.canvas.getBoundingClientRect();
+  const x = ev.clientX - rect.left;
+  const y = ev.clientY - rect.top;
+  const flag = parseInt(ib.mode.value, 10);
+  let prob = parseFloat(ib.prob.value);
+  if (isNaN(prob) || prob <= 0) prob = 1.0;
+
+  ib.points.push({ id: ib.nextId++, x: Math.round(x), y: Math.round(y), flag, prob: +prob.toFixed(2) });
+  drawBuilder();
+  renderPointsTable();
+});
+
+function renderPointsTable() {
+  const tb = document.getElementById("points-tbody");
+  tb.innerHTML = "";
+  for (const p of ib.points) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${p.id}</td>
+      <td><input type="number" value="${p.x}" style="width:80px" data-id="${p.id}" data-k="x"></td>
+      <td><input type="number" value="${p.y}" style="width:80px" data-id="${p.id}" data-k="y"></td>
+      <td>
+        <select data-id="${p.id}" data-k="flag">
+          <option value="0" ${p.flag===0?"selected":""}>0</option>
+          <option value="1" ${p.flag===1?"selected":""}>1</option>
+        </select>
+      </td>
+      <td><input type="number" step="0.01" min="0.1" max="1.0" value="${p.prob}" style="width:80px" data-id="${p.id}" data-k="prob"></td>
+      <td><button data-id="${p.id}" data-act="del">Eliminar</button></td>
+    `;
+    tb.appendChild(tr);
+  }
+  tb.querySelectorAll("input,select,button").forEach(el => {
+    if (el.tagName === "BUTTON") {
+      el.addEventListener("click", () => {
+        const id = +el.getAttribute("data-id");
+        ib.points = ib.points.filter(p => p.id !== id);
+        drawBuilder(); renderPointsTable();
+      });
+    } else {
+      el.addEventListener("change", () => {
+        const id = +el.getAttribute("data-id");
+        const k = el.getAttribute("data-k");
+        const p = ib.points.find(r => r.id === id);
+        if (!p) return;
+        let v = el.value;
+        if (k === "x" || k === "y") v = Math.round(parseFloat(v));
+        if (k === "flag") v = parseInt(v, 10);
+        if (k === "prob") v = Math.min(1.0, Math.max(0.1, parseFloat(v)));
+        p[k] = v; drawBuilder();
+      });
+    }
+  });
+}
+
+ib.uploadBtn.addEventListener("click", async () => {
+  if (!ib.file.files[0]) { alert("Selecciona una imagen primero."); return; }
+  const fd = new FormData();
+  fd.append("image", ib.file.files[0]);
+  fd.append("name", ib.name.value.replace(".dat", "") || "map");
+
+  const res = await fetch("/upload_map", { method: "POST", body: fd });
+  if (!res.ok) { alert("No se pudo subir la imagen"); return; }
+  const json = await res.json();
+  const url = json.url; // p.ej. /static/maps/mi_mapa.jpg
+
+  ib.img = new Image();
+  ib.img.onload = () => { drawBuilder(); };
+  ib.img.src = url;
+});
+
+ib.gridOn.addEventListener("change", drawBuilder);
+ib.grid.addEventListener("change", drawBuilder);
+
+document.getElementById("ib-undo").addEventListener("click", () => {
+  ib.points.pop(); drawBuilder(); renderPointsTable();
+});
+document.getElementById("ib-clear").addEventListener("click", () => {
+  ib.points = []; ib.nextId = 1; drawBuilder(); renderPointsTable();
+});
+
+document.getElementById("ib-save").addEventListener("click", async () => {
+  const name = (ib.name.value || "").trim();
+  if (!name) { alert("Ponle un nombre a la instancia"); return; }
+  if (ib.points.length === 0) { alert("Agrega al menos un punto"); return; }
+
+  // 🔽 convertir Y del canvas (origen arriba) a cartesiano (origen abajo)
+  const h = ib.canvas.height;
+
+  const payload = {
+    name: name.endsWith(".dat") ? name : (name + ".dat"),
+    points: ib.points.map(p => ({
+      id: p.id,
+      x: p.x,
+      y: h - p.y,     // <<<<<< clave: invertimos Y al guardar
+      flag: p.flag,
+      prob: p.prob
+    })),
+    presupuesto: Number(document.getElementById("ib-P").value || 0),
+    radio: Number(document.getElementById("ib-R").value || 800),
+    c1: Number(document.getElementById("ib-c1").value || 1.0),
+    c2: Number(document.getElementById("ib-c2").value || 1.0)
+  };
+
+  const res = await fetch("/save_instance", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  const json = await res.json();
+  if (!res.ok) { alert("Error guardando: " + (json.error || "desconocido")); return; }
+  alert("Instancia guardada en " + json.filename);
+});
+
+
+document.getElementById("ib-add-to-select").addEventListener("click", async () => {
+  const sel = form.instancia;
+  const resp = await fetch("/list_instances");
+  const j = await resp.json();
+  sel.innerHTML = "";
+  (j.instances || []).forEach(fn => {
+    const opt = document.createElement("option");
+    opt.value = fn; opt.textContent = fn;
+    sel.appendChild(opt);
+  });
+  const target = (ib.name.value || "").trim();
+  if (target) sel.value = target.endsWith(".dat") ? target : (target + ".dat");
+
+  // 🔹 Ajustar Variables según cantidad de puntos de la instancia
+  const numVarSel = form.num_var;
+  if (ib.points.length > 0) {
+    const n = ib.points.length;
+    let found = false;
+    [...numVarSel.options].forEach(opt => {
+      if (parseInt(opt.value) === n) found = true;
+    });
+    if (!found) {
+      const opt = document.createElement("option");
+      opt.value = n;
+      opt.textContent = n;
+      numVarSel.appendChild(opt);
+    }
+    numVarSel.value = n;
+  }
+
+  status.innerText = "Instancia actualizada desde el constructor.";
+});
+
+
+
+async function fetchNFromInstance(filename) {
+  try {
+    const res = await fetch("/get/" + "INSTANCES/" + filename);
+    if (!res.ok) return null;
+    const txt = await res.text();
+
+    // 1) Intenta con 'set N:= <num> ;'
+    const m1 = txt.match(/set\s+N\s*:=\s*(\d+)\s*;/i);
+    if (m1) return parseInt(m1[1], 10);
+
+    // 2) Si no, intenta contar líneas del bloque 'param : coordx coordy flag prob_ohca:=' ... ';'
+    const start = txt.search(/param\s*:\s*coordx\s+coordy\s+flag\s+prob_ohca\s*:=/i);
+    if (start >= 0) {
+      const rest = txt.slice(start);
+      const end = rest.search(/;\s*$/m);
+      const block = end >= 0 ? rest.slice(0, end) : rest;
+      const lines = block.split("\n").map(s => s.trim()).filter(s => /^\d+(\s|$)/.test(s));
+      if (lines.length > 0) return lines.length;
+    }
+  } catch (e) {
+    console.warn("No se pudo leer N de la instancia:", e);
+  }
+  return null;
+}
+
+// Ajusta el <select name="num_var"> al valor N (crea la opción si no existe)
+function setNumVarTo(N) {
+  const sel = form.num_var;
+  let opt = Array.from(sel.options).find(o => parseInt(o.value, 10) === N);
+  if (!opt) {
+    opt = document.createElement("option");
+    opt.value = String(N);
+    opt.textContent = String(N);
+    sel.appendChild(opt);
+  }
+  sel.value = String(N);
+}
+
+// Sincroniza variables desde un archivo .dat (lee N y lo aplica)
+async function syncVariablesFromInstance(filename) {
+  const N = await fetchNFromInstance(filename);
+  if (N) setNumVarTo(N);
+}
+
+// dibujo inicial
+drawBuilder();
 
   </script>
 
