@@ -1,722 +1,393 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Visualizador MOEA/D</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MOEA/D – Visualizador</title>
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
-    form { margin-bottom: 20px; }
-    #plot, #hv-plot, #history-plot { width: 90%; margin: auto; }
-    #plot { height: 600px; }
-    #hv-plot { height: 400px; margin-top: 40px; }
-    #history-plot { height: 500px; margin-top: 40px; }
-    #slider-container { margin-top: 12px; width: 100%; }
-    #slider { width: 100%; }
-    #stats-container { white-space: pre; text-align:left; font-family: monospace; margin:10px auto 0; width:90%; display:none; }
-    button, label { margin: 5px; padding: 8px 15px; }
-    .card { width: 90%; margin: 30px auto; padding: 16px; border: 1px solid #ddd; border-radius: 10px; text-align: left; }
-    .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-    .hint { font-size: 12px; color: #555; }
-    #builder-canvas { width: 100%; max-width: 900px; border: 1px dashed #999; background: #fafafa; cursor: crosshair; }
-    #points-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    #points-table th, #points-table td { border: 1px solid #eee; padding: 6px 8px; text-align: center; }
-    .pill { padding: 4px 8px; border-radius: 999px; border: 1px solid #ccc; }
+    :root{
+--bg:#f6f7fb; --panel:#ffffff; --text:#0f172a; --muted:#64748b; --border:#e2e8f0;
+--accent:#2563eb; --ok:#16a34a; --warn:#f59e0b; --danger:#ef4444;
+}
+
+   
+    *{box-sizing:border-box}
+    html,body{
+  font-size:16px;
+}
+    body{ font-size:20px; margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif}
+
+    /* Barra de pestañas */
+    .tabs{
+      position:sticky; top:0; z-index:10;
+      display:flex; gap:.6rem; padding:.8rem 1rem;
+      border-bottom:1px solid var(--border);
+      background:var(--panel);
+      box-shadow:0 1px 0 var(--border);
+    }  
+    /* Pestaña */
+    .tab-btn{border:1px solid var(--border); background:var(--panel); color:var(--text); padding:.75rem 1.15rem; border-radius:.8rem; cursor:pointer; font-weight:700; font-size:1.05rem;}
+
+    .tab-btn.active{background:#fff;color:var(--accent);border-color:var(--accent);box-shadow:0 0 0 2px rgba(37,99,235,.15) inset}
+
+
+    /* Layout visualizador */
+    .wrap{padding:1rem;display:grid;gap:1rem}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:1rem;padding:1rem}
+    .row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+    label{
+      font-size:1rem; color:#334155; font-weight:600;
+    }
+    /* Inputs negros */
+    select, input[type="number"], input[type="text"], textarea{
+      background:#fff; color:#0f172a;
+      border:1px solid #cbd5e1; border-radius:.6rem;
+      padding:.6rem .8rem;
+    }
+    select::placeholder, input::placeholder, textarea::placeholder{ color:#94a3b8; }
+
+    select{min-width:220px}
+    input[type="number"]{width:120px}
+    .btn{border:1px solid var(--border); background:var(--panel); color:var(--text); padding:.65rem 1.1rem; border-radius:.8rem; cursor:pointer; font-size:1rem; font-weight:600;}
+    .btn.primary{ background:#2563eb; border-color:#1d4ed8; color:#fff; }
+    .hint{font-size:1.4rem;color:var(--muted)}
+
+    #plot,#hv-plot,#history-plot{height:360px;background:#fff;border:1px dashed #273048;border-radius:.8rem}
+    #plot{height:560px}
+
+    #pareto-map-wrapper{display:flex;gap:1rem;align-items:flex-start}
+    #plot-col{flex:1;min-width:360px}
+    #map-col{width:38%;min-width:300px}
+    #map{height:360px;background:#fff;border:1px dashed #273048;border-radius:.8rem}
+
+    #stats-container{white-space:pre-wrap;text-align:left;font-family:monospace;margin:10px 0 0;display:none}
+    #slider-container{margin-top:12px}
+
+    /* Builder */
+    #builder-canvas{width:100%;max-width:900px;border:1px dashed #999;background:#fff}
+    #points-table{
+        width:100%;
+        border-collapse:collapse;
+        font-size:1rem;
+        line-height:1.35;
+      }
+    #points-table th,#points-table td{
+        border:1px solid var(--border);
+        padding:10px 12pxs;
+        text-align:center;
+      }
+
+    #points-table input, #points-table select{ font-size:1rem; padding:.55rem .7rem; border-radius:.6rem; }
+    #points-table button{ font-size:.95rem; padding:.4rem .65rem; border-radius:.5rem; }
+
+    .pill{padding:4px 8px;border-radius:999px;border:1px solid #444}
+
+    /* Secciones */
+    .section{display:none}
+    .section.active{display:block}
+
+    @media (max-width:1100px){#pareto-map-wrapper{flex-direction:column} #map-col{width:100%}}
+    .section-title{font-size:1.5rem;font-weight:700;color:var(--text);margin:.2rem 0 1rem}
+
+    /* Barra de controles (Instancia, Semilla, N° variables, Ejecutar, Cargar generaciones) */
+    .wrap > .card:first-child .row label,
+    .wrap > .card:first-child .row select,
+    .wrap > .card:first-child .row input,
+    .wrap > .card:first-child .row .btn,
+    .wrap > .card:first-child .row .hint{
+      font-size: 1.5rem;   /* ← súbelo, por ejemplo a 1.15rem o 1.2rem */
+    }
+
+
   </style>
 </head>
 <body>
-  <h1>Visualizador MOEA/D</h1>
-  <form id="form">
-    <div style="margin-bottom: 10px;">
-      <label style="margin-right: 10px;">Instancia:
-        <select name="instancia" style="margin-right: 20px;">
-          <option value="DRP.dat">DRP.dat</option>
-          <option value="100-3.dat">100-3.dat</option>
-          <option value="150-11.dat">150-11.dat</option>
-          <option value="1000-88_4.dat">1000-88_4.dat</option>
-          <option value="1450-71_4.dat">1450-71_4.dat</option>
-          <option value="bbb.dat">bbb.dat</option>
-        </select>
-      </label>
+  <!-- PESTAÑAS -->
+  <div class="tabs">
+    <button id="btn-tab-visualizador" class="tab-btn active">Visualizador</button>
+    <button id="btn-tab-builder" class="tab-btn">Crear instancia</button>
+  </div>
 
-      <label style="margin-right: 10px;">Semilla:
-        <input name="semilla" value="123" style="margin-right: 20px;">
-      </label>
+  <!-- SECCIÓN: VISUALIZADOR -->
+  <section id="tab-visualizador" class="section active">
+    <div class="wrap">
+      <div class="card">
+        <div class="row">
+          <div class="field">
+            <label for="instancia">Instancia</label>
+            <select id="instancia" name="instancia"></select>
+          </div>
+          <div class="field">
+            <label for="semilla">Semilla</label>
+            <input id="semilla" type="number" value="1" min="0" step="1" />
+          </div>
+          <div class="field">
+            <label for="num_var">N° variables</label>
+            <input id="num_var" type="number" value="10" min="1" step="1" />
+          </div>
+          <button class="btn primary" id="btn-ejecutar">Ejecutar</button>
+          <button class="btn" id="load-btn">Cargar generaciones</button>
+          <label class="hint"><input type="checkbox" id="fix-scale"/> Usar misma escala</label>
+          <label class="hint"><input type="checkbox" id="recalcular-hv" checked/> Recalcular HV</label>
+          <span id="status" class="hint">Listo</span>
+        </div>
+      </div>
 
-      <label style="margin-right: 10px;">Variables:
-        <select name="num_var" style="margin-right: 20px;">
-          <option value="21">21</option>
-          <option value="100">100</option>
-          <option value="150">150</option>
-          <option value="1000">1000</option>
-          <option value="1450">1450</option>
-        </select>
-      </label>
+      <div class="card" id="pareto-map-wrapper">
+        <div id="plot-col">
+          <div id="plot"></div>
+          <div id="stats-container"></div>
+          <div id="slider-container" style="display:none">
+            <input type="range" id="slider" min="0" max="0" value="0" style="width:100%" />
+            <p class="hint">Generación: <span id="gen-num">1</span></p>
+          </div>
+        </div>
+        <div id="map-col">
+          <h3 class="hint">Configuración seleccionada</h3>
+          <img id="map-image" src="" alt="Mapa" style="width:100%;border:1px solid #333;border-radius:.6rem" />
+        </div>
+      </div>
 
-      <button type="submit">Ejecutar</button>
+      <div class="card"><h3 class="section-title">Hipervolumen</h3><div id="hv-plot"></div></div>
+      <div class="card"><h3 class="section-title">Historial de frentes</h3><div id="history-plot"></div></div>
     </div>
-  </form>
+  </section>
 
-  <button id="load-btn">Cargar generaciones existentes</button>
-  <label><input type="checkbox" id="fix-scale"> Usar la misma escala para comparar</label>
-  <label><input type="checkbox" id="recalcular-hv" checked>Recalcular hipervolumen al cargar</label>
+  <!-- SECCIÓN: CONSTRUCTOR -->
+  <section id="tab-builder" class="section">
+    <div class="wrap">
+      <div class="card" id="instance-builder">
+        <h2>Constructor de instancias</h2>
+        <div class="row">
+          <div>
+            <label>Nombre de instancia (.dat)</label>
+            <input type="text" id="ib-name" placeholder="Ej: Escuela_A.dat" style="min-width:260px" />
+          </div>
+          <div><label class="pill">Modo:
+            <select id="ib-mode"><option value="0">Marcar demanda (OHCA)</option><option value="1">Marcar AED preinstalado</option></select>
+          </label></div>
+          <div><label class="pill">Prob. por defecto (0.1–1.0)
+            <input type="number" id="ib-prob" step="0.01" min="0.1" max="1.0" value="1.0" style="width:90px" />
+          </label></div>
+          <div><label class="pill">Cuadrícula(px)
+            <input type="number" id="ib-grid" step="5" min="10" value="50" style="width:90px" />
+          </label>
+            <label class="pill"><input type="checkbox" id="ib-grid-on" /> Mostrar cuadrícula</label>
+          </div>
+        </div>
 
-  <h3 id="status">Esperando ejecución...</h3>
+        <div class="row" style="margin-top:8px">
+          <input type="file" id="ib-file" accept="image/png,image/jpeg,image/webp" />
+          <button class="btn" id="ib-upload">Subir imagen</button>
+          <span class="hint">Sugerencia: imagen/plano para referenciar coordenadas.</span>
+        </div>
 
-  <div id="pareto-map-wrapper" style="display: flex; justify-content: center; align-items: flex-start; gap: 20px; margin-top: 20px;">
-    <!-- Columna izquierda: gráfico + stats + slider -->
-    <div style="width: 60%; min-width: 400px; display: flex; flex-direction: column; align-items: center;">
-      <div id="plot" style="width: 100%; min-width: 400px;"></div>
+        <div style="margin-top:10px"><canvas id="builder-canvas" width="900" height="600"></canvas></div>
 
-      <!-- Stats debajo del gráfico -->
-      <div id="stats-container"></div>
+        <div class="row" style="margin-top:8px">
+          <label class="pill">Presupuesto (P)
+            <input id="ib-P" type="number" step="1" min="0" value="100000" style="width:110px" />
+          </label>
+          <label class="pill">Radio (R)
+            <input id="ib-R" type="number" step="1" min="1" value="800" style="width:110px" />
+          </label>
+          <label class="pill">Costo instalación (c1)
+            <input id="ib-c1" type="number" step="0.01" min="0" value="1.0" style="width:110px" />
+          </label>
+          <label class="pill">Costo reubicación (c2)
+            <input id="ib-c2" type="number" step="0.01" min="0" value="1.0" style="width:110px" />
+          </label>
+        </div>
 
-      <!-- Slider debajo de stats -->
-      <div id="slider-container" style="display:none;">
-        <input type="range" id="slider" min="0" max="0" value="0">
-        <p>Generación: <span id="gen-num">1</span></p>
+        <div class="row" style="margin-top:10px">
+          <button class="btn" id="ib-undo">Deshacer último punto</button>
+          <button class="btn" id="ib-clear">Limpiar todo</button>
+          <button class="btn" id="ib-save">Guardar instancia</button>
+        </div>
+
+        <details style="margin-top:12px"><summary>Ver puntos</summary>
+          <table id="points-table"><thead><tr><th>ID</th><th>X</th><th>Y</th><th>Flag</th><th>Prob</th><th>Acciones</th></tr></thead><tbody id="points-tbody"></tbody></table>
+        </details>
       </div>
     </div>
-
-    <!-- Columna derecha: mapa -->
-    <div id="map-container" style="display: none; width: 40%; min-width: 300px;">
-      <h3>Configuración seleccionada:</h3>
-      <img id="map-image" src="" alt="Mapa" style="width: 100%; border: 1px solid #ccc;">
-    </div>
-  </div>
-
-  <div id="hv-plot"></div>
-  <div id="history-plot"></div>
-
-<!-- =====================  CONSTRUCTOR DE INSTANCIAS  ===================== -->
-<div class="card" id="instance-builder">
-  <h2>Constructor de instancias</h2>
-
-  <div class="row">
-    <div>
-      <label>Nombre de instancia (.dat): </label>
-      <input type="text" id="ib-name" placeholder="Ej: Escuela_A.dat" style="min-width:260px;">
-    </div>
-    <div>
-      <label class="pill">Modo:
-        <select id="ib-mode">
-          <option value="0">Marcar demanda (OHCA)</option>
-          <option value="1">Marcar AED preinstalado</option>
-        </select>
-      </label>
-    </div>
-    <div>
-      <label class="pill">Prob. por defecto (0.1 a 1.0):
-        <input type="number" id="ib-prob" step="0.01" min="0.1" max="1.0" value="1.0" style="width:80px;">
-      </label>
-    </div>
-    <div>
-      <label class="pill">Cuadrícula(px):
-        <input type="number" id="ib-grid" step="5" min="10" value="50" style="width:80px;">
-      </label>
-      <label class="pill">
-        <input type="checkbox" id="ib-grid-on"> Mostrar cuadrícula
-      </label>
-    </div>
-  </div>
-
-  <div class="row" style="margin-top:8px;">
-    <input type="file" id="ib-file" accept="image/png,image/jpeg,image/webp">
-    <button id="ib-upload">Subir imagen</button>
-    <span class="hint">Sugerencia: imagen de la escuela/plano. Las coordenadas serán en píxeles de esta imagen.</span>
-  </div>
-
-  <div style="margin-top:10px;">
-    <canvas id="builder-canvas" width="900" height="600"></canvas>
-  </div>
-
-  <div class="row" style="margin-top:8px;">
-    <label class="pill">Presupuesto (P):
-      <input id="ib-P" type="number" step="1" min="0" value="100000" style="width:100px;">
-    </label>
-    <label class="pill">Radio (R):
-      <input id="ib-R" type="number" step="1" min="1" value="800" style="width:100px;">
-    </label>
-    <label class="pill">Costo instalación (c1):
-      <input id="ib-c1" type="number" step="0.01" min="0" value="1.0" style="width:100px;">
-    </label>
-    <label class="pill">Costo reubicación (c2):
-      <input id="ib-c2" type="number" step="0.01" min="0" value="1.0" style="width:100px;">
-    </label>
-  </div>
-
-  <div class="row" style="margin-top:10px;">
-    <button id="ib-undo">Deshacer último punto</button>
-    <button id="ib-clear">Limpiar todo</button>
-    <button id="ib-save">Guardar instancia</button>
-    <button id="ib-add-to-select">Agregar al selector y cargar</button>
-  </div>
-
-  <details style="margin-top:12px;">
-    <summary>Ver puntos</summary>
-    <table id="points-table">
-      <thead>
-        <tr>
-          <th>ID</th><th>X</th><th>Y</th><th>Flag</th><th>Prob</th><th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="points-tbody"></tbody>
-    </table>
-  </details>
-</div>
-
-
+  </section>
 
   <script>
-    const form = document.getElementById("form");
-    const status = document.getElementById("status");
-    const plotDiv = document.getElementById("plot");
-    const sliderContainer = document.getElementById("slider-container");
-    const slider = document.getElementById("slider");
-    const genNum = document.getElementById("gen-num");
-    const loadBtn = document.getElementById("load-btn");
-    const fixScaleCheckbox = document.getElementById("fix-scale");
+    // ===== Helpers =====
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-    let frames = [];
-    let hvValues = [];
-    let globalXMin = Infinity, globalXMax = -Infinity;
-    let globalYMin = Infinity, globalYMax = -Infinity;
+    // ===== Tabs =====
+    const tabVisBtn = $('#btn-tab-visualizador');
+    const tabBldBtn = $('#btn-tab-builder');
+    const tabVis = $('#tab-visualizador');
+    const tabBld = $('#tab-builder');
+    function showTab(which){
+      const vis = which === 'visualizador';
+      tabVis.classList.toggle('active', vis); tabVisBtn.classList.toggle('active', vis);
+      tabBld.classList.toggle('active', !vis); tabBldBtn.classList.toggle('active', !vis);
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+    tabVisBtn.addEventListener('click', ()=>showTab('visualizador'));
+    tabBldBtn.addEventListener('click', ()=>showTab('builder'));
 
+    // ===== Visualizador Elements =====
+    const selInst = $('#instancia');
+    const inputSeed = $('#semilla');
+    const inputVars = $('#num_var');
+    const statusEl = $('#status');
+    const fixScaleCheckbox = $('#fix-scale');
+
+    const plotDiv = $('#plot');
+    const sliderContainer = $('#slider-container');
+    const slider = $('#slider');
+    const genNum = $('#gen-num');
+
+    // ===== Data holders =====
+    let frames = []; let hvValues = [];
+    let globalXMin = Infinity, globalXMax = -Infinity, globalYMin = Infinity, globalYMax = -Infinity;
     let globalCovMin = Infinity, globalCovMax = -Infinity;
 
-    function findParetoFront(points) {
-      if (!points || !Array.isArray(points) || points.length === 0) return [];
-      const isDominated = new Array(points.length).fill(false);
-      for (let i = 0; i < points.length; i++) {
-        for (let j = 0; j < points.length; j++) {
-          if (i !== j) {
-            if (points[j].x <= points[i].x && points[j].y <= points[i].y &&
-                (points[j].x < points[i].x || points[j].y < points[i].y)) {
-              isDominated[i] = true;
-              break;
-            }
-          }
+    // ===== Instancias =====
+    async function refreshInstanciaSelect(){
+      try{
+        const r = await fetch('/list_instances');
+        const j = await r.json();
+        const arr = Array.isArray(j) ? j : (j.instances || []);
+        selInst.innerHTML = arr.map(fn=>`<option value="${fn}">${fn}</option>`).join('');
+      }catch(e){ console.warn('No se pudo listar instancias', e); }
+    }
+
+    async function fetchNFromInstance(filename){
+      try{
+        const res = await fetch('/get/' + 'INSTANCES/' + filename);
+        if(!res.ok) return null; const txt = await res.text();
+        const m1 = txt.match(/set\s+N\s*:=\s*(\d+)\s*;/i); if(m1) return parseInt(m1[1],10);
+        const start = txt.search(/param\s*:\s*coordx\s+coordy\s+flag\s+prob_ohca\s*:=/i);
+        if(start>=0){
+          const rest = txt.slice(start); const end = rest.search(/;\s*$/m);
+          const block = end>=0? rest.slice(0,end): rest;
+          const lines = block.split('\n').map(s=>s.trim()).filter(s=>/^\d+(\s|$)/.test(s));
+          if(lines.length>0) return lines.length;
         }
+      }catch(e){ console.warn('No se pudo leer N de la instancia:', e); }
+      return null;
+    }
+    function setNumVarTo(N){
+      let opt = Array.from(inputVars.options||[]).find(o=>parseInt(o.value,10)===N);
+      if(!opt){ opt = document.createElement('option'); opt.value=String(N); opt.textContent=String(N); inputVars.appendChild(opt); }
+      inputVars.value = String(N);
+    }
+    async function syncVariablesFromInstance(filename){ const N = await fetchNFromInstance(filename); if(N) setNumVarTo(N); }
+
+    // ===== Visualizador: Correr / Cargar =====
+    async function runNow(){
+      const payload = { instancia: selInst.value, semilla: Number(inputSeed.value||0), num_var: Number(inputVars.value||0) };
+      statusEl.textContent = 'Ejecutando…';
+      const res = await fetch('/run', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+      if(!res.ok){ statusEl.textContent='Error en ejecución'; return; }
+      const data = await res.json();
+      if(!data.files || !data.files.length){ statusEl.textContent='⚠️ No se generaron archivos.'; return; }
+      await loadGenerations(data.files, data.hv||[]);
+      statusEl.textContent = `Listo: ${frames.length} generaciones`;
+    }
+
+    async function loadSaved(){
+      statusEl.textContent = 'Cargando generaciones…';
+      const payload = { instancia: selInst.value, semilla: Number(inputSeed.value||0), recalcular: $('#recalcular-hv').checked };
+      const res = await fetch('/load', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+      const data = await res.json();
+      if(!data.files || !data.files.length){ statusEl.textContent='⚠️ No se encontraron generaciones.'; return; }
+      await loadGenerations(data.files, data.hv||[]);
+      statusEl.textContent = `Listo: ${frames.length} generaciones`;
+    }
+
+    // ===== Visualizador: Plot logic =====
+    function findParetoFront(points){
+      if(!points||!Array.isArray(points)||!points.length) return [];
+      const isDom = new Array(points.length).fill(false);
+      for(let i=0;i<points.length;i++) for(let j=0;j<points.length;j++) if(i!==j){
+        if(points[j].x<=points[i].x && points[j].y<=points[i].y && (points[j].x<points[i].x || points[j].y<points[i].y)) { isDom[i]=true; break; }
       }
-      return points.map((p, i) => ({ ...p, isPareto: !isDominated[i] }));
+      return points.map((p,i)=>({...p,isPareto:!isDom[i]}));
     }
+    function getMultiColor(f){ const cs=["#440154","#3b528b","#21918c","#fde725","#ff7f00"]; const s=f*(cs.length-1); const i1=Math.floor(s); const i2=Math.min(i1+1,cs.length-1); const t=s-i1; const c1=cs[i1].slice(1), c2=cs[i2].slice(1); const r1=parseInt(c1.slice(0,2),16),g1=parseInt(c1.slice(2,4),16),b1=parseInt(c1.slice(4),16); const r2=parseInt(c2.slice(0,2),16),g2=parseInt(c2.slice(2,4),16),b2=parseInt(c2.slice(4),16); const r=Math.round(r1+t*(r2-r1)),g=Math.round(g1+t*(g2-g1)),b=Math.round(b1+t*(b2-b1)); return `rgb(${r},${g},${b})`; }
 
-    function getMultiColor(factor) {
-      const gradientColors = ["#440154", "#3b528b", "#21918c", "#fde725", "#ff7f00"];
-      const scaled = factor * (gradientColors.length - 1);
-      const idx1 = Math.floor(scaled);
-      const idx2 = Math.min(idx1 + 1, gradientColors.length - 1);
-      const localFactor = scaled - idx1;
-      const c1 = gradientColors[idx1].slice(1);
-      const c2 = gradientColors[idx2].slice(1);
-      const r1 = parseInt(c1.slice(0, 2), 16), g1 = parseInt(c1.slice(2, 4), 16), b1 = parseInt(c1.slice(4), 16);
-      const r2 = parseInt(c2.slice(0, 2), 16), g2 = parseInt(c2.slice(2, 4), 16), b2 = parseInt(c2.slice(4), 16);
-      const r = Math.round(r1 + localFactor * (r2 - r1));
-      const g = Math.round(g1 + localFactor * (g2 - g1));
-      const b = Math.round(b1 + localFactor * (b2 - b1));
-      return `rgb(${r},${g},${b})`;
-    }
-
-    async function loadGenerations(files, hvs) {
-      frames = [];
-      hvValues = hvs;
-      globalXMin = Infinity; globalXMax = -Infinity;
-      globalYMin = Infinity; globalYMax = -Infinity;
-
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const res = await fetch("/get/" + file);
-        const text = await res.text();
-
-        const puntos = text
-          .trim()
-          .split("\n")
-          .map(l => l.trim())
-          .filter(l => l && !l.startsWith("#"))
-          .map(line => {
-            // separar cobertura si viene con '|'
-            let coverage = null;
-            let left = line;
-            if (line.includes("|")) {
-              const parts = line.split("|");
-              left = parts[0].trim();
-              const covStr = parts[1].trim().split(/\s+/)[0];
-              const covVal = parseFloat(covStr);
-              if (!Number.isNaN(covVal)) coverage = covVal;
-            }
-
-            const toks = left.split(/\s+/);
-            const f1 = parseFloat(toks[0]);
-            const f2 = parseFloat(toks[1]);
-
-            let startIdx = 2;
-            let isPareto;
-            if (Number.isNaN(parseFloat(toks[2]))) {
-              if (toks[2] === "P") { isPareto = true;  startIdx = 3; }
-              else if (toks[2] === "D") { isPareto = false; startIdx = 3; }
-              else if (toks[2] === "-" && line.includes("IDs instalados:")) {
-                const right = line.split("IDs instalados:")[1] || "";
-                const ids = right.trim().split(/\s+/).map(Number).filter(n => !Number.isNaN(n));
-                updateRanges(f1, f2);
-                return { x: f1, y: f2, ids, isPareto, coverage };
-              }
-            }
-
-            const ids = toks.slice(startIdx).map(n => parseInt(n, 10)).filter(n => !Number.isNaN(n));
-
-            updateRanges(f1, f2);
-
-            if (typeof coverage === "number" && !Number.isNaN(coverage)) {
-              if (coverage < globalCovMin) globalCovMin = coverage;
-              if (coverage > globalCovMax) globalCovMax = coverage;
-            }
-
-            return { x: f1, y: f2, ids, isPareto, coverage };
-          });
-
+    async function loadGenerations(files, hvs){
+      frames=[]; hvValues=hvs; globalXMin=Infinity; globalXMax=-Infinity; globalYMin=Infinity; globalYMax=-Infinity; globalCovMin=Infinity; globalCovMax=-Infinity;
+      for(const file of files){ const res = await fetch('/get/'+file); const text = await res.text();
+        const puntos = text.trim().split('\n').map(l=>l.trim()).filter(l=>l && !l.startsWith('#')).map(line=>{
+          let coverage=null; let left=line; if(line.includes('|')){ const parts=line.split('|'); left=parts[0].trim(); const covStr=parts[1].trim().split(/\s+/)[0]; const covVal=parseFloat(covStr); if(!Number.isNaN(covVal)) coverage=covVal; }
+          const toks = left.split(/\s+/); const f1=parseFloat(toks[0]); const f2=parseFloat(toks[1]); let startIdx=2; let isPareto;
+          if(Number.isNaN(parseFloat(toks[2]))){ if(toks[2]==='P'){isPareto=true; startIdx=3;} else if(toks[2]==='D'){isPareto=false; startIdx=3;} else if(toks[2]==='-' && line.includes('IDs instalados:')){ const right=line.split('IDs instalados:')[1]||''; const ids=right.trim().split(/\s+/).map(Number).filter(n=>!Number.isNaN(n)); updateRanges(f1,f2); return {x:f1,y:f2,ids,isPareto,coverage}; } }
+          const ids = toks.slice(startIdx).map(n=>parseInt(n,10)).filter(n=>!Number.isNaN(n)); updateRanges(f1,f2); if(typeof coverage==='number'&&!Number.isNaN(coverage)){ if(coverage<globalCovMin) globalCovMin=coverage; if(coverage>globalCovMax) globalCovMax=coverage; }
+          return {x:f1,y:f2,ids,isPareto,coverage}; });
         frames.push(puntos);
       }
-
-      showGeneration(0);
-      sliderContainer.style.display = "block";
-      slider.max = frames.length - 1;
-      slider.value = 0;
-      genNum.innerText = 1;
-      status.innerText = `Listo: ${frames.length} generaciones cargadas`;
-
-      Plotly.newPlot("hv-plot", [{
-        x: hvValues.map((_, i) => i + 1),
-        y: hvValues,
-        mode: "lines+markers",
-        marker: { color: "green" },
-        line: { color: "green" },
-        name: "Hipervolumen"
-      }], {
-        title: "Evolución del Hipervolumen",
-        xaxis: { title: "Generación" },
-        yaxis: { title: "Hipervolumen" }
-      });
-
-      document.getElementById("hv-plot").on("plotly_click", function(data) {
-        const gen = data.points[0].x;
-        slider.value = gen - 1;
-        genNum.innerText = gen;
-        showGeneration(gen - 1);
-      });
-
-      // Historial de frentes (solo Pareto por generación)
-      const traces = frames.map((points, idx) => {
-        const hasFlag = points.every(p => typeof p.isPareto === "boolean");
-        const allPoints = hasFlag ? points : findParetoFront(points);
-        const paretoPoints = allPoints.filter(p => p.isPareto);
-        const color = getMultiColor(idx / Math.max(1, (frames.length - 1)));
-        return {
-          x: paretoPoints.map(p => p.x),
-          y: paretoPoints.map(p => p.y),
-          mode: "markers",
-          marker: { size: 6, color: color },
-          name: `Gen ${idx + 1}`,
-          showlegend: false
-        };
-      });
-
-      Plotly.newPlot("history-plot", traces, {
-        title: "Historial de Frentes de Pareto",
-        xaxis: { title: "f1" },
-        yaxis: { title: "f2" }
-      });
-
-      function updateRanges(f1, f2) {
-        if (f1 < globalXMin) globalXMin = f1;
-        if (f1 > globalXMax) globalXMax = f1;
-        if (f2 < globalYMin) globalYMin = f2;
-        if (f2 > globalYMax) globalYMax = f2;
-      }
+      showGeneration(0); sliderContainer.style.display='block'; slider.max=frames.length-1; slider.value=0; genNum.innerText=1;
+      // HV
+      Plotly.newPlot('hv-plot',[{x:hvValues.map((_,i)=>i+1), y:hvValues, mode:'lines+markers', marker:{color:'green'}, line:{color:'green'}, name:'Hipervolumen'}], {title:'Evolución del Hipervolumen', xaxis:{title:'Generación'}, yaxis:{title:'Hipervolumen'}, paper_bgcolor:'#fff', plot_bgcolor:'#fff'});
+      document.getElementById('hv-plot').on('plotly_click', d=>{ const gen=d.points[0].x; slider.value=gen-1; genNum.innerText=gen; showGeneration(gen-1); });
+      // Historial
+      const traces = frames.map((pts,idx)=>{ const hasFlag=pts.every(p=>typeof p.isPareto==='boolean'); const all=hasFlag?pts:findParetoFront(pts); const pareto=all.filter(p=>p.isPareto); const color=getMultiColor(idx/Math.max(1,(frames.length-1))); return {x:pareto.map(p=>p.x), y:pareto.map(p=>p.y), mode:'markers', marker:{size:6, color}, name:`Gen ${idx+1}`, showlegend:false}; });
+      Plotly.newPlot('history-plot', traces, {title:'Historial de Frentes de Pareto', xaxis:{title:'f1'}, yaxis:{title:'f2'}});
+      function updateRanges(f1,f2){ if(f1<globalXMin)globalXMin=f1; if(f1>globalXMax)globalXMax=f1; if(f2<globalYMin)globalYMin=f2; if(f2>globalYMax)globalYMax=f2; }
     }
 
-    function showGeneration(index) {
-      const points = frames[index];
-      if (!points || !Array.isArray(points)) return;
-
-      // Si el archivo trae banderas P/D, úsalo; si no, calcula
-      const hasFlag = points.every(p => typeof p.isPareto === "boolean");
-      const allPoints = hasFlag ? points : findParetoFront(points);
-
-      const paretoPoints = allPoints.filter(p => p.isPareto);
-      const dominatedPoints = allPoints.filter(p => !p.isPareto);
-
-      const layout = {
-        title: `Frente de Pareto - Generación ${index + 1}`,
-        xaxis: { title: "Minimizar Cobertura Probabilística (f1)" },
-        yaxis: { title: "Minimizar Costos (f2)" },
-        legend: {
-          x: 1, y: 1, xanchor: 'right', yanchor: 'top',
-          bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#ccc', borderwidth: 1
-        }
-      };
-
-      if (fixScaleCheckbox.checked) {
-        const xMargin = (globalXMax - globalXMin) * 0.05;
-        const yMargin = (globalYMax - globalYMin) * 0.05;
-        layout.xaxis.range = [globalXMin - xMargin, globalXMax + xMargin];
-        layout.yaxis.range = [globalYMin - yMargin, globalYMax + yMargin];
-      }
-
-      Plotly.react(plotDiv, [
-        {
-          x: dominatedPoints.map(p => p.x),
-          y: dominatedPoints.map(p => p.y),
-          text: dominatedPoints.map(p => `IDs: ${p.ids.join(", ")}`),
-          customdata: dominatedPoints.map(p => p.ids),
-          mode: "markers",
-          marker: { size: 8, color: "blue" },
-          name: "Dominados",
-          showlegend: true
-        },
-        {
-          x: paretoPoints.map(p => p.x),
-          y: paretoPoints.map(p => p.y),
-          text: paretoPoints.map(p => `IDs: ${p.ids.join(", ")}`),
-          customdata: paretoPoints.map(p => p.ids),
-          mode: "markers",
-          marker: { size: 10, color: "red", symbol: "circle-open" },
-          name: "Frente Pareto",
-          showlegend: true
-        }
-      ], layout);
-
+    function showGeneration(index){
+      const points = frames[index]; if(!points||!Array.isArray(points)) return;
+      const hasFlag = points.every(p=>typeof p.isPareto==='boolean');
+      const allPoints = hasFlag? points : findParetoFront(points);
+      const paretoPoints = allPoints.filter(p=>p.isPareto);
+      const dominatedPoints = allPoints.filter(p=>!p.isPareto);
+      const layout = { title:`Frente de Pareto - Gen ${index+1}`, xaxis:{title:'Minimizar Cobertura (f1)'}, yaxis:{title:'Minimizar Costos (f2)'}, legend:{x:1,y:1,xanchor:'right',yanchor:'top',bgcolor:'rgba(255,255,255,.08)',bordercolor:'#333',borderwidth:1} };
+      if(fixScaleCheckbox.checked){ const xM=(globalXMax-globalXMin)*0.05; const yM=(globalYMax-globalYMin)*0.05; layout.xaxis.range=[globalXMin-xM,globalXMax+xM]; layout.yaxis.range=[globalYMin-yM,globalYMax+yM]; }
+      Plotly.react(plotDiv,[{x:dominatedPoints.map(p=>p.x), y:dominatedPoints.map(p=>p.y), text:dominatedPoints.map(p=>`IDs: ${p.ids.join(', ')}`), customdata:dominatedPoints.map(p=>p.ids), mode:'markers', marker:{size:8, color:'blue'}, name:'Dominados'},{x:paretoPoints.map(p=>p.x), y:paretoPoints.map(p=>p.y), text:paretoPoints.map(p=>`IDs: ${p.ids.join(', ')}`), customdata:paretoPoints.map(p=>p.ids), mode:'markers', marker:{size:10, color:'red', symbol:'circle-open'}, name:'Frente Pareto'}], layout);
       plotDiv.removeAllListeners?.('plotly_click');
-      plotDiv.on('plotly_click', async function(data) {
-        const idsSeleccionados = data.points[0].customdata || [];
-        const instanciaActual = form.instancia.value;
-
-        const res = await fetch("/map", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ instancia: instanciaActual, ids: idsSeleccionados })
-        });
-
-        if (res.ok) {
-          const json = await res.json();
-          const imgURL = "data:image/png;base64," + json.img;
-
-          document.getElementById("map-image").src = imgURL;
-          document.getElementById("map-container").style.display = "block";
-
-          const statsDiv = document.getElementById("stats-container");
-          statsDiv.textContent = json.stats;
-          statsDiv.style.display = "block";
-        } else {
-          alert("❌ No se pudo generar el mapa.");
-        }
+      plotDiv.on('plotly_click', async d=>{
+        const idsSel = d.points[0].customdata || []; const instanciaActual = selInst.value;
+        const res = await fetch('/map',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({instancia:instanciaActual, ids:idsSel})});
+        if(res.ok){ const json = await res.json(); const imgURL = 'data:image/png;base64,'+json.img; $('#map-image').src = imgURL; $('#stats-container').textContent = json.stats; $('#stats-container').style.display='block'; }
+        else alert('❌ No se pudo generar el mapa.');
       });
     }
 
-    slider.addEventListener("input", () => {
-      const index = parseInt(slider.value);
-      genNum.innerText = index + 1;
-      showGeneration(index);
+    slider.addEventListener('input',()=>{ const i=parseInt(slider.value,10); genNum.innerText=i+1; showGeneration(i); });
+    $('#btn-ejecutar').addEventListener('click', runNow);
+    $('#load-btn').addEventListener('click', loadSaved);
+    fixScaleCheckbox.addEventListener('change', ()=>showGeneration(parseInt(slider.value||'0',10)));
+
+    // ====== Builder logic ======
+    const ib = { name:$('#ib-name'), mode:$('#ib-mode'), prob:$('#ib-prob'), grid:$('#ib-grid'), gridOn:$('#ib-grid-on'), file:$('#ib-file'), uploadBtn:$('#ib-upload'), canvas:$('#builder-canvas'), ctx:null, img:new Image(), points:[], nextId:1 };
+    ib.ctx = ib.canvas.getContext('2d');
+
+    function drawBuilder(){ const ctx=ib.ctx; ctx.clearRect(0,0,ib.canvas.width,ib.canvas.height); if(ib.img && ib.img.complete){ ctx.drawImage(ib.img,0,0,ib.canvas.width,ib.canvas.height); } if(ib.gridOn.checked){ const step=Math.max(10, parseInt(ib.grid.value||'50',10)); ctx.save(); ctx.strokeStyle='#233'; for(let x=0;x<ib.canvas.width;x+=step){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,ib.canvas.height); ctx.stroke(); } for(let y=0;y<ib.canvas.height;y+=step){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(ib.canvas.width,y); ctx.stroke(); } ctx.restore(); } for(const p of ib.points){ const color = p.flag===1? '#e53935':'#1e88e5'; ctx.fillStyle=color; ctx.strokeStyle='#000'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(p.x,p.y,8,0,Math.PI*2); ctx.fill(); ctx.stroke(); ctx.fillStyle='#fff'; ctx.font='14px monospace'; ctx.fillText(String(p.id), p.x+10, p.y-10); } }
+
+    ib.canvas.addEventListener('click', ev=>{ const r=ib.canvas.getBoundingClientRect(); const x=ev.clientX-r.left; const y=ev.clientY-r.top; const flag=parseInt(ib.mode.value,10); let prob=parseFloat(ib.prob.value); if(isNaN(prob)||prob<=0) prob=1.0; ib.points.push({id:ib.nextId++, x:Math.round(x), y:Math.round(y), flag, prob:+prob.toFixed(2)}); drawBuilder(); renderPointsTable(); });
+
+    function renderPointsTable(){ const tb=$('#points-tbody'); tb.innerHTML=''; for(const p of ib.points){ const tr=document.createElement('tr'); tr.innerHTML=`<td>${p.id}</td><td><input type="number" value="${p.x}" style="width:110px" data-id="${p.id}" data-k="x"></td><td><input type="number" value="${p.y}" style="width:80px" data-id="${p.id}" data-k="y"></td><td><select data-id="${p.id}" data-k="flag" style="width:90px"><option value="0" ${p.flag===0?'selected':''}>0</option><option value="1" ${p.flag===1?'selected':''}>1</option></select></td><td><input type="number" step="0.01" min="0.1" max="1.0" value="${p.prob}" style="width:110px" data-id="${p.id}" data-k="prob"></td><td><button data-id="${p.id}" data-act="del">Eliminar</button></td>`; tb.appendChild(tr); }
+      tb.querySelectorAll('input,select,button').forEach(el=>{ if(el.tagName==='BUTTON'){ el.addEventListener('click',()=>{ const id=+el.getAttribute('data-id'); ib.points = ib.points.filter(p=>p.id!==id); drawBuilder(); renderPointsTable(); }); } else { el.addEventListener('change',()=>{ const id=+el.getAttribute('data-id'); const k=el.getAttribute('data-k'); const p=ib.points.find(r=>r.id===id); if(!p) return; let v=el.value; if(k==='x'||k==='y') v=Math.round(parseFloat(v)); if(k==='flag') v=parseInt(v,10); if(k==='prob') v=Math.min(1.0, Math.max(0.1, parseFloat(v))); p[k]=v; drawBuilder(); }); } }); }
+
+    ib.uploadBtn.addEventListener('click', async()=>{ if(!ib.file.files[0]){ alert('Selecciona una imagen'); return; } const fd=new FormData(); fd.append('image', ib.file.files[0]); fd.append('name', ib.name.value.replace('.dat','')||'map'); const res=await fetch('/upload_map',{method:'POST', body:fd}); if(!res.ok){ alert('No se pudo subir la imagen'); return; } const json=await res.json(); const url=json.url; ib.img=new Image(); ib.img.onload=()=>drawBuilder(); ib.img.src=url; });
+    $('#ib-grid-on').addEventListener('change', drawBuilder); $('#ib-grid').addEventListener('change', drawBuilder);
+    $('#ib-undo').addEventListener('click', ()=>{ ib.points.pop(); drawBuilder(); renderPointsTable(); });
+    $('#ib-clear').addEventListener('click', ()=>{ ib.points=[]; ib.nextId=1; drawBuilder(); renderPointsTable(); });
+
+    $('#ib-save').addEventListener('click', async()=>{
+      const name=(ib.name.value||'').trim(); if(!name){ alert('Ponle un nombre a la instancia'); return; }
+      if(ib.points.length===0){ alert('Agrega al menos un punto'); return; }
+      const h=ib.canvas.height; const payload={ name: name.endsWith('.dat')? name : (name+'.dat'), points: ib.points.map(p=>({id:p.id,x:p.x,y:h-p.y,flag:p.flag,prob:p.prob})), presupuesto:Number($('#ib-P').value||0), radio:Number($('#ib-R').value||800), c1:Number($('#ib-c1').value||1.0), c2:Number($('#ib-c2').value||1.0) };
+      const res=await fetch('/save_instance',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)}); const j=await res.json(); if(!res.ok){ alert('Error guardando: '+(j.error||'desconocido')); return; }
+      // Actualizar selector, seleccionar nueva y volver al visualizador
+      await refreshInstanciaSelect(); const fname = payload.name; selInst.value = fname; try{ await syncVariablesFromInstance(fname); }catch(_){ }
+      statusEl.textContent = 'Instancia creada. Ahora puedes ejecutarla';
+      showTab('visualizador');
+      window.scrollTo({top:0, behavior:'smooth'});
     });
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      status.innerText = "Ejecutando MOEA/D...";
-      const data = {
-        instancia: form.instancia.value,
-        semilla: form.semilla.value,
-        num_var: form.num_var.value
-      };
-      const res = await fetch("/run", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      const json = await res.json();
-      if (!json.files || json.files.length === 0) {
-        status.innerText = "⚠️ No se generaron archivos.";
-        return;
-      }
-      await loadGenerations(json.files, json.hv || []);
-    });
-
-    loadBtn.addEventListener("click", async () => {
-      status.innerText = "Cargando generaciones existentes...";
-      const data = {
-        instancia: form.instancia.value,
-        semilla: form.semilla.value,
-        recalcular: document.getElementById("recalcular-hv").checked
-      };
-      const res = await fetch("/load", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      const json = await res.json();
-      if (!json.files || json.files.length === 0) {
-        status.innerText = "⚠️ No se encontraron generaciones guardadas.";
-        return;
-      }
-      await loadGenerations(json.files, json.hv || []);
-    });
-
-    fixScaleCheckbox.addEventListener("change", () => {
-      showGeneration(parseInt(slider.value));
-    });
-
-
-// =====================  LÓGICA CONSTRUCTOR  =====================
-const ib = {
-  name: document.getElementById("ib-name"),
-  mode: document.getElementById("ib-mode"),
-  prob: document.getElementById("ib-prob"),
-  grid: document.getElementById("ib-grid"),
-  gridOn: document.getElementById("ib-grid-on"),
-  file: document.getElementById("ib-file"),
-  uploadBtn: document.getElementById("ib-upload"),
-  canvas: document.getElementById("builder-canvas"),
-  ctx: null,
-  img: new Image(),
-  points: [],  // {id, x, y, flag, prob}
-  nextId: 1
-};
-ib.ctx = ib.canvas.getContext("2d");
-
-function drawBuilder() {
-  const ctx = ib.ctx;
-  ctx.clearRect(0,0,ib.canvas.width, ib.canvas.height);
-
-  // fondo: imagen
-  if (ib.img && ib.img.complete) {
-    ctx.drawImage(ib.img, 0, 0, ib.canvas.width, ib.canvas.height);
-  }
-
-  // cuadrícula
-  if (ib.gridOn.checked) {
-    const step = Math.max(10, parseInt(ib.grid.value || "50", 10));
-    ctx.save();
-    ctx.strokeStyle = "#e0e0e0";
-    ctx.lineWidth = 1;
-    for (let x=0; x < ib.canvas.width; x+=step) {
-      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,ib.canvas.height); ctx.stroke();
-    }
-    for (let y=0; y < ib.canvas.height; y+=step) {
-      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(ib.canvas.width,y); ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  // puntos
-  for (const p of ib.points) {
-    const color = p.flag === 1 ? "#e53935" : "#1e88e5"; // 1=preinstalado rojo, 0=demanda azul
-    ctx.fillStyle = color;
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-
-    ctx.fillStyle = "#000";
-    ctx.font = "12px monospace";
-    ctx.fillText(`${p.id}`, p.x + 8, p.y - 8);
-  }
-}
-
-ib.canvas.addEventListener("click", (ev) => {
-  const rect = ib.canvas.getBoundingClientRect();
-  const x = ev.clientX - rect.left;
-  const y = ev.clientY - rect.top;
-  const flag = parseInt(ib.mode.value, 10);
-  let prob = parseFloat(ib.prob.value);
-  if (isNaN(prob) || prob <= 0) prob = 1.0;
-
-  ib.points.push({ id: ib.nextId++, x: Math.round(x), y: Math.round(y), flag, prob: +prob.toFixed(2) });
-  drawBuilder();
-  renderPointsTable();
-});
-
-function renderPointsTable() {
-  const tb = document.getElementById("points-tbody");
-  tb.innerHTML = "";
-  for (const p of ib.points) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${p.id}</td>
-      <td><input type="number" value="${p.x}" style="width:80px" data-id="${p.id}" data-k="x"></td>
-      <td><input type="number" value="${p.y}" style="width:80px" data-id="${p.id}" data-k="y"></td>
-      <td>
-        <select data-id="${p.id}" data-k="flag">
-          <option value="0" ${p.flag===0?"selected":""}>0</option>
-          <option value="1" ${p.flag===1?"selected":""}>1</option>
-        </select>
-      </td>
-      <td><input type="number" step="0.01" min="0.1" max="1.0" value="${p.prob}" style="width:80px" data-id="${p.id}" data-k="prob"></td>
-      <td><button data-id="${p.id}" data-act="del">Eliminar</button></td>
-    `;
-    tb.appendChild(tr);
-  }
-  tb.querySelectorAll("input,select,button").forEach(el => {
-    if (el.tagName === "BUTTON") {
-      el.addEventListener("click", () => {
-        const id = +el.getAttribute("data-id");
-        ib.points = ib.points.filter(p => p.id !== id);
-        drawBuilder(); renderPointsTable();
-      });
-    } else {
-      el.addEventListener("change", () => {
-        const id = +el.getAttribute("data-id");
-        const k = el.getAttribute("data-k");
-        const p = ib.points.find(r => r.id === id);
-        if (!p) return;
-        let v = el.value;
-        if (k === "x" || k === "y") v = Math.round(parseFloat(v));
-        if (k === "flag") v = parseInt(v, 10);
-        if (k === "prob") v = Math.min(1.0, Math.max(0.1, parseFloat(v)));
-        p[k] = v; drawBuilder();
-      });
-    }
-  });
-}
-
-ib.uploadBtn.addEventListener("click", async () => {
-  if (!ib.file.files[0]) { alert("Selecciona una imagen primero."); return; }
-  const fd = new FormData();
-  fd.append("image", ib.file.files[0]);
-  fd.append("name", ib.name.value.replace(".dat", "") || "map");
-
-  const res = await fetch("/upload_map", { method: "POST", body: fd });
-  if (!res.ok) { alert("No se pudo subir la imagen"); return; }
-  const json = await res.json();
-  const url = json.url; // p.ej. /static/maps/mi_mapa.jpg
-
-  ib.img = new Image();
-  ib.img.onload = () => { drawBuilder(); };
-  ib.img.src = url;
-});
-
-ib.gridOn.addEventListener("change", drawBuilder);
-ib.grid.addEventListener("change", drawBuilder);
-
-document.getElementById("ib-undo").addEventListener("click", () => {
-  ib.points.pop(); drawBuilder(); renderPointsTable();
-});
-document.getElementById("ib-clear").addEventListener("click", () => {
-  ib.points = []; ib.nextId = 1; drawBuilder(); renderPointsTable();
-});
-
-document.getElementById("ib-save").addEventListener("click", async () => {
-  const name = (ib.name.value || "").trim();
-  if (!name) { alert("Ponle un nombre a la instancia"); return; }
-  if (ib.points.length === 0) { alert("Agrega al menos un punto"); return; }
-
-  // 🔽 convertir Y del canvas (origen arriba) a cartesiano (origen abajo)
-  const h = ib.canvas.height;
-
-  const payload = {
-    name: name.endsWith(".dat") ? name : (name + ".dat"),
-    points: ib.points.map(p => ({
-      id: p.id,
-      x: p.x,
-      y: h - p.y,     // <<<<<< clave: invertimos Y al guardar
-      flag: p.flag,
-      prob: p.prob
-    })),
-    presupuesto: Number(document.getElementById("ib-P").value || 0),
-    radio: Number(document.getElementById("ib-R").value || 800),
-    c1: Number(document.getElementById("ib-c1").value || 1.0),
-    c2: Number(document.getElementById("ib-c2").value || 1.0)
-  };
-
-  const res = await fetch("/save_instance", {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  const json = await res.json();
-  if (!res.ok) { alert("Error guardando: " + (json.error || "desconocido")); return; }
-  alert("Instancia guardada en " + json.filename);
-});
-
-
-document.getElementById("ib-add-to-select").addEventListener("click", async () => {
-  const sel = form.instancia;
-  const resp = await fetch("/list_instances");
-  const j = await resp.json();
-  sel.innerHTML = "";
-  (j.instances || []).forEach(fn => {
-    const opt = document.createElement("option");
-    opt.value = fn; opt.textContent = fn;
-    sel.appendChild(opt);
-  });
-  const target = (ib.name.value || "").trim();
-  if (target) sel.value = target.endsWith(".dat") ? target : (target + ".dat");
-
-  // 🔹 Ajustar Variables según cantidad de puntos de la instancia
-  const numVarSel = form.num_var;
-  if (ib.points.length > 0) {
-    const n = ib.points.length;
-    let found = false;
-    [...numVarSel.options].forEach(opt => {
-      if (parseInt(opt.value) === n) found = true;
-    });
-    if (!found) {
-      const opt = document.createElement("option");
-      opt.value = n;
-      opt.textContent = n;
-      numVarSel.appendChild(opt);
-    }
-    numVarSel.value = n;
-  }
-
-  status.innerText = "Instancia actualizada desde el constructor.";
-});
-
-
-
-async function fetchNFromInstance(filename) {
-  try {
-    const res = await fetch("/get/" + "INSTANCES/" + filename);
-    if (!res.ok) return null;
-    const txt = await res.text();
-
-    // 1) Intenta con 'set N:= <num> ;'
-    const m1 = txt.match(/set\s+N\s*:=\s*(\d+)\s*;/i);
-    if (m1) return parseInt(m1[1], 10);
-
-    // 2) Si no, intenta contar líneas del bloque 'param : coordx coordy flag prob_ohca:=' ... ';'
-    const start = txt.search(/param\s*:\s*coordx\s+coordy\s+flag\s+prob_ohca\s*:=/i);
-    if (start >= 0) {
-      const rest = txt.slice(start);
-      const end = rest.search(/;\s*$/m);
-      const block = end >= 0 ? rest.slice(0, end) : rest;
-      const lines = block.split("\n").map(s => s.trim()).filter(s => /^\d+(\s|$)/.test(s));
-      if (lines.length > 0) return lines.length;
-    }
-  } catch (e) {
-    console.warn("No se pudo leer N de la instancia:", e);
-  }
-  return null;
-}
-
-// Ajusta el <select name="num_var"> al valor N (crea la opción si no existe)
-function setNumVarTo(N) {
-  const sel = form.num_var;
-  let opt = Array.from(sel.options).find(o => parseInt(o.value, 10) === N);
-  if (!opt) {
-    opt = document.createElement("option");
-    opt.value = String(N);
-    opt.textContent = String(N);
-    sel.appendChild(opt);
-  }
-  sel.value = String(N);
-}
-
-// Sincroniza variables desde un archivo .dat (lee N y lo aplica)
-async function syncVariablesFromInstance(filename) {
-  const N = await fetchNFromInstance(filename);
-  if (N) setNumVarTo(N);
-}
-
-// dibujo inicial
-drawBuilder();
-
+    // ===== Inicio =====
+    window.addEventListener('DOMContentLoaded', async()=>{ await refreshInstanciaSelect(); showTab('visualizador'); statusEl.textContent='Listo'; drawBuilder(); });
   </script>
-
 </body>
 </html>
