@@ -412,6 +412,8 @@ def generar_mapa():
     try:
         instancia = data["instancia"]
         ids_instalados = [int(i) for i in data["ids"]]
+        show_probs = bool(data.get("show_probs", True))  # ← nuevo
+
     except (KeyError, ValueError, TypeError):
         return "Datos inválidos", 400
 
@@ -449,10 +451,12 @@ def generar_mapa():
     x0, y0, s0 = [], [], []
     x1, y1, s1 = [], [], []
     for _, x, y, f, p in nodes:
+        size = (p * 200) if show_probs else 20  # 36 ≈ punto fijo
         if f == 0:
-            x0.append(x); y0.append(y); s0.append(p * 300)
+            x0.append(x); y0.append(y); s0.append(size)
         else:
-            x1.append(x); y1.append(y); s1.append(p * 300)
+            x1.append(x); y1.append(y); s1.append(size)
+
 
     xi = [x for x, y in puntos_instalados]
     yi = [y for x, y in puntos_instalados]
