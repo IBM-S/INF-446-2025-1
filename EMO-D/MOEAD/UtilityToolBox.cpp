@@ -227,7 +227,7 @@ void CUtilityToolBox::MutacionModificada(vector<double> &x_var, double rate)
 	if (Get_Random_Number() <= rate)
 	{
 
-		bool eliminarEstacion = (0 % 2 == 1);
+		bool eliminarEstacion = (rand() % 2 == 1);
 
 		if (eliminarEstacion)
 		{
