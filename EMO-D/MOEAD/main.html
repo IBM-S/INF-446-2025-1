@@ -7,11 +7,10 @@
   <style>
     body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
     form { margin-bottom: 20px; }
-    #plot, #hv-plot, #history-plot, #plot3d { width: 90%; margin: auto; }
+    #plot, #hv-plot, #history-plot { width: 90%; margin: auto; }
     #plot { height: 600px; }
     #hv-plot { height: 400px; margin-top: 40px; }
     #history-plot { height: 500px; margin-top: 40px; }
-    #plot3d { height: 600px; margin-top: 50px; }
     #slider-container { margin-top: 12px; width: 100%; }
     #slider { width: 100%; }
     #stats-container { white-space: pre; text-align:left; font-family: monospace; margin:10px auto 0; width:90%; display:none; }
@@ -88,32 +87,6 @@
 
   <div id="hv-plot"></div>
   <div id="history-plot"></div>
-
-  <!-- Nuevo gráfico 3D -->
-  <div id="plot3d"></div>
-
-  <!-- Controles de visualización 3D/2D -->
-  <div id="plot3d-controls" style="width:90%; margin:10px auto 0; display:flex; gap:8px; align-items:center; justify-content:flex-start;">
-    <strong style="margin-right:6px;">Vista:</strong>
-    <button type="button" id="btn-mode-3d">3D</button>
-    <button type="button" id="btn-mode-2d-single">2D (una vista)</button>
-    <select id="select-2d-proj" style="display:none;">
-      <option value="f1f2">f1 vs f2</option>
-      <option value="f1cov">f1 vs % cobertura</option>
-      <option value="f2cov">f2 vs % cobertura</option>
-    </select>
-    <button type="button" id="btn-mode-2d-grid">2D (tres vistas)</button>
-  </div>
-
-  <!-- 2D: una sola vista -->
-  <div id="plot2d" style="width:90%; height:520px; margin:12px auto 0; display:none;"></div>
-
-  <!-- 2D: grilla de tres vistas -->
-  <div id="plot2d-grid" style="width:90%; margin:12px auto 0; display:none; grid-template-columns: repeat(3, 1fr); gap:12px;">
-    <div id="plot2d-f1f2" style="height:380px;"></div>
-    <div id="plot2d-f1cov" style="height:380px;"></div>
-    <div id="plot2d-f2cov" style="height:380px;"></div>
-  </div>
 
 <!-- =====================  CONSTRUCTOR DE INSTANCIAS  ===================== -->
 <div class="card" id="instance-builder">
@@ -210,11 +183,6 @@
     let globalYMin = Infinity, globalYMax = -Infinity;
 
     let globalCovMin = Infinity, globalCovMax = -Infinity;
-
-    // Estado de la vista final
-    let viewMode = "3d";        // "3d" | "2d-single" | "2d-grid"
-    let viewProj = "f1f2";      // para "2d-single": "f1f2" | "f1cov" | "f2cov"
-
 
     function findParetoFront(points) {
       if (!points || !Array.isArray(points) || points.length === 0) return [];
@@ -417,9 +385,6 @@
         }
       ], layout);
 
-      // también actualizar 3D
-      drawFinalViews(allPoints, index);
-
       plotDiv.removeAllListeners?.('plotly_click');
       plotDiv.on('plotly_click', async function(data) {
         const idsSeleccionados = data.points[0].customdata || [];
@@ -445,43 +410,6 @@
           alert("❌ No se pudo generar el mapa.");
         }
       });
-    }
-
-    function draw3D(points, index) {
-      // Si no hay cobertura en el archivo, no dibujar (o poner 0)
-      const x = [], y = [], z = [], text = [];
-      for (const p of points) {
-        if (typeof p.coverage === "number" && !Number.isNaN(p.coverage)) {
-          x.push(p.x); y.push(p.y); z.push(p.coverage);
-          text.push(`IDs: ${p.ids.join(", ")}<br>Cobertura: ${p.coverage.toFixed(2)}%`);
-        }
-      }
-
-      const trace = {
-        x, y, z,
-        mode: 'markers',
-        type: 'scatter3d',
-        marker: {
-          size: 4,
-          color: z,
-          colorscale: 'Viridis',
-          colorbar: { title: '% Cobertura' },
-          opacity: 0.9
-        },
-        text
-      };
-
-      const layout3d = {
-        title: `Frente de Pareto 3D - Gen ${index + 1}`,
-        scene: {
-          xaxis: { title: 'f1' },
-          yaxis: { title: 'f2' },
-          zaxis: { title: '% Cobertura' }
-        },
-        margin: { l: 0, r: 0, b: 0, t: 40 }
-      };
-
-      Plotly.react('plot3d', [trace], layout3d);
     }
 
     slider.addEventListener("input", () => {
@@ -535,174 +463,6 @@
       showGeneration(parseInt(slider.value));
     });
 
-    function drawFinalViews(points, index) {
-      const plot3d = document.getElementById("plot3d");
-      const plot2d = document.getElementById("plot2d");
-      const grid = document.getElementById("plot2d-grid");
-      const selectProj = document.getElementById("select-2d-proj");
-
-      if (viewMode === "3d") {
-        plot3d.style.display = "block";
-        plot2d.style.display = "none";
-        grid.style.display = "none";
-        selectProj.style.display = "none";
-        draw3D(points, index);
-      } else if (viewMode === "2d-single") {
-        plot3d.style.display = "none";
-        plot2d.style.display = "block";
-        grid.style.display = "none";
-        selectProj.style.display = "inline-block";
-        draw2DSingle(points, index, viewProj);
-      } else {
-        plot3d.style.display = "none";
-        plot2d.style.display = "none";
-        grid.style.display = "grid";
-        selectProj.style.display = "none";
-        draw2DGrid(points, index);
-      }
-    }
-
-    function splitPareto(points) {
-      const hasFlag = points.every(p => typeof p.isPareto === "boolean");
-      const all = hasFlag ? points : findParetoFront(points);
-      return {
-        pareto: all.filter(p => p.isPareto),
-        dom: all.filter(p => !p.isPareto)
-      };
-    }
-
-    function axisRangesFor(proj) {
-      const margin = 0.05;
-      const xr = proj === "f2cov" ? [globalYMin, globalYMax] : [globalXMin, globalXMax]; // x=f2 en f2cov, si no x=f1
-      const yr = (proj === "f1cov" || proj === "f2cov")
-        ? [0, 100]  // cobertura en %
-        : [globalYMin, globalYMax];
-
-      const xSpan = xr[1] - xr[0];
-      const ySpan = yr[1] - yr[0];
-      return {
-        x: [xr[0] - xSpan * margin, xr[1] + xSpan * margin],
-        y: [yr[0] - ySpan * margin, yr[1] + ySpan * margin]
-      };
-    }
-
-    function draw2DSingle(points, index, proj) {
-      const { pareto, dom } = splitPareto(points);
-      let xTitle = "", yTitle = "";
-      let xPareto = [], yPareto = [], xDom = [], yDom = [];
-
-      if (proj === "f1f2") {
-        xTitle = "f1"; yTitle = "f2";
-        xPareto = pareto.map(p => p.x); yPareto = pareto.map(p => p.y);
-        xDom    = dom.map(p => p.x);    yDom    = dom.map(p => p.y);
-      } else if (proj === "f1cov") {
-        xTitle = "f1"; yTitle = "% Cobertura";
-        xPareto = pareto.map(p => p.x); yPareto = pareto.map(p => p.coverage ?? null);
-        xDom    = dom.map(p => p.x);    yDom    = dom.map(p => p.coverage ?? null);
-      } else { // f2cov
-        xTitle = "f2"; yTitle = "% Cobertura";
-        xPareto = pareto.map(p => p.y); yPareto = pareto.map(p => p.coverage ?? null);
-        xDom    = dom.map(p => p.y);    yDom    = dom.map(p => p.coverage ?? null);
-      }
-
-      // filtra nulos si hubiese puntos sin coverage
-      const filterValid = (xs, ys) => {
-        const xx = [], yy = [];
-        for (let i = 0; i < xs.length; i++) if (ys[i] != null) { xx.push(xs[i]); yy.push(ys[i]); }
-        return { x: xx, y: yy };
-      };
-      const p = filterValid(xPareto, yPareto);
-      const d = filterValid(xDom, yDom);
-
-      const ranges = axisRangesFor(proj);
-
-      Plotly.react("plot2d", [
-        {
-          x: d.x, y: d.y, mode: "markers", name: "Dominados",
-          marker: { size: 8, color: "blue" }
-        },
-        {
-          x: p.x, y: p.y, mode: "markers", name: "Frente Pareto",
-          marker: { size: 10, color: "red", symbol: "circle-open" }
-        }
-      ], {
-        title: `Vista 2D (${proj}) - Gen ${index + 1}`,
-        xaxis: { title: xTitle, range: ranges.x },
-        yaxis: { title: yTitle, range: ranges.y },
-        legend: { x: 1, y: 1, xanchor: "right", yanchor: "top",
-                  bgcolor: "rgba(255,255,255,0.8)", bordercolor: "#ccc", borderwidth: 1 }
-      });
-    }
-
-  function draw2DGrid(points, index) {
-    draw2DSingle(points, index, "f1f2");
-    // const l1 = document.getElementById("plot2d")._fullLayout; // para tomar estilos
-    // f1 vs %cov
-    const { pareto: p1, dom: d1 } = splitPareto(points);
-    const r1 = axisRangesFor("f1cov");
-    Plotly.react("plot2d-f1cov", [
-      { x: d1.map(p => p.x), y: d1.map(p => p.coverage ?? null), mode: "markers", name: "Dominados",
-        marker: { size: 8, color: "blue" } },
-      { x: p1.map(p => p.x), y: p1.map(p => p.coverage ?? null), mode: "markers", name: "Frente Pareto",
-        marker: { size: 10, color: "red", symbol: "circle-open" } }
-    ], {
-      title: `f1 vs % Cobertura - Gen ${index + 1}`,
-      xaxis: { title: "f1", range: r1.x },
-      yaxis: { title: "% Cobertura", range: r1.y },
-      showlegend: false
-    });
-
-    // f2 vs %cov
-    const r2 = axisRangesFor("f2cov");
-    Plotly.react("plot2d-f2cov", [
-      { x: d1.map(p => p.y), y: d1.map(p => p.coverage ?? null), mode: "markers", name: "Dominados",
-        marker: { size: 8, color: "blue" } },
-      { x: p1.map(p => p.y), y: p1.map(p => p.coverage ?? null), mode: "markers", name: "Frente Pareto",
-        marker: { size: 10, color: "red", symbol: "circle-open" } }
-    ], {
-      title: `f2 vs % Cobertura - Gen ${index + 1}`,
-      xaxis: { title: "f2", range: r2.x },
-      yaxis: { title: "% Cobertura", range: r2.y },
-      showlegend: false
-    });
-
-    // f1 vs f2 (usar el mismo de plot2d pero replicamos para la grilla)
-    const { pareto, dom } = splitPareto(points);
-    const r0 = axisRangesFor("f1f2");
-    Plotly.react("plot2d-f1f2", [
-      { x: dom.map(p => p.x), y: dom.map(p => p.y), mode: "markers", name: "Dominados",
-        marker: { size: 8, color: "blue" } },
-      { x: pareto.map(p => p.x), y: pareto.map(p => p.y), mode: "markers", name: "Frente Pareto",
-        marker: { size: 10, color: "red", symbol: "circle-open" } }
-    ], {
-      title: `f1 vs f2 - Gen ${index + 1}`,
-      xaxis: { title: "f1", range: r0.x },
-      yaxis: { title: "f2", range: r0.y },
-      showlegend: false
-    });
-  }
-
-document.getElementById("btn-mode-3d").addEventListener("click", () => {
-  viewMode = "3d";
-  drawFinalViews(frames[parseInt(slider.value)], parseInt(slider.value));
-});
-
-document.getElementById("btn-mode-2d-single").addEventListener("click", () => {
-  viewMode = "2d-single";
-  drawFinalViews(frames[parseInt(slider.value)], parseInt(slider.value));
-});
-
-document.getElementById("btn-mode-2d-grid").addEventListener("click", () => {
-  viewMode = "2d-grid";
-  drawFinalViews(frames[parseInt(slider.value)], parseInt(slider.value));
-});
-
-document.getElementById("select-2d-proj").addEventListener("change", (e) => {
-  viewProj = e.target.value;
-  if (viewMode === "2d-single") {
-    drawFinalViews(frames[parseInt(slider.value)], parseInt(slider.value));
-  }
-});
 
 // =====================  LÓGICA CONSTRUCTOR  =====================
 const ib = {
