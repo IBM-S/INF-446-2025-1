@@ -130,6 +130,7 @@
           <button class="btn" id="load-btn">Cargar generaciones</button>
           <label class="hint"><input type="checkbox" id="fix-scale"/> Usar misma escala</label>
           <label class="hint"><input type="checkbox" id="recalcular-hv" checked/> Recalcular HV</label>
+          <label class="hint"><input type="checkbox" id="toggle-prob" checked /> Probabilidad en mapa</label>
           <span id="status" class="hint">Listo</span>
         </div>
       </div>
@@ -233,6 +234,9 @@
     tabBldBtn.addEventListener('click', ()=>showTab('builder'));
 
     // ===== Visualizador Elements =====
+    const toggleProb = $('#toggle-prob');
+    let lastIds = null;
+    let lastInstancia = null;
     const selInst = $('#instancia');
     const inputSeed = $('#semilla');
     const inputVars = $('#num_var');
@@ -346,12 +350,56 @@
       Plotly.react(plotDiv,[{x:dominatedPoints.map(p=>p.x), y:dominatedPoints.map(p=>p.y), text:dominatedPoints.map(p=>`IDs: ${p.ids.join(', ')}`), customdata:dominatedPoints.map(p=>p.ids), mode:'markers', marker:{size:8, color:'blue'}, name:'Dominados'},{x:paretoPoints.map(p=>p.x), y:paretoPoints.map(p=>p.y), text:paretoPoints.map(p=>`IDs: ${p.ids.join(', ')}`), customdata:paretoPoints.map(p=>p.ids), mode:'markers', marker:{size:10, color:'red', symbol:'circle-open'}, name:'Frente Pareto'}], layout);
       plotDiv.removeAllListeners?.('plotly_click');
       plotDiv.on('plotly_click', async d=>{
-        const idsSel = d.points[0].customdata || []; const instanciaActual = selInst.value;
-        const res = await fetch('/map',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({instancia:instanciaActual, ids:idsSel})});
-        if(res.ok){ const json = await res.json(); const imgURL = 'data:image/png;base64,'+json.img; $('#map-image').src = imgURL; $('#stats-container').textContent = json.stats; $('#stats-container').style.display='block'; }
-        else alert('❌ No se pudo generar el mapa.');
-      });
+          const idsSel = d.points[0].customdata || [];
+          const instanciaActual = selInst.value;
+
+          lastIds = idsSel;              // <- recordar para refrescar
+          lastInstancia = instanciaActual;
+
+          const res = await fetch('/map',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+              instancia: instanciaActual,
+              ids: idsSel,
+              show_probs: toggleProb.checked   // <- AQUÍ va el flag
+            })
+          });
+          if(res.ok){
+            const json = await res.json();
+            const imgURL = 'data:image/png;base64,'+json.img;
+            const mapImg = $('#map-image');
+            mapImg.src = imgURL;
+            mapImg.style.display = 'block';
+            $('#stats-container').textContent = json.stats;
+            $('#stats-container').style.display='block';
+          } else {
+            alert('❌ No se pudo generar el mapa.');
+          }
+        });
     }
+
+    toggleProb.addEventListener('change', async ()=>{
+      if(!lastIds || !lastInstancia) return;
+      const res = await fetch('/map',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          instancia: lastInstancia,
+          ids: lastIds,
+          show_probs: toggleProb.checked
+        })
+      });
+      if(res.ok){
+        const { img, stats } = await res.json();
+        const mapImg = $('#map-image');
+        mapImg.src = 'data:image/png;base64,' + img;
+        mapImg.style.display = 'block';
+        $('#stats-container').textContent = stats;
+        $('#stats-container').style.display = 'block';
+      }
+    });
+
 
     slider.addEventListener('input',()=>{ const i=parseInt(slider.value,10); genNum.innerText=i+1; showGeneration(i); });
     $('#btn-ejecutar').addEventListener('click', runNow);
