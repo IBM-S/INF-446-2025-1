@@ -256,7 +256,9 @@ def run():
 
     base_name = parse_instance_name(instancia)
     raw_files = glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat")
+    #print("[/run] POF encontrados:", raw_files, flush=True)
     raw_files = sorted(raw_files, key=gen_number_from_path)
+    print("[/run] POF GEN ordenados:", [gen_number_from_path(p) for p in raw_files], flush=True)
     hv_results = []
 
     fp_folder = os.path.join("FrentesDePareto", base_name)
@@ -327,7 +329,9 @@ def load():
     base_name = parse_instance_name(instancia)
 
     raw_files = glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat")
+    #print("[/load] POF encontrados:", raw_files, flush=True)
     raw_files = sorted(raw_files, key=gen_number_from_path)
+    print("[/load] POF GEN ordenados:", [gen_number_from_path(p) for p in raw_files], flush=True)
     fp_folder = os.path.join("FrentesDePareto", base_name)
     aeds_folder = os.path.join("aeds", base_name)
     os.makedirs(fp_folder, exist_ok=True)
@@ -336,7 +340,10 @@ def load():
     resumen_path = os.path.join(fp_folder, f"{base_name}_HV_summary.txt")
     hv_results = []
     aed_files = glob.glob(os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN*.dat"))
+    #print("[/load] AEDs encontrados:", aed_files, flush=True)
     aed_files = sorted(aed_files, key=gen_number_from_path)
+    print("[/load] AEDs GEN ordenados:", [gen_number_from_path(p) for p in aed_files], flush=True)
+
 
     if (not recalcular) and os.path.exists(resumen_path) and aed_files:
         with open(resumen_path) as f:
