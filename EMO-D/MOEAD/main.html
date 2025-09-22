@@ -74,7 +74,7 @@
       }
     #points-table th,#points-table td{
         border:1px solid var(--border);
-        padding:10px 12pxs;
+        padding:10px 12px;
         text-align:center;
       }
 
@@ -99,6 +99,21 @@
       font-size: 1.5rem;   /* ← súbelo, por ejemplo a 1.15rem o 1.2rem */
     }
 
+    .all-grid{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:1rem; }
+    @media (max-width: 1200px){
+      .all-grid{ grid-template-columns: 1fr; }
+    }
+    .all-card{ background:var(--panel); border:1px solid var(--border); border-radius:1rem; padding:1rem; }
+    .all-card h4{ margin:0 0 .5rem 0; }
+    .all-row{ display:grid; grid-template-columns: 1fr 0.85fr; gap:1rem; }
+    .all-plot{ height:520px; background:#fff; border:1px dashed var(--border); border-radius:.8rem; }
+    .all-small{ height:340px; background:#fff; border:1px dashed var(--border); border-radius:.8rem; }
+    .all-slider{ margin-top:.5rem; }
+    /* Fix solapamientos en pestaña “Todo” */
+    .all-card{ overflow: hidden; }
+    .all-row{ align-items: start; }
+    .all-plot, .all-small{ width:100%; min-width:0; display:block; }
+    @media (max-width:1100px){ .all-row{ grid-template-columns:1fr; } }
 
   </style>
 </head>
@@ -107,6 +122,7 @@
   <div class="tabs">
     <button id="btn-tab-visualizador" class="tab-btn active">Visualizador</button>
     <button id="btn-tab-builder" class="tab-btn">Crear instancia</button>
+    <button id="btn-tab-all" class="tab-btn">Ver todas las instancia</button>
   </div>
 
   <!-- SECCIÓN: VISUALIZADOR -->
@@ -214,24 +230,97 @@
     </div>
   </section>
 
+  <!-- SECCIÓN: Todas las instancias -->
+<section id="tab-all" class="section">
+  <div class="wrap">
+    <div class="card">
+      <div class="row">
+        <label class="hint"><input type="checkbox" id="toggle-prob-all" checked /> Probabilidad en mapa</label>
+        <label class="hint"><input type="checkbox" id="fix-scale-all" checked /> Misma escala</label>
+        <span id="status-all" class="hint">Sin cargar</span>
+      </div>
+    </div>
+    <div id="all-grid" class="all-grid"></div>
+  </div>
+</section>
+
+
+
   <script>
     // ===== Helpers =====
     const $ = (s, r=document) => r.querySelector(s);
     const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+    const PLOTLY_CFG = { responsive: true, displayModeBar: false };
+
+    // === Tooltips compactos + panel de detalle ===
+    function compressRanges(ids, maxTokens = 10) {
+      if (!Array.isArray(ids) || !ids.length) return [];
+      const arr = [...new Set(ids)].sort((a,b)=>a-b);
+      const out = [];
+      let s = arr[0], p = arr[0];
+      const push = (a,b)=> out.push(a===b ? `${a}` : `${a}–${b}`);
+      for (let i=1;i<arr.length;i++){
+        const v = arr[i];
+        if (v === p + 1) { p = v; continue; }
+        push(s,p); s = p = v;
+      }
+      push(s,p);
+      if (out.length > maxTokens) {
+        const head = out.slice(0, maxTokens).join(', ');
+        return [head + ` … (+${out.length - maxTokens} más)`];
+      }
+      return out;
+    }
+
+    // texto de hover resumido: coord + conteo + ids comprimidos
+    function mkHoverTextPt(p, maxTokens=8){
+      const ids = p.ids || [];
+      const ranges = compressRanges(ids, maxTokens).join(', ');
+      return `(${Number(p.x).toFixed(2)}, ${Number(p.y).toFixed(2)})<br>` +
+            `IDs (${ids.length}): ${ranges}`;
+    }
+
+    // crea (si no existe) un panel debajo del gráfico para ver/copy el detalle
+    function ensureDetailPanelAfter(plotElOrId, suffix='main'){
+      const plotEl = typeof plotElOrId === 'string' ? document.getElementById(plotElOrId) : plotElOrId;
+      let panel = document.getElementById('ids-panel-' + suffix);
+      if (!panel) {
+        panel = document.createElement('div');
+        panel.id = 'ids-panel-' + suffix;
+        panel.style.marginTop = '8px';
+        panel.style.padding = '8px';
+        panel.style.border = '1px solid #e3e3e3';
+        panel.style.borderRadius = '8px';
+        panel.style.maxHeight = '140px';
+        panel.style.overflow = 'auto';
+        panel.style.fontSize = '12px';
+        plotEl.parentNode.insertBefore(panel, plotEl.nextSibling);
+      }
+      return panel;
+    }
+
 
     // ===== Tabs =====
     const tabVisBtn = $('#btn-tab-visualizador');
     const tabBldBtn = $('#btn-tab-builder');
+    const tabAllBtn = $('#btn-tab-all');
     const tabVis = $('#tab-visualizador');
     const tabBld = $('#tab-builder');
+    const tabAll = $('#tab-all');
     function showTab(which){
       const vis = which === 'visualizador';
+      const bld = which === 'builder';
+      const all = which === 'all';
+
       tabVis.classList.toggle('active', vis); tabVisBtn.classList.toggle('active', vis);
-      tabBld.classList.toggle('active', !vis); tabBldBtn.classList.toggle('active', !vis);
+      tabBld.classList.toggle('active', bld); tabBldBtn.classList.toggle('active', bld);
+      tabAll.classList.toggle('active', all); tabAllBtn.classList.toggle('active', all);
       window.scrollTo({top:0, behavior:'smooth'});
+      if (all) buildAllDashboard();      
     }
     tabVisBtn.addEventListener('click', ()=>showTab('visualizador'));
     tabBldBtn.addEventListener('click', ()=>showTab('builder'));
+    tabAllBtn.addEventListener('click', ()=>showTab('all'));
 
     // ===== Visualizador Elements =====
     const toggleProb = $('#toggle-prob');
@@ -247,6 +336,28 @@
     const sliderContainer = $('#slider-container');
     const slider = $('#slider');
     const genNum = $('#gen-num');
+
+    // ==== Pestaña TODO ====
+    const framesAll = {};    // inst -> [ [points], ... ]
+    let lastIdsAll = null, lastInstAll = null;
+    let prefetchDone = false;
+
+    const selProbAll = $('#toggle-prob-all');
+    const statusAll  = $('#status-all');
+    const gridAll    = $('#all-grid');
+
+    const allCache = {};           // inst -> { files, hv }
+    const framesPerInst = {};      // inst -> [ [points]... ]
+    const lastSelPerInst = {};     // inst -> ids[]
+    let allBuilt = false;
+
+    const slug = s => s.replace(/[^a-zA-Z0-9_-]/g,'_');
+
+    const fixScaleAll = document.getElementById('fix-scale-all');
+    const rangesPerInst = {};       // inst -> { x:[min,max], y:[min,max] }
+    const currentGenIndex = {};     // inst -> índice actual del slider
+
+
 
     // ===== Data holders =====
     let frames = []; let hvValues = [];
@@ -345,39 +456,79 @@
       const allPoints = hasFlag? points : findParetoFront(points);
       const paretoPoints = allPoints.filter(p=>p.isPareto);
       const dominatedPoints = allPoints.filter(p=>!p.isPareto);
-      const layout = { title:`Frente de Pareto - Gen ${index+1}`, xaxis:{title:'Minimizar Cobertura (f1)'}, yaxis:{title:'Minimizar Costos (f2)'}, legend:{x:1,y:1,xanchor:'right',yanchor:'top',bgcolor:'rgba(255,255,255,.08)',bordercolor:'#333',borderwidth:1} };
-      if(fixScaleCheckbox.checked){ const xM=(globalXMax-globalXMin)*0.05; const yM=(globalYMax-globalYMin)*0.05; layout.xaxis.range=[globalXMin-xM,globalXMax+xM]; layout.yaxis.range=[globalYMin-yM,globalYMax+yM]; }
-      Plotly.react(plotDiv,[{x:dominatedPoints.map(p=>p.x), y:dominatedPoints.map(p=>p.y), text:dominatedPoints.map(p=>`IDs: ${p.ids.join(', ')}`), customdata:dominatedPoints.map(p=>p.ids), mode:'markers', marker:{size:8, color:'blue'}, name:'Dominados'},{x:paretoPoints.map(p=>p.x), y:paretoPoints.map(p=>p.y), text:paretoPoints.map(p=>`IDs: ${p.ids.join(', ')}`), customdata:paretoPoints.map(p=>p.ids), mode:'markers', marker:{size:10, color:'red', symbol:'circle-open'}, name:'Frente Pareto'}], layout);
+
+      const layout = {
+        title:`Frente de Pareto - Gen ${index+1}`,
+        xaxis:{title:'Minimizar Cobertura (f1)'},
+        yaxis:{title:'Minimizar Costos (f2)'},
+        legend:{x:1,y:1,xanchor:'right',yanchor:'top',bgcolor:'rgba(255,255,255,.08)',bordercolor:'#333',borderwidth:1},
+        hovermode: 'closest'
+      };
+      if (fixScaleCheckbox.checked){
+        const xM=(globalXMax-globalXMin)*0.05, yM=(globalYMax-globalYMin)*0.05;
+        layout.xaxis.range=[globalXMin-xM,globalXMax+xM];
+        layout.yaxis.range=[globalYMin-yM,globalYMax+yM];
+      }
+
+      // texto de hover resumido
+      const domText    = dominatedPoints.map(p=>mkHoverTextPt(p));
+      const paretoText = paretoPoints.map(p=>mkHoverTextPt(p));
+
+      Plotly.react(plotDiv, [
+        {
+          x: dominatedPoints.map(p=>p.x),
+          y: dominatedPoints.map(p=>p.y),
+          customdata: dominatedPoints.map(p=>p.ids),
+          text: domText,
+          mode:'markers',
+          marker:{size:8, color:'blue'},
+          name:'Dominados',
+          hovertemplate: '%{text}<extra></extra>',
+          hoverlabel: { align:'left', namelength: 0 }
+        },
+        {
+          x: paretoPoints.map(p=>p.x),
+          y: paretoPoints.map(p=>p.y),
+          customdata: paretoPoints.map(p=>p.ids),
+          text: paretoText,
+          mode:'markers',
+          marker:{size:10, color:'red', symbol:'circle-open'},
+          name:'Frente Pareto',
+          hovertemplate: '%{text}<extra></extra>',
+          hoverlabel: { align:'left', namelength: 0 }
+        }
+      ], layout);
+
+      // click: mapa + panel de detalle con todos los IDs (copiable)
       plotDiv.removeAllListeners?.('plotly_click');
       plotDiv.on('plotly_click', async d=>{
-          const idsSel = d.points[0].customdata || [];
-          const instanciaActual = selInst.value;
+        const idsSel = d.points[0].customdata || [];
+        const instanciaActual = selInst.value;
 
-          lastIds = idsSel;              // <- recordar para refrescar
-          lastInstancia = instanciaActual;
+        lastIds = idsSel;
+        lastInstancia = instanciaActual;
 
-          const res = await fetch('/map',{
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({
-              instancia: instanciaActual,
-              ids: idsSel,
-              show_probs: toggleProb.checked   // <- AQUÍ va el flag
-            })
-          });
-          if(res.ok){
-            const json = await res.json();
-            const imgURL = 'data:image/png;base64,'+json.img;
-            const mapImg = $('#map-image');
-            mapImg.src = imgURL;
-            mapImg.style.display = 'block';
-            $('#stats-container').textContent = json.stats;
-            $('#stats-container').style.display='block';
-          } else {
-            alert('❌ No se pudo generar el mapa.');
-          }
+        // Panel con los IDs completos bajo el gráfico
+        const coord = `(${(+d.points[0].x).toFixed(2)}, ${( +d.points[0].y).toFixed(2)})`;
+
+        // Mapa como ya lo tenías
+        const res = await fetch('/map',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ instancia: instanciaActual, ids: idsSel, show_probs: toggleProb.checked, x: d.points[0].x, y: d.points[0].y})
         });
+        if(res.ok){
+          const json = await res.json();
+          $('#map-image').src = 'data:image/png;base64,'+json.img;
+          $('#map-image').style.display = 'block';
+          $('#stats-container').textContent = json.stats;
+          $('#stats-container').style.display = 'block';
+        } else {
+          alert('❌ No se pudo generar el mapa.');
+        }
+      });
     }
+
 
     toggleProb.addEventListener('change', async ()=>{
       if(!lastIds || !lastInstancia) return;
@@ -436,6 +587,266 @@
 
     // ===== Inicio =====
     window.addEventListener('DOMContentLoaded', async()=>{ await refreshInstanciaSelect(); showTab('visualizador'); statusEl.textContent='Listo'; drawBuilder(); });
+
+    async function buildAllDashboard(){
+      if (allBuilt) return;
+      statusAll.textContent = 'Cargando…';
+
+      const r = await fetch('/list_instances');
+      const j = await r.json();
+      const insts = Array.isArray(j) ? j : (j.instances || []);
+
+      const withData = [];
+      for (const inst of insts) {
+        const res = await fetch('/load', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ instancia: inst, semilla: 0, recalcular: false })
+        });
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data.files && data.files.length) {
+          allCache[inst] = data;
+          withData.push(inst);
+        }
+      }
+
+      for (const inst of withData) {
+        const id = slug(inst);
+        gridAll.insertAdjacentHTML('beforeend', `
+          <div class="all-card" id="card-${id}">
+            <h4>${inst}</h4>
+            <div class="all-row">
+              <div>
+                <div id="plot-${id}" class="all-plot"></div>
+                <div class="all-slider">
+                  <input type="range" id="slider-${id}" min="0" max="0" value="0" style="width:100%" />
+                  <p class="hint">Generación: <span id="gen-${id}">1</span></p>
+                </div>
+              </div>
+              <div>
+                <div id="hv-${id}" class="all-small"></div>
+                <div id="hist-${id}" class="all-small" style="margin-top:1rem"></div>
+                <img id="map-${id}" alt="Mapa" style="display:none;width:100%;border:1px solid #333;border-radius:.6rem;margin-top:1rem" />
+                <div id="stats-${id}" style="white-space:pre-wrap;font-family:monospace;display:none;margin-top:.5rem"></div>
+              </div>
+            </div>
+          </div>`);
+
+        await renderInstanceCard(inst, id, allCache[inst]);
+      }
+
+      statusAll.textContent = `Cargadas: ${withData.length}`;
+      allBuilt = true;
+    }
+
+    function parsePoints(text){
+      return text.trim().split('\n')
+        .map(l=>l.trim()).filter(l=>l && !l.startsWith('#'))
+        .map(line=>{
+          let coverage=null; let left=line;
+          if(line.includes('|')){
+            const parts=line.split('|');
+            left=parts[0].trim();
+            const covStr=parts[1].trim().split(/\s+/)[0];
+            const covVal=parseFloat(covStr);
+            if(!Number.isNaN(covVal)) coverage=covVal;
+          }
+          const toks = left.split(/\s+/);
+          const f1=parseFloat(toks[0]); const f2=parseFloat(toks[1]);
+          let startIdx=2; let isPareto;
+          if(Number.isNaN(parseFloat(toks[2]))){
+            if(toks[2]==='P'){ isPareto=true; startIdx=3; }
+            else if(toks[2]==='D'){ isPareto=false; startIdx=3; }
+          }
+          const ids = toks.slice(startIdx).map(n=>parseInt(n,10)).filter(n=>!Number.isNaN(n));
+          return { x:f1, y:f2, ids, isPareto, coverage };
+        });
+    }
+
+    async function renderInstanceCard(inst, id, data){
+      const files = data.files, hv = data.hv || [];
+      const frames = [];
+      for (const file of files) {
+        const res = await fetch('/get/'+file);
+        const text = await res.text();
+        frames.push(parsePoints(text));
+      }
+      framesPerInst[inst] = frames;
+
+      // Rango global para “Misma escala”
+      let xMin=Infinity, xMax=-Infinity, yMin=Infinity, yMax=-Infinity;
+      for (const gen of frames) {
+        for (const p of gen) {
+          if (p.x < xMin) xMin = p.x;
+          if (p.x > xMax) xMax = p.x;
+          if (p.y < yMin) yMin = p.y;
+          if (p.y > yMax) yMax = p.y;
+        }
+      }
+      rangesPerInst[inst] = { x:[xMin, xMax], y:[yMin, yMax] };
+      currentGenIndex[inst] = 0;  // primera generación
+
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      // HV
+      Plotly.newPlot('hv-'+id,
+        [{ x: hv.map((_,i)=>i+1), y: hv, mode:'lines+markers', name:'HV' }],
+        { title:'Hipervolumen', xaxis:{title:'Generación'}, yaxis:{title:'HV'},
+          paper_bgcolor:'#fff', plot_bgcolor:'#fff' }, PLOTLY_CFG
+      ).then(gd=>{
+        gd.on('plotly_click', d=>{
+          const gen = d.points[0].x;
+          const slider = $('#slider-'+id), genLbl = $('#gen-'+id);
+          slider.value = gen-1; genLbl.textContent = gen;
+          showGenInCard(inst, id, gen-1);
+        });
+      });
+
+      // Historial
+      const traces = frames.map((pts,idx)=>{
+        const hasFlag = pts.every(p=>typeof p.isPareto==='boolean');
+        const all = hasFlag ? pts : findParetoFront(pts);
+        const pareto = all.filter(p=>p.isPareto);
+        const color = getMultiColor(idx/Math.max(1,(frames.length-1)));
+        return { x:pareto.map(p=>p.x), y:pareto.map(p=>p.y), mode:'markers',
+                marker:{size:6, color}, showlegend:false };
+      });
+      Plotly.newPlot('hist-'+id, traces,
+        { title:'Frentes', xaxis:{title:'f1'}, yaxis:{title:'f2'},
+          paper_bgcolor:'#fff', plot_bgcolor:'#fff' }, PLOTLY_CFG);
+
+      // Slider + primera generación
+      const slider = $('#slider-'+id), genLbl = $('#gen-'+id);
+      slider.max = frames.length-1; slider.value = 0; genLbl.textContent = 1;
+      slider.addEventListener('input', ()=>{
+        const i = parseInt(slider.value,10);
+        currentGenIndex[inst] = i;              // ← guarda la gen actual
+        genLbl.textContent = i+1;
+        showGenInCard(inst, id, i);
+      });
+
+
+      // Primer render
+      showGenInCard(inst, id, 0);
+      observeCardResize(id);
+    }
+
+    function showGenInCard(inst, id, index){
+      const frames = framesPerInst[inst]; if(!frames) return;
+      const points = frames[index] || [];
+
+      const hasFlag = points.every(p=>typeof p.isPareto==='boolean');
+      const allPoints = hasFlag ? points : findParetoFront(points);
+      const pareto = allPoints.filter(p=>p.isPareto);
+      const dom = allPoints.filter(p=>!p.isPareto);
+
+      const layout = {
+        title:`Frente – Gen ${index+1}`,
+        xaxis:{title:'f1'}, yaxis:{title:'f2'},
+        paper_bgcolor:'#fff', plot_bgcolor:'#fff',
+        hovermode:'closest'
+      };
+
+      const el = document.getElementById('plot-' + id);
+      const dataTraces = [
+        {
+          x: dom.map(p=>p.x), y: dom.map(p=>p.y),
+          customdata: dom.map(p=>p.ids),
+          text: dom.map(mkHoverTextPt),
+          mode:'markers', marker:{size:8, color:'blue'}, name:'Dominados',
+          hovertemplate: '%{text}<extra></extra>',
+          hoverlabel: { align:'left', namelength: 0 }
+        },
+        {
+          x: pareto.map(p=>p.x), y: pareto.map(p=>p.y),
+          customdata: pareto.map(p=>p.ids),
+          text: pareto.map(mkHoverTextPt),
+          mode:'markers', marker:{size:10, color:'red', symbol:'circle-open'}, name:'Pareto',
+          hovertemplate: '%{text}<extra></extra>',
+          hoverlabel: { align:'left', namelength: 0 }
+        }
+      ];
+
+      const plotPromise = el.data
+        ? Plotly.react(el, dataTraces, layout)
+        : Plotly.newPlot(el, dataTraces, layout, { responsive:true, displayModeBar:false });
+
+      plotPromise.then(gd => {
+        gd.removeAllListeners?.('plotly_click');
+        gd.on('plotly_click', async d => {
+          const idsSel = d.points[0].customdata || [];
+          lastSelPerInst[inst] = idsSel;
+
+          // Panel de detalle bajo la card
+          const coord = `(${(+d.points[0].x).toFixed(2)}, ${( +d.points[0].y).toFixed(2)})`;
+
+          // Mapa (como ya lo tenías)
+          const res = await fetch('/map', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ instancia: inst, ids: idsSel, show_probs: selProbAll.checked, x: d.points[0].x, y: d.points[0].y })
+          });
+          if (res.ok) {
+            const { img, stats } = await res.json();
+            const imgEl = $('#map-'+id), stEl = $('#stats-'+id);
+            imgEl.src = 'data:image/png;base64,' + img; imgEl.style.display = 'block';
+            stEl.textContent = stats; stEl.style.display = 'block';
+          }
+        });
+      });
+    }
+
+    
+    function observeCardResize(id){
+      const card = document.getElementById('card-'+id);
+      if (!window.ResizeObserver || !card) return;
+      let rafId = null;
+      const ro = new ResizeObserver(() => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          const p  = document.getElementById('plot-'+id);
+          const hv = document.getElementById('hv-'+id);
+          const hi = document.getElementById('hist-'+id);
+          if (p)  Plotly.Plots.resize(p);
+          if (hv) Plotly.Plots.resize(hv);
+          if (hi) Plotly.Plots.resize(hi);
+          rafId = null;
+        });
+      });
+      ro.observe(card);
+    }
+
+
+
+    selProbAll.addEventListener('change', async ()=>{
+      for (const inst of Object.keys(lastSelPerInst)) {
+        const ids = lastSelPerInst[inst];
+        const id = slug(inst);
+        const res = await fetch('/map',{
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ instancia: inst, ids, show_probs: selProbAll.checked })
+        });
+        if(res.ok){
+          const {img, stats} = await res.json();
+          const imgEl = $('#map-'+id), stEl = $('#stats-'+id);
+          if(imgEl){ imgEl.src = 'data:image/png;base64,'+img; imgEl.style.display='block'; }
+          if(stEl){ stEl.textContent = stats; stEl.style.display='block'; }
+        }
+      }
+    });
+
+    window.addEventListener('resize', ()=>{
+      document.querySelectorAll('.js-plotly-plot')
+        .forEach(el => Plotly.Plots.resize(el));
+    });
+
+    fixScaleAll?.addEventListener('change', ()=>{
+      for (const inst of Object.keys(framesPerInst)) {
+        const id = slug(inst);
+        const i  = currentGenIndex[inst] ?? 0;
+        showGenInCard(inst, id, i);
+      }
+    });
+
+
   </script>
 </body>
 </html>
