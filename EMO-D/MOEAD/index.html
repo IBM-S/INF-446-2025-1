@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CDMX – Instancias por Alcaldía</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+   <style>
+    html, body { 
+      height: 100%; 
+      margin: 0; 
+      font: 14px/1.3 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    #app { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      height: 100vh; 
+      width: 100%; 
+    }
+    #map { 
+      height: 100%; 
+      width: 100%; 
+    }
+    #side {
+      padding: 24px; 
+      overflow-y: auto; 
+      background: #f7f8fb; 
+      border-left: 1px solid #e6e8ef;
+    }
+    h1 { 
+      font-size: 20px; 
+      font-weight: 700;
+      margin: 0 0 20px; 
+      color: #1a202c;
+    }
+    
+    /* Estilo de las tarjetas de sección */
+    .data-section {
+      background: #fff;
+      border: 1px solid #e6e8ef;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #4a5568;
+      background: #fdfdfe;
+      padding: 10px 16px;
+      border-bottom: 1px solid #e6e8ef;
+      margin: 0;
+      font-family: monospace, sans-serif;
+    }
+    .section-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .form-group { 
+      margin: 0; /* Reseteamos margen, el gap se encarga del espaciado */
+    }
+    label { 
+      display: block; 
+      font-weight: 600; 
+      font-size: 12px; 
+      color: #2d3748; 
+      margin-bottom: 6px; 
+    }
+    select, input[type="number"], button { 
+      width: 100%; 
+      padding: 9px 12px; 
+      border-radius: 8px; 
+      border: 1px solid #cfd6e4; 
+      background: #fff;
+      font-size: 14px;
+      box-sizing: border-box; /* Importante para que el padding no afecte el ancho */
+    }
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      color: #2d3748;
+      transition: all 0.2s ease-in-out;
+    }
+    button:hover {
+      background-color: #f7fafc;
+      border-color: #a0aec0;
+    }
+
+    button.primary {
+      background-color: #16a34a;
+      color: #fff;
+      border-color: #15803d;
+    }
+    button.primary:hover {
+      background-color: #14532d;
+    }
+
+    .row { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 12px; 
+      .row-align-end { align-items: end;}
+      .btn-full { grid-column: 1 / -1; } /* Ocupa todo el ancho en un grid si es necesario */
+    }
+    .btn-full {
+      grid-column: 1 / -1; /* Ocupa todo el ancho en un grid si es necesario */
+    }
+
+    .muted { color: #555; font-size: 12px; margin-top: 8px; }
+    .stats { margin-top: 16px; font-size: 13px; color: #2d3748; line-height: 1.6; }
+    
+    /* Estilos para botones activos y secundarios */
+    .on { 
+      background: #2c5282; /* Un azul más suave */
+      color: #fff; 
+      border-color: #2c5282; 
+    }
+    .on:hover {
+      background: #2a4365;
+    }
+    .btn-sm { 
+      padding: 6px 10px; 
+      font-size: 12px; 
+    }
+    .btn-secondary {
+      background-color: #f0f2f5;
+      color: #4a5568;
+      border-color: #e2e8f0;
+    }
+    .btn-secondary:hover {
+      background-color: #e2e8f0;
+      border-color: #cbd5e0;
+    }
+
+
+    @media (max-width: 900px) {
+      #app { grid-template-columns: 1fr; }
+      #side { border-left: none; border-top: 1px solid #e6e8ef; }
+    }
+    .star { font-size: 18px; line-height: 18px; color: #1b5e20; text-shadow: 0 0 2px #fff; }
+  </style>
+</head>
+<body>
+
+    <div id="app">
+    <div id="map"></div>
+    <div id="side">
+      <h1>Instancias por Alcaldía</h1>
+
+      <!-- Sección de Alcaldía -->
+      <!-- Sección de Selección de Zona Geográfica -->
+      <div class="data-section">
+        <h2 class="section-title">Selección de Zona Geográfica</h2>
+        <div class="section-content">
+          <div class="row">
+            <!-- Columna Izquierda: Alcaldía -->
+            <div class="form-group">
+              <label for="selAlc">Alcaldía (DemograficosD_GJ)</label>
+              <select id="selAlc"><option value="">(elige una)</option></select>
+            </div>
+            <!-- Columna Derecha: Colonias -->
+            <div class="form-group">
+              <label>Colonias (GeoColonias)</label>
+              <button id="btnColonias" type="button">Ver colonias (toggle)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección de Cámaras -->
+      <div class="data-section">
+        <h2 class="section-title">CamarasPosU.geojson</h2>
+        <div class="section-content">
+          <div class="row">
+            <button id="btnAplicar">Ver cámaras instaladas</button>
+            <button id="btnActivar" type="button">Activar cámaras</button>
+          </div>
+          <button id="btnNueva" type="button" class="btn-full">Vaciar instancia (solo frontera)</button>
+        </div>
+      </div>
+
+      <!-- Sección de Reportes de Incidencia -->
+      <div class="data-section">
+        <h2 class="section-title">reportes_incidenciaU.geojson</h2>
+        <div class="section-content">
+          <div class="row">
+            <button id="btnAltoImpacto" type="button">Ver alto impacto</button>
+            <button id="btnActivarAlto" type="button">Activar (alto impacto)</button>
+          </div>
+          <div class="row">
+            <button id="btnBajoImpacto" type="button">Ver bajo impacto</button>
+            <button id="btnActivarBajo" type="button">Activar (bajo impacto)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección para crear instancias -->
+      <div class="data-section">
+        <h2 class="section-title">Crear instancia</h2>
+        <div class="section-content">
+          <button id="btnColocar" type="button" class="btn-full">Colocar cámaras (click)</button>
+          <div class="row">
+            <div class="form-group">
+              <label for="spacing">Espaciado malla (m)</label>
+              <input id="spacing" type="number" min="10" max="2000" step="10" value="250" />
+            </div>
+            <div class="form-group">
+              <label for="mindist">Dist. mínima a cámaras (m)</label>
+              <input id="mindist" type="number" min="0" max="2000" step="10" value="0" />
+            </div>
+          </div>
+          <button id="btnDiscretizar" class="btn-full">Discretizar</button>
+        </div>
+      </div>
+
+      <!-- Sección de Acciones de Limpieza -->
+      <div class="data-section">
+         <h2 class="section-title">Acciones</h2>
+         <div class="section-content">
+            <div class="row">
+                <button id="btnClrCand" class="btn-sm btn-secondary">Limpiar candidatos</button>
+                <button id="btnClrSel" class="btn-sm btn-secondary">Limpiar seleccionados</button>
+            </div>
+             <button id="btnClrAct" class="btn-sm btn-secondary btn-full">Limpiar preinstaladas</button>
+         </div>
+      </div>
+
+
+      <!-- Estadísticas -->
+      <div class="stats">
+        <div>Existentes (vista): <span id="cntExist">0</span></div>
+        <div>Preinstaladas (activadas): <span id="cntAct">0</span></div>
+        <div>Candidatos: <span id="cntCand">0</span></div>
+        <div>Seleccionados: <span id="cntSel">0</span></div>
+        <div style="margin-top: 8px;">Reportes (alto impacto): <span id="cntAlto">0</span></div>
+        <div>Reportes (bajo impacto): <span id="cntBajo">0</span></div>
+      </div>
+
+      <div class="muted" id="status">Listo. Selecciona una alcaldía.</div>
+    </div>
+  </div>
+
+   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
+  <script>
+    // ====== Mapa base ======
+    const map = L.map('map', { preferCanvas: true }).setView([19.4326, -99.1332], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+
+    // ====== Capas ======
+    const clustersExist = L.markerClusterGroup({ chunkedLoading: true });
+    const layerActive   = L.layerGroup();
+    const layerCand     = L.geoJSON(null, { pointToLayer: (f, latlng) => L.circleMarker(latlng, { radius: 3, color: '#666', weight: 1, fillOpacity: 0.7 })});
+    const hullSelected  = L.geoJSON(null, { style: { color: '#0d47a1', weight: 4, fillOpacity: 0.03 } });
+    const layerSelected = L.layerGroup();
+
+    // colonias: borde celeste
+    const coloniasStyle = { color: '#03a9f4', weight: 1.2, fillColor: '#b3e5fc', fillOpacity: 0.06 };
+    const coloniasLayer = L.geoJSON(null, { style: coloniasStyle });
+
+      // ===== NUEVO: Capas para reportes de incidencia =====
+    const reportsHighLayer = L.markerClusterGroup({ chunkedLoading: true });
+    const reportsLowLayer = L.markerClusterGroup({ chunkedLoading: true });
+    const highImpactStyle = { radius: 4, color: '#c62828', weight: 1, fillOpacity: 0.7 }; // Rojo
+    const lowImpactStyle  = { radius: 4, color: '#f9a825', weight: 1, fillOpacity: 0.7 }; // Amarillo/Naranja
+
+    // ===== NUEVO: Capas y estilos para la vista "activa" (simplificada) =====
+    const layerActiveHigh = L.layerGroup();
+    const layerActiveLow  = L.layerGroup();
+    const highImpactActiveStyle = { radius: 3, color: '#c62828', fillColor: '#c62828', fillOpacity: 1, weight: 0.5 };
+    const lowImpactActiveStyle  = { radius: 3, color: '#f9a825', fillColor: '#f9a825', fillOpacity: 1, weight: 0.5 };
+
+    map.addLayer(hullSelected);
+   // ====== Estado/UI ======
+    const selAlc = document.getElementById('selAlc');
+    const spacing = document.getElementById('spacing');
+    const mindist = document.getElementById('mindist');
+
+    const btnAplicar   = document.getElementById('btnAplicar');
+    const btnNueva     = document.getElementById('btnNueva');
+    const btnDiscret   = document.getElementById('btnDiscretizar');
+    const btnColocar   = document.getElementById('btnColocar');
+    const btnActivar   = document.getElementById('btnActivar');
+    const btnColonias  = document.getElementById('btnColonias');
+    // ===== NUEVO: Referencias a botones de reportes =====
+    const btnAltoImpacto = document.getElementById('btnAltoImpacto');
+    const btnBajoImpacto = document.getElementById('btnBajoImpacto');
+     // ===== NUEVO: Referencias a los botones de "Activar" =====
+    const btnActivarAlto = document.getElementById('btnActivarAlto');
+    const btnActivarBajo = document.getElementById('btnActivarBajo');
+
+    const btnClrSel  = document.getElementById('btnClrSel');
+    const btnClrCand = document.getElementById('btnClrCand');
+    const btnClrAct  = document.getElementById('btnClrAct');
+
+    const cntExist = document.getElementById('cntExist');
+    const cntAct   = document.getElementById('cntAct');
+    const cntCand  = document.getElementById('cntCand');
+    const cntSel   = document.getElementById('cntSel');
+    const statusEl = document.getElementById('status');
+    // ===== NUEVO: Referencias a contadores de reportes =====
+    const cntAlto  = document.getElementById('cntAlto');
+    const cntBajo  = document.getElementById('cntBajo');
+
+    let placeMode = false;
+    let hullFeature = null;   // frontera activa (alcaldía)
+    let activeOn   = false;
+    let coloniasFC = null;
+    let coloniasOn = false;
+    // ===== NUEVO: Estado para capas de reportes =====
+    let altoImpactoOn = false;
+    let bajoImpactoOn = false;
+     // ===== NUEVO: Estado para capas de reportes (vista activa) =====
+    let altoImpactoActiveOn = false;
+    let bajoImpactoActiveOn = false;
+
+    // ====== Helpers ======
+    function qs(params) {
+      const q = new URLSearchParams();
+      Object.entries(params).forEach(([k,v]) => { if (v !== undefined && String(v).trim() !== '') q.set(k, v); });
+      return q.toString() ? '?' + q.toString() : '';
+    }
+    function setStatus(s) { statusEl.textContent = s; }
+    function togglePlaceMode(on) {
+      placeMode = on;
+      btnColocar.classList.toggle('on', placeMode);
+      if (placeMode && !map.hasLayer(layerSelected)) map.addLayer(layerSelected);
+    }
+    function resetCounts() {
+      cntExist.textContent = '0'; cntAct.textContent = '0'; cntCand.textContent = '0';
+      cntSel.textContent = String(layerSelected.getLayers().length);
+      // ===== NUEVO: Resetear contadores de reportes =====
+      cntAlto.textContent = '0'; cntBajo.textContent = '0';
+    }
+    
+    // Función para limpiar todas las capas de datos
+    function clearAllDataLayers() {
+        clustersExist.clearLayers(); layerActive.clearLayers(); layerCand.clearLayers();
+        layerSelected.clearLayers(); reportsHighLayer.clearLayers(); reportsLowLayer.clearLayers();
+        layerActiveHigh.clearLayers(); layerActiveLow.clearLayers();
+        resetCounts();
+        activeOn = false; btnActivar.classList.remove('on');
+        // ===== NUEVO: Resetear estado de botones de reportes =====
+        altoImpactoOn = false; bajoImpactoOn = false;
+        btnAltoImpacto.classList.remove('on'); btnBajoImpacto.classList.remove('on');
+    }
+
+    async function loadMeta() {
+      const res = await fetch('/meta');
+      if (!res.ok) throw new Error('No se pudo cargar /meta');
+      const meta = await res.json();
+      (meta.alcaldias || []).forEach(a => {
+        const opt = document.createElement('option'); opt.value = a; opt.textContent = a; selAlc.appendChild(opt);
+      });
+      // La meta ahora puede incluir `impactos_delito`, pero no lo usaremos directamente en la UI por ahora
+    }
+
+    async function loadHullFor(alcaldia) {
+      const res = await fetch('/hulls');
+      if (!res.ok) throw new Error('No se pudo cargar /hulls');
+      const fc = await res.json();
+      hullFeature = (fc.features || []).find(f => ((f.properties?.alcaldia || '').toUpperCase() === alcaldia.toUpperCase())) || null;
+      hullSelected.clearLayers();
+      if (hullFeature) { hullSelected.addData(hullFeature); try { map.fitBounds(hullSelected.getBounds().pad(0.05)); } catch {} }
+    }
+
+    async function loadColoniasFor(alcaldia) {
+      const res = await fetch('/colonias' + qs({ alcaldia }));
+      if (!res.ok) throw new Error('No se pudo cargar /colonias');
+      coloniasFC = await res.json();
+    }
+
+    function showColonias(on) {
+      coloniasOn = on;
+      btnColonias.classList.toggle('on', coloniasOn);
+      coloniasLayer.clearLayers();
+      if (coloniasOn && coloniasFC) {
+        coloniasLayer.addData(coloniasFC);
+        if (!map.hasLayer(coloniasLayer)) map.addLayer(coloniasLayer);
+        coloniasLayer.bringToBack();
+      } else {
+        if (map.hasLayer(coloniasLayer)) map.removeLayer(coloniasLayer);
+      }
+    }
+
+    async function loadExistingView(alcaldia) {
+      const res = await fetch('/data' + qs({ alcaldia }));
+      if (!res.ok) throw new Error('No se pudo cargar /data');
+      const fc = await res.json();
+      clustersExist.clearLayers();
+      const markers = [];
+      (fc.features || []).forEach(f => {
+        if (!f || !f.geometry || f.geometry.type !== 'Point') return;
+        const [lon, lat] = f.geometry.coordinates || [];
+        if (!isFinite(lat) || !isFinite(lon)) return;
+        const p = f.properties || {};
+        const m = L.marker([lat, lon]);
+        m.bindPopup(`<div style="font: 13px/1.2 sans-serif; min-width: 220px;">
+            <div style="font-weight:600; font-size:14px;">${p.calle || '-'}</div>
+            <div>Esquina/entre: <b>${p['esquina / entre calles'] || '-'}</b></div>
+            <div>Alcaldía: <b>${p.alcaldia || '-'}</b></div>
+            <div>Colonia: <b>${p.colonia || '-'}</b></div>
+            <div>ID STV: <b>${p['id stv'] ?? '-'}</b></div>
+            <div>Lat/Lon: ${lat.toFixed(6)}, ${lon.toFixed(6)}</div>
+          </div>`);
+        markers.push(m);
+      });
+      clustersExist.addLayers(markers);
+      if (!map.hasLayer(clustersExist)) map.addLayer(clustersExist);
+      cntExist.textContent = String(fc.count ?? markers.length);
+    }
+    
+    // ===== NUEVO: Función para cargar y mostrar reportes de incidencia =====
+    async function loadReports(alcaldia, impacto, layer, counterEl, style) {
+        setStatus(`Cargando reportes (${impacto})...`);
+        const res = await fetch('/reportes' + qs({ alcaldia, impacto_delito: impacto }));
+        if (!res.ok) { setStatus('Error al cargar reportes'); throw new Error('No se pudo cargar /reportes'); }
+        const fc = await res.json();
+        
+        layer.clearLayers();
+        const markers = [];
+        (fc.features || []).forEach(f => {
+            if (!f || !f.geometry || f.geometry.type !== 'Point') return;
+            const [lon, lat] = f.geometry.coordinates || [];
+            if (!isFinite(lat) || !isFinite(lon)) return;
+            const p = f.properties || {};
+            const m = L.circleMarker([lat, lon], style);
+            m.bindPopup(`<div style="font: 13px/1.2 sans-serif; min-width: 280px;">
+                <div style="font-weight:600; font-size:14px; text-transform: capitalize;">${(p.delito || '-').toLowerCase()}</div>
+                <div><b>Impacto:</b> ${p.impacto_delito || '-'}</div>
+                <div><b>Categoría:</b> ${p.categoria_delito || '-'}</div>
+                <div><b>Fecha:</b> ${p.mes_hecho || ''} ${p.anio_hecho || ''}</div>
+                <div><b>Colonia:</b> ${p.colonia || '-'}</div>
+            </div>`);
+            markers.push(m);
+        });
+        layer.addLayers(markers);
+        if (!map.hasLayer(layer)) map.addLayer(layer);
+        counterEl.textContent = String(fc.count ?? markers.length);
+        setStatus(`Reportes (${impacto}) cargados`);
+    }
+
+     // ===== NUEVO: Funciones para activar la vista simplificada de reportes =====
+    async function activateReports(alcaldia, impacto, activeLayer, clusterLayer, style, activeStateSetter, btn) {
+      const currentState = activeStateSetter(null); // Llama a la función para obtener el estado actual
+      
+      // Apagar la capa activa
+      if (currentState) {
+        activeLayer.clearLayers();
+        // Si la vista de cluster estaba encendida, la volvemos a mostrar
+        if (map.hasLayer(clusterLayer)) {
+           // No es necesario hacer nada, ya que la capa de cluster nunca se eliminó del mapa
+        }
+        activeStateSetter(false);
+        btn.classList.remove('on');
+        setStatus(`Vista activa de '${impacto}' desactivada.`);
+        // Vuelve a mostrar la capa de cluster si estaba oculta
+        if (altoImpactoOn && clusterLayer === reportsHighLayer && !map.hasLayer(clusterLayer)) map.addLayer(clusterLayer);
+        if (bajoImpactoOn && clusterLayer === reportsLowLayer && !map.hasLayer(clusterLayer)) map.addLayer(clusterLayer);
+        return;
+      }
+
+      // Encender la capa activa
+      setStatus(`Activando vista para '${impacto}'...`);
+      const res = await fetch('/reportes' + qs({ alcaldia, impacto_delito: impacto }));
+      if (!res.ok) throw new Error('No se pudo cargar /reportes');
+      const fc = await res.json();
+      
+      activeLayer.clearLayers();
+      (fc.features || []).forEach(f => {
+        if (!f || !f.geometry || f.geometry.type !== 'Point') return;
+        const [lon, lat] = f.geometry.coordinates || [];
+        if (!isFinite(lat) || !isFinite(lon)) return;
+        L.circleMarker([lat, lon], style).addTo(activeLayer);
+      });
+      
+      if (!map.hasLayer(activeLayer)) map.addLayer(activeLayer);
+      // Ocultamos la vista de cluster para evitar superposición
+      if (map.hasLayer(clusterLayer)) {
+          map.removeLayer(clusterLayer);
+      }
+
+      activeStateSetter(true);
+      btn.classList.add('on');
+      setStatus(`Vista activa de '${impacto}' cargada.`);
+    }
+
+    // Funciones específicas que llaman a la genérica
+    async function activateReportsHigh(alcaldia) {
+        await activateReports(alcaldia, 'DELITO DE ALTO IMPACTO', layerActiveHigh, reportsHighLayer, highImpactActiveStyle, (val) => {
+            if (val === null) return altoImpactoActiveOn;
+            altoImpactoActiveOn = val;
+        }, btnActivarAlto);
+    }
+
+    async function activateReportsLow(alcaldia) {
+        await activateReports(alcaldia, 'DELITO DE BAJO IMPACTO', layerActiveLow, reportsLowLayer, lowImpactActiveStyle, (val) => {
+            if (val === null) return bajoImpactoActiveOn;
+            bajoImpactoActiveOn = val;
+        }, btnActivarBajo);
+    }
+
+    async function activateExisting(alcaldia) {
+      if (activeOn) {
+        layerActive.clearLayers();
+        if (!map.hasLayer(clustersExist)) map.addLayer(clustersExist);
+        activeOn = false; btnActivar.classList.remove('on'); cntAct.textContent = '0';
+        setStatus('Preinstaladas desactivadas');
+        return;
+      }
+      const res = await fetch('/data' + qs({ alcaldia }));
+      if (!res.ok) throw new Error('No se pudo cargar /data');
+      const fc = await res.json();
+      layerActive.clearLayers();
+      (fc.features || []).forEach(f => {
+        if (!f || !f.geometry || f.geometry.type !== 'Point') return;
+        const [lon, lat] = f.geometry.coordinates || [];
+        if (!isFinite(lat) || !isFinite(lon)) return;
+        L.circleMarker([lat, lon], { radius: 3.5, color: '#000', fillColor: '#000', fillOpacity: 1, weight: 0.5 }).addTo(layerActive);
+      });
+      if (!map.hasLayer(layerActive)) map.addLayer(layerActive);
+      if (map.hasLayer(clustersExist)) { map.removeLayer(clustersExist); cntExist.textContent = '0'; }
+      cntAct.textContent = String(fc.count ?? (fc.features?.length || 0));
+      activeOn = true; btnActivar.classList.add('on');
+      setStatus('Cámaras del área activadas');
+    }
+
+    async function loadGrid(alcaldia, spacing_m, min_dist_m) {
+      const res = await fetch('/grid' + qs({ alcaldia, spacing_m, min_dist_m }));
+      if (!res.ok) throw new Error('No se pudo cargar /grid');
+      const fc = await res.json();
+      layerCand.clearLayers(); layerCand.addData(fc);
+      if (!map.hasLayer(layerCand)) map.addLayer(layerCand);
+      cntCand.textContent = String(fc.features?.length ?? 0);
+    }
+
+    // ====== colocar seleccionados (clicks) ======
+    const starIcon = L.divIcon({ className: 'star', html: '★', iconSize: [18,18], iconAnchor: [9,9] });
+    map.on('click', (e) => {
+      if (!placeMode || !hullFeature) return;
+      const pt = turf.point([e.latlng.lng, e.latlng.lat]);
+      const poly = turf.feature(hullFeature.geometry);
+      if (!turf.booleanPointInPolygon(pt, poly)) { setStatus('Fuera del área'); return; }
+      L.marker(e.latlng, { icon: starIcon }).addTo(layerSelected);
+      if (!map.hasLayer(layerSelected)) map.addLayer(layerSelected);
+      cntSel.textContent = String(layerSelected.getLayers().length);
+      setStatus('Punto seleccionado');
+    });
+
+    // ====== Eventos UI ======
+    selAlc.addEventListener('change', async () => {
+      const alc = selAlc.value;
+      if (!alc) { setStatus('Elige una alcaldía'); return; }
+      // ===== MODIFICADO: Limpiar todas las capas de datos =====
+      clearAllDataLayers();
+
+      setStatus('Cargando alcaldía…');
+      try {
+        await loadHullFor(alc);
+        await loadColoniasFor(alc);
+        showColonias(true);
+        setStatus('Alcaldía y colonias cargadas');
+      } catch (e) { console.error(e); setStatus('Error cargando datos'); }
+    });
+
+    // Toggle manual colonias
+    btnColonias.addEventListener('click', () => {
+      if (!selAlc.value) { setStatus('Elige una alcaldía'); return; }
+      showColonias(!coloniasOn);
+      setStatus(coloniasOn ? 'Colonias visibles' : 'Colonias ocultas');
+    });
+
+    btnAplicar.addEventListener('click', async () => {
+      const alc = selAlc.value; if (!alc) { setStatus('Elige una alcaldía'); return; }
+      togglePlaceMode(false); setStatus('Cargando…');
+      try { await loadExistingView(alc); setStatus('Listo (existentes)'); }
+      catch (e) { console.error(e); setStatus('Error al cargar'); }
+    });
+
+    btnNueva.addEventListener('click', async () => {
+      const alc = selAlc.value; if (!alc) { setStatus('Elige una alcaldía'); return; }
+      togglePlaceMode(false);
+      // ===== MODIFICADO: Limpiar todas las capas de datos =====
+      clearAllDataLayers();
+      setStatus('Cargando frontera…');
+      try { await loadHullFor(alc); setStatus('Mapa en blanco (frontera)'); }
+      catch (e) { console.error(e); setStatus('Error al cargar frontera'); }
+      // mantener estado de colonias tal cual esté el toggle
+      if (coloniasOn && coloniasFC) showColonias(true);
+    });
+
+    btnActivar.addEventListener('click', async () => {
+      const alc = selAlc.value; if (!alc) { setStatus('Elige una alcaldía'); return; }
+      try { await activateExisting(alc); } catch (e) { console.error(e); setStatus('Error activando cámaras'); }
+    });
+    
+    // ===== NUEVO: Eventos para botones de reportes =====
+    btnAltoImpacto.addEventListener('click', async () => {
+        const alc = selAlc.value; if (!alc) { setStatus('Elige una alcaldía'); return; }
+        altoImpactoOn = !altoImpactoOn;
+        btnAltoImpacto.classList.toggle('on', altoImpactoOn);
+        if (altoImpactoOn) {
+            if (altoImpactoActiveOn) {
+                setStatus('Desactiva la vista simple primero para ver los detalles.');
+                return;
+            }
+            try { await loadReports(alc, 'DELITO DE ALTO IMPACTO', reportsHighLayer, cntAlto, highImpactStyle); }
+            catch(e) { console.error(e); setStatus('Error cargando reportes'); altoImpactoOn = false; btnAltoImpacto.classList.remove('on'); }
+        } else {
+            reportsHighLayer.clearLayers();
+            cntAlto.textContent = '0';
+            setStatus('Reportes de alto impacto ocultos');
+        }
+    });
+
+    btnBajoImpacto.addEventListener('click', async () => {
+        const alc = selAlc.value; if (!alc) { setStatus('Elige una alcaldía'); return; }
+        bajoImpactoOn = !bajoImpactoOn;
+        btnBajoImpacto.classList.toggle('on', bajoImpactoOn);
+        if (bajoImpactoOn) {
+            if (bajoImpactoActiveOn) {
+                setStatus('Desactiva la vista simple primero para ver los detalles.');
+                return;
+            }
+            try { await loadReports(alc, 'DELITO DE BAJO IMPACTO', reportsLowLayer, cntBajo, lowImpactStyle); }
+            catch(e) { console.error(e); setStatus('Error cargando reportes'); bajoImpactoOn = false; btnBajoImpacto.classList.remove('on'); }
+        } else {
+            reportsLowLayer.clearLayers();
+            cntBajo.textContent = '0';
+            setStatus('Reportes de bajo impacto ocultos');
+        }
+    });
+
+        // ===== NUEVO: Eventos para botones de "Activar" reportes =====
+    btnActivarAlto.addEventListener('click', async () => {
+        const alc = selAlc.value; if (!alc) { setStatus('Elige una alcaldía'); return; }
+        try { await activateReportsHigh(alc); } catch (e) { console.error(e); setStatus('Error activando reportes de alto impacto'); }
+    });
+
+    btnActivarBajo.addEventListener('click', async () => {
+        const alc = selAlc.value; if (!alc) { setStatus('Elige una alcaldía'); return; }
+        try { await activateReportsLow(alc); } catch (e) { console.error(e); setStatus('Error activando reportes de bajo impacto'); }
+    });
+
+    btnDiscret.addEventListener('click', async () => {
+      const alc = selAlc.value; if (!alc) { setStatus('Elige una alcaldía'); return; }
+      setStatus('Generando malla…');
+      try { await loadGrid(alc, Number(spacing.value || 250), Number(mindist.value || 0)); setStatus('Malla generada'); }
+      catch (e) { console.error(e); setStatus('Error en discretización'); }
+    });
+
+    btnColocar.addEventListener('click', () => {
+      if (!selAlc.value) { setStatus('Elige una alcaldía'); return; }
+      togglePlaceMode(!placeMode);
+      setStatus(placeMode ? 'Modo colocar: ON (click en el mapa)' : 'Modo colocar: OFF');
+    });
+
+    btnClrSel.addEventListener('click', () => { layerSelected.clearLayers(); cntSel.textContent = '0'; setStatus('Seleccionados limpiados'); });
+    btnClrCand.addEventListener('click', () => { layerCand.clearLayers(); if (map.hasLayer(layerCand)) map.removeLayer(layerCand); cntCand.textContent = '0'; setStatus('Candidatos limpiados'); });
+    btnClrAct.addEventListener('click', () => { layerActive.clearLayers(); if (map.hasLayer(layerActive)) map.removeLayer(layerActive); activeOn=false; btnActivar.classList.remove('on'); cntAct.textContent='0'; setStatus('Preinstaladas limpiadas'); });
+
+    // Inicio: cargar alcaldías
+    (async () => { try { await loadMeta(); } catch (e) { console.error(e); setStatus('Error cargando meta'); } })();
+  </script>
+</body>
+</html>
+
+
+<!-- 
+ // ===== NUEVO: Lógica para crear instancia .dat =====
+    const btnCrearInstancia = document.getElementById('btnCrearInstancia');
+    const statusInstanciaEl = document.getElementById('statusInstancia');
+
+    btnCrearInstancia.addEventListener('click', async () => {
+      // 1. Recolectar parámetros de la UI
+      const nombre = document.getElementById('instancia-nombre').value;
+      if (!nombre) {
+        statusInstanciaEl.textContent = '❌ Por favor, introduce un nombre para la instancia.';
+        return;
+      }
+
+      const P = parseFloat(document.getElementById('instancia-p').value);
+      const R = parseFloat(document.getElementById('instancia-r').value);
+      const c1 = parseFloat(document.getElementById('instancia-c1').value);
+      const c2 = parseFloat(document.getElementById('instancia-c2').value);
+      const probDefecto = parseFloat(document.getElementById('instancia-prob').value);
+      
+      // 2. Recolectar puntos de las capas activas
+      const activePoints = [];
+      
+      // Cámaras (flag=1, preinstaladas)
+      layerActive.eachLayer(layer => {
+        const latlng = layer.getLatLng();
+        activePoints.push({ lat: latlng.lat, lon: latlng.lng, flag: 1, prob: probDefecto });
+      });
+
+      // Delitos de alto impacto (flag=0, demanda)
+      layerActiveHigh.eachLayer(layer => {
+        const latlng = layer.getLatLng();
+        activePoints.push({ lat: latlng.lat, lon: latlng.lng, flag: 0, prob: probDefecto });
+      });
+      
+      // Delitos de bajo impacto (flag=0, demanda)
+      layerActiveLow.eachLayer(layer => {
+        const latlng = layer.getLatLng();
+        activePoints.push({ lat: latlng.lat, lon: latlng.lng, flag: 0, prob: probDefecto });
+      });
+
+      if (activePoints.length === 0) {
+        statusInstanciaEl.textContent = '⚠️ No hay puntos activos en el mapa para crear la instancia.';
+        return;
+      }
+      
+      // 3. Construir y enviar el payload
+      const payload = {
+        name: nombre,
+        P, R, c1, c2,
+        points: activePoints
+      };
+      
+      statusInstanciaEl.textContent = `Creando instancia con ${activePoints.length} puntos...`;
+      btnCrearInstancia.disabled = true;
+
+      try {
+        const res = await fetch('/create_instance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await res.json();
+        
+        if (res.ok) {
+          statusInstanciaEl.innerHTML = `✅ ${result.message}`;
+        } else {
+          statusInstanciaEl.textContent = `❌ Error: ${result.error || 'Desconocido'}`;
+        }
+      } catch (e) {
+        console.error(e);
+        statusInstanciaEl.textContent = '❌ Error de red al intentar crear la instancia.';
+      } finally {
+        btnCrearInstancia.disabled = false;
+      }
+    });
+ -->
