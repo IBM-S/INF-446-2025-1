@@ -6,7 +6,7 @@ set N:= 53 ;
 
 param P:= 100000.0 ;
 
-param R:= 0.001 ;
+param R:= 1.0 ;
 
 param c1:= 1.0 ;
 
