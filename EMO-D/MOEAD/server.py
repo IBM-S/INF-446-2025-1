@@ -128,33 +128,34 @@ def calculate_hv(filepath, ref_point, gen_number=None):
         return 0.0
 
 # --------- helpers para instancias / cobertura ----------
-RADIOS = {
-    "toy_DRP": 10,
-    "100-3": 800,
-    "150-11": 800,
-    "SJC324-3": 800,
-    "DRP": 10,
-    "1000-88_4": 800,
-    "1450-71_4": 800,
-}
+RE_FLOAT = r'[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?'
+
+def leer_R_desde_dat(instancia_path: str):
+    """
+    Intenta extraer 'param R := <num>' desde el archivo .dat.
+    Devuelve float o None si no se encontró.
+    """
+    try:
+        with open(instancia_path, 'r', encoding='utf-8', errors='ignore') as f:
+            text = f.read()
+        m = re.search(r'param\s+R\s*:=\s*(' + RE_FLOAT + r')', text)
+        if m:
+            return float(m.group(1))
+    except Exception:
+        pass
+    return None
+
 
 def cargar_instancia_coords_y_demanda(instancia_path):
     """Devuelve (nodes, coords_por_id, demanda, preinstalados, radio)
        Lee radio R desde INSTANCES/<archivo>.dat.meta.json si existe.
     """
     base_name = os.path.splitext(os.path.basename(instancia_path))[0]
-    radio = RADIOS.get(base_name, 800)
+    # 1) R desde .dat
+    radio = leer_R_desde_dat(instancia_path)
+    print(f"[cargar_instancia] Radio leído desde .dat: {radio}")
 
-    # --- lee meta si existe ---
-    meta_path = instancia_path + ".meta.json"
-    if os.path.exists(meta_path):
-        try:
-            with open(meta_path) as mf:
-                meta = json.load(mf)
-                radio = float(meta.get("R", radio))
-        except Exception:
-            pass
-
+    # --- Parseo de nodos/coords/preinstalados/demanda ---
     nodes, coords = [], {}
     with open(instancia_path, 'r') as f:
         for line in f:
@@ -329,6 +330,9 @@ def load():
     base_name = parse_instance_name(instancia)
 
     raw_files = glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat")
+    if not raw_files:
+    # No hay resultados guardados para esta instancia: devuelve vacío en vez de 500
+        return jsonify({"files": [], "hv": []}), 200
     #print("[/load] POF encontrados:", raw_files, flush=True)
     raw_files = sorted(raw_files, key=gen_number_from_path)
     print("[/load] POF GEN ordenados:", [gen_number_from_path(p) for p in raw_files], flush=True)
@@ -405,6 +409,27 @@ def load():
 
     return jsonify({"files": aed_files, "hv": hv_results})
 
+
+def compress_ranges(seq):
+    """
+    [1,2,3,4,5,6,7, 9, 12,13,14,15] -> '1-7, 9, 12-15'
+    """
+    if not seq:
+        return ""
+    arr = sorted(set(int(x) for x in seq))
+    out = []
+    s = p = arr[0]
+    for v in arr[1:]:
+        if v == p + 1:
+            p = v
+            continue
+        out.append(f"{s}-{p}" if s != p else f"{s}")
+        s = p = v
+    out.append(f"{s}-{p}" if s != p else f"{s}")
+    return ", ".join(out)
+
+
+
 # ------------------- /map -------------------
 @app.route("/map", methods=["POST"])
 def generar_mapa():
@@ -413,6 +438,12 @@ def generar_mapa():
         instancia = data["instancia"]
         ids_instalados = [int(i) for i in data["ids"]]
         show_probs = bool(data.get("show_probs", True))  # ← nuevo
+         # Coordenadas del punto (para mostrar en el título del resumen)
+        fx = data.get("x")
+        fy = data.get("y")
+        coord_txt = ""
+        if isinstance(fx, (int, float)) and isinstance(fy, (int, float)):
+            coord_txt = f" ({fx:.2f}, {fy:.2f})"
 
     except (KeyError, ValueError, TypeError):
         return "Datos inválidos", 400
@@ -432,14 +463,11 @@ def generar_mapa():
     )
 
     # resumen formateado con IDs en líneas de 40
-    ids_str_lines = []
-    for i in range(0, len(ids_instalados), 30):
-        chunk = ids_instalados[i:i+40]
-        ids_str_lines.append(", ".join(map(str, chunk)))
-    ids_formateados = ("\n   " + "\n   ".join(ids_str_lines)) if ids_str_lines else "[]"
+    ids_compact = compress_ranges(ids_instalados)
+    ids_formateados = ids_compact if ids_compact else "[]"
 
     resumen = (
-        f"📊 {base_name}\n"
+        f"📊 Instancia {base_name} - Stats Punto {coord_txt}\n"
         f" - Estaciones manuales instaladas  : {str(len(ids_instalados)).ljust(4)} - Estaciones preinstaladas        : {len(preinstalados)}\n"
         f" - IDs de estaciones manuales      : {ids_formateados}\n"
         f" - Total de nodos y probabilidad   : {str(total_nodos).ljust(4)} - {total_prob:.4f}\n"
