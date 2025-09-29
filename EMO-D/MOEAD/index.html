@@ -220,6 +220,42 @@
         </div>
       </div>
 
+      <div class="data-section">
+        <h2 class="section-title">Crear Instancia .dat</h2>
+        <div class="section-content">
+          <div class="form-group">
+            <label for="instancia-nombre">Nombre de la instancia (.dat)</label>
+            <input type="text" id="instancia-nombre" placeholder="Ej: alcaldia_GAM.dat">
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label for="instancia-p">Presupuesto (P)</label>
+              <input id="instancia-p" type="number" step="0.1" value="100.0">
+            </div>
+            <div class="form-group">
+              <label for="instancia-r">Radio (R)</label>
+              <input id="instancia-r" type="number" step="1" value="800">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label for="instancia-c1">Costo instalación (c1)</label>
+              <input id="instancia-c1" type="number" step="0.1" value="1.0">
+            </div>
+            <div class="form-group">
+              <label for="instancia-c2">Costo reubicación (c2)</label>
+              <input id="instancia-c2" type="number" step="0.1" value="0.2">
+            </div>
+          </div>
+           <div class="form-group">
+              <label for="instancia-prob">Prob. por defecto (prob_ohca)</label>
+              <input id="instancia-prob" type="number" step="0.01" min="0" max="1" value="1.0">
+            </div>
+          <button id="btnCrearInstancia" type="button" class="btn-full primary">Crear .dat con puntos activos</button>
+          <div class="muted" id="statusInstancia" style="text-align: center;"></div>
+        </div>
+      </div>
+
       <!-- Sección de Acciones de Limpieza -->
       <div class="data-section">
          <h2 class="section-title">Acciones</h2>
@@ -666,6 +702,81 @@
     btnClrSel.addEventListener('click', () => { layerSelected.clearLayers(); cntSel.textContent = '0'; setStatus('Seleccionados limpiados'); });
     btnClrCand.addEventListener('click', () => { layerCand.clearLayers(); if (map.hasLayer(layerCand)) map.removeLayer(layerCand); cntCand.textContent = '0'; setStatus('Candidatos limpiados'); });
     btnClrAct.addEventListener('click', () => { layerActive.clearLayers(); if (map.hasLayer(layerActive)) map.removeLayer(layerActive); activeOn=false; btnActivar.classList.remove('on'); cntAct.textContent='0'; setStatus('Preinstaladas limpiadas'); });
+
+    const btnCrearInstancia = document.getElementById('btnCrearInstancia');
+    const statusInstanciaEl = document.getElementById('statusInstancia');
+
+    btnCrearInstancia.addEventListener('click', async () => {
+      // 1. Recolectar parámetros de la UI
+      const nombre = document.getElementById('instancia-nombre').value;
+      if (!nombre) {
+        statusInstanciaEl.textContent = '❌ Por favor, introduce un nombre para la instancia.';
+        return;
+      }
+
+      const P = parseFloat(document.getElementById('instancia-p').value);
+      const R = parseFloat(document.getElementById('instancia-r').value);
+      const c1 = parseFloat(document.getElementById('instancia-c1').value);
+      const c2 = parseFloat(document.getElementById('instancia-c2').value);
+      const probDefecto = parseFloat(document.getElementById('instancia-prob').value);
+      
+      // 2. Recolectar puntos de las capas activas
+      const activePoints = [];
+      
+      // Cámaras (flag=1, preinstaladas)
+      layerActive.eachLayer(layer => {
+        const latlng = layer.getLatLng();
+        activePoints.push({ lat: latlng.lat, lon: latlng.lng, flag: 1, prob: probDefecto });
+      });
+
+      // Delitos de alto impacto (flag=0, demanda)
+      layerActiveHigh.eachLayer(layer => {
+        const latlng = layer.getLatLng();
+        activePoints.push({ lat: latlng.lat, lon: latlng.lng, flag: 0, prob: probDefecto });
+      });
+      
+      // Delitos de bajo impacto (flag=0, demanda)
+      layerActiveLow.eachLayer(layer => {
+        const latlng = layer.getLatLng();
+        activePoints.push({ lat: latlng.lat, lon: latlng.lng, flag: 0, prob: probDefecto });
+      });
+
+      if (activePoints.length === 0) {
+        statusInstanciaEl.textContent = '⚠️ No hay puntos activos en el mapa para crear la instancia.';
+        return;
+      }
+      
+      // 3. Construir y enviar el payload
+      const payload = {
+        name: nombre,
+        P, R, c1, c2,
+        points: activePoints
+      };
+      
+      statusInstanciaEl.textContent = `Creando instancia con ${activePoints.length} puntos...`;
+      btnCrearInstancia.disabled = true;
+
+      try {
+        const res = await fetch('/create_instance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await res.json();
+        
+        if (res.ok) {
+          statusInstanciaEl.innerHTML = `✅ ${result.message}`;
+        } else {
+          statusInstanciaEl.textContent = `❌ Error: ${result.error || 'Desconocido'}`;
+        }
+      } catch (e) {
+        console.error(e);
+        statusInstanciaEl.textContent = '❌ Error de red al intentar crear la instancia.';
+      } finally {
+        btnCrearInstancia.disabled = false;
+      }
+    });
 
     // Inicio: cargar alcaldías
     (async () => { try { await loadMeta(); } catch (e) { console.error(e); setStatus('Error cargando meta'); } })();
