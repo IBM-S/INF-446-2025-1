@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	// readf>>total_run;
 	NumberOfObjectives = 2;
 	NumberOfVariables = 324;
-	NumberOfFuncEvals = 12500;
+	NumberOfFuncEvals = 1000;
 
 	char alg_name[1024];
 
