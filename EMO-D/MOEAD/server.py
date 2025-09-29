@@ -259,7 +259,7 @@ def run():
     raw_files = glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat")
     #print("[/run] POF encontrados:", raw_files, flush=True)
     raw_files = sorted(raw_files, key=gen_number_from_path)
-    print("[/run] POF GEN ordenados:", [gen_number_from_path(p) for p in raw_files], flush=True)
+    #print("[/run] POF GEN ordenados:", [gen_number_from_path(p) for p in raw_files], flush=True)
     hv_results = []
 
     fp_folder = os.path.join("FrentesDePareto", base_name)
@@ -315,9 +315,9 @@ def run():
             resumen_file.write(f"GEN{i} {hv:.4f}\n")
         resumen_file.write("#\n")
 
-    print("Archivos AEDs que voy a devolver al front:")
+    """ print("Archivos AEDs que voy a devolver al front:")
     for f in aed_files:
-        print(f, os.path.exists(f))
+        print(f, os.path.exists(f)) """
 
 
     return jsonify({"files": aed_files, "hv": hv_results})
@@ -402,10 +402,10 @@ def load():
             resumen_file.write(f"GEN{i} {hv:.4f}\n")
         resumen_file.write("#\n")
     
-    print("Archivos AEDs que voy a devolver al front:")
+    """ print("Archivos AEDs que voy a devolver al front:")
     for f in aed_files:
         print(f, os.path.exists(f))
-
+    """
 
     return jsonify({"files": aed_files, "hv": hv_results})
 
@@ -454,7 +454,9 @@ def generar_mapa():
         return "Instancia no encontrada", 404
 
     nodes, coords_por_id, demanda, preinstalados, radio = cargar_instancia_coords_y_demanda(archivo)
-    puntos_instalados = [coords_por_id[i] for i in ids_instalados if i in coords_por_id]
+    id_flag = {idx: flag for (idx, x, y, flag, prob) in nodes}
+    ids_normales_instalados = [i for i in ids_instalados if id_flag.get(i, 0) == 0]
+    puntos_instalados = [coords_por_id[i] for i in ids_normales_instalados if i in coords_por_id]
     puntos_totales = puntos_instalados + preinstalados
 
     # métricas
@@ -475,7 +477,7 @@ def generar_mapa():
     )
 
     # === Graficar ===
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(15, 8), dpi=180)
     x0, y0, s0 = [], [], []
     x1, y1, s1 = [], [], []
     for _, x, y, f, p in nodes:
@@ -491,7 +493,7 @@ def generar_mapa():
 
     ax.scatter(x0, y0, s=s0, c='blue', label='Normales', alpha=0.6, edgecolors='k')
     ax.scatter(x1, y1, s=s1, c='red',  label='Preinstalados', alpha=0.8, edgecolors='k')
-    ax.scatter(xi, yi, c='green', s=200, marker='*', label='Seleccionados', edgecolors='k', zorder=5)
+    ax.scatter(xi, yi, c='green', s=100, marker='*', label='Seleccionados', edgecolors='k', zorder=5)
 
     for x, y in puntos_totales:
         ax.add_patch(plt.Circle((x, y), radio, color='gray', alpha=0.15, zorder=1))
@@ -512,15 +514,75 @@ def generar_mapa():
     ax.set_title(f"Mapa: {base_name}")
     ax.grid(True)
     ax.legend(loc='center left', bbox_to_anchor=(1.02, 0.85), framealpha=0.95)
-    plt.tight_layout(rect=[0, 0, 0.85, 1])
+    plt.tight_layout(rect=[0, 0, 0.88, 1])
 
     img_bytes = io.BytesIO()
-    plt.savefig(img_bytes, format='png')
+    plt.savefig(img_bytes, format='png', bbox_inches='tight', pad_inches=0.15)
     plt.close()
     img_bytes.seek(0)
 
     img_base64 = base64.b64encode(img_bytes.read()).decode('utf-8')
     return jsonify({"img": img_base64, "stats": resumen})
+
+@app.route("/map_json", methods=["POST"])
+def map_json():
+    data = request.json
+    try:
+        instancia = data["instancia"]
+        ids_instalados = [int(i) for i in data["ids"]]
+        show_probs = bool(data.get("show_probs", True))  # ← nuevo
+        fx = data.get("x"); fy = data.get("y")
+    except (KeyError, ValueError, TypeError):
+        return "Datos inválidos", 400
+
+    base_name = os.path.splitext(os.path.basename(instancia))[0]
+    archivo = f"INSTANCES/{instancia}"
+    if not os.path.exists(archivo):
+        return "Instancia no encontrada", 404
+
+    nodes, coords_por_id, demanda, preinstalados, radio = cargar_instancia_coords_y_demanda(archivo)
+
+    id_flag = {idx: flag for (idx, x, y, flag, prob) in nodes}
+    ids_normales_instalados = [i for i in ids_instalados if id_flag.get(i, 0) == 0]
+
+
+
+    x_norm, y_norm, s_norm = [], [], []
+    x_pre, y_pre, s_pre = [], [], []
+    for _, x, y, flag, p in nodes:
+        size = (p * 200) if show_probs else 20  # 36 ≈ punto fijo
+        if flag == 0:
+            x_norm.append(x); y_norm.append(y); s_norm.append(size)
+        else:
+            x_pre.append(x); y_pre.append(y); s_pre.append(size)
+
+    xi = [coords_por_id[i][0] for i in ids_normales_instalados if i in coords_por_id]
+    yi = [coords_por_id[i][1] for i in ids_normales_instalados if i in coords_por_id]
+
+    puntos_instalados = [coords_por_id[i] for i in ids_normales_instalados if i in coords_por_id]
+    nodos_cubiertos, prob_cubierta, porc, total_prob, total_nodos = cobertura_por_ids(
+        puntos_instalados, demanda, preinstalados, radio
+    )
+
+    coord_txt = f" ({fx:.2f}, {fy:.2f})" if isinstance(fx, (int, float)) and isinstance(fy, (int, float)) else ""
+    ids_compact = compress_ranges(ids_instalados)
+
+
+    resumen = (
+        f"📊 Instancia {base_name} - Stats Punto {coord_txt}\n"
+        f" - Estaciones manuales instaladas  : {len(ids_instalados):<4} - Estaciones preinstaladas        : {len(preinstalados)}\n"
+        f" - IDs de estaciones manuales      : {ids_compact or '[]'}\n"
+        f" - Total de nodos y probabilidad   : {total_nodos:<4} - {total_prob:<4}\n"
+        f" - Nodos y probabilidad cubiertos  : {nodos_cubiertos:<4} - {prob_cubierta:<4} ({porc:.2f}%)"
+    )
+    return jsonify({
+        "meta": {"instancia": base_name, "radio": radio},
+        "normales": {"x": x_norm, "y": y_norm, "s": s_norm},
+        "preinstalados": {"x": x_pre, "y": y_pre, "s": s_pre},
+        "seleccionados": {"x": xi, "y": yi},
+        "stats": resumen
+        })
+
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 

@@ -115,6 +115,15 @@
     .all-plot, .all-small{ width:100%; min-width:0; display:block; }
     @media (max-width:1100px){ .all-row{ grid-template-columns:1fr; } }
 
+    .hidden {display: none;}
+    .map-card {width: 50%; max-width: 1200px;}
+    #map-image {width: 100%; height: auto; display: block;}
+
+    #map-plot-container, #map-plot {
+    height: 100%;
+    width: 100%;
+}
+
   </style>
 </head>
 <body>
@@ -140,12 +149,12 @@
           </div>
           <div class="field">
             <label for="num_var">N° variables</label>
-            <input id="num_var" type="number" value="10" min="1" step="1" />
+            <input id="num_var" type="number" value="100" min="1" step="1" />
           </div>
           <button class="btn primary" id="btn-ejecutar">Ejecutar</button>
           <button class="btn" id="load-btn">Cargar generaciones</button>
-          <label class="hint"><input type="checkbox" id="fix-scale"/> Usar misma escala</label>
-          <label class="hint"><input type="checkbox" id="recalcular-hv" checked/> Recalcular HV</label>
+          <label class="hint"><input type="checkbox" id="fix-scale" checked/> Usar misma escala</label>
+          <label class="hint"><input type="checkbox" id="recalcular-hv"/> Recalcular HV</label>
           <label class="hint"><input type="checkbox" id="toggle-prob" checked /> Probabilidad en mapa</label>
           <span id="status" class="hint">Listo</span>
         </div>
@@ -160,9 +169,24 @@
             <p class="hint">Generación: <span id="gen-num">1</span></p>
           </div>
         </div>
-        <div id="map-col">
+        <!-- <div id="map-col">
           <h3 class="hint">Configuración seleccionada</h3>
           <img id="map-image" src="" alt="Mapa" style="width:100%;border:1px solid #333;border-radius:.6rem" />
+        </div> -->
+        <div class="map-card">
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+          <button id="btn-toggle-map" type="button" class="btn hidden">Ver mapa interactivo</button>
+        </div>
+
+        <div id="map-image-container" class="hidden">
+          <img id="map-image" src="" alt="Mapa AEDs">
+        </div>
+
+        <div id="map-plot-container" class="hidden">
+          <div id="map-plot" style="width: 100%; height: 640px;"></div>
+        </div>
+
+        <pre id="map-stats" style="white-space: pre-wrap; margin-top: 8px;"></pre>
         </div>
       </div>
 
@@ -247,11 +271,15 @@
 
 
   <script>
+    
     // ===== Helpers =====
     const $ = (s, r=document) => r.querySelector(s);
     const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
     const PLOTLY_CFG = { responsive: true, displayModeBar: false };
 
+    let currentMapJsonData = null;
+
+    
     // === Tooltips compactos + panel de detalle ===
     function compressRanges(ids, maxTokens = 10) {
       if (!Array.isArray(ids) || !ids.length) return [];
@@ -501,56 +529,121 @@
 
       // click: mapa + panel de detalle con todos los IDs (copiable)
       plotDiv.removeAllListeners?.('plotly_click');
-      plotDiv.on('plotly_click', async d=>{
-        const idsSel = d.points[0].customdata || [];
-        const instanciaActual = selInst.value;
+      plotDiv.on('plotly_click', async d => {
+          const point = d.points[0];
+          const idsSel = point.customdata || [];
+          const instanciaActual = selInst.value;
 
-        lastIds = idsSel;
-        lastInstancia = instanciaActual;
+          lastIds = idsSel;
+          lastInstancia = instanciaActual;
 
-        // Panel con los IDs completos bajo el gráfico
-        const coord = `(${(+d.points[0].x).toFixed(2)}, ${( +d.points[0].y).toFixed(2)})`;
+          const payload = {
+              instancia: instanciaActual,
+              ids: idsSel,
+              show_probs: toggleProb.checked,
+              x: point.x,
+              y: point.y
+          };
 
-        // Mapa como ya lo tenías
-        const res = await fetch('/map',{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ instancia: instanciaActual, ids: idsSel, show_probs: toggleProb.checked, x: d.points[0].x, y: d.points[0].y})
-        });
-        if(res.ok){
-          const json = await res.json();
-          $('#map-image').src = 'data:image/png;base64,'+json.img;
-          $('#map-image').style.display = 'block';
-          $('#stats-container').textContent = json.stats;
-          $('#stats-container').style.display = 'block';
-        } else {
-          alert('❌ No se pudo generar el mapa.');
-        }
+          // 1. Esconder todo y mostrar mensaje de carga
+          $('#map-image-container').classList.add('hidden');
+          $('#map-plot-container').classList.add('hidden');
+          $('#map-stats').textContent = 'Cargando mapas...';
+          
+          // 2. Ejecutar AMBAS peticiones de mapa en paralelo
+          const peticionEstatica = fetch('/map', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+          });
+          const peticionInteractiva = fetch('/map_json', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+          });
+
+          try {
+              // 3. Esperar a que ambas terminen
+              const [resStatic, resJson] = await Promise.all([peticionEstatica, peticionInteractiva]);
+
+              if (!resStatic.ok || !resJson.ok) {
+                  throw new Error('Una o ambas peticiones de mapa fallaron');
+              }
+
+              const staticData = await resStatic.json();
+              const jsonData = await resJson.json();
+
+              // 4. Guardar datos y renderizar
+              currentMapJsonData = jsonData;
+              renderInteractiveMap('map-plot', currentMapJsonData); // Renderiza el interactivo (aún oculto)
+              
+              // 5. Cargar la imagen estática y las estadísticas
+              $('#map-image').src = 'data:image/png;base64,' + staticData.img;
+              $('#map-stats').textContent = staticData.stats;
+
+              // 6. Mostrar la VISTA POR DEFECTO (estática) y el botón
+              $('#map-image-container').classList.remove('hidden');
+              $('#btn-toggle-map').classList.remove('hidden');
+              $('#btn-toggle-map').textContent = 'Ver mapa interactivo';
+
+          } catch (e) {
+              console.error(e);
+              $('#map-stats').textContent = '❌ No se pudo generar el mapa.';
+          }
       });
+    
     }
 
 
-    toggleProb.addEventListener('change', async ()=>{
-      if(!lastIds || !lastInstancia) return;
-      const res = await fetch('/map',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          instancia: lastInstancia,
-          ids: lastIds,
-          show_probs: toggleProb.checked
-        })
-      });
-      if(res.ok){
-        const { img, stats } = await res.json();
-        const mapImg = $('#map-image');
-        mapImg.src = 'data:image/png;base64,' + img;
-        mapImg.style.display = 'block';
-        $('#stats-container').textContent = stats;
-        $('#stats-container').style.display = 'block';
-      }
+    toggleProb.addEventListener('change', async () => {
+    // Si no hay datos de mapa cargados, no hace nada
+    if (!currentMapJsonData || !lastIds || !lastInstancia) return;
+
+    // Actualiza la variable global con el nuevo estado del checkbox
+    currentMapJsonData.meta.show_probs = toggleProb.checked;
+
+    // Vuelve a pedir los datos JSON con la nueva configuración
+    const payload = {
+        instancia: lastInstancia,
+        ids: lastIds,
+        show_probs: toggleProb.checked,
+    };
+
+    $('#map-stats').textContent = 'Refrescando mapas...';
+
+    const peticionEstatica = fetch('/map', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
     });
 
+    const peticionInteractiva = fetch('/map_json', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    try {
+        const [resStatic, resJson] = await Promise.all([peticionEstatica, peticionInteractiva]);
+
+        if (!resJson.ok) throw new Error('Fallo al refrescar datos JSON del mapa');
+        const staticData = await resStatic.json();
+        const jsonData= await resJson.json(); // Actualizar datos
+
+
+        $('#map-image').src = 'data:image/png;base64,' + staticData.img;
+        currentMapJsonData = jsonData; // Actualiza la variable global con los nuevos datos
+        // Vuelve a dibujar el mapa interactivo con los datos actualizados
+        renderInteractiveMap('map-plot', currentMapJsonData);
+        
+        // Actualiza también las estadísticas
+        $('#map-stats').textContent = staticData.stats;
+
+    } catch (e) {
+        console.error("Error al refrescar el mapa interactivo:", e);
+        $('#map-stats').textContent = '❌ Error al refrescar mapa.';
+    }
+});
 
     slider.addEventListener('input',()=>{ const i=parseInt(slider.value,10); genNum.innerText=i+1; showGeneration(i); });
     $('#btn-ejecutar').addEventListener('click', runNow);
@@ -846,7 +939,74 @@
       }
     });
 
+    function renderInteractiveMap(targetDivId, jsonData) {
+      if (!jsonData) return;
 
+      const {meta, normales, preinstalados, seleccionados} = jsonData;
+    
+      const traces = [
+        {
+          x: normales.x, y: normales.y,
+          mode:'markers', name:'Nodos de demanda',
+          marker: {size: normales.s.map(s => Math.sqrt(s)), color:'blue', opacity:0.6}
+        },
+        {
+          x: preinstalados.x, y: preinstalados.y,
+          mode:'markers', name:'AEDs preinstalados',
+          marker: {size: preinstalados.s.map(s => Math.sqrt(s)), color:'red', opacity:0.8, symbol:'circle'}
+        },
+        {
+          x: seleccionados.x, y: seleccionados.y,
+          mode:'markers', name:'AEDs seleccionados',
+          marker: {size: 12, color:'green', symbol: "star", line: {width:1, color:'black'}}
+        }
+      ];
+
+      const shapes = [];
+      const allInstalledCoords = [...preinstalados.x.map((x, i) => ({x, y: preinstalados.y[i]})), ...seleccionados.x.map((x, i) => ({x, y: seleccionados.y[i]}))];
+      
+      for (const p of allInstalledCoords) {
+        shapes.push({
+          type: 'circle',
+          xref: 'x', yref: 'y',
+          x0: p.x - meta.radio, y0: p.y - meta.radio,
+          x1: p.x + meta.radio, y1: p.y + meta.radio,
+          fillcolor: 'rgba(128, 128, 128, 0.15)',
+          line: { color: 'rgba(128, 128, 128, 0.3)' },
+        });
+      }
+
+      const layout = {
+        title: `Mapa Interactivo: ${meta.instancia}`,
+        xaxis: { title: 'Coordenada X', scaleanchor: 'x', scaleratio: 1 },
+        yaxis: { title: 'Coordenada Y' },
+        shapes: shapes,
+        legend: { x:1.02, y:1 },
+        hovermode: 'closest'
+      };
+      Plotly.newPlot(targetDivId, traces, layout, {responsive:true, displayModeBar:true});
+    }
+
+    const btnToggleMap = $('#btn-toggle-map');
+    const mapImgContainer = $('#map-image-container');
+    const mapPlotContainer = $('#map-plot-container');
+
+    btnToggleMap.addEventListener('click', () => {
+        const isStaticVisible = !mapImgContainer.classList.contains('hidden');
+
+        if (isStaticVisible) {
+            // Si el estático está visible, lo ocultamos y mostramos el interactivo
+            mapImgContainer.classList.add('hidden');
+            mapPlotContainer.classList.remove('hidden');
+            btnToggleMap.textContent = 'Ver mapa estático';
+            Plotly.Plots.resize('map-plot'); // Asegura que el plot se redimensione correctamente
+        } else {
+            // Si el interactivo está visible, lo ocultamos y mostramos el estático
+            mapPlotContainer.classList.add('hidden');
+            mapImgContainer.classList.remove('hidden');
+            btnToggleMap.textContent = 'Ver mapa interactivo';
+        }
+    });
   </script>
 </body>
 </html>
