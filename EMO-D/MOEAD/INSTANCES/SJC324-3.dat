@@ -2,7 +2,7 @@
 set N:= 324 ;
 
 /* PARAMETROS */
-param P:= 324 ;
+param P:= 3 ;
 param R:= 800 ;
 param c1:= 1 ;
 param c2:= 0.2 ;

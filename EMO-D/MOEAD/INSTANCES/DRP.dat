@@ -4,7 +4,7 @@ set N:= 21 ;
 
 /* PARAMETROS */
 
-param P:= 1.9 ;
+param P:= 3 ;
 
 param R:= 10 ;
 
