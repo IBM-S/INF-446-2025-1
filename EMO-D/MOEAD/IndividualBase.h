@@ -9,35 +9,31 @@
 #include <string.h>
 using namespace std;
 
-class CIndividualBase  
+class CIndividualBase
 {
 public:
 	CIndividualBase();
 	virtual ~CIndividualBase();
 
-	ProblemInstance* problemInstance;
+	ProblemInstance *problemInstance;
 
-	vector <double> x_var;
-	vector <double> f_obj;
-	vector <double> f_normal;
+	vector<double> x_var;
+	vector<double> f_obj;
+	vector<double> f_normal;
 
+	unsigned int rank;
+	unsigned int count;
+	unsigned int type;
+	double density;
 
-	unsigned int    rank;
-	unsigned int    count;
-	unsigned int    type;
-	double          density;
+	void Randomize();
+	void GenerateSimpleFeasibleSolution(int num_AEDs, int total_locations);
+	void GenerateSimpleFeasibleSolution_v2(int num_AEDs, int total_locations);
+	void Evaluate();
+	void Show(int type);
 
-	void   Randomize();
-	void   GenerateSimpleFeasibleSolution(int num_AEDs, int total_locations);
-	void   GenerateSimpleFeasibleSolution_v2(int num_AEDs, int total_locations);
-	void   Evaluate();
-	void   Show(int type);
-
-    bool   operator<(const CIndividualBase &ind2);
-	bool   operator<<(const CIndividualBase &ind2);
-    bool   operator==(const CIndividualBase &ind2);
-    void   operator=(const CIndividualBase &ind2);
-
+	bool operator<(const CIndividualBase &ind2);
+	bool operator<<(const CIndividualBase &ind2);
+	bool operator==(const CIndividualBase &ind2);
+	void operator=(const CIndividualBase &ind2);
 };
-
-
