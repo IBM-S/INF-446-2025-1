@@ -21,10 +21,32 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 
 	for (;;)
 	{
-
+		std::cout << "Generación: " << gen << std::endl;
 		gen++;
-
 		this->EvolvePopulation();
+		std::cout << "aaaaaaaa" << std::endl;
+		if (gen >= 100 and gen <= 101)
+		{
+			std::cout << "bbbb" << std::endl;
+
+			printf("Población en la generación 10:\n");
+			for (unsigned i = 0; i < m_PopulationSOP.size(); i++)
+			{
+				std::cout << "Individuo #" << i << ": ";
+				for (double val : m_PopulationSOP[i].m_BestIndividual.x_var)
+				{
+					std::cout << val << " ";
+				}
+				std::cout << std::endl;
+				// valor funcion objetvo val
+				std::cout << "f_obj = ";
+				for (double f : m_PopulationSOP[i].m_BestIndividual.f_obj)
+				{
+					std::cout << f << " ";
+				}
+				std::cout << std::endl;
+			}
+		}
 
 		if (IsTerminated())
 		{
@@ -44,6 +66,8 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 			sprintf(filename, "SAVING/MOEAD/POF/POF_%s_%d_GEN%d.dat", strTestInstance, rnd_uni_seed, gen);
 			SaveObjSpace(filename); // Guardar la población actual en el archivo
 		} */
+		// imprimir poblacion de la generacion 10
+
 		printf("Instance:  %s  RUN:  %d  GEN = %d\n", strTestInstance, run_id, gen);
 		this->SavePopulation(gen);
 	}
@@ -52,6 +76,9 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 
 	m_PopulationSOP.clear();
 	v_IdealPoint.clear();
+
+	// numero total de gen
+	std::cout << "Total de generaciones: " << gen << std::endl;
 }
 
 void CALG_EMO_MOEAD::InitializeNeighborhood()
@@ -143,22 +170,27 @@ void CALG_EMO_MOEAD::InitializePopulation()
 
 		int num_AEDs = rand() % (total_locations + 1); // genera número entre 0 y total_locations
 
-		// int num_AEDs = 1;
-
 		SP.m_BestIndividual.problemInstance = this->problemInstance;
 
+		// Con contar presupuesto
+		int presupuesto = this->problemInstance->getP();
+		num_AEDs = rand() % (presupuesto + 1);
 		SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
+		// Sin contar el presupuesto
+		// SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
 		SP.m_BestIndividual.Evaluate();
 		s_Fevals_Count++;
 
 		/* std::cout << "Individuo #" << i << ": ";
-		for (double val : SP.m_BestIndividual.x_var) {
+		for (double val : SP.m_BestIndividual.x_var)
+		{
 			std::cout << val << " ";
 		}
-		std::cout << std::endl;
+		std::cout << std::endl; */
 
-		std::cout << "f_obj = ";
-		for (double f : SP.m_BestIndividual.f_obj) {
+		/* std::cout << "f_obj = ";
+		for (double f : SP.m_BestIndividual.f_obj)
+		{
 			std::cout << f << " ";
 		}
 		std::cout << std::endl; */
@@ -385,33 +417,42 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		/* std::cout << "\n=== Reproducción " << s << " ===" << std::endl;
 
 		std::cout << "Padre 1 (ID " << p1 << "): ";
-		for (double val : m_PopulationSOP[p1].m_BestIndividual.x_var) {
+		for (double val : m_PopulationSOP[p1].m_BestIndividual.x_var)
+		{
 			std::cout << val << " ";
 		}
 		std::cout << std::endl;
 
 		std::cout << "Padre 2 (ID " << p2 << "): ";
-		for (double val : m_PopulationSOP[p2].m_BestIndividual.x_var) {
+		for (double val : m_PopulationSOP[p2].m_BestIndividual.x_var)
+		{
 			std::cout << val << " ";
 		}
 		std::cout << std::endl; */
 
-		UtilityToolBox.CruzamientoUniformeModificado(m_PopulationSOP[p1].m_BestIndividual.x_var,
+		UtilityToolBox.CruzamientoUniformeModificado_sin_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
+																	 m_PopulationSOP[p2].m_BestIndividual.x_var,
+																	 child.x_var, this->problemInstance);
+
+		/* UtilityToolBox.CruzamientoUniformeModificado(m_PopulationSOP[p1].m_BestIndividual.x_var,
 													 m_PopulationSOP[p2].m_BestIndividual.x_var,
-													 child.x_var);
+													 child.x_var); */
 
 		child.problemInstance = this->problemInstance;
 
 		/* std::cout << "Hijo generado antes de la mutacion:   ";
-		for (double val : child.x_var) {
+		for (double val : child.x_var)
+		{
 			std::cout << val << " ";
 		}
 		std::cout << std::endl; */
 
-		UtilityToolBox.MutacionModificada(child.x_var, 1.0);
+		// UtilityToolBox.MutacionModificada(child.x_var, 1.0);
+		UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, 1.0, this->problemInstance);
 
 		/* std::cout << "Hijo generado despues de la mutacion: ";
-		for (double val : child.x_var) {
+		for (double val : child.x_var)
+		{
 			std::cout << val << " ";
 		}
 		std::cout << std::endl; */
