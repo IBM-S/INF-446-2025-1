@@ -579,7 +579,7 @@
               
               // 5. Cargar la imagen estática y las estadísticas
               $('#map-image').src = 'data:image/png;base64,' + staticData.img;
-              $('#map-stats').textContent = staticData.stats;
+              $('#map-stats').textContent = jsonData.stats || staticData.stats;
 
               // 6. Mostrar la VISTA POR DEFECTO (estática) y el botón
               $('#map-image-container').classList.remove('hidden');
@@ -637,7 +637,8 @@
         renderInteractiveMap('map-plot', currentMapJsonData);
         
         // Actualiza también las estadísticas
-        $('#map-stats').textContent = staticData.stats;
+        $('#map-stats').textContent = jsonData.stats|| staticData.stats;
+        
 
     } catch (e) {
         console.error("Error al refrescar el mapa interactivo:", e);
@@ -942,35 +943,45 @@
     function renderInteractiveMap(targetDivId, jsonData) {
       if (!jsonData) return;
 
-      const {meta, normales, preinstalados, seleccionados} = jsonData;
+      const {meta, demanda, preinstalados_movidos_origen, seleccionados_nuevos, seleccionados_existentes, coords_finales_aeds} = jsonData;
     
       const traces = [
+        // 1. Puntos de Demanda OHCA
         {
-          x: normales.x, y: normales.y,
+          x: demanda.x, y: demanda.y,
           mode:'markers', name:'Nodos de demanda',
-          marker: {size: normales.s.map(s => Math.sqrt(s)), color:'blue', opacity:0.6}
+          marker: {size: demanda.s.map(s => Math.sqrt(s)), color:'blue', opacity:0.6}
         },
+        // 2. Origen de AEDs preinstalados movidos
         {
-          x: preinstalados.x, y: preinstalados.y,
-          mode:'markers', name:'AEDs preinstalados',
-          marker: {size: preinstalados.s.map(s => Math.sqrt(s)), color:'red', opacity:0.8, symbol:'circle'}
+          x: preinstalados_movidos_origen.x, y: preinstalados_movidos_origen.y,
+          mode:'markers', name:'AED movido',
+          marker: {size: preinstalados_movidos_origen.s.map(s => Math.sqrt(s)), color:'red', opacity:0.8, symbol:'circle-open', line: {width:2}}
         },
+        // 3. AEDs preinstalados que se mantuvieron
         {
-          x: seleccionados.x, y: seleccionados.y,
-          mode:'markers', name:'AEDs seleccionados',
-          marker: {size: 12, color:'green', symbol: "star", line: {width:1, color:'black'}}
+          x: seleccionados_existentes.x, y: seleccionados_existentes.y,
+          mode:'markers', name:'Equipo Preinstalado (Mantenido)',
+          marker: {size: 14, color:'orange', symbol: "star", line: {width:1, color:'black'}}
+        },
+        // 4. Nuevos AEDs instalados
+        {
+          x: seleccionados_nuevos.x, y: seleccionados_nuevos.y,
+          mode:'markers', name:'AED instalado (Nuevo)',
+          marker: {size: 14, color:'green', symbol: "star", line: {width:1, color:'black'}}
         }
       ];
 
       const shapes = [];
-      const allInstalledCoords = [...preinstalados.x.map((x, i) => ({x, y: preinstalados.y[i]})), ...seleccionados.x.map((x, i) => ({x, y: seleccionados.y[i]}))];
       
-      for (const p of allInstalledCoords) {
+      for (const coords of coords_finales_aeds) {
+        const x = coords[0];
+        const y = coords[1];
         shapes.push({
           type: 'circle',
           xref: 'x', yref: 'y',
-          x0: p.x - meta.radio, y0: p.y - meta.radio,
-          x1: p.x + meta.radio, y1: p.y + meta.radio,
+          x0: x - meta.radio, y0: y - meta.radio,
+          x1: x + meta.radio, y1: y + meta.radio,
           fillcolor: 'rgba(128, 128, 128, 0.15)',
           line: { color: 'rgba(128, 128, 128, 0.3)' },
         });
@@ -978,7 +989,7 @@
 
       const layout = {
         title: `Mapa Interactivo: ${meta.instancia}`,
-        xaxis: { title: 'Coordenada X', scaleanchor: 'x', scaleratio: 1 },
+        xaxis: { title: 'Coordenada X', scaleanchor: 'y', scaleratio: 1 },
         yaxis: { title: 'Coordenada Y' },
         shapes: shapes,
         legend: { x:1.02, y:1 },

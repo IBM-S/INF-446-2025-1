@@ -439,8 +439,7 @@ def generar_mapa():
         ids_instalados = [int(i) for i in data["ids"]]
         show_probs = bool(data.get("show_probs", True))  # ← nuevo
          # Coordenadas del punto (para mostrar en el título del resumen)
-        fx = data.get("x")
-        fy = data.get("y")
+        fx, fy = data.get("x"), data.get("y")
         coord_txt = ""
         if isinstance(fx, (int, float)) and isinstance(fy, (int, float)):
             coord_txt = f" ({fx:.2f}, {fy:.2f})"
@@ -454,48 +453,60 @@ def generar_mapa():
         return "Instancia no encontrada", 404
 
     nodes, coords_por_id, demanda, preinstalados, radio = cargar_instancia_coords_y_demanda(archivo)
-    id_flag = {idx: flag for (idx, x, y, flag, prob) in nodes}
-    ids_normales_instalados = [i for i in ids_instalados if id_flag.get(i, 0) == 0]
-    puntos_instalados = [coords_por_id[i] for i in ids_normales_instalados if i in coords_por_id]
-    puntos_totales = puntos_instalados + preinstalados
+    ids_seleccionados_set = set(ids_instalados)
 
+    demanda_x, demanda_y, demanda_s = [], [], []
+    movidos_x, movidos_y, movidos_s = [], [], []
+    nuevos_x, nuevos_y = [], []
+    existentes_x, existentes_y = [], []
+    coords_finales_aeds = []
+
+    for idx, x, y, flag, prob in nodes:
+        size = (prob * 200) if show_probs else 20  # 36 ≈ punto fijo
+
+        if idx in ids_seleccionados_set:
+            if flag == 0:
+                nuevos_x.append(x); nuevos_y.append(y)
+                coords_finales_aeds.append((x, y))
+            elif flag == 1:
+                existentes_x.append(x); existentes_y.append(y)
+                coords_finales_aeds.append((x, y))
+        else:
+            if flag == 0:
+                demanda_x.append(x); demanda_y.append(y); demanda_s.append(size)
+            elif flag == 1:
+                movidos_x.append(x); movidos_y.append(y); movidos_s.append(size)
+    
+    puntos_instalados_finales = [coords_por_id[i] for i in ids_instalados if i in coords_por_id]
     # métricas
     nodos_cubiertos, prob_cubierta, porc, total_prob, total_nodos = cobertura_por_ids(
-        puntos_instalados, demanda, preinstalados, radio
+        puntos_instalados_finales, demanda, [], radio
     )
 
     # resumen formateado con IDs en líneas de 40
     ids_compact = compress_ranges(ids_instalados)
-    ids_formateados = ids_compact if ids_compact else "[]"
-
     resumen = (
         f"📊 Instancia {base_name} - Stats Punto {coord_txt}\n"
         f" - Estaciones manuales instaladas  : {str(len(ids_instalados)).ljust(4)} - Estaciones preinstaladas        : {len(preinstalados)}\n"
-        f" - IDs de estaciones manuales      : {ids_formateados}\n"
+        f" - IDs de estaciones manuales      : {ids_compact or '[]'}\n"
         f" - Total de nodos y probabilidad   : {str(total_nodos).ljust(4)} - {total_prob:.4f}\n"
         f" - Nodos y probabilidad cubiertos  : {str(nodos_cubiertos).ljust(4)} - {prob_cubierta:.4f} ({porc:.2f}%)"
     )
 
     # === Graficar ===
     fig, ax = plt.subplots(figsize=(15, 8), dpi=180)
-    x0, y0, s0 = [], [], []
-    x1, y1, s1 = [], [], []
-    for _, x, y, f, p in nodes:
-        size = (p * 200) if show_probs else 20  # 36 ≈ punto fijo
-        if f == 0:
-            x0.append(x); y0.append(y); s0.append(size)
-        else:
-            x1.append(x); y1.append(y); s1.append(size)
 
+    # Demanda no cubierta
+    ax.scatter(demanda_x, demanda_y, s=demanda_s, c='blue', label='Nodos de Demanda', alpha=0.6, edgecolors='k')
+    # Origen AEDs movidos
+    ax.scatter(movidos_x, movidos_y, s=movidos_s, facecolors='none', edgecolors='red', linewidth=1.5, label='AED movido')
+    # AEDs preinstalados que se quedaron
+    ax.scatter(existentes_x, existentes_y, c='orange', s=120, marker='*', label='Equipo Preinstalado (mantenido)', edgecolors='k', zorder=4)
+    # Nuevos AEDs instalados
+    ax.scatter(nuevos_x, nuevos_y, c='green', s=120, marker='*', label='AED instalado (Nuevo)', edgecolors='k', zorder=5)
+   
 
-    xi = [x for x, y in puntos_instalados]
-    yi = [y for x, y in puntos_instalados]
-
-    ax.scatter(x0, y0, s=s0, c='blue', label='Normales', alpha=0.6, edgecolors='k')
-    ax.scatter(x1, y1, s=s1, c='red',  label='Preinstalados', alpha=0.8, edgecolors='k')
-    ax.scatter(xi, yi, c='green', s=100, marker='*', label='Seleccionados', edgecolors='k', zorder=5)
-
-    for x, y in puntos_totales:
+    for x, y in coords_finales_aeds:
         ax.add_patch(plt.Circle((x, y), radio, color='gray', alpha=0.15, zorder=1))
 
     xs = [x for _, x, y, _, _ in nodes]
@@ -522,7 +533,10 @@ def generar_mapa():
     img_bytes.seek(0)
 
     img_base64 = base64.b64encode(img_bytes.read()).decode('utf-8')
-    return jsonify({"img": img_base64, "stats": resumen})
+    return jsonify({
+        "img": img_base64, 
+        "stats": resumen
+        })
 
 @app.route("/map_json", methods=["POST"])
 def map_json():
@@ -530,7 +544,7 @@ def map_json():
     try:
         instancia = data["instancia"]
         ids_instalados = [int(i) for i in data["ids"]]
-        show_probs = bool(data.get("show_probs", True))  # ← nuevo
+        show_probs = bool(data.get("show_probs", True))
         fx = data.get("x"); fy = data.get("y")
     except (KeyError, ValueError, TypeError):
         return "Datos inválidos", 400
@@ -540,46 +554,66 @@ def map_json():
     if not os.path.exists(archivo):
         return "Instancia no encontrada", 404
 
-    nodes, coords_por_id, demanda, preinstalados, radio = cargar_instancia_coords_y_demanda(archivo)
+    nodes, coords_por_id, demanda, preinstalados_coords_originales, radio = cargar_instancia_coords_y_demanda(archivo)
 
-    id_flag = {idx: flag for (idx, x, y, flag, prob) in nodes}
-    ids_normales_instalados = [i for i in ids_instalados if id_flag.get(i, 0) == 0]
+    ids_seleccionados_set = set(ids_instalados)
 
+    puntos_demanda = {'x': [], 'y': [], 's': []}
+    preinstalados_movidos_origen = {'x': [], 'y': [], 's': []}
+    seleccionados_nuevos = {'x': [], 'y': []}
+    seleccionados_existentes = {'x': [], 'y': []}
 
+    for idx, x, y, flag, prob in nodes:
+        size = (prob * 200) if show_probs else 20  # 36 ≈ punto fijo
 
-    x_norm, y_norm, s_norm = [], [], []
-    x_pre, y_pre, s_pre = [], [], []
-    for _, x, y, flag, p in nodes:
-        size = (p * 200) if show_probs else 20  # 36 ≈ punto fijo
-        if flag == 0:
-            x_norm.append(x); y_norm.append(y); s_norm.append(size)
+        if idx in ids_seleccionados_set:
+            if flag == 0:
+                seleccionados_nuevos['x'].append(x)
+                seleccionados_nuevos['y'].append(y)
+            elif flag == 1:
+                seleccionados_existentes['x'].append(x)
+                seleccionados_existentes['y'].append(y)
         else:
-            x_pre.append(x); y_pre.append(y); s_pre.append(size)
+            if flag == 0:
+                puntos_demanda['x'].append(x)
+                puntos_demanda['y'].append(y)
+                puntos_demanda['s'].append(size)
+            elif flag == 1:
+                preinstalados_movidos_origen['x'].append(x)
+                preinstalados_movidos_origen['y'].append(y)
+                preinstalados_movidos_origen['s'].append(size)
 
-    xi = [coords_por_id[i][0] for i in ids_normales_instalados if i in coords_por_id]
-    yi = [coords_por_id[i][1] for i in ids_normales_instalados if i in coords_por_id]
+    coords_finales_aeds = []
+    if seleccionados_nuevos['x']:
+        coords_finales_aeds.extend(list(zip(seleccionados_nuevos['x'], seleccionados_nuevos['y'])))
+    if seleccionados_existentes['x']:
+        coords_finales_aeds.extend(list(zip(seleccionados_existentes['x'], seleccionados_existentes['y'])))
 
-    puntos_instalados = [coords_por_id[i] for i in ids_normales_instalados if i in coords_por_id]
-    nodos_cubiertos, prob_cubierta, porc, total_prob, total_nodos = cobertura_por_ids(
-        puntos_instalados, demanda, preinstalados, radio
+
+    puntos_instalados_finales_coords = [coords_por_id[i] for i in ids_instalados if i in coords_por_id]
+
+    nodos_cubiertos, prob_cubierta, porc, total_prob, total_nodos_demanda = cobertura_por_ids(
+        puntos_instalados_finales_coords, demanda, [], radio
     )
-
+    
     coord_txt = f" ({fx:.2f}, {fy:.2f})" if isinstance(fx, (int, float)) and isinstance(fy, (int, float)) else ""
     ids_compact = compress_ranges(ids_instalados)
 
 
     resumen = (
         f"📊 Instancia {base_name} - Stats Punto {coord_txt}\n"
-        f" - Estaciones manuales instaladas  : {len(ids_instalados):<4} - Estaciones preinstaladas        : {len(preinstalados)}\n"
+        f" - Estaciones manuales instaladas  : {len(ids_instalados):<4} - Estaciones preinstaladas        : {len(preinstalados_coords_originales)}\n"
         f" - IDs de estaciones manuales      : {ids_compact or '[]'}\n"
-        f" - Total de nodos y probabilidad   : {total_nodos:<4} - {total_prob:<4}\n"
+        f" - Total de nodos y probabilidad   : {total_nodos_demanda:<4} - {total_prob:<4}\n"
         f" - Nodos y probabilidad cubiertos  : {nodos_cubiertos:<4} - {prob_cubierta:<4} ({porc:.2f}%)"
-    )
+    ) 
     return jsonify({
         "meta": {"instancia": base_name, "radio": radio},
-        "normales": {"x": x_norm, "y": y_norm, "s": s_norm},
-        "preinstalados": {"x": x_pre, "y": y_pre, "s": s_pre},
-        "seleccionados": {"x": xi, "y": yi},
+        "demanda": puntos_demanda,
+        "preinstalados_movidos_origen": preinstalados_movidos_origen,
+        "seleccionados_nuevos": seleccionados_nuevos,
+        "seleccionados_existentes": seleccionados_existentes,
+        "coords_finales_aeds": coords_finales_aeds,
         "stats": resumen
         })
 
