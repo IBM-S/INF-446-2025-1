@@ -66,6 +66,9 @@ public:
 	void CruzamientoUniformeModificado_sin_reubicacion(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, ProblemInstance *problemInstance);
 	void MutacionModificada_sin_reubicacion(vector<double> &x_var, double rate, ProblemInstance *problemInstance);
 
+	void CruzamientoUniformeModificado_con_reubicacion(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, ProblemInstance *problemInstance);
+	void MutacionModificada_con_reubicacion(vector<double> &x_var, double rate, ProblemInstance *problemInstance);
+
 	int GetWeightNumber(int nobj, int H);
 
 	double DistanceVectorNorm1(vector<double> &vec1, vector<double> &vec2);

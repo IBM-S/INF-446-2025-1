@@ -24,29 +24,6 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 		std::cout << "Generación: " << gen << std::endl;
 		gen++;
 		this->EvolvePopulation();
-		std::cout << "aaaaaaaa" << std::endl;
-		if (gen >= 100 and gen <= 101)
-		{
-			std::cout << "bbbb" << std::endl;
-
-			printf("Población en la generación 10:\n");
-			for (unsigned i = 0; i < m_PopulationSOP.size(); i++)
-			{
-				std::cout << "Individuo #" << i << ": ";
-				for (double val : m_PopulationSOP[i].m_BestIndividual.x_var)
-				{
-					std::cout << val << " ";
-				}
-				std::cout << std::endl;
-				// valor funcion objetvo val
-				std::cout << "f_obj = ";
-				for (double f : m_PopulationSOP[i].m_BestIndividual.f_obj)
-				{
-					std::cout << f << " ";
-				}
-				std::cout << std::endl;
-			}
-		}
 
 		if (IsTerminated())
 		{
@@ -186,9 +163,9 @@ void CALG_EMO_MOEAD::InitializePopulation()
 		{
 			std::cout << val << " ";
 		}
-		std::cout << std::endl; */
+		std::cout << std::endl;
 
-		/* std::cout << "f_obj = ";
+		std::cout << "f_obj = ";
 		for (double f : SP.m_BestIndividual.f_obj)
 		{
 			std::cout << f << " ";
@@ -430,9 +407,20 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		}
 		std::cout << std::endl; */
 
-		UtilityToolBox.CruzamientoUniformeModificado_sin_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
-																	 m_PopulationSOP[p2].m_BestIndividual.x_var,
-																	 child.x_var, this->problemInstance);
+		bool con_reubicacion = true;
+
+		if (con_reubicacion)
+		{
+			UtilityToolBox.CruzamientoUniformeModificado_con_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
+																		 m_PopulationSOP[p2].m_BestIndividual.x_var,
+																		 child.x_var, this->problemInstance);
+		}
+		else
+		{
+			UtilityToolBox.CruzamientoUniformeModificado_sin_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
+																		 m_PopulationSOP[p2].m_BestIndividual.x_var,
+																		 child.x_var, this->problemInstance);
+		}
 
 		/* UtilityToolBox.CruzamientoUniformeModificado(m_PopulationSOP[p1].m_BestIndividual.x_var,
 													 m_PopulationSOP[p2].m_BestIndividual.x_var,
@@ -448,7 +436,14 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		std::cout << std::endl; */
 
 		// UtilityToolBox.MutacionModificada(child.x_var, 1.0);
-		UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, 1.0, this->problemInstance);
+		if (con_reubicacion)
+		{
+			UtilityToolBox.MutacionModificada_con_reubicacion(child.x_var, 1.0, this->problemInstance);
+		}
+		else
+		{
+			UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, 1.0, this->problemInstance);
+		}
 
 		/* std::cout << "Hijo generado despues de la mutacion: ";
 		for (double val : child.x_var)

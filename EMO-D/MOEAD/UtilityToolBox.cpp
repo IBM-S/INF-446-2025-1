@@ -279,54 +279,96 @@ void CUtilityToolBox::MutacionModificada_sin_reubicacion(vector<double> &x_var, 
 
 	const auto &nodos = problemInstance->getNodes();
 
-	if (Get_Random_Number() <= rate)
+	if (Get_Random_Number() > rate)
 	{
+		return;
+	}
 
-		bool eliminarEstacion = (rand() % 2 == 1);
+	bool esSwap = (rand() % 2 == 1);
 
-		if (eliminarEstacion)
+	int pos_eliminada = -1;
+	// === Paso 1: buscar un 1 para cambiarlo a 0 ===
+	int inicio1 = rand() % n;
+	for (int i = 0; i < n; ++i)
+	{
+		int pos = (inicio1 + i) % n;
+		/* Si en la posicion es 1 y no es preinstalado entonces se cambia a 0 */
+		if (x_var[pos] == 1 && nodos[pos]->getFlag() == 0)
 		{
-
-			int inicio1 = rand() % n;
-			for (int i = 0; i < n; ++i)
-			{
-				int pos = (inicio1 + i) % n;
-				/* Si en la posicion es 1 y no es preinstalado entonces se cambia a 0 */
-				if (x_var[pos] == 1 && nodos[pos]->getFlag() == 0)
-				{
-					x_var[pos] = 0;
-					break;
-				}
-			}
+			x_var[pos] = 0;
+			pos_eliminada = pos;
+			break;
 		}
-		else
+	}
+
+	if (esSwap && pos_eliminada != -1)
+	{
+		// === Paso 2: buscar un 0 para cambiarlo a 1 ===
+		int inicio0 = rand() % n;
+		for (int i = 0; i < n; ++i)
 		{
-
-			// === Paso 1: buscar un 1 para cambiarlo a 0 ===
-			int inicio1 = rand() % n;
-			for (int i = 0; i < n; ++i)
+			int pos = (inicio0 + i) % n;
+			if (x_var[pos] == 0 && pos != pos_eliminada)
 			{
-				int pos = (inicio1 + i) % n;
-				if (x_var[pos] == 1 && nodos[pos]->getFlag() == 0)
-				{
-					x_var[pos] = 0;
-					break;
-				}
-			}
-
-			// === Paso 2: buscar un 0 para cambiarlo a 1 ===
-			int inicio0 = rand() % n;
-			for (int i = 0; i < n; ++i)
-			{
-				int pos = (inicio0 + i) % n;
-				if (x_var[pos] == 0)
-				{
-					x_var[pos] = 1;
-					break;
-				}
+				x_var[pos] = 1;
+				break;
 			}
 		}
 	}
+	// imprmir x_var
+	/* std::cout << "Solución mutada (x_var): ";
+	for (double val : x_var)
+	{
+		std::cout << val << " ";
+	}
+	std::cout << std::endl; */
+}
+
+void CUtilityToolBox::MutacionModificada_con_reubicacion(vector<double> &x_var, double rate, ProblemInstance *problemInstance)
+{
+	if (Get_Random_Number() > rate)
+	{
+		return;
+	}
+
+	int n = x_var.size();
+
+	bool esSwap = (rand() % 2 == 0);
+	int pos_eliminada = -1;
+	int inicio1 = rand() % n;
+	// === Paso 1: buscar un 1 para cambiarlo a 0 ===
+	for (int i = 0; i < n; ++i)
+	{
+		int pos = (inicio1 + i) % n;
+		/* Si en la posicion es 1*/
+		if (x_var[pos] == 1)
+		{
+			x_var[pos] = 0;
+			pos_eliminada = pos;
+			break;
+		}
+	}
+
+	if (pos_eliminada == -1)
+	{
+		return;
+	}
+
+	if (esSwap)
+	{
+		// === Paso 2: buscar un 0 para cambiarlo a 1 ===
+		int inicio0 = rand() % n;
+		for (int i = 0; i < n; ++i)
+		{
+			int pos = (inicio0 + i) % n;
+			if (x_var[pos] == 0 && pos != pos_eliminada)
+			{
+				x_var[pos] = 1;
+				break;
+			}
+		}
+	}
+
 	// imprmir x_var
 	/* std::cout << "Solución mutada (x_var): ";
 	for (double val : x_var)
@@ -484,9 +526,54 @@ void CUtilityToolBox::CruzamientoUniformeModificado_sin_reubicacion(vector<doubl
 	{
 		std::cout << val << " ";
 	}
-	std::cout << std::endl; */
+	std::cout << std::endl;
 	// contar aeds instalados
-	/* int total_aeds = std::count(child.begin(), child.end(), 1.0);
+	int total_aeds = std::count(child.begin(), child.end(), 1.0);
+	std::cout << "Total AEDs instalados en el hijo: " << total_aeds;
+	std::cout << std::endl; */
+}
+
+void CUtilityToolBox::CruzamientoUniformeModificado_con_reubicacion(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, ProblemInstance *problemInstance)
+{
+	int nvar = x_var1.size();
+	child.assign(nvar, 0); // inicializa en 0s
+
+	int count1 = std::count(x_var1.begin(), x_var1.end(), 1.0);
+	int count2 = std::count(x_var2.begin(), x_var2.end(), 1.0);
+	int min_total = std::min(count1, count2);
+	int max_total = std::max(count1, count2);
+
+	int max_instalaciones = 0;
+	if (max_total > min_total)
+	{
+		max_instalaciones = min_total + rand() % (max_total - min_total + 1);
+	}
+	else
+	{
+		max_instalaciones = min_total; // ambos iguales
+	}
+
+	int start = rand() % nvar;
+	int instalados = 0;
+	for (int i = 0; i < nvar && instalados < max_instalaciones; ++i)
+	{
+		int idx = (start + i) % nvar;
+
+		if (x_var1[idx] == 1 || x_var2[idx] == 1)
+		{
+			child[idx] = 1;
+			instalados++;
+		}
+	}
+	// imprimir child
+	/* std::cout << "Hijo generado (child): ";
+	for (double val : child)
+	{
+		std::cout << val << " ";
+	}
+	std::cout << std::endl;
+	// contar aeds instalados
+	int total_aeds = std::count(child.begin(), child.end(), 1.0);
 	std::cout << "Total AEDs instalados en el hijo: " << total_aeds;
 	std::cout << std::endl; */
 }
