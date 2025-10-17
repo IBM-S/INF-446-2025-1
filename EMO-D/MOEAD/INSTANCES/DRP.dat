@@ -1,17 +1,11 @@
 /* CONJUNTOS */
-
 set N:= 21 ;
 
 /* PARAMETROS */
-
-param P:= 3 ;
-
+param P:= 5 ;
 param R:= 10 ;
-
 param c1:= 1 ;
-
 param c2:= 0.2 ;
-
 param nombre_instancia := "DRP.dat" ;
 
 param : coordx coordy flag prob_ohca:=
