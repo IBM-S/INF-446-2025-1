@@ -407,7 +407,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		}
 		std::cout << std::endl; */
 
-		bool con_reubicacion = true;
+		bool con_reubicacion = false;
 
 		if (con_reubicacion)
 		{

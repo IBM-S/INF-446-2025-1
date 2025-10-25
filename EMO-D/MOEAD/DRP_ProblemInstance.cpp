@@ -3,7 +3,8 @@
 #include <cmath>
 
 // Constructor
-ProblemInstance::ProblemInstance() {
+ProblemInstance::ProblemInstance()
+{
     P = 0;
     R = 0;
     c1 = 0;
@@ -13,33 +14,40 @@ ProblemInstance::ProblemInstance() {
 }
 
 // Destructor
-ProblemInstance::~ProblemInstance() {
-    for (Node* node : nodes) {
+ProblemInstance::~ProblemInstance()
+{
+    for (Node *node : nodes)
+    {
         delete node;
     }
     nodes.clear();
 }
 
 // Añadir un nodo
-void ProblemInstance::addNode(Node* node) {
-    for (Node* existing : nodes) {
-        if (existing->getId() == node->getId()) return;
+void ProblemInstance::addNode(Node *node)
+{
+    for (Node *existing : nodes)
+    {
+        if (existing->getId() == node->getId())
+            return;
     }
     nodes.push_back(node);
-    if (node->getFlag() == 0) {
+    if (node->getFlag() == 0)
+    {
         candidateLocations.push_back(node->getId());
     }
 }
 
 // Getters de listas
-std::vector<int> ProblemInstance::getCandidateLocations() {
+std::vector<int> ProblemInstance::getCandidateLocations()
+{
     return candidateLocations;
 }
 
-std::vector<Node*>& ProblemInstance::getNodes() {
+std::vector<Node *> &ProblemInstance::getNodes()
+{
     return nodes;
 }
-
 
 // Setters y Getters
 /* void ProblemInstance::setAlpha(int a) { alpha = a; }
@@ -47,7 +55,7 @@ void ProblemInstance::setBeta(int b) { beta = b; }
 int ProblemInstance::getAlpha() { return alpha; }
 int ProblemInstance::getBeta() { return beta; } */
 // Parámetros
-void ProblemInstance::setN(int n) { N = n;}
+void ProblemInstance::setN(int n) { N = n; }
 
 int ProblemInstance::getN() { return N; }
 
@@ -67,17 +75,25 @@ void ProblemInstance::setNombreInstancia(std::string nombre) { nombre_instancia 
 std::string ProblemInstance::getNombreInstancia() { return nombre_instancia; }
 
 // Debug: imprimir todo
-void ProblemInstance::printAll() {
+void ProblemInstance::printAll()
+{
     std::cout << "Instancia: " << nombre_instancia << "\n";
-    std::cout << "Parámetros: P=" << P << ", R=" << R << ", c1=" << c1 << ", c2=" << c2 << "\n";
-    //std::cout << "Alpha=" << alpha << ", Beta=" << beta << "\n";
+    std::cout << "Parámetros: Presupuesto = " << P << ", Radio equipo = " << R << "\n";
+    std::cout << "costo ubicacion (c1) = " << c1 << ", costo reubicacion (c2) = " << c2 << "\n";
 
-    std::cout << "\nNodos:\n";
-    for (auto* node : nodes) {
+    std::cout << "\nNodos (mostrando los primeros 3 de " << nodes.size() << "):\n";
+    int nodos_a_mostrar = std::min((size_t)3, nodes.size());
+
+    for (int i = 0; i < nodos_a_mostrar; i++)
+    {
+        Node *node = nodes[i];
         std::cout << "ID: " << node->getId()
                   << ", Coord: (" << node->getX() << ", " << node->getY() << ")"
                   << ", Flag: " << node->getFlag()
                   << ", OHCA Prob: " << node->getProbOhca() << "\n";
     }
-
+    if (nodes.size() > 3)
+    {
+        std::cout << "...\n";
+    }
 }

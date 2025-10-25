@@ -16,6 +16,7 @@
 #include "DRP_ProblemInstance.h"
 #include <libgen.h>
 #include "Reader_DRP.h"
+#include <stdlib.h>
 
 void ResetRandSeed();
 
@@ -44,11 +45,27 @@ int main(int argc, char *argv[])
 	rnd_uni_seed = atoi(argv[2]);
 	NumberOfVariables = atoi(argv[3]);
 
+	srand(rnd_uni_seed);
+
+	// printear 10 numeros aleatorios con rand()
+	std::cout << "Números aleatorios generados con semilla " << rnd_uni_seed << ": ";
+	for (int i = 0; i < 5; i++)
+	{
+		std::cout << rand() % 100 << " ";
+	}
+	std::cout << "\n"
+			  << std::endl;
+
 	Reader r(instance);
 
 	ProblemInstance *problemInstance;
+	clock_t start_read = clock();
 	problemInstance = r.readInputFile();
+	clock_t end_read = clock();
 	problemInstance->printAll();
+	double read_duration = static_cast<double>(end_read - start_read) / CLOCKS_PER_SEC;
+	std::cout << "\nTiempo de lectura de la instancia: " << read_duration << " segundos.\n"
+			  << std::endl;
 
 	// sprintf(strTestInstance, instance);
 	strcpy(strTestInstance, basename(instance));
