@@ -18,17 +18,33 @@
 #include "Reader_DRP.h"
 #include <stdlib.h>
 
+#include <string>
+
+std::string exe_dir_path;
+
+void set_exe_path(const char* arg0){
+	std::string path_str(arg0);
+	size_t last_slash_idx = path_str.rfind("/");
+	if (std::string::npos != last_slash_idx)
+	{
+		exe_dir_path = path_str.substr(0, last_slash_idx);
+	} else {
+		exe_dir_path = ".";
+	}
+}
+
 void ResetRandSeed();
 
 int main(int argc, char *argv[])
 {
+	set_exe_path(argv[0]);
 	// int total_run, numOfInstance;
 	// std::ifstream readf("../../SETTINGS/instances/Instance.txt");
 	// readf>>numOfInstance;
 	// readf>>total_run;
 	NumberOfObjectives = 2;
 	NumberOfVariables = 324;
-	NumberOfFuncEvals = 1000;
+	NumberOfFuncEvals = 10000;
 
 	char alg_name[1024];
 
@@ -46,15 +62,6 @@ int main(int argc, char *argv[])
 	NumberOfVariables = atoi(argv[3]);
 
 	srand(rnd_uni_seed);
-
-	// printear 10 numeros aleatorios con rand()
-	std::cout << "Números aleatorios generados con semilla " << rnd_uni_seed << ": ";
-	for (int i = 0; i < 5; i++)
-	{
-		std::cout << rand() % 100 << " ";
-	}
-	std::cout << "\n"
-			  << std::endl;
 
 	Reader r(instance);
 
@@ -76,7 +83,9 @@ int main(int argc, char *argv[])
 
 	std::fstream fout;
 	char logFilename[1024];
-	sprintf(logFilename, "SAVING/%s/LOG/LOG_%s.dat", alg_name, strTestInstance);
+	// sprintf(logFilename, "SAVING/%s/LOG/LOG_%s.dat", alg_name, strTestInstance);
+	sprintf(logFilename, "%s/SAVING/%s/LOG/LOG_%s.dat", exe_dir_path.c_str(), alg_name, strTestInstance);
+
 	fout.open(logFilename, std::ios::out);
 
 	if (!strcmp(alg_name, "MOEAD"))
@@ -102,7 +111,9 @@ int main(int argc, char *argv[])
 	std::cout << "Instancia: " << instance << std::endl;
 
 	// Guardar en archivo
-	std::ofstream fout_time("execution_time.log", std::ios::app);
+	char timeLogFilename[1024];
+	sprintf(timeLogFilename, "%s/execution_time.log", exe_dir_path.c_str());
+	std::ofstream fout_time(timeLogFilename, std::ios::app);
 	fout_time << "Instancia: " << instance
 			  << ", Semilla: " << rnd_uni_seed
 			  << ", Tiempo (s): " << duration

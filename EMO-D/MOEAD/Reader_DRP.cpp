@@ -28,7 +28,7 @@ ProblemInstance *Reader::readInputFile()
 
     problemInstance->nombre_instancia = filePath;
 
-    this->findDef("N:=");
+    this->findDef("N_total:=");
     this->readSet(problemInstance);
     if (debug)
         cout << "End readSet! " << endl;

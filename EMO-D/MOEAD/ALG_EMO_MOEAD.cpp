@@ -91,7 +91,8 @@ void CALG_EMO_MOEAD::InitializeParameter()
 {
 	char filename[1024];
 
-	sprintf(filename, "SETTINGS/algorithms/MOEAD.txt");
+	//sprintf(filename, "SETTINGS/algorithms/MOEAD.txt");
+	sprintf(filename, "%s/SETTINGS/algorithms/MOEAD.txt", exe_dir_path.c_str());
 
 	char str_temp[1024];
 	std::ifstream readf(filename);
@@ -121,7 +122,10 @@ void CALG_EMO_MOEAD::InitializePopulation()
 	v_IdealPoint = vector<double>(NumberOfObjectives, 1.0e+30);
 
 	char filename1[1024];
-	sprintf(filename1, "SETTINGS/weightvectors/W%dD_%d.dat", NumberOfObjectives, s_PopulationSize);
+	//sprintf(filename1, "SETTINGS/weightvectors/W%dD_%d.dat", NumberOfObjectives, s_PopulationSize);
+	
+	sprintf(filename1, "%s/SETTINGS/weightvectors/W%dD_%d.dat", exe_dir_path.c_str(), NumberOfObjectives, s_PopulationSize);
+
 	std::ifstream readf(filename1);
 	if (!readf.is_open())
 	{
@@ -542,7 +546,9 @@ void CALG_EMO_MOEAD::SavePopulation(int run_id)
 {
 	char filename[1024];
 	// sprintf(filename,"SAVING/MOEAD/POF/POF_%s_RUN%d.dat",strTestInstance, run_id);
-	sprintf(filename, "SAVING/MOEAD/POF/POF_%s_GEN_%d.dat", strTestInstance, run_id);
+	// sprintf(filename, "SAVING/MOEAD/POF/POF_%s_GEN_%d.dat", strTestInstance, run_id);
+	sprintf(filename, "%s/SAVING/MOEAD/POF/POF_%s_GEN_%d.dat", exe_dir_path.c_str(), strTestInstance, run_id);
+
 	SaveObjSpace(filename); // ��ǰ��Ⱥ���
 
 	// sprintf_s(filename,"Saving/MOEAD/POS_%s_RUN%d.dat",strTestInstance, run_id);

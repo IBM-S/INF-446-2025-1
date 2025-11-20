@@ -1,0 +1,180 @@
+reset;
+
+model mo_relocation_model_simple.mod;
+data  DRP_con_probs.dat;
+# data casos_dats_prob/150-11.dat;
+# data casos_dats_prob/alcaldia_milpa_alta.dat;
+# data casos_dats_prob/alcaldia_venustiano.dat;
+# ---------- Config ----------
+param mostrar_pesos default 1;
+
+# Solver
+option solver gurobi;
+option gurobi_options 'timelim=600';
+option show_stats 1;
+option solver_msg 0;
+
+printf "\n--- MODO: FLEXIBLE LOCATION ---\n";
+printf "Instancia: %s\n", nombre_instancia;
+printf "Presupuesto P = %g, Radio R = %g\n\n", P, R;
+
+# ---------- Parametros para guardar resultados ----------
+param Ttotal default 0;
+
+param TCPU1 {objetivos}   default 0;
+param MVF   {objetivos}   default 0;
+param PVF   {objetivos}   default 0;
+param f1    {objetivos}   default 0;
+
+param f2    {objetivos}   default 0;
+param TCPU2 {ejecuciones} default 0;
+param FN1   {ejecuciones} default 0;
+param FN2   {ejecuciones} default 0;
+param F1    {ejecuciones} default 0;
+param F2    {ejecuciones} default 0;
+param BT1   {ejecuciones} default 0;
+param BT2   {ejecuciones} default 0;
+
+param Tstartuno default 0;
+param Tstartdos default 0;
+
+# Tabla de extremos
+param SolucionExtrema {objetivos, objetivos};
+
+# ############################################################################################
+# ############################# FASE 1: Busqueda del mejor y peor valor ######################
+# ############################################################################################
+
+let Tstartuno := time() ;
+
+for {gg in objetivos} {
+    printf "\n--- Calculando extremo para Objetivo %d ---\n", gg;
+    let g := gg;
+    objective FO1;
+    let Ttotal := time();
+    solve;
+    let TCPU1[gg] := time() - Ttotal;
+    # Guarda vector F en la matriz de extremos
+    for {i in objetivos} { let SolucionExtrema[gg, i] := F[i]; }
+    let f1[gg] := F[1];
+    let f2[gg] := F[2];
+    printf "  F[1] (Cobert.) = %g   F[2] (Costo) = %g\n", F[1], F[2];
+    # ------ Detalle de la solucion extrema ------
+    printf "  >> COSTO USADO (debe = F[2]): ";
+    printf "%g\n", sum {i in N} (c1 * (1-flag[i]) * y[i]) + sum {i in N} (c2 * flag[i] * (1-y[i]));
+    printf "  >> COBERTURA PROB. (debe = -F[1]): ";
+    printf "%g\n", sum{j in N} x[j]*prob_ohca[j];
+
+    printf "\n  -------- ACCIONES REALIZADAS --------\n";
+    for {i in N: flag[i]=1 and y[i]=1} {
+        printf "    - Se MANTIENE el AED existente en i=%d\n", i;
+    }
+    for {i in N: flag[i]=1 and y[i]=0} {
+        printf "    - Se ELIMINA/REUBICA el AED de i=%d\n", i;
+    }
+    for {i in N: flag[i]=0 and y[i]=1} {
+        printf "    - Se instala NUEVO AED en i=%d\n", i;
+    }
+
+    printf "\n  -------- PRESENCIA FINAL (y[i]=1) --------\n";
+    for {i in N: y[i]=1} {
+        printf "    - Al final hay AED en i=%d\n", i;
+    }
+
+    printf "\n  -------- COBERTURA (x[j]=1) --------\n";
+    printf "    j cubiertos: ";
+    for {j in N: x[j]=1} { printf "%d ", j; }
+    printf "\n\n";
+    
+    # Limpieza para proximo extremo (usando las nuevas variables)
+    reset data x, y, F;
+}
+
+# Determinar MV y PV por columna a partir de SolucionExtrema
+for {i in objetivos} {
+    let MV[i] := min {gg in objetivos} SolucionExtrema[gg, i];
+    let PV[i] := max {gg in objetivos} SolucionExtrema[gg, i];
+    let MVF[i] := MV[i];
+    let PVF[i] := PV[i];
+}
+
+
+# ############################################################################################
+# ############################# FASE 2: Busqueda de la frontera de Pareto ####################
+# ############################################################################################
+
+let Tstartdos := time() ;
+
+for {gg in ejecuciones} {
+    printf "\n==> Ejecucion ponderada %d\n", gg;
+    for {i in objetivos} { let betha[i] := sigma[gg,i]; }
+    objective FO2;
+    let Ttotal := time();
+    solve;
+    let TCPU2[gg] := time() - Ttotal;
+    # Guardar resultados agregados
+    let F1[gg] := F[1];
+    let F2[gg] := F[2];
+    let BT1[gg] := sigma[gg,1];
+    let BT2[gg] := sigma[gg,2];
+    if (MV[1] - PV[1]) <> 0 then { let FN1[gg] := (F[1] - PV[1]) / (MV[1] - PV[1]); } else { let FN1[gg] := 0; }
+    if (MV[2] - PV[2]) <> 0 then { let FN2[gg] := (F[2] - PV[2]) / (MV[2] - PV[2]); } else { let FN2[gg] := 0; }
+    # ------ Detalle de la solucion de compromiso ------
+   printf "  F[1] (Cobert.) = %g   F[2] (Costo) = %g   (BT1=%g, BT2=%g)\n", F[1], F[2], BT1[gg], BT2[gg];
+    printf "  >> COSTO USADO: %g\n", F[2];
+    printf "  >> COBERTURA PROB.: %g\n", -F[1];
+    
+    printf "\n  -------- ACCIONES REALIZADAS --------\n";
+    for {i in N: flag[i]=1 and y[i]=1} {
+        printf "    - Se MANTIENE el AED existente en i=%d\n", i;
+    }
+    for {i in N: flag[i]=1 and y[i]=0} {
+        printf "    - Se ELIMINA/REUBICA el AED de i=%d\n", i;
+    }
+    for {i in N: flag[i]=0 and y[i]=1} {
+        printf "    - Se instala NUEVO AED en i=%d\n", i;
+    }
+
+    printf "\n  -------- PRESENCIA FINAL (y[i]=1) --------\n";
+    for {i in N: y[i]=1} {
+        printf "    - Al final hay AED en i=%d\n", i;
+    }
+
+    printf "\n  -------- COBERTURA (x[j]=1) --------\n";
+    printf "    j cubiertos: ";
+    for {j in N: x[j]=1} { printf "%d ", j; }
+    printf "\n\n";
+
+    # Limpieza para la proxima corrida (usando las nuevas variables)
+    reset data x, y, F;
+}
+# ============ RESUMEN FINAL ============
+printf "\n\n================== RESUMEN FINAL FLEXIBLE LOCATION ==================\n";
+printf "\nValores extremos encontrados (Payoff Table):\n"; 
+printf "%-10s | %-12s | %-12s | %-12s | %-12s | %-12s\n",
+       "Objetivo","MVF (Mejor)","PVF (Peor)","TCPU1 (s)","f1 (Cobert.)","f2 (Costo)";
+printf "%s\n", "-----------+--------------+--------------+--------------+--------------+---------------";
+for {i in objetivos} {
+    printf "%-10g | %-12g | %-12g | %-12g | %-12g | %-12g\n", i, MVF[i], PVF[i], TCPU1[i], f1[i], f2[i];
+}
+printf "\nResultados de las ejecuciones ponderadas:\n";
+if mostrar_pesos = 1 then {
+    printf "%-10s : %-10s | %-10s | %-10s | %-10s | %-12s | %-12s | %-10s\n",
+           "Ejecucion","BT1","BT2","FN1","FN2","F1 (Cobert.)","F2 (Costo)","TCPU2 (s)";
+    printf "%s\n", "-----------:------------+------------+------------+------------+--------------+--------------+------------";
+    for {gg in ejecuciones} {
+        printf "%-10g : %-10.3g | %-10.3g | %-10.4g | %-10.4g | %-12.4g | %-12.4g | %-10g\n",
+               gg, BT1[gg], BT2[gg], FN1[gg], FN2[gg], F1[gg], F2[gg], TCPU2[gg];
+    }
+} else {
+    printf "%-10s : %-12s | %-12s | %-12s | %-12s | %-12s\n",
+           "Ejecucion","FN1","FN2","F1 (Cobert.)","F2 (Costo)","TCPU2 (s)";
+    printf "%s\n", "-----------:--------------+--------------+--------------+--------------+---------------";
+    for {gg in ejecuciones} {
+        printf "%-10g : %-12.6g | %-12.4g | %-12.4g | %-12.4g | %-12g\n",
+               gg, FN1[gg], FN2[gg], F1[gg], F2[gg], TCPU2[gg];
+    }
+}
+printf "================================================================================================\n";
+# =================== fin ===================
+ 

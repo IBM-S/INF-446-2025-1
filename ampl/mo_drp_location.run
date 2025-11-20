@@ -1,0 +1,245 @@
+#reset ;
+
+model mo_location_model.mod;
+data DRP_con_probs.dat;
+# data casos_dats_prob/100-3.dat;
+# data casos_dats_prob/alcaldia_milpa_alta.dat;
+# data "casos_dats_prob/alcaldia_alvaro obregon.dat";
+# data casos_dats_prob/alcaldia_azcapotzalco.dat;
+# data casos_dats_prob/alcaldia_benito_juarez.dat;
+# data casos_dats_prob/alcaldia_coyoacan.dat;
+# data casos_dats_prob/alcaldia_cuajimalpa.dat;
+# data casos_dats_prob/alcaldia_cuauhtemoc.dat;
+# data casos_dats_prob/alcaldia_gustavo_a_madero.dat;
+# data casos_dats_prob/alcaldia_iztacalco.dat;
+# data casos_dats_prob/alcaldia_iztapalapa.dat;
+# data casos_dats_prob/alcaldia_la_magdalena_contreras.dat;
+# data casos_dats_prob/alcaldia_miguel_hidalgo.dat;
+# data casos_dats_prob/alcaldia_milpa_alta.dat;
+# data casos_dats_prob/alcaldia_tlahuac.dat;
+# data casos_dats_prob/alcaldia_tlalpan.dat;
+# data casos_dats_prob/alcaldia_venustiano.dat;
+# data casos_dats_prob/alcaldia_xochimilco.dat;
+
+data conf_execution.dat;
+
+/* GUROBI */
+option solver gurobi;
+# option gurobi_options 'threads= 3 ' ;
+option solver_msg 0 ;
+# option DisplayInterval 1 ;
+# option gurobi_options 'outlev 1 logfreq 1 timing 1 ' ;
+# option presolve 10 ;
+# option show_stats 1 ;
+# option gurobi_options 'timelim = 3600 return_mipgap 2 ' ;
+
+option gurobi_options 'timelim=600';
+
+param mostrar_detalles default 0;
+param mostrar_pesos default 0;
+param formato_salida default 3;
+
+# param Ttotal default 0;
+#let Ttotal := time();
+#solve;
+#let Ttotal := time() - Ttotal;
+
+#printf "FO: %d\n", FO1 ;
+#display F ;
+#printf "Tiempo CPU: %d\n", Ttotal ;
+
+printf "\n#####################################################\n";
+printf "#         BI-OBJECTIVE AED LOCATION PROBLEM         #\n";
+printf "#####################################################\n";
+printf "Instance: %s\n", nombre_instancia;
+printf "Presupuesto (P): %s\n", P;
+printf "Radio (R): %s\n", R;
+printf "Costo Instalacion (c1): %s\n", c1;
+printf "Costo Relocacion (c2): %s (no usado en este modelo)\n", c2;
+printf "Cant. Preinstalados: %s\n\n", sum{i in N} flag[i];
+
+param count default 0;
+param Ttotal default 0 ;
+param TCPU1{objetivos}   default 0 ;
+param MVF{objetivos}     default 0 ;
+param PVF{objetivos}     default 0 ;
+param f1{objetivos}      default 0 ;
+param f2{objetivos}      default 0 ;
+param TCPU2{ejecuciones} default 0 ;
+param FN1{ejecuciones}   default 0 ;
+param FN2{ejecuciones}   default 0 ;
+param F1{ejecuciones}    default 0 ;
+param F2{ejecuciones}    default 0 ;
+param BT1{ejecuciones}   default 0 ;
+param BT2{ejecuciones}   default 0 ;
+
+# ############################################################################################
+# ############################# FASE 1: Busqueda del mejor y peor valor ######################
+# ############################################################################################
+
+# Paso 1: Crear una tabla para guardar los resultados de las soluciones extremas.
+param SolucionExtrema {objetivos, objetivos};
+
+# Paso 2: Resolver para cada objetivo individualmente y llenar la tabla.
+for {gg in objetivos} {
+    printf "\n--- Calculando extremo para Objetivo %s ---\n", gg;
+    let g := gg;
+    objective FO1;
+    let Ttotal := time();
+    solve;
+    let TCPU1[gg] := time() - Ttotal;
+
+    # Guarda el vector de objetivos F completo en la fila 'gg' de la tabla
+    for {i in objetivos} {
+        let SolucionExtrema[gg, i] := F[i];
+    }
+
+    let f1[gg] := F[1];
+    let f2[gg] := F[2];
+    
+    if mostrar_detalles = 1 then {
+        printf "  Objective Values: F1(Coverage)=%.4f, F2(Cost)=%.4f\n", F[1], F[2];
+        
+        printf "  - Pre-existing AEDs: ";
+        let count := 0; for {i in N: flag[i] == 1} { if count > 0 then printf ", "; printf "%s", i; let count := count + 1; } if count == 0 then printf "None";
+        printf "\n";
+
+        printf "  - New AEDs installed: ";
+        let count := 0; for {i in N: x[i] == 1} { if count > 0 then printf ", "; printf "%s", i; let count := count + 1; } if count == 0 then printf "None";
+        printf "\n\n";
+    }
+
+    # Limpia las variables de decision para la siguiente iteracion
+    reset data x, z, F;
+}
+
+# Paso 3: Usar la tabla SolucionExtrema para determinar los verdaderos MV y PV.
+#         Esto se hace DESPUeS de haber completado el bucle anterior.
+for {i in objetivos} {
+    # El Mejor Valor (MV) para el objetivo 'i' es el minimo valor en la columna 'i' de nuestra tabla
+    let MV[i] := min {gg in objetivos} SolucionExtrema[gg, i];
+    
+    # El Peor Valor (PV) para el objetivo 'i' es el maximo valor en la columna 'i'
+    let PV[i] := max {gg in objetivos} SolucionExtrema[gg, i];
+}
+
+# Paso 4: Copiar los valores finales a MVF y PVF para mostrarlos al final.
+#         Hay que hacerlo elemento por elemento.
+for {i in objetivos} {
+    let MVF[i] := MV[i];
+    let PVF[i] := PV[i];
+}
+
+
+
+# ############################################################################################
+# ############################# FASE 2: Busqueda de la frontera de Pareto ####################
+# ############################################################################################
+
+for {gg in ejecuciones} {
+
+    printf "\n==> Ejecucion ponderada ::::::: %s\n", gg;
+
+    for {i in objetivos} {
+	   let betha[i] := sigma[gg,i];
+	}
+
+    objective FO2;
+    let Ttotal := time();
+    solve;
+    let TCPU2[gg] := time() - Ttotal;
+
+    # --- MOSTRAR RESULTADOS DE ESTA SOLUCIoN DE COMPROMISO ---
+    # printf "\nValores de los objetivos (F1, F2): (%f, %f)\n", F[1], F[2];
+    
+
+    if mostrar_detalles = 1 then {
+        printf "  Objective Values: F1(Coverage)=%.4f, F2(Cost)=%.4f\n", F[1], F[2];
+        
+        printf "  - Pre-existing AEDs: ";
+        let count := 0; for {i in N: flag[i] == 1} { if count > 0 then printf ", "; printf "%s", i; let count := count + 1; } if count == 0 then printf "None";
+        printf "\n";
+
+        printf "  - New AEDs installed: ";
+        let count := 0; for {i in N: x[i] == 1} { if count > 0 then printf ", "; printf "%s", i; let count := count + 1; } if count == 0 then printf "None";
+        printf "\n\n";
+    }
+
+
+
+    # --- GUARDAR RESULTADOS DE ESTA EJECUCIoN ---
+    # (Esta seccion necesita una pequeña correccion en la normalizacion)
+    # La formula original estaba invertida, esta es la correcta: (valor - peor) / (mejor - peor)
+    # Como tus objetivos son de minimizacion, "mejor" es MV y "peor" es PV.
+    let FN1[gg] := (F[1] - PV[1]) / (MV[1] - PV[1]);
+    let FN2[gg] := (F[2] - PV[2]) / (MV[2] - PV[2]);
+    let F1[gg] := F[1];
+    let F2[gg] := F[2];
+
+    let BT1[gg] := sigma[gg, 1];
+    let BT2[gg] := sigma[gg, 2];
+
+    reset data x, z, F;
+}
+
+# ############################################################################################
+# ################################### Resultados Finales #####################################
+# ############################################################################################
+
+if formato_salida = 1 then {
+
+printf "\n\n================== RESUMEN FINAL FIXED LOCATION ==================\n";
+printf "\nValores extremos encontrados:\n";
+printf "%-10s | %-12s | %-12s | %-12s | %-12s | %-12s\n", "Objetivo", "MVF (Mejor)", "PVF (Peor)", "TCPU1 (s)", "f1 (Cobert.)", "f2 (Costo)";
+printf "%s\n", "-----------+--------------+--------------+--------------+--------------+---------------";
+for {i in objetivos} {
+    printf "%-10g | %-12g | %-12g | %-12g | %-12g | %-12g\n", i, MVF[i], PVF[i], TCPU1[i], f1[i], f2[i];
+}
+
+printf "\nResultados de las ejecuciones ponderadas:\n";
+
+
+    printf "%-10s : %-10s | %-10s | %-10s | %-10s | %-10s | %-10s | %-10s\n",
+           "Ejecucion", "BT1", "BT2", "FN1", "FN2", "F1 (Cobert.)", "F2 (Costo)", "TCPU2 (s)";
+    printf "%s\n", "-----------:------------+------------+------------+------------+--------------+------------+-------------";
+    for {gg in ejecuciones} {
+        printf "%-10g : %-10.5f | %-10.5f | %-10.4g | %-10.4g | %-10.4g   | %-10.4g | %-10g\n",
+               gg, BT1[gg], BT2[gg], FN1[gg], FN2[gg], F1[gg], F2[gg], TCPU2[gg];
+    }
+    printf "=========================================================================================================\n";
+
+}
+else if formato_salida = 2 then {
+
+    printf "\n\n================== RESUMEN FINAL FIXED LOCATION ==================\n";
+printf "\nValores extremos encontrados:\n";
+printf "%-10s | %-12s | %-12s | %-12s | %-12s | %-12s\n", "Objetivo", "MVF (Mejor)", "PVF (Peor)", "TCPU1 (s)", "f1 (Cobert.)", "f2 (Costo)";
+printf "%s\n", "-----------+--------------+--------------+--------------+--------------+---------------";
+for {i in objetivos} {
+    printf "%-10g | %-12g | %-12g | %-12g | %-12g | %-12g\n", i, MVF[i], PVF[i], TCPU1[i], f1[i], f2[i];
+}
+
+printf "\nResultados de las ejecuciones ponderadas:\n";
+
+ # Version SIMPLE de la tabla (sin BT1 y BT2)
+    printf "%-10s : %-12s | %-12s | %-12s | %-12s | %-12s\n",
+           "Ejecucion", "FN1", "FN2", "F1 (Cobert.)", "F2 (Costo)", "TCPU2 (s)";
+    printf "%s\n", "-----------:--------------+--------------+--------------+--------------+---------------";
+    for {gg in ejecuciones} {
+        printf "%-10g : %-12g | %-12g | %-12g | %-12g | %-12g\n",
+               gg, FN1[gg], FN2[gg], F1[gg], F2[gg], TCPU2[gg];
+    }
+    printf "==============================================================================================================\n";
+
+}
+
+else if formato_salida = 3 then {
+    # Opción 3: Solo los puntos de la frontera (F1, F2)
+    printf "\nF1(Coverage) F2(Cost)\n";
+    printf "---------------------\n";
+    for {gg in ejecuciones} {
+        printf "%g %g\n", F1[gg], F2[gg];
+    }
+}
+
+

@@ -1,0 +1,9 @@
+txt_to_dat_with_prob.py
+toma la carpeta casos_txt y por cada archivo los convierte en .dat
+
+txt_to_dat_with_prob.py
+toma la carpeta casos_txt y por cada archivo los convierte en .dat y les agrega tambien las probabilidades
+
+inicio.py
+toma la carpeta casos_dats, y genera los respectivos graficos de cada uno. 
+

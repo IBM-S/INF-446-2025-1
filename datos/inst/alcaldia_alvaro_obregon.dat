@@ -2,8 +2,8 @@
 set N:= 15743 ;
 
 /* PARAMETROS */
-param P:= 100.0 ;
-param R:= 800.0 ;
+param P:= 100000.0 ;
+param R:= 200.0 ;
 param c1:= 1.0 ;
 param c2:= 0.2 ;
 param nombre_instancia := "alcaldia_alvaro obregon.dat" ;

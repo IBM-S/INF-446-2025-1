@@ -1,1 +1,21 @@
 material/
+
+ampl/Trabajo anterior/
+ampl/casos_dats/
+ampl/casos_dats_prob/
+ampl/casos_txts/
+ampl/dats_resultados/
+ampl/instances_location/
+ampl/modeloEjemplo/
+ampl/para enviar/
+ampl/recibir_server/
+ampl/resultados_gurobi/
+ampl/results_ampl/
+ampl/venv/
+
+
+
+datos/res/
+
+
+visualizador_web/venv/

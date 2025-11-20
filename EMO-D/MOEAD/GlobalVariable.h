@@ -1,5 +1,6 @@
 
 #pragma once
+#include <string>
 
 extern int   NumberOfVariables;
 extern int   NumberOfObjectives;
@@ -12,3 +13,4 @@ extern char  strTestInstance[1024];
 extern long  rnd_uni_init;  
 extern int   rnd_uni_seed;
 
+extern std::string exe_dir_path;

@@ -1,0 +1,7 @@
+
+
+Ejecutando el caso de prueba: alcaldia_venustiano.dat
+Presupuesto: 100
+R: 100
+
+--- Calculando extremo para Objetivo 1 ---

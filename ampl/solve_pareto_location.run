@@ -1,0 +1,81 @@
+/* GUROBI */
+option solver gurobi;
+option gurobi_options 'timelim=600';
+
+param mostrar_pesos default 0;
+
+
+printf "\n\n";
+param count default 0;
+param Ttotal default 0 ;
+param TCPU1{objetivos}   default 0 ;
+param MVF{objetivos}     default 0 ;
+param PVF{objetivos}     default 0 ;
+param f1{objetivos}      default 0 ;
+param f2{objetivos}      default 0 ;
+param TCPU2{ejecuciones} default 0 ;
+param FN1{ejecuciones}   default 0 ;
+param FN2{ejecuciones}   default 0 ;
+param F1{ejecuciones}    default 0 ;
+param F2{ejecuciones}    default 0 ;
+param BT1{ejecuciones}   default 0 ;
+param BT2{ejecuciones}   default 0 ;
+
+# ############################################################################################
+# ############################# FASE 1: Busqueda del mejor y peor valor ######################
+# ############################################################################################
+
+param SolucionExtrema {objetivos, objetivos};
+
+# Paso 2: Resolver para cada objetivo individualmente y llenar la tabla.
+for {gg in objetivos} {
+    let g := gg;
+    objective FO1;
+    let Ttotal := time();
+    solve;
+    let TCPU1[gg] := time() - Ttotal;
+
+    for {i in objetivos} { let SolucionExtrema[gg, i] := F[i]; }
+    let f1[gg] := F[1];
+    let f2[gg] := F[2];
+    
+    reset data x, z, F;
+}
+
+
+for {i in objetivos} {
+    let MV[i] := min {gg in objetivos} SolucionExtrema[gg, i];
+    let PV[i] := max {gg in objetivos} SolucionExtrema[gg, i];
+}
+
+for {i in objetivos} {
+    let MVF[i] := MV[i];
+    let PVF[i] := PV[i];
+}
+
+# ############################################################################################
+# ############################# FASE 2: Busqueda de la frontera de Pareto ####################
+# ############################################################################################
+
+for {gg in ejecuciones} {
+
+    for {i in objetivos} {
+	   let betha[i] := sigma[gg,i];
+	}
+
+    objective FO2;
+    let Ttotal := time();
+    solve;
+    let TCPU2[gg] := time() - Ttotal;
+
+    let FN1[gg] := (F[1] - PV[1]) / (MV[1] - PV[1]);
+    let FN2[gg] := (F[2] - PV[2]) / (MV[2] - PV[2]);
+    let F1[gg] := F[1];
+    let F2[gg] := F[2];
+
+    let BT1[gg] := sigma[gg, 1];
+    let BT2[gg] := sigma[gg, 2];
+
+    reset data x, z, F;
+}
+

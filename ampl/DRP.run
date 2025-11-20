@@ -1,0 +1,218 @@
+reset ;
+
+model DRP.mod;
+data casos_dats_prob/150-11.dat;
+
+
+/* GUROBI */
+option solver gurobi;
+# option gurobi_options 'threads= 3 ' ;
+#option solver_msg 0 ;
+#option DisplayInterval 1 ;
+#option gurobi_options 'outlev 1 logfreq 1 timing 1 ' ;
+#option presolve 10 ;
+option show_stats 1 ;
+# option gurobi_options 'timelim = 3600 return_mipgap 2 ' ;
+
+option gurobi_options 'timelim = 600 ' ;
+
+# param Ttotal default 0;
+#let Ttotal := time();
+#solve;
+#let Ttotal := time() - Ttotal;
+
+printf "\n\n";
+#printf "FO: %d\n", FO1 ;
+#display F ;
+#printf "Tiempo CPU: %d\n", Ttotal ;
+printf "Ejecutando el caso de prueba: %s\n", nombre_instancia ;
+printf "Presupuesto: %s\n", P ;
+printf "R: %s\n", R ;
+
+
+param Ttotal default 0 ;
+
+param TCPU1{objetivos}   default 0 ;
+param MVF{objetivos}     default 0 ;
+param PVF{objetivos}     default 0 ;
+param f1{objetivos}      default 0 ;
+param f2{objetivos}      default 0 ;
+
+param TCPU2{ejecuciones} default 0 ;
+param FN1{ejecuciones}   default 0 ;
+param FN2{ejecuciones}   default 0 ;
+param F1{ejecuciones}    default 0 ;
+param F2{ejecuciones}    default 0 ;
+param BT1{ejecuciones}   default 0 ;
+param BT2{ejecuciones}   default 0 ;
+
+############################################################################################
+############################# Busqueda del mejor y peor valor ##############################
+############################################################################################
+
+for {gg in objetivos}{
+	printf "  Objetivo :::::: %s\n", gg ;
+
+	let g := gg ;
+
+	objective FO1 ;
+	let Ttotal := time();
+	solve;
+    let TCPU1[gg] := time() - Ttotal ;
+
+	printf "\n\n" ;
+	printf "----------- INSTALACIONES PREVIAS -----------\n" ;
+	for {i in N: w[i] == 1}{
+		printf "Se Mantiene un desfibrilador en el sitio %s \n", i ;
+	}
+	printf "\n" ;
+	for {i in N}{
+		if sum {j in N} t[i,j] == 1 then {
+			for {j in N: t[i,j] == 1}{
+				printf "Se desplazo un desfibrilador del sitio %s al %s \n", i, j ;
+			}
+		}
+	}
+
+	printf "\n\n" ;
+	printf "----------- INSTALACIONES NUEVAS ------------\n" ;
+	for {i in N: x[i] == 1}{
+		printf "Se instala un desfibrilador en el sitio %s \n", i ;
+	}
+	/*
+	printf "\n\n" ;
+	printf "---------------- COBERTURA ------------------\n" ;
+	for {i in N: sum {j in N} y[i,j] > 0}{
+		printf "El desfibrilador del sitio %s cubre al: \n", i ;
+		for {j in N: y[i,j] == 1}{
+			printf "    - Sitio %s con prob %s\n", j, prob_ohca[j] ;
+		}
+	}
+
+	printf "\n\n" ;
+	printf "--------------- SIN COBERTURA ---------------\n" ;
+	printf "No tienen cobertura los sitios: " ;
+	for {j in N: sum {i in N} y[i,j] == 0}{
+		printf "%s ", j ;
+	}
+	*/
+	
+	printf "\n\n" ;
+	printf "----------- COORDENADAS X,Y ------------\n" ;
+	for {i in N} {
+		printf "%s %s %s \n", i, coordx[i], coordy[i];
+	}
+
+	printf "\n\n\n\n\n\n" ;
+	
+	#printf "\n\n\n\n\n\n" ;
+
+	for {i in objetivos}{
+		if F[i] < MV[i] then {
+		let MV[i] := F[i] ;
+		}
+		if F[i] > PV[i] then {
+		let PV[i] := F[i] ;
+		}
+	}
+	for {i in objetivos}{
+		let MVF[i] := MV[i] ;
+		let PVF[i] := PV[i] ;
+	}
+
+	let f1[gg] := F[1] ;
+	let f2[gg] := F[2] ;
+
+	reset data w, t, x, y, z, F ;
+}
+
+
+# Ajuste pequeño
+for {i in objetivos}{
+  let PV[i]  := PV[i] * 2  ;
+  let PVF[i] := PV[i] ;
+}
+
+############################################################################################
+############################ Busqueda de la frontera de pareto #############################
+############################################################################################
+
+for {gg in ejecuciones}{
+
+  printf "==> Ejecucion ::::::: %s\n", gg ;
+
+  for {i in objetivos}{
+    let betha[i] := sigma[gg,i] ;
+  }
+
+  objective FO2 ;
+  let Ttotal := time() ;
+  solve ;
+  let TCPU2[gg] := time() - Ttotal ;
+
+
+  # //////////////////////////////////////////////////////////////////////////////////////////////////
+  # //////////////////////////////////////////////////////////////////////////////////////////////////
+  # //////////////////////////////////////////////////////////////////////////////////////////////////
+  printf "\n\n" ;
+  display F ;
+
+	printf "----------- INSTALACIONES PREVIAS -----------\n" ;
+	for {i in N: w[i] == 1}{
+		printf "Se Mantiene un desfibrilador en el sitio %s \n", i ;
+	}
+	printf "\n" ;
+	for {i in N}{
+		if sum {j in N} t[i,j] == 1 then {
+			for {j in N: t[i,j] == 1}{
+				printf "Se desplazo un desfibrilador del sitio %s al %s \n", i, j ;
+			}
+		}
+	}
+
+	printf "\n\n" ;
+	printf "----------- INSTALACIONES NUEVAS ------------\n" ;
+	for {i in N: x[i] == 1}{
+		printf "Se instala un desfibrilador en el sitio %s \n", i ;
+	}
+	/*
+	printf "\n\n" ;
+	printf "---------------- COBERTURA ------------------\n" ;
+	for {i in N: sum {j in N} y[i,j] > 0}{
+		printf "El desfibrilador del sitio %s cubre al: \n", i ;
+		for {j in N: y[i,j] == 1}{
+			printf "    - Sitio %s con prob %s\n", j, prob_ohca[j] ;
+		}
+	}
+
+	printf "\n\n" ;
+	printf "--------------- SIN COBERTURA ---------------\n" ;
+	printf "No tienen cobertura los sitios: " ;
+	for {j in N: sum {i in N} y[i,j] == 0}{
+		printf "%s ", j ;
+	} */
+
+
+  printf "\n" ;
+  # //////////////////////////////////////////////////////////////////////////////////////////////////
+  # //////////////////////////////////////////////////////////////////////////////////////////////////
+  # //////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  let FN1[gg] := (F[1] - PV[1])/(MV[1] - PV[1]) ;
+  let FN2[gg] := (F[2] - PV[2])/(MV[2] - PV[2]) ;
+  let F1[gg] := F[1] ;
+  let F2[gg] := F[2] ;
+  let BT1[gg] := sigma[gg,1] ;
+  let BT2[gg] := sigma[gg,2] ;
+
+reset data w, t, x, y, z, F ;
+}
+
+############################################################################################
+################################ Resultados por instancia ##################################
+############################################################################################
+
+printf "\n\n" ;
+display MVF, PVF, TCPU1, f1, f2 ;
+display FN1, FN2, F1, F2, TCPU2 ;

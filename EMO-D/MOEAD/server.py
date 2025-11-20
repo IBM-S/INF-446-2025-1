@@ -18,6 +18,35 @@ def gen_number_from_path(path: str) -> int:
     return int(m.group(1)) if m else 10**9  # grande si no matchea
 
 
+# ==============================================================================
+# CONFIGURACIÓN DE RUTAS
+# Cambia estos valores si mueves las carpetas.
+# ==============================================================================
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+# Carpeta donde se guardan los archivos .dat de las instancias
+DIR_INSTANCES = os.path.join(BASE_DIR, "../../inst")
+
+# Carpeta donde MOEAD guarda sus resultados crudos (POF)
+DIR_SAVING_POF = os.path.join(BASE_DIR, "SAVING", "MOEAD", "POF")
+
+# Carpetas para los resultados procesados (caché)
+DIR_FRENTES_PARETO = os.path.join(BASE_DIR, "FrentesDePareto")
+DIR_AEDS_PROCESADOS = os.path.join(BASE_DIR, "aeds")
+DIR_STATIC_MAPS = os.path.join(BASE_DIR, "static", "maps")
+
+# Ruta al ejecutable de MOEAD
+# Si está en el mismo directorio que server.py:
+PATH_MOEAD_EXEC = os.path.join(BASE_DIR, "MOEAD")
+# Si está en una subcarpeta llamada 'bin':
+# PATH_MOEAD_EXEC = os.path.join(BASE_DIR, "bin", "MOEAD")
+
+# Ruta al ejecutable de Hipervolumen (hv)
+# Asumiendo la estructura ../../material/hv-1.3-src/hv
+PATH_HV_EXEC = os.path.join(BASE_DIR, "..", "..", "material", "hv-1.3-src", "hv")
+# ==============================================================================
+
+
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 
 @app.route("/")
@@ -113,7 +142,7 @@ def parse_line_with_ids(line):
     return (x, y, ids, flag, coverage)
 
 def calculate_hv(filepath, ref_point, gen_number=None):
-    cmd = ["../../material/hv-1.3-src/hv", "-r", f"{ref_point[0]} {ref_point[1]}", filepath]
+    cmd = [PATH_HV_EXEC, "-r", f"{ref_point[0]} {ref_point[1]}", filepath]
     print("Ejecutando:", " ".join(cmd))
     result = subprocess.run(cmd, capture_output=True, text=True)
     try:
@@ -148,7 +177,7 @@ def leer_R_desde_dat(instancia_path: str):
 
 def cargar_instancia_coords_y_demanda(instancia_path):
     """Devuelve (nodes, coords_por_id, demanda, preinstalados, radio)
-       Lee radio R desde INSTANCES/<archivo>.dat.meta.json si existe.
+       Lee radio R desde DIR_INSTANCES/<archivo>.dat.meta.json si existe.
     """
     base_name = os.path.splitext(os.path.basename(instancia_path))[0]
     # 1) R desde .dat
@@ -252,23 +281,24 @@ def run():
     semilla = request.json["semilla"]
     num_var = request.json["num_var"]
 
-    full_path = os.path.join("INSTANCES", instancia)
-    subprocess.run(["./MOEAD", full_path, str(semilla), str(num_var)])
+    full_path = os.path.join(DIR_INSTANCES, instancia)
+    subprocess.run([PATH_MOEAD_EXEC, full_path, str(semilla), str(num_var)])
 
     base_name = parse_instance_name(instancia)
-    raw_files = glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat")
+    patron_busqueda = os.path.join(DIR_SAVING_POF, f"POF_{instancia}_GEN_*.dat")
+    raw_files = glob.glob(patron_busqueda)
     #print("[/run] POF encontrados:", raw_files, flush=True)
     raw_files = sorted(raw_files, key=gen_number_from_path)
     #print("[/run] POF GEN ordenados:", [gen_number_from_path(p) for p in raw_files], flush=True)
     hv_results = []
 
-    fp_folder = os.path.join("FrentesDePareto", base_name)
-    aeds_folder = os.path.join("aeds", base_name)
+    fp_folder = os.path.join(DIR_FRENTES_PARETO, base_name)
+    aeds_folder = os.path.join(DIR_AEDS_PROCESADOS, base_name)
     os.makedirs(fp_folder, exist_ok=True)
     os.makedirs(aeds_folder, exist_ok=True)
 
     # cargar instancia para cobertura
-    nodes, coords_by_id, demanda, preinst_coords, radio = cargar_instancia_coords_y_demanda(os.path.join("INSTANCES", instancia))
+    nodes, coords_by_id, demanda, preinst_coords, radio = cargar_instancia_coords_y_demanda(os.path.join(DIR_INSTANCES, instancia))
 
     ref_point = calcular_referencia_global(raw_files)
     resumen_path = os.path.join(fp_folder, f"{base_name}_HV_summary.txt")
@@ -318,50 +348,75 @@ def run():
     """ print("Archivos AEDs que voy a devolver al front:")
     for f in aed_files:
         print(f, os.path.exists(f)) """
+    files_relativos = [os.path.relpath(f, BASE_DIR) for f in aed_files]
 
-
-    return jsonify({"files": aed_files, "hv": hv_results})
+    return jsonify({"files": files_relativos, "hv": hv_results})
 
 # ------------------- /load -------------------
 @app.route("/load", methods=["POST"])
 def load():
-    instancia = request.json["instancia"]
-    recalcular = request.json.get("recalcular", True)
+    data = request.json
+    instancia = data["instancia"]
+    recalcular = data.get("recalcular", False)
+    is_strict_mode = data.get("strict", False)
+
     base_name = parse_instance_name(instancia)
-
-    raw_files = glob.glob(f"SAVING/MOEAD/POF/POF_{instancia}_GEN_*.dat")
-    if not raw_files:
-    # No hay resultados guardados para esta instancia: devuelve vacío en vez de 500
-        return jsonify({"files": [], "hv": []}), 200
-    #print("[/load] POF encontrados:", raw_files, flush=True)
-    raw_files = sorted(raw_files, key=gen_number_from_path)
-    print("[/load] POF GEN ordenados:", [gen_number_from_path(p) for p in raw_files], flush=True)
-    fp_folder = os.path.join("FrentesDePareto", base_name)
-    aeds_folder = os.path.join("aeds", base_name)
-    os.makedirs(fp_folder, exist_ok=True)
-    os.makedirs(aeds_folder, exist_ok=True)
-
+    fp_folder = os.path.join(DIR_FRENTES_PARETO, base_name)
+    aeds_folder = os.path.join(DIR_AEDS_PROCESADOS, base_name)
     resumen_path = os.path.join(fp_folder, f"{base_name}_HV_summary.txt")
-    hv_results = []
-    aed_files = glob.glob(os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN*.dat"))
-    #print("[/load] AEDs encontrados:", aed_files, flush=True)
-    aed_files = sorted(aed_files, key=gen_number_from_path)
-    print("[/load] AEDs GEN ordenados:", [gen_number_from_path(p) for p in aed_files], flush=True)
+    
+    aed_files = sorted(
+        glob.glob(os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN*.dat")), 
+        key=gen_number_from_path
+    )
 
-
-    if (not recalcular) and os.path.exists(resumen_path) and aed_files:
+    # --- LÓGICA DE CARGA RÁPIDA (CACHE) ---
+    # CORRECCIÓN: Ahora comprobamos 'not recalcular' primero.
+    # Solo intentamos usar la caché si NO se ha pedido recalcular.
+    if not recalcular and os.path.exists(resumen_path) and aed_files:
+        hv_results = []
         with open(resumen_path) as f:
             lines = [line.strip() for line in f if line.strip() and not line.startswith("#")]
             if len(lines) > 1:
                 hv_results = [float(line.split()[1]) for line in lines[1:]]
-        return jsonify({"files": aed_files, "hv": hv_results})
+        files_relativos = [os.path.relpath(f, BASE_DIR) for f in aed_files]
+        print(f"[/load] Éxito: Cargando datos cacheados para {instancia}")
+        return jsonify({"files": files_relativos, "hv": hv_results})
 
-    # recalcular y reescribir aeds/ con cobertura
-    nodes, coords_by_id, demanda, preinst_coords, radio = cargar_instancia_coords_y_demanda(os.path.join("INSTANCES", instancia))
+    # --- DECISIÓN CLAVE ---
+    # Si llegamos aquí, es porque:
+    #   A) Se pidió recalcular (recalcular=True).
+    #   B) No se pidió recalcular, pero los archivos de caché no existen.
 
+    # Si estamos en modo estricto (viene de "Ver todas") Y los archivos no existen,
+    # entonces no hacemos nada.
+    # CORRECCIÓN: La condición 'not aed_files' asegura que esto solo se active si la caché no existe.
+    if is_strict_mode and not aed_files:
+        print(f"[/load] Modo Estricto: No se encontraron datos cacheados para {instancia}. No se recalculará.")
+        return jsonify({"files": [], "hv": []})
+
+    # Si llegamos aquí, DEFINITIVAMENTE tenemos que procesar los archivos crudos.
+    if recalcular:
+        print(f"[/load] Forzando recálculo para {instancia} como fue solicitado.")
+    else:
+        print(f"[/load] Aviso: No se encontraron datos cacheados para {instancia}. Se procesarán los resultados crudos.")
+
+    patron_pof = os.path.join(DIR_SAVING_POF, f"POF_{instancia}_GEN_*.dat")
+    raw_files = sorted(
+        glob.glob(patron_pof), 
+        key=gen_number_from_path
+    )
+    if not raw_files:
+        print(f"[/load] Error: No se encontraron archivos crudos (POF) para {instancia} para recalcular.")
+        return jsonify({"files": [], "hv": []})
+
+    nodes, coords_by_id, demanda, preinst_coords, radio = cargar_instancia_coords_y_demanda(os.path.join(DIR_INSTANCES, instancia))
     ref_point = calcular_referencia_global(raw_files)
     hv_results = []
-    aed_files = []
+    aed_files_recalculados = []
+
+    os.makedirs(fp_folder, exist_ok=True)
+    os.makedirs(aeds_folder, exist_ok=True)
 
     with open(resumen_path, "w") as resumen_file:
         resumen_file.write(f"{ref_point[0]} {ref_point[1]}\n")
@@ -392,7 +447,7 @@ def load():
 
             aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{i}.dat")
             coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
-            aed_files.append(aeds_file)
+            aed_files_recalculados.append(aeds_file)
 
             fp_file = os.path.join(fp_folder, f"{base_name}_GEN{i}.dat")
             save_front_to_file(coords_for_hv, fp_file)
@@ -401,14 +456,9 @@ def load():
             hv_results.append(hv)
             resumen_file.write(f"GEN{i} {hv:.4f}\n")
         resumen_file.write("#\n")
-    
-    """ print("Archivos AEDs que voy a devolver al front:")
-    for f in aed_files:
-        print(f, os.path.exists(f))
-    """
 
-    return jsonify({"files": aed_files, "hv": hv_results})
-
+    files_relativos = [os.path.relpath(f, BASE_DIR) for f in aed_files_recalculados]
+    return jsonify({"files": files_relativos, "hv": hv_results})
 
 def compress_ranges(seq):
     """
@@ -448,7 +498,7 @@ def generar_mapa():
         return "Datos inválidos", 400
 
     base_name = os.path.splitext(os.path.basename(instancia))[0]
-    archivo = f"INSTANCES/{instancia}"
+    archivo = os.path.join(DIR_INSTANCES, instancia)
     if not os.path.exists(archivo):
         return "Instancia no encontrada", 404
 
@@ -550,7 +600,7 @@ def map_json():
         return "Datos inválidos", 400
 
     base_name = os.path.splitext(os.path.basename(instancia))[0]
-    archivo = f"INSTANCES/{instancia}"
+    archivo = os.path.join(DIR_INSTANCES, instancia)
     if not os.path.exists(archivo):
         return "Instancia no encontrada", 404
 
@@ -618,8 +668,6 @@ def map_json():
         })
 
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-
 @app.route("/get/<path:filename>")
 def get_file(filename):
     # Normaliza y evita salirte del proyecto
@@ -636,6 +684,18 @@ def get_file(filename):
         print(f"[/get] 404 -> NO existe: {full_path}", flush=True)
         abort(404)
 
+    return send_file(full_path)
+
+@app.route("/get_instance/<path:filename>")
+def get_instance_file(filename):
+    # Normaliza para seguridad
+    safe_filename = secure_filename(filename)
+    full_path = os.path.join(DIR_INSTANCES, safe_filename)
+
+    if not os.path.exists(full_path):
+        print(f"[/get_instance] 404 -> NO existe: {full_path}", flush=True)
+        abort(404)
+    
     return send_file(full_path)
 
 ALLOWED_IMG = {"png", "jpg", "jpeg", "webp"}
@@ -661,8 +721,8 @@ def upload_map():
     fname = secure_filename(raw_name) or "map"
     ext = os.path.splitext(file.filename)[1].lower()
 
-    os.makedirs(os.path.join("static", "maps"), exist_ok=True)
-    out_path = os.path.join("static", "maps", fname + ext)
+    os.makedirs(DIR_STATIC_MAPS, exist_ok=True)
+    out_path = os.path.join(DIR_STATIC_MAPS, fname + ext)
     file.save(out_path)
 
     url = url_for('static', filename=f"maps/{fname}{ext}", _external=False)
@@ -703,18 +763,18 @@ def save_instance():
 
     N = len(rows)
 
-    os.makedirs("INSTANCES", exist_ok=True)
-    dat_path = os.path.join("INSTANCES", name)
+    os.makedirs(DIR_INSTANCES, exist_ok=True)
+    dat_path = os.path.join(DIR_INSTANCES, name)
 
     with open(dat_path, "w") as f:
         # Cabecera
-        f.write("/* CONJUNTOS */\n\n")
+        f.write("/* CONJUNTOS */\n")
         f.write(f"set N:= {N} ;\n\n")
-        f.write("/* PARAMETROS */\n\n")
-        f.write(f"param P:= {P} ;\n\n")
-        f.write(f"param R:= {R} ;\n\n")
-        f.write(f"param c1:= {c1} ;\n\n")
-        f.write(f"param c2:= {c2} ;\n\n")
+        f.write("/* PARAMETROS */\n")
+        f.write(f"param P:= {P} ;\n")
+        f.write(f"param R:= {R} ;\n")
+        f.write(f"param c1:= {c1} ;\n")
+        f.write(f"param c2:= {c2} ;\n")
         f.write(f'param nombre_instancia := "{nombre_instancia}" ;\n\n')
 
         # Coordenadas y parámetros
@@ -729,8 +789,8 @@ def save_instance():
 @app.route("/list_instances", methods=["GET"])
 def list_instances():
     files = []
-    os.makedirs("INSTANCES", exist_ok=True)
-    for fn in sorted(os.listdir("INSTANCES")):
+    os.makedirs(DIR_INSTANCES, exist_ok=True)
+    for fn in sorted(os.listdir(DIR_INSTANCES)):
         if fn.lower().endswith(".dat"):
             files.append(fn)
     return jsonify({"instances": files})
