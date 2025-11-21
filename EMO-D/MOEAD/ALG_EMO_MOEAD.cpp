@@ -17,39 +17,24 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 	this->InitializePopulation();
 	this->InitializeNeighborhood();
 
-	int gen = 0;
+	printf("Instance:  %s  RUN:  %d  GEN = 0 (Inicio)\n", strTestInstance, run_id);
+	this->SavePopulation(0);
+
+	int gen = 1;
 
 	for (;;)
 	{
-		std::cout << "Generación: " << gen << std::endl;
-		gen++;
 		this->EvolvePopulation();
+
+		printf("Instance:  %s  RUN:  %d  GEN = %d\n", strTestInstance, run_id, gen);
+		this->SavePopulation(gen);
 
 		if (IsTerminated())
 		{
 			break;
 		}
-
-		/* if((gen%25)==0)
-		{
-			printf("Instance:  %s  RUN:  %d  GEN = %d\n", strTestInstance, run_id, gen);
-			this->SavePopulation(run_id);
-		}
-		*/
-
-		/* if ((gen % 1) == 0) // cada 1 generación
-		{
-			char filename[1024];
-			sprintf(filename, "SAVING/MOEAD/POF/POF_%s_%d_GEN%d.dat", strTestInstance, rnd_uni_seed, gen);
-			SaveObjSpace(filename); // Guardar la población actual en el archivo
-		} */
-		// imprimir poblacion de la generacion 10
-
-		printf("Instance:  %s  RUN:  %d  GEN = %d\n", strTestInstance, run_id, gen);
-		this->SavePopulation(gen);
+		gen++;
 	}
-
-	this->SavePopulation(gen);
 
 	m_PopulationSOP.clear();
 	v_IdealPoint.clear();
@@ -544,10 +529,21 @@ void CALG_EMO_MOEAD::SaveVarSpace(char saveFilename[1024])
 
 void CALG_EMO_MOEAD::SavePopulation(int run_id)
 {
-	char filename[1024];
-	// sprintf(filename,"SAVING/MOEAD/POF/POF_%s_RUN%d.dat",strTestInstance, run_id);
-	// sprintf(filename, "SAVING/MOEAD/POF/POF_%s_GEN_%d.dat", strTestInstance, run_id);
-	sprintf(filename, "%s/SAVING/MOEAD/POF/POF_%s_GEN_%d.dat", exe_dir_path.c_str(), strTestInstance, run_id);
+	char filename[2048];
+
+	if (this->outputDirectory.empty()) {
+		this->outputDirectory = "SAVING/MOEAD/POF";
+	}
+
+	std::string cleanName= strTestInstance;
+	size_t lastindex = cleanName.find_last_of(".");
+	if (lastindex != std::string::npos) {
+		cleanName = cleanName.substr(0, lastindex);
+	}
+
+	sprintf(filename, "%s/POF_%s_GEN_%d.dat", this->outputDirectory.c_str(), cleanName.c_str(), run_id);
+
+	// sprintf(filename, "%s/SAVING/MOEAD/POF/POF_%s_GEN_%d.dat", exe_dir_path.c_str(), strTestInstance, run_id);
 
 	SaveObjSpace(filename); // ��ǰ��Ⱥ���
 

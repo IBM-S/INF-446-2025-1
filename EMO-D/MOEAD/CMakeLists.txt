@@ -16,20 +16,15 @@ set(SOURCE_FILES
 		 ALG_EMO_MAIN
 		 ALG_EMO_MOEAD_DE
 		 ALG_EMO_MOEAD
+		 DRP_ProblemInstance
 		 GlobalObject
 		 GlobalVariable
 		 IndividualBase
+		 Node_DRP
+		 Reader_DRP
 		 SubProblemBase
 		 TestInstance
 		 UtilityToolBox
-		 ProblemInstance
-		 Reader
-		 Truck
-		 Timeslot
-		 Node
-		 DRP_ProblemInstance
-		 Node_DRP
-		 Reader_DRP
         )
 
 add_executable(moead ${SOURCE_FILES})

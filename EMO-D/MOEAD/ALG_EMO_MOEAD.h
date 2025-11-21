@@ -37,6 +37,11 @@ public:
 	void SaveVarSpace(char saveFilename[1024]);
 	void SavePopulation(int run_id);
 
+std::string outputDirectory;
+void SetOutputDirectory(std::string path) {
+	this->outputDirectory = path;
+}
+
 public:
 	ProblemInstance *problemInstance;
 

@@ -287,3 +287,14 @@ Instancia: ../../datos/inst/150-11.dat, Semilla: 0, Tiempo (s): 0.299176
 Instancia: ../../datos/inst/100-3.dat, Semilla: 0, Tiempo (s): 0.160379
 Instancia: ../../datos/inst/100-3.dat, Semilla: 0, Tiempo (s): 0.134798
 Instancia: ../../datos/inst/cam_1390_MILPA_ALTA.dat, Semilla: 0, Tiempo (s): 7.75114
+Instancia: ../../datos/inst/100-3.dat, Semilla: 1, Tiempo (s): 0.348755
+Instancia: ../../datos/inst/100-3.dat, Semilla: 1, Tiempo (s): 0.127519
+Instancia: ../../datos/inst/100-3.dat, Semilla: 1, Tiempo (s): 0.123105
+Instancia: ../../datos/inst/100-3.dat, Semilla: 1, Tiempo (s): 0.156797
+Inst: 100-3.dat, Seed: 1, Route: ./../../datos/res/raw_moead/100-3, Tiempo (s): 0.117273
+Inst: 100-3.dat, Seed: 1, Route: ./../../datos/res/raw_moead/100-3, Tiempo (s): 0.060561
+Inst: 100-3.dat, Seed: 1, Dest. Route: ./../../datos/res/raw_moead/100-3, Tiempo (s): 0.062687
+Inst: 100-3.dat, Seed: 1, Dest. Route: ./../../datos/res/raw_moead/100-3, Tiempo (s): 0.058556
+Inst: 100-3.dat, Seed: 1, Dest. Route: ./../../datos/res/raw_moead/100-3, Tiempo (s): 0.071641
+Inst: 100-3.dat, Seed: 1, Dest. Route: ./MOEAD/../../datos/res/raw_moead/100-3, Tiempo (s): 0.060511
+Inst: 100-3.dat, Seed: 1, Dest. Route: ./MOEAD/../../datos/res/raw_moead/100-3, Tiempo (s): 0.012174

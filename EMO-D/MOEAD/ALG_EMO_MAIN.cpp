@@ -33,6 +33,33 @@ void set_exe_path(const char* arg0){
 	}
 }
 
+std::string PrepararDirectorioSalida(std::string nombreInstancia) {
+    
+    // 1. Limpiar extensión .dat del nombre (ej: cam_1.dat -> cam_1)
+    std::string nombreCarpeta = nombreInstancia;
+    size_t lastindex = nombreCarpeta.find_last_of("."); 
+    if (lastindex != std::string::npos) { 
+        nombreCarpeta = nombreCarpeta.substr(0, lastindex); 
+    }
+
+    // 2. Construir la ruta completa
+    // Usamos strings de C++ para concatenar fácil
+    std::string rutaCompleta = exe_dir_path + "/../../datos/res/raw_moead/" + nombreCarpeta;
+
+    std::cout << "Preparando directorio: " << rutaCompleta << std::endl;
+
+    // 3. Crear comando para crear directorio (mkdir -p crea toda la ruta si no existe)
+    std::string cmd_mkdir = "mkdir -p \"" + rutaCompleta + "\"";
+    int res_mk = system(cmd_mkdir.c_str());
+
+    // 4. Crear comando para limpiar archivos .dat viejos (rm -f evita error si no hay archivos)
+    // Borraremos rutaCompleta/*.dat
+    std::string cmd_clean = "rm -f \"" + rutaCompleta + "\"/*.dat";
+    int res_rm = system(cmd_clean.c_str());
+
+    return rutaCompleta;
+}
+
 void ResetRandSeed();
 
 int main(int argc, char *argv[])
@@ -44,7 +71,7 @@ int main(int argc, char *argv[])
 	// readf>>total_run;
 	NumberOfObjectives = 2;
 	NumberOfVariables = 324;
-	NumberOfFuncEvals = 10000;
+	NumberOfFuncEvals = 1000;
 
 	char alg_name[1024];
 
@@ -61,37 +88,47 @@ int main(int argc, char *argv[])
 	rnd_uni_seed = atoi(argv[2]);
 	NumberOfVariables = atoi(argv[3]);
 
+
 	srand(rnd_uni_seed);
 
+	// Lectura de Instancia
 	Reader r(instance);
-
 	ProblemInstance *problemInstance;
+
 	clock_t start_read = clock();
 	problemInstance = r.readInputFile();
 	clock_t end_read = clock();
-	problemInstance->printAll();
-	double read_duration = static_cast<double>(end_read - start_read) / CLOCKS_PER_SEC;
-	std::cout << "\nTiempo de lectura de la instancia: " << read_duration << " segundos.\n"
-			  << std::endl;
 
-	// sprintf(strTestInstance, instance);
-	strcpy(strTestInstance, basename(instance));
+	problemInstance->printAll();
+
+	double read_duration = static_cast<double>(end_read - start_read) / CLOCKS_PER_SEC;
+	
+	std::cout << "------------------------------------------------" << std::endl;
+    std::cout << "Instancia cargada: " << instance << std::endl;
+    std::cout << "N (Puntos): " << NumberOfVariables << std::endl;
+    std::cout << "Tiempo de lectura: " << read_duration << " s." << std::endl;
+    std::cout << "------------------------------------------------" << std::endl;
+
+	char* basec = strdup(instance);
+	char* bname = basename(basec);
+	strcpy(strTestInstance, bname);
+
+	//strcpy(strTestInstance, basename(instance));
+
+    std::string rutaSalida = PrepararDirectorioSalida(std::string(bname));
+
 
 	clock_t start, temp, finish;
 	double last = 0;
 	start = clock();
 
 	std::fstream fout;
-	char logFilename[1024];
-	// sprintf(logFilename, "SAVING/%s/LOG/LOG_%s.dat", alg_name, strTestInstance);
-	sprintf(logFilename, "%s/SAVING/%s/LOG/LOG_%s.dat", exe_dir_path.c_str(), alg_name, strTestInstance);
-
-	fout.open(logFilename, std::ios::out);
 
 	if (!strcmp(alg_name, "MOEAD"))
 	{
 		CALG_EMO_MOEAD MOEAD;
 		MOEAD.problemInstance = problemInstance;
+		MOEAD.SetOutputDirectory(rutaSalida);
 		MOEAD.Execute(1); // Se ejecuta solo una vez
 	}
 
@@ -107,20 +144,22 @@ int main(int argc, char *argv[])
 
 	// Mostrar por consola
 	std::cout << "Tiempo de ejecución: " << duration << " segundos." << std::endl;
-	std::cout << "Semilla: " << rnd_uni_seed << std::endl;
-	std::cout << "Instancia: " << instance << std::endl;
+	std::cout << "Seed: " << rnd_uni_seed << std::endl;
+	std::cout << "Inst: " << instance << std::endl;
 
 	// Guardar en archivo
 	char timeLogFilename[1024];
 	sprintf(timeLogFilename, "%s/execution_time.log", exe_dir_path.c_str());
 	std::ofstream fout_time(timeLogFilename, std::ios::app);
-	fout_time << "Instancia: " << instance
-			  << ", Semilla: " << rnd_uni_seed
+	fout_time << "Inst: " << bname
+			  << ", Seed: " << rnd_uni_seed
+			  << ", Dest. Route: " << rutaSalida
 			  << ", Tiempo (s): " << duration
 			  << std::endl;
 	fout_time.close();
 
 	std::cout << "Done!" << std::endl;
+	free(basec);
 
 	return 0;
 }
