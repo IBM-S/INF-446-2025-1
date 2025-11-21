@@ -1,5 +1,5 @@
 /* CONJUNTOS */
-set N:= 1000 ;
+param N_total:= 1000 ;
 
 /* PARAMETROS */
 param P:= 88 ;

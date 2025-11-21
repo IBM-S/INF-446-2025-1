@@ -7,6 +7,7 @@ import re
 import base64
 import json
 from werkzeug.utils import secure_filename
+import shutil
 
 def gen_number_from_path(path: str) -> int:
     """
@@ -23,7 +24,6 @@ def gen_number_from_path(path: str) -> int:
 # Cambia estos valores si mueves las carpetas.
 # ==============================================================================
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-# PROYECTO_ROOT es la carpeta principal que contiene todo
 PROYECTO_ROOT = os.path.join(BASE_DIR, "..")
 
 # Carpeta donde se guardan los archivos .dat de las instancias
@@ -31,22 +31,16 @@ DIR_DATOS = os.path.join(PROYECTO_ROOT, "datos")
 DIR_INSTANCES = os.path.join(DIR_DATOS, "inst")
 DIR_RESULTADOS = os.path.join(DIR_DATOS, "res")
 
-
+DIR_RAW_MOEAD = os.path.join(DIR_RESULTADOS, "raw_moead") 
 
 # Carpetas para los resultados procesados (caché)
 DIR_FRENTES_PARETO = os.path.join(DIR_RESULTADOS, "cache_procesada", "frentes_pareto")
 DIR_AEDS_PROCESADOS = os.path.join(DIR_RESULTADOS, "cache_procesada", "aeds")
 DIR_STATIC_MAPS = os.path.join(BASE_DIR, "static", "maps")
 
-# Ruta al ejecutable de MOEAD
-# Si está en el mismo directorio que server.py:
 DIR_MOEAD_CORE = os.path.join(PROYECTO_ROOT, "EMO-D", "MOEAD")
 PATH_MOEAD_EXEC = os.path.join(DIR_MOEAD_CORE, "MOEAD")
 
-# Carpeta donde MOEAD guarda sus resultados crudos (POF)
-DIR_SAVING_POF = os.path.join(DIR_MOEAD_CORE, "SAVING", "MOEAD", "POF")
-
-# Ruta al ejecutable de Hipervolumen (hv)
 # Asumiendo la estructura ../../material/hv-1.3-src/hv
 PATH_HV_EXEC = os.path.join(PROYECTO_ROOT, "material", "hv-1.3-src", "hv") # Asumiendo que 'material' está en la raíz
 # ==============================================================================
@@ -97,8 +91,7 @@ def calcular_referencia_global(files):
     max_y = max(p[1] for p in all_points)
     ref_x = max_x + abs(max_x) * 0.001
     ref_y = max_y + abs(max_y) * 0.001
-    if ref_x == 0:
-        ref_x = 0.1
+    if ref_x == 0: ref_x = 0.1
     print(f"Punto de referencia global: ({ref_x}, {ref_y})")
     return (ref_x, ref_y)
 
@@ -111,8 +104,7 @@ def parse_line_with_ids(line):
     Retorna (x, y, ids:list[int], flag:str|None, coverage:float|None)
     """
     s = line.strip()
-    if not s or s.startswith("#"):
-        return None
+    if not s or s.startswith("#"): return None
 
     coverage = None
     if "|" in s:
@@ -287,20 +279,26 @@ def run():
     num_var = request.json["num_var"]
 
     full_path = os.path.join(DIR_INSTANCES, instancia)
-    print(f"Ejecutando {PATH_MOEAD_EXEC} en el directorio de trabajo {DIR_MOEAD_CORE}")
+    print(f"Ejecutando MOEAD con instancia {instancia}")
 
     subprocess.run([PATH_MOEAD_EXEC, full_path, str(semilla), str(num_var)], cwd=DIR_MOEAD_CORE)
 
     base_name = parse_instance_name(instancia)
-    patron_busqueda = os.path.join(DIR_SAVING_POF, f"POF_{instancia}_GEN_*.dat")
+    instance_raw_dir = os.path.join(DIR_RAW_MOEAD, base_name)
+    patron_busqueda = os.path.join(instance_raw_dir, f"POF_{base_name}_GEN_*.dat")
     raw_files = glob.glob(patron_busqueda)
     #print("[/run] POF encontrados:", raw_files, flush=True)
     raw_files = sorted(raw_files, key=gen_number_from_path)
     #print("[/run] POF GEN ordenados:", [gen_number_from_path(p) for p in raw_files], flush=True)
+    
     hv_results = []
 
     fp_folder = os.path.join(DIR_FRENTES_PARETO, base_name)
     aeds_folder = os.path.join(DIR_AEDS_PROCESADOS, base_name)
+    
+    if os.path.exists(fp_folder): shutil.rmtree(fp_folder)
+    if os.path.exists(aeds_folder): shutil.rmtree(aeds_folder)
+
     os.makedirs(fp_folder, exist_ok=True)
     os.makedirs(aeds_folder, exist_ok=True)
 
@@ -313,7 +311,8 @@ def run():
     aed_files = []
     with open(resumen_path, "w") as resumen_file:
         resumen_file.write(f"{ref_point[0]} {ref_point[1]}\n")
-        for i, file in enumerate(raw_files, start=1):
+        for i, file in enumerate(raw_files):
+            actual_gen = gen_number_from_path(file)
             entries_raw = []
             with open(file) as f:
                 for ln in f:
@@ -324,7 +323,7 @@ def run():
 
             if not entries_raw:
                 hv_results.append(0.0)
-                resumen_file.write(f"GEN{i} 0.0\n")
+                resumen_file.write(f"GEN{actual_gen} 0.0\n")
                 continue
 
             # separar P/D
@@ -336,26 +335,27 @@ def run():
             # calcular cobertura para cada punto
             entries_all = []
             for (x, y, ids, is_par) in (nd_entries + dom_entries):
-                coords_inst = [coords_by_id[i] for i in ids if i in coords_by_id]
+                coords_inst = [coords_by_id[k] for k in ids if k in coords_by_id]
                 _, prob_cov, porc, _, _ = cobertura_por_ids(coords_inst, demanda, preinst_coords, radio)
                 entries_all.append((x, y, ids, is_par, porc))
 
-            aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{i}.dat")
+            aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{actual_gen}.dat")
             coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
             aed_files.append(aeds_file)
 
-            fp_file = os.path.join(fp_folder, f"{base_name}_GEN{i}.dat")
+            fp_file = os.path.join(fp_folder, f"{base_name}_GEN{actual_gen}.dat")
             save_front_to_file(coords_for_hv, fp_file)
 
-            hv = calculate_hv(fp_file, ref_point, gen_number=i) or 0.0
+            hv = calculate_hv(fp_file, ref_point, gen_number=actual_gen) or 0.0
             hv_results.append(hv)
-            resumen_file.write(f"GEN{i} {hv:.4f}\n")
+            resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
         resumen_file.write("#\n")
 
     """ print("Archivos AEDs que voy a devolver al front:")
     for f in aed_files:
         print(f, os.path.exists(f)) """
-    files_relativos = [os.path.relpath(f, BASE_DIR) for f in aed_files]
+
+    files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files]
 
     return jsonify({"files": files_relativos, "hv": hv_results})
 
@@ -377,30 +377,20 @@ def load():
         key=gen_number_from_path
     )
 
-    # --- LÓGICA DE CARGA RÁPIDA (CACHE) ---
-    # CORRECCIÓN: Ahora comprobamos 'not recalcular' primero.
-    # Solo intentamos usar la caché si NO se ha pedido recalcular.
     if not recalcular and os.path.exists(resumen_path) and aed_files:
         hv_results = []
         with open(resumen_path) as f:
             lines = [line.strip() for line in f if line.strip() and not line.startswith("#")]
             if len(lines) > 1:
                 hv_results = [float(line.split()[1]) for line in lines[1:]]
-        files_relativos = [os.path.relpath(f, BASE_DIR) for f in aed_files]
-        print(f"[/load] Éxito: Cargando datos cacheados para {instancia}")
+        files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files]
+        print(f"[/load] Éxito: Cargando cache para {instancia}")
         return jsonify({"files": files_relativos, "hv": hv_results})
 
-    # --- DECISIÓN CLAVE ---
-    # Si llegamos aquí, es porque:
-    #   A) Se pidió recalcular (recalcular=True).
-    #   B) No se pidió recalcular, pero los archivos de caché no existen.
-
-    # Si estamos en modo estricto (viene de "Ver todas") Y los archivos no existen,
-    # entonces no hacemos nada.
-    # CORRECCIÓN: La condición 'not aed_files' asegura que esto solo se active si la caché no existe.
     if is_strict_mode and not aed_files:
         print(f"[/load] Modo Estricto: No se encontraron datos cacheados para {instancia}. No se recalculará.")
         return jsonify({"files": [], "hv": []})
+
 
     # Si llegamos aquí, DEFINITIVAMENTE tenemos que procesar los archivos crudos.
     if recalcular:
@@ -408,26 +398,36 @@ def load():
     else:
         print(f"[/load] Aviso: No se encontraron datos cacheados para {instancia}. Se procesarán los resultados crudos.")
 
-    patron_pof = os.path.join(DIR_SAVING_POF, f"POF_{instancia}_GEN_*.dat")
+    instance_raw_dir = os.path.join(DIR_RAW_MOEAD, base_name)
+
+    patron_pof = os.path.join(instance_raw_dir, f"POF_{base_name}_GEN_*.dat")
     raw_files = sorted(
         glob.glob(patron_pof), 
         key=gen_number_from_path
     )
     if not raw_files:
-        print(f"[/load] Error: No se encontraron archivos crudos (POF) para {instancia} para recalcular.")
+        print(f"[/load] Error: No hay archivos crudos en {instance_raw_dir} para recalcular.")
         return jsonify({"files": [], "hv": []})
+
+    if os.path.exists(fp_folder): 
+        print("Carpeta a eliminar frente de pareto ",fp_folder)
+        shutil.rmtree(fp_folder)
+    if os.path.exists(aeds_folder):
+        print("Carpeta a eliminar aeds ",aeds_folder)
+        shutil.rmtree(aeds_folder)
+
+    os.makedirs(fp_folder, exist_ok=True)
+    os.makedirs(aeds_folder, exist_ok=True)
 
     nodes, coords_by_id, demanda, preinst_coords, radio = cargar_instancia_coords_y_demanda(os.path.join(DIR_INSTANCES, instancia))
     ref_point = calcular_referencia_global(raw_files)
     hv_results = []
     aed_files_recalculados = []
 
-    os.makedirs(fp_folder, exist_ok=True)
-    os.makedirs(aeds_folder, exist_ok=True)
-
     with open(resumen_path, "w") as resumen_file:
         resumen_file.write(f"{ref_point[0]} {ref_point[1]}\n")
-        for i, file in enumerate(raw_files, start=1):
+        for i, file in enumerate(raw_files):
+            actual_gen = gen_number_from_path(file)
             entries_raw = []
             with open(file) as f:
                 for ln in f:
@@ -438,7 +438,7 @@ def load():
 
             if not entries_raw:
                 hv_results.append(0.0)
-                resumen_file.write(f"GEN{i} 0.0\n")
+                resumen_file.write(f"GEN{actual_gen} 0.0\n")
                 continue
 
             nd_idx = get_non_dominated_idx([(x, y) for (x, y, _) in entries_raw])
@@ -448,23 +448,23 @@ def load():
 
             entries_all = []
             for (x, y, ids, is_par) in (nd_entries + dom_entries):
-                coords_inst = [coords_by_id[i] for i in ids if i in coords_by_id]
+                coords_inst = [coords_by_id[k] for k in ids if k in coords_by_id]
                 _, prob_cov, porc, _, _ = cobertura_por_ids(coords_inst, demanda, preinst_coords, radio)
                 entries_all.append((x, y, ids, is_par, porc))
 
-            aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{i}.dat")
+            aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{actual_gen}.dat")
             coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
             aed_files_recalculados.append(aeds_file)
 
-            fp_file = os.path.join(fp_folder, f"{base_name}_GEN{i}.dat")
+            fp_file = os.path.join(fp_folder, f"{base_name}_GEN{actual_gen}.dat")
             save_front_to_file(coords_for_hv, fp_file)
 
-            hv = calculate_hv(fp_file, ref_point, gen_number=i) or 0.0
+            hv = calculate_hv(fp_file, ref_point, gen_number=actual_gen) or 0.0
             hv_results.append(hv)
-            resumen_file.write(f"GEN{i} {hv:.4f}\n")
+            resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
         resumen_file.write("#\n")
 
-    files_relativos = [os.path.relpath(f, BASE_DIR) for f in aed_files_recalculados]
+    files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files_recalculados]
     return jsonify({"files": files_relativos, "hv": hv_results})
 
 def compress_ranges(seq):
@@ -484,7 +484,6 @@ def compress_ranges(seq):
         s = p = v
     out.append(f"{s}-{p}" if s != p else f"{s}")
     return ", ".join(out)
-
 
 
 # ------------------- /map -------------------
@@ -554,13 +553,13 @@ def generar_mapa():
     fig, ax = plt.subplots(figsize=(15, 8), dpi=180)
 
     # Demanda no cubierta
-    ax.scatter(demanda_x, demanda_y, s=demanda_s, c='blue', label='Nodos de Demanda', alpha=0.6, edgecolors='k')
+    ax.scatter(demanda_x, demanda_y, s=demanda_s, c='blue', label='Nodos Demanda', alpha=0.6, edgecolors='k')
     # Origen AEDs movidos
     ax.scatter(movidos_x, movidos_y, s=movidos_s, facecolors='none', edgecolors='red', linewidth=1.5, label='AED movido')
     # AEDs preinstalados que se quedaron
-    ax.scatter(existentes_x, existentes_y, c='orange', s=120, marker='*', label='Equipo Preinstalado (mantenido)', edgecolors='k', zorder=4)
+    ax.scatter(existentes_x, existentes_y, c='orange', s=120, marker='*', label='Preinstalado (mantenido)', edgecolors='k', zorder=4)
     # Nuevos AEDs instalados
-    ax.scatter(nuevos_x, nuevos_y, c='green', s=120, marker='*', label='AED instalado (Nuevo)', edgecolors='k', zorder=5)
+    ax.scatter(nuevos_x, nuevos_y, c='green', s=120, marker='*', label='AED nuevo', edgecolors='k', zorder=5)
    
 
     for x, y in coords_finales_aeds:
@@ -679,7 +678,7 @@ def map_json():
 def get_file(filename):
     # Normaliza y evita salirte del proyecto
     safe_path = os.path.normpath(filename).lstrip(os.sep)
-    full_path = os.path.join(BASE_DIR, safe_path)
+    full_path = os.path.join(PROYECTO_ROOT, safe_path)
 
     # Log para depurar
     # print("[/get] filename:", filename, flush=True)
@@ -776,7 +775,7 @@ def save_instance():
     with open(dat_path, "w") as f:
         # Cabecera
         f.write("/* CONJUNTOS */\n")
-        f.write(f"set N:= {N} ;\n\n")
+        f.write(f"param N_total:= {N} ;\n\n")
         f.write("/* PARAMETROS */\n")
         f.write(f"param P:= {P} ;\n")
         f.write(f"param R:= {R} ;\n")

@@ -728,9 +728,9 @@
         });
         frames.push(puntos);
       }
-      showGeneration(0); sliderContainer.style.display = 'block'; slider.max = frames.length - 1; slider.value = 0; genNum.innerText = 1;
+      showGeneration(0); sliderContainer.style.display = 'block'; slider.max = frames.length - 1; slider.value = 0; genNum.innerText = 0;
       // HV
-      Plotly.newPlot('hv-plot', [{ x: hvValues.map((_, i) => i + 1), y: hvValues, mode: 'lines+markers', marker: { color: 'green' }, line: { color: 'green' }, name: 'Hipervolumen' }], { title: 'Evolución del Hipervolumen', xaxis: { title: 'Generación' }, yaxis: { title: 'Hipervolumen' }, paper_bgcolor: '#fff', plot_bgcolor: '#fff' });
+      Plotly.newPlot('hv-plot', [{ x: hvValues.map((_, i) => i), y: hvValues, mode: 'lines+markers', marker: { color: 'green' }, line: { color: 'green' }, name: 'Hipervolumen' }], { title: 'Evolución del Hipervolumen', xaxis: { title: 'Generación' }, yaxis: { title: 'Hipervolumen' }, paper_bgcolor: '#fff', plot_bgcolor: '#fff' });
       document.getElementById('hv-plot').on('plotly_click', d => { const gen = d.points[0].x; slider.value = gen - 1; genNum.innerText = gen; showGeneration(gen - 1); });
       // Historial
       const traces = frames.map((pts, idx) => { const hasFlag = pts.every(p => typeof p.isPareto === 'boolean'); const all = hasFlag ? pts : findParetoFront(pts); const pareto = all.filter(p => p.isPareto); const color = getMultiColor(idx / Math.max(1, (frames.length - 1))); return { x: pareto.map(p => p.x), y: pareto.map(p => p.y), mode: 'markers', marker: { size: 6, color }, name: `Gen ${idx + 1}`, showlegend: false }; });
@@ -746,7 +746,7 @@
       const dominatedPoints = allPoints.filter(p => !p.isPareto);
 
       const layout = {
-        title: `Frente de Pareto - Gen ${index + 1}`,
+        title: `Frente de Pareto - Gen ${index}`,
         xaxis: { title: 'Minimizar Cobertura (f1)' },
         yaxis: { title: 'Minimizar Costos (f2)' },
         legend: { x: 1, y: 1, xanchor: 'right', yanchor: 'top', bgcolor: 'rgba(255,255,255,.08)', bordercolor: '#333', borderwidth: 1 },
@@ -906,7 +906,7 @@
       }
     });
 
-    slider.addEventListener('input', () => { const i = parseInt(slider.value, 10); genNum.innerText = i + 1; showGeneration(i); });
+    slider.addEventListener('input', () => { const i = parseInt(slider.value, 10); genNum.innerText = i; showGeneration(i); });
     $('#btn-ejecutar').addEventListener('click', runNow);
     $('#load-btn').addEventListener('click', loadSaved);
     fixScaleCheckbox.addEventListener('change', () => showGeneration(parseInt(slider.value || '0', 10)));
@@ -1086,7 +1086,7 @@
       await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
       // HV
       Plotly.newPlot('hv-' + id,
-        [{ x: hv.map((_, i) => i + 1), y: hv, mode: 'lines+markers', name: 'HV' }],
+        [{ x: hv.map((_, i) => i), y: hv, mode: 'lines+markers', name: 'HV' }],
         {
           title: 'Hipervolumen', xaxis: { title: 'Generación' }, yaxis: { title: 'HV' },
           paper_bgcolor: '#fff', plot_bgcolor: '#fff'
@@ -1123,7 +1123,7 @@
       slider.addEventListener('input', () => {
         const i = parseInt(slider.value, 10);
         currentGenIndex[inst] = i;              // ← guarda la gen actual
-        genLbl.textContent = i + 1;
+        genLbl.textContent = i;
         showGenInCard(inst, id, i);
       });
 
@@ -1143,7 +1143,7 @@
       const dom = allPoints.filter(p => !p.isPareto);
 
       const layout = {
-        title: `Frente – Gen ${index + 1}`,
+        title: `Frente – Gen ${index}`,
         xaxis: { title: 'f1' }, yaxis: { title: 'f2' },
         paper_bgcolor: '#fff', plot_bgcolor: '#fff',
         hovermode: 'closest'
