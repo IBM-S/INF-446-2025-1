@@ -1,25 +1,27 @@
 #reset ;
 
 model mo_location_model.mod;
-data DRP_con_probs.dat;
-# data casos_dats_prob/100-3.dat;
-# data casos_dats_prob/alcaldia_milpa_alta.dat;
-# data "casos_dats_prob/alcaldia_alvaro obregon.dat";
-# data casos_dats_prob/alcaldia_azcapotzalco.dat;
-# data casos_dats_prob/alcaldia_benito_juarez.dat;
-# data casos_dats_prob/alcaldia_coyoacan.dat;
-# data casos_dats_prob/alcaldia_cuajimalpa.dat;
-# data casos_dats_prob/alcaldia_cuauhtemoc.dat;
-# data casos_dats_prob/alcaldia_gustavo_a_madero.dat;
-# data casos_dats_prob/alcaldia_iztacalco.dat;
-# data casos_dats_prob/alcaldia_iztapalapa.dat;
-# data casos_dats_prob/alcaldia_la_magdalena_contreras.dat;
-# data casos_dats_prob/alcaldia_miguel_hidalgo.dat;
-# data casos_dats_prob/alcaldia_milpa_alta.dat;
-# data casos_dats_prob/alcaldia_tlahuac.dat;
-# data casos_dats_prob/alcaldia_tlalpan.dat;
-# data casos_dats_prob/alcaldia_venustiano.dat;
-# data casos_dats_prob/alcaldia_xochimilco.dat;
+# data DRP_con_probs.dat;
+# data ../datos/inst/100-3.dat;
+# data ../datos/inst/100-3.dat;
+# data ../datos/inst/100-3.dat;
+
+data ../datos/inst/cam_1390_MILPA_ALTA.dat;
+# data ../datos/inst/cam_1800_CUAJIMALPA_DE_MORELOS.dat;
+# data ../datos/inst/cam_3205_LA_MAGDALENA_CONTRERAS.dat;
+# data ../datos/inst/cam_7256_TLAHUAC.dat;
+# data ../datos/inst/cam_7408_XOCHIMILCO.dat;
+# data ../datos/inst/cam_9673_AZCAPOTZALCO.dat;
+# data ../datos/inst/cam_11096_IZTACALCO.dat;
+# data ../datos/inst/cam_11410_TLALPAN.dat;
+# data ../datos/inst/cam_11476_BENITO_JUAREZ.dat;
+# data ../datos/inst/cam_12319_COYOACAN.dat;
+# data ../datos/inst/cam_13802_MIGUEL_HIDALGO.dat;
+# data ../datos/inst/cam_14468_VENUSTIANO_CARRANZA.dat;
+# data ../datos/inst/cam_15743_ALVARO_OBREGON.dat;
+# data ../datos/inst/cam_22238_CUAUHTEMOC.dat;
+# data ../datos/inst/cam_24363_GUSTAVO_A._MADERO.dat;
+# data ../datos/inst/cam_40264_IZTAPALAPA.dat;
 
 data conf_execution.dat;
 

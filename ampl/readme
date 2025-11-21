@@ -1,4 +1,4 @@
-txt_to_dat_with_prob.py
+txt_to_dat.py
 toma la carpeta casos_txt y por cada archivo los convierte en .dat
 
 txt_to_dat_with_prob.py
