@@ -33,7 +33,7 @@ void set_exe_path(const char* arg0){
 	}
 }
 
-std::string PrepararDirectorioSalida(std::string nombreInstancia) {
+std::string PrepararDirectorioSalida(std::string nombreInstancia, std::string tipoProblema) {
     
     // 1. Limpiar extensión .dat del nombre (ej: cam_1.dat -> cam_1)
     std::string nombreCarpeta = nombreInstancia;
@@ -44,9 +44,9 @@ std::string PrepararDirectorioSalida(std::string nombreInstancia) {
 
     // 2. Construir la ruta completa
     // Usamos strings de C++ para concatenar fácil
-    std::string rutaCompleta = exe_dir_path + "/../datos/res/raw_moead/" + nombreCarpeta;
+    std::string rutaCompleta = exe_dir_path + "/../datos/res/raw_moead/" + tipoProblema + "/" + nombreCarpeta;
 
-    std::cout << "Preparando directorio: " << rutaCompleta << std::endl;
+    //std::cout << "Preparando directorio: " << rutaCompleta << std::endl;
 
     // 3. Crear comando para crear directorio (mkdir -p crea toda la ruta si no existe)
     std::string cmd_mkdir = "mkdir -p \"" + rutaCompleta + "\"";
@@ -59,6 +59,8 @@ std::string PrepararDirectorioSalida(std::string nombreInstancia) {
 
     return rutaCompleta;
 }
+
+// ... includes y funciones previas (set_exe_path, PrepararDirectorioSalida) ...
 
 void PrintUsage() {
     std::cout << "\n==========================================================" << std::endl;
@@ -74,10 +76,13 @@ void PrintUsage() {
 
     std::cout << "\n--- Configuración del Algoritmo ---" << std::endl;
     std::cout << "  -alg <string>     : Algoritmo: 'MOEAD' o 'MOEAD-DE' (Defecto: MOEAD)" << std::endl;
+    std::cout << "  -seed <int>       : Semilla aleatoria (Defecto: 123)" << std::endl;
     std::cout << "  -pop <int>        : Tamaño Población (Sobrescribe MOEAD.txt)" << std::endl;
     std::cout << "  -neighbor <int>   : Tamaño Vecindario T (Sobrescribe MOEAD.txt)" << std::endl;
-    std::cout << "  -seed <int>       : Semilla aleatoria (Defecto: 123)" << std::endl;
-    std::cout << "  -neval <int>      : Número máx. de evaluaciones (Criterio de parada) (Defecto: 1000)" << std::endl;
+    
+    std::cout << "\n--- Criterios de Parada ---" << std::endl;
+    std::cout << "  -neval <int>      : Número máx. de evaluaciones (Defecto: 1000)" << std::endl;
+    std::cout << "  -time <double>    : Tiempo máx. de ejecución en segundos (0 = Sin límite) (Defecto: 0)" << std::endl;
 
     std::cout << "\n--- Parámetros Evolutivos ---" << std::endl;
     std::cout << "  -mut <double>     : Tasa de Mutación Global [0.0 - 1.0] (Defecto: 0.05)" << std::endl;
@@ -112,6 +117,8 @@ int main(int argc, char *argv[])
     std::string problemType = "cam";  // o "drp"
     std::string algName = "MOEAD";
 
+    double maxTime = 0; 
+
 	if (argc < 2) {
         PrintUsage();
         return 0;
@@ -124,18 +131,24 @@ int main(int argc, char *argv[])
         if (arg == "-inst") { if (i + 1 < argc) instancePath = argv[++i]; }
         else if (arg == "-seed") { if (i + 1 < argc) rnd_uni_seed = atoi(argv[++i]); }
         else if (arg == "-nvars") { if (i + 1 < argc) NumberOfVariables = atoi(argv[++i]); }
-        else if (arg == "-neval") { if (i + 1 < argc) NumberOfFuncEvals = atoi(argv[++i]); } 
+        
+        // Criterios de parada
+		else if (arg == "-neval") { if (i + 1 < argc) NumberOfFuncEvals = atoi(argv[++i]); } 
+        else if (arg == "-time") { if (i + 1 < argc) maxTime = atof(argv[++i]); } 
+        
+        // Configuración Algoritmo
+        else if (arg == "-pop") { if (i + 1 < argc) userPop = atoi(argv[++i]); }
+        else if (arg == "-neighbor") { if (i + 1 < argc) userNeighbor = atoi(argv[++i]); }
 
+        // Evolutivos
         else if (arg == "-mut") { if (i + 1 < argc) mutationRate = atof(argv[++i]); }
         else if (arg == "-cross") { if (i + 1 < argc) crossoverRate = atof(argv[++i]); }
         else if (arg == "-op1") { if (i + 1 < argc) op1Prob = atof(argv[++i]); }
 
+        // Tipos
         else if (arg == "-variant") { if (i + 1 < argc) variant = argv[++i]; }
         else if (arg == "-type") { if (i + 1 < argc) problemType = argv[++i]; }
-
         else if (arg == "-alg") { if (i + 1 < argc) algName = argv[++i]; }
-        else if (arg == "-pop" || arg == "-population") {  if (i + 1 < argc) userPop = atoi(argv[++i]); }
-        else if (arg == "-neighbor" || arg == "-T") { if (i + 1 < argc) userNeighbor = atoi(argv[++i]); }
     }
 
 
@@ -155,10 +168,14 @@ int main(int argc, char *argv[])
 
 	double read_duration = static_cast<double>(end_read - start_read) / CLOCKS_PER_SEC;
 
+    if (problemInstance->getNodes().size() > 0) {
+        NumberOfVariables = problemInstance->getNodes().size();
+    }
+
 	char* basec = strdup(instancePath.c_str());
 	char* bname = basename(basec);
 	strcpy(strTestInstance, bname);
-    std::string rutaSalida = PrepararDirectorioSalida(std::string(bname));
+    std::string rutaSalida = PrepararDirectorioSalida(std::string(bname), problemType);
 
     // 2 Configuracion del algoritmo
     CALG_EMO_MOEAD* algoritmo = nullptr; // Puntero base (si usaras polimorfismo sería ideal)
@@ -197,26 +214,28 @@ int main(int argc, char *argv[])
     std::cout << " [1] INFORMACIÓN DE LA INSTANCIA" << std::endl;
     std::cout << "     Archivo       : " << bname << std::endl;
     std::cout << "     Tiempo Lectura: " << read_duration << " s" << std::endl;
-    problemInstance->printAll(); // Llama a la función mejorada en DRP_ProblemInstance
+    problemInstance->printAll(); 
 
     std::cout << "\n [2] CONFIGURACIÓN DEL ALGORITMO" << std::endl;
     std::cout << "     Algoritmo     : " << algName << std::endl;
     std::cout << "     Tipo Problema : " << problemType << std::endl;
     std::cout << "     Variante      : " << variant << (variant == "relocation" ? " (Flexible)" : " (Fija)") << std::endl;
     std::cout << "     Semilla (Seed): " << rnd_uni_seed << std::endl;
+    std::cout << "     Población     : " << finalPop << (userPop > 0 ? " (Manual)" : " (Archivo)") << std::endl;
+    std::cout << "     Vecindario (T): " << finalNeighbor << (userNeighbor > 0 ? " (Manual)" : " (Archivo)") << std::endl;
+    std::cout << "     N de variables: " << NumberOfVariables << std::endl;
+    
+    std::cout << "\n [3] CRITERIOS DE PARADA" << std::endl;
     std::cout << "     Evaluaciones  : " << NumberOfFuncEvals << std::endl;
-    std::string popSource = (userPop > 0) ? "(Manual)" : "(Archivo Default)";
-    std::string neighborSource = (userNeighbor > 0) ? "(Manual)" : "(Archivo Default)";
-    std::cout << "     Población     : " << finalPop << " " << popSource << std::endl;
-    std::cout << "     Vecindario (T): " << finalNeighbor << " " << neighborSource << std::endl;
+    std::cout << "     Tiempo Máx    : " << (maxTime > 0 ? std::to_string(maxTime) + " s" : "Sin Límite") << std::endl;
 
-    std::cout << "\n [3] PARÁMETROS EVOLUTIVOS" << std::endl;
+    std::cout << "\n [4] PARÁMETROS EVOLUTIVOS" << std::endl;
     std::cout << "     Mutación Global : " << mutationRate * 100.0 << "%" << std::endl;
     std::cout << "     Prob. Op1 (Del) : " << op1Prob * 100.0 << "%" << std::endl;
     std::cout << "     Prob. Op2 (Swap): " << (1.0 - op1Prob) * 100.0 << "%" << std::endl;
     std::cout << "     Cruzamiento     : " << crossoverRate * 100.0 << "%" << std::endl;
     
-    std::cout << "\n [4] SALIDA DE DATOS" << std::endl;
+    std::cout << "\n [5] SALIDA DE DATOS" << std::endl;
     std::cout << "     Destino       : " << rutaSalida << std::endl;
     std::cout << "==========================================================\n" << std::endl;
 
@@ -234,6 +253,7 @@ int main(int argc, char *argv[])
         MOEAD.SetProblemType(problemType);
         MOEAD.SetVariant(variant); // Configura m_IsRelocation internamente
         MOEAD.SetOutputDirectory(rutaSalida);
+        MOEAD.SetMaxTime(maxTime);
 
 		MOEAD.Execute(1); // Se ejecuta solo una vez
 	}
@@ -249,25 +269,29 @@ int main(int argc, char *argv[])
 	// Mostrar por consola
 	std::cout << "\n------------------------------------------------" << std::endl;
     std::cout << " ESTADO FINAL: TERMINADO" << std::endl;
+    if (maxTime > 0 && duration >= maxTime) std::cout << " NOTA: Detenido por Límite de Tiempo." << std::endl;
     std::cout << " Tiempo Total: " << duration << " segundos." << std::endl;
     std::cout << "------------------------------------------------" << std::endl;
 
 	// Guardar en archivo
 	char timeLogFilename[1024];
-	sprintf(timeLogFilename, "%s/execution_time.log", exe_dir_path.c_str());
+	sprintf(timeLogFilename, "%s/execution_log.csv", exe_dir_path.c_str());
+    bool writeHeader = false;
+    std::ifstream checkFile(timeLogFilename);
+    if (!checkFile.good() || checkFile.peek() == std::ifstream::traits_type::eof()) writeHeader = true;
+    checkFile.close();
+
 	std::ofstream fout_time(timeLogFilename, std::ios::app);
-	fout_time << "Inst: " << bname
-			  << ", Problem Type: " << problemType
-			  << ", variant: " << variant
-              << ", N Var: " << NumberOfVariables
-              << ", N Eval: " << NumberOfFuncEvals
-			  << ", Seed: " << rnd_uni_seed
-			  << ", Mutation Rate: " << mutationRate
-			  << ", Op1 Prob: " << op1Prob
-              << ", Crossover Rate: " << crossoverRate
-              << ", Time: " << duration
-              << std::endl;
+        if (writeHeader) fout_time << "Instance,Alg,Type,Variant,Pop,Neigh,NVars,NEvals,MaxTime,Seed,Mut,Op1,Cross,Time_s,OutDir" << std::endl;
+
+	fout_time << bname << "," << algName << "," << problemType << "," << variant << ","
+              << finalPop << "," << finalNeighbor << "," << NumberOfVariables << ","
+              << NumberOfFuncEvals << "," << maxTime << "," << rnd_uni_seed << "," 
+              << mutationRate << "," << op1Prob << "," << crossoverRate << "," 
+              << duration << "," << rutaSalida << std::endl;
 	fout_time.close();
+
+	std::cout << "Log guardado en execution_log.csv" << std::endl;
 
 	std::cout << "Done!" << std::endl;
 	free(basec);

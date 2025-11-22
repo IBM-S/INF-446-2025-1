@@ -11,6 +11,7 @@ CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
     m_ProblemType = "cam";
 	s_PopulationSize = 0;
     s_NeighborhoodSize = 0;
+	m_MaxTimeSeconds = 0; // Sin límite por defecto
 }
 
 CALG_EMO_MOEAD::~CALG_EMO_MOEAD(void)
@@ -23,6 +24,8 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 	//this->InitializeParameter();
 	this->InitializePopulation();
 	this->InitializeNeighborhood();
+
+	clock_t start_clock = clock();
 
 	printf("Instance:  %s  RUN:  %d  GEN = 0 (Inicio)\n", strTestInstance, run_id);
 	this->SavePopulation(0);
@@ -40,6 +43,15 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 		{
 			break;
 		}
+
+		if (m_MaxTimeSeconds > 0) {
+            double elapsed = (double)(clock() - start_clock) / CLOCKS_PER_SEC;
+            if (elapsed >= m_MaxTimeSeconds) {
+                printf(">>> TIMEOUT ALCANZADO (%g s). Deteniendo en Gen %d.\n", elapsed, gen);
+                break; // Salir del bucle
+            }
+        }
+
 		gen++;
 	}
 

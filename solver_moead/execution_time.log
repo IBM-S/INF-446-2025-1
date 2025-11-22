@@ -338,3 +338,6 @@ Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000
 Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.076437
 Inst: cam_1390_MILPA_ALTA.dat, Problem Type: cam, variant: location, N Var: 1390, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 2.30899
 Inst: cam_1390_MILPA_ALTA.dat, Problem Type: cam, variant: location, N Var: 1390, N Eval: 5000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 8.39712
+Inst: cam_1390_MILPA_ALTA.dat, Problem Type: cam, variant: location, N Var: 1390, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 3.86659
+Inst: cam_1390_MILPA_ALTA.dat, Problem Type: cam, variant: location, N Var: 1390, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 3.34438
+Inst: cam_1390_MILPA_ALTA.dat, Problem Type: cam, variant: location, Population: 100, Neighborhood: 40, N Var: 1390, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 3.79807

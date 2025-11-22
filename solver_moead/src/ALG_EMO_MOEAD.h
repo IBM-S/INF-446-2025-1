@@ -53,6 +53,8 @@ public:
     }
 	void SetPopulationSize(int p) { s_PopulationSize = p; }
     void SetNeighborhoodSize(int n) { s_NeighborhoodSize = n; }
+	void SetMaxTime(double t) { m_MaxTimeSeconds = t; }
+
 
 public:
 	ProblemInstance *problemInstance;
@@ -78,5 +80,6 @@ private:
     bool m_IsRelocation;        // true = con reubicación, false = sin reubicación
     std::string m_ProblemType;  // Para logs o lógica específica (CAM/DRP)
 
+	double m_MaxTimeSeconds; // Tiempo máximo en segundos (0 = sin límite)
 
 };

@@ -1,0 +1,12 @@
+Instance,Alg,Type,Variant,PopSize,Neighbor,NVars,NEvals,Seed,Mut,Op1,Cross,Time_s
+cam_1390_MILPA_ALTA.dat,MOEAD,cam,location,100,40,1390,1000,123,0.05,0.5,1,1.85238
+cam_1390_MILPA_ALTA.dat,MOEAD,cam,location,100,40,1390,1000,123,0.05,0.5,1,2.75666
+cam_1800_CUAJIMALPA_DE_MORELOS.dat,MOEAD,cam,location,100,40,1390,1000,123,0.05,0.5,1,1.61235
+cam_1800_CUAJIMALPA_DE_MORELOS.dat,MOEAD,cam,location,100,40,1390,1000,123,0.05,0.5,1,1.46351
+cam_1800_CUAJIMALPA_DE_MORELOS.dat,MOEAD,cam,location,100,40,1390,1000,1,123,0.05,0.5,1,1.51754,./../datos/res/raw_moead/cam/cam_1800_CUAJIMALPA_DE_MORELOS
+cam_1800_CUAJIMALPA_DE_MORELOS.dat,MOEAD,cam,location,100,40,1390,1000,1,123,0.05,0.5,1,1.65284,./../datos/res/raw_moead/cam/cam_1800_CUAJIMALPA_DE_MORELOS
+cam_1390_MILPA_ALTA.dat,MOEAD,cam,location,100,20,1390,10000,0,101,0.05,0.5,1,24.7778,./../datos/res/raw_moead/cam/cam_1390_MILPA_ALTA
+cam_1390_MILPA_ALTA.dat,MOEAD,cam,location,100,20,1390,10000,0,102,0.05,0.5,1,25.2474,./../datos/res/raw_moead/cam/cam_1390_MILPA_ALTA
+cam_1800_CUAJIMALPA_DE_MORELOS.dat,MOEAD,cam,location,100,40,1800,1000,1,123,0.05,0.5,1,1.35753,./../datos/res/raw_moead/cam/cam_1800_CUAJIMALPA_DE_MORELOS
+cam_1390_MILPA_ALTA.dat,MOEAD,cam,location,100,20,1390,10000,0,101,0.05,0.5,1,24.9885,./../datos/res/raw_moead/cam/cam_1390_MILPA_ALTA
+cam_1390_MILPA_ALTA.dat,MOEAD,cam,location,100,20,1390,10000,0,102,0.05,0.5,1,27.2554,./../datos/res/raw_moead/cam/cam_1390_MILPA_ALTA
