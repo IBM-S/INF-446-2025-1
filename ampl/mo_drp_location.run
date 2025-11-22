@@ -2,10 +2,10 @@ reset ;
 
 
 model mo_location_model.mod;
-# data DRP_con_probs.dat;
+data DRP_con_probs.dat;
+# data casos_dats_prob/100-3.dat;
 # data ../datos/inst/100-3.dat;
-
-data ../datos/inst/cam_1390_MILPA_ALTA.dat;
+# data ../datos/inst/cam_1390_MILPA_ALTA.dat;
 # data ../datos/inst/cam_1800_CUAJIMALPA_DE_MORELOS.dat;
 # data ../datos/inst/cam_3205_LA_MAGDALENA_CONTRERAS.dat;
 # data ../datos/inst/cam_7256_TLAHUAC.dat;

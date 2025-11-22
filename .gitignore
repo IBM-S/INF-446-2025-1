@@ -14,5 +14,7 @@ ampl/venv/
 datos/geo/
 datos/res/
 
+solver_moead/venv/
+
 
 visualizador_web/venv/
