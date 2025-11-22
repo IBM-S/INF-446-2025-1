@@ -1,0 +1,19 @@
+alcaldia                        #delitos de alto impacto       km2  #camaras
+----------------------------------------------------------------------------
+ALVARO OBREGON                                     14770     70.36       973
+AZCAPOTZALCO                                        8915     33.52       758
+BENITO JUAREZ                                      10598     26.65       878
+COYOACAN                                           11346     53.99       973
+CUAJIMALPA DE MORELOS                               1540     45.16       260
+CUAUHTEMOC                                         20675     32.59      1563
+GUSTAVO A. MADERO                                  22462     87.17      1901
+IZTACALCO                                          10374     23.12       722
+IZTAPALAPA                                         38034    114.01      2230
+LA MAGDALENA CONTRERAS                              2887     24.01       318
+MIGUEL HIDALGO                                     12780     47.17      1022
+MILPA ALTA                                          1175     45.65       215
+NONE                                                 170    575.67        35
+TLAHUAC                                             6705     64.87       551
+TLALPAN                                            10606    112.44       804
+VENUSTIANO CARRANZA                                13383      33.9      1085
+XOCHIMILCO                                          6951    106.42       457

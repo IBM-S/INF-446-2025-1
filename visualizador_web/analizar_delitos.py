@@ -4,7 +4,9 @@ import os
 import time
 import numpy as np
 
-PATH_ARCHIVO_DELITOS_JSON = "INSTANCES Camera/DatosProcesadosGeoJSON/GeoJSON/reportes_incidenciaU.geojson"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+PATH_ARCHIVO_DELITOS_JSON = os.path.join(BASE_DIR, "..", "datos", "geo", "reportes_incidenciaU.geojson")
 
 def analizar_delitos(archivo_geojson):
     """
@@ -73,14 +75,14 @@ def analizar_delitos(archivo_geojson):
     print("\n--- Guardando resultados en archivos CSV ---")
     
     # Crear una carpeta para guardar los resultados si no existe
-    if not os.path.exists('analisis_delitos'):
-        os.makedirs('analisis_delitos')
+    if not os.path.exists('resultados_resumen'):
+        os.makedirs('resultados_resumen')
 
-    stats_categoria.to_csv('analisis_delitos/estadisticas_por_categoria_delito.csv')
-    conteo_por_año.to_csv('analisis_delitos/estadisticas_por_anio.csv')
-    matriz_delitos_alcaldias.to_csv('analisis_delitos/matriz_alcaldia_vs_delito.csv')
+    stats_categoria.to_csv('resultados_resumen/estadisticas_por_categoria_delito.csv')
+    conteo_por_año.to_csv('resultados_resumen/estadisticas_por_anio.csv')
+    matriz_delitos_alcaldias.to_csv('resultados_resumen/matriz_alcaldia_vs_delito.csv')
     
-    print("¡Análisis completo! Los archivos CSV se han guardado en la carpeta 'analisis_delitos'.")
+    print("¡Análisis completo! Los archivos CSV se han guardado en la carpeta 'resultados_resumen'.")
 
 
 

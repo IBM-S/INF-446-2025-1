@@ -8,11 +8,14 @@ import os
 # Configuración de rutas
 # -----------------------------
 BASE = Path(__file__).resolve().parent
-CRIMES_PATH = Path(os.getenv("REPORTES_FILE", BASE / "INSTANCES Camera/DatosProcesadosGeoJSON/GeoJSON/reportes_incidenciaU.geojson"))
-DEMOS_PATH  = Path(os.getenv("DEMOG_FILE", BASE / "INSTANCES Camera/DatosProcesadosGeoJSON/GeoJSON/DemograficosD_GJ.geojson"))
-CAMS_PATH   = Path(os.getenv("CAMARA_FILE", BASE / "INSTANCES Camera/DatosProcesadosGeoJSON/GeoJSON/camaraPosU.geojson"))
 
-OUT_DIR = BASE / "INSTANCES Camera"
+GEO_DIR = BASE.parent / "datos" / "geo"
+
+CRIMES_PATH = Path(os.getenv("REPORTES_FILE", GEO_DIR / "reportes_incidenciaU.geojson"))
+DEMOS_PATH  = Path(os.getenv("DEMOG_FILE",    GEO_DIR / "DemograficosD_GJ.geojson"))
+CAMS_PATH   = Path(os.getenv("CAMARA_FILE",   GEO_DIR / "camaraPosU.geojson"))
+
+OUT_DIR = BASE / "resultados_resumen"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 OUT_TXT = OUT_DIR / "resumen_alcaldias.txt"
 

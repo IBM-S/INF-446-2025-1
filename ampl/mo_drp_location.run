@@ -29,7 +29,7 @@ option solver gurobi;
 
 option solver_msg 1 ;
 option show_stats 1;
-option gurobi_options 'timelimit=1';
+option gurobi_options 'timelimit=600';
 
 param mostrar_detalles default 0;
 param mostrar_pesos default 0;
