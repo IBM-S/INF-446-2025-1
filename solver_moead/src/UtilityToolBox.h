@@ -64,10 +64,10 @@ public:
 	void MutacionModificada(vector<double> &x_var, double rate);
 
 	void CruzamientoUniformeModificado_sin_reubicacion(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, ProblemInstance *problemInstance);
-	void MutacionModificada_sin_reubicacion(vector<double> &x_var, double rate, ProblemInstance *problemInstance);
+	void MutacionModificada_sin_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
 
 	void CruzamientoUniformeModificado_con_reubicacion(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, ProblemInstance *problemInstance);
-	void MutacionModificada_con_reubicacion(vector<double> &x_var, double rate, ProblemInstance *problemInstance);
+	void MutacionModificada_con_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
 
 	int GetWeightNumber(int nobj, int H);
 

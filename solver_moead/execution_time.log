@@ -317,3 +317,10 @@ Inst: 150-11.dat, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Tiemp
 Inst: 150-11.dat, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Tiempo (s): 0.064857
 Inst: 150-11.dat, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Tiempo (s): 0.105615
 Inst: 150-11.dat, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Tiempo (s): 0.057705
+Inst: 150-11.dat, Problem Type: cam, variant: location, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Mut: 0.05, Op1 Prob: 0.5, Crossover: 1, Time: 0.117891
+Inst: 150-11.dat, Problem Type: cam, variant: location, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Mut: 0.05, Op1 Prob: 0.5, Crossover: 1, Time: 0.101051
+Inst: 150-11.dat, Problem Type: cam, variant: location, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Mut: 0.05, Op1 Prob: 0.5, Crossover: 1, Time: 0.705195
+Inst: 150-11.dat, Problem Type: cam, variant: location, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Mut: 0.05, Op1 Prob: 0.5, Crossover: 1, Time: 0.154337
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.097414
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.136556
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.086609

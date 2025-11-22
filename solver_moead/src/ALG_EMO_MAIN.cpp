@@ -60,60 +60,110 @@ std::string PrepararDirectorioSalida(std::string nombreInstancia) {
     return rutaCompleta;
 }
 
+void PrintUsage() {
+    std::cout << "\n==========================================================" << std::endl;
+    std::cout << "      MOEA/D - Location & Relocation (CAM / DRP)          " << std::endl;
+    std::cout << "==========================================================" << std::endl;
+    std::cout << "Uso: ./MOEAD -inst <archivo.dat> [opciones]" << std::endl;
+
+    std::cout << "\n--- Configuración del Problema ---" << std::endl;
+    std::cout << "  -inst <string>    : Ruta del archivo de instancia (OBLIGATORIO)" << std::endl;
+    std::cout << "  -type <string>    : Tipo: 'cam' o 'drp' (Defecto: cam)" << std::endl;
+    std::cout << "  -variant <string> : Variante: 'location' (fijo) o 'relocation' (flexible) (Defecto: location)" << std::endl;
+    std::cout << "  -nvars <int>      : Número de variables/nodos (Defecto: 324)" << std::endl;
+
+    std::cout << "\n--- Configuración del Algoritmo ---" << std::endl;
+    std::cout << "  -alg <string>     : Algoritmo: 'MOEAD' o 'MOEAD-DE' (Defecto: MOEAD)" << std::endl;
+    std::cout << "  -seed <int>       : Semilla aleatoria (Defecto: 123)" << std::endl;
+    std::cout << "  -neval <int>      : Número máx. de evaluaciones (Criterio de parada) (Defecto: 1000)" << std::endl;
+
+    std::cout << "\n--- Parámetros Evolutivos ---" << std::endl;
+    std::cout << "  -mut <double>     : Tasa de Mutación Global [0.0 - 1.0] (Defecto: 0.05)" << std::endl;
+    std::cout << "  -cross <double>   : Tasa de Cruzamiento [0.0 - 1.0] (Defecto: 1.0)" << std::endl;
+    std::cout << "  -op1 <double>     : Probabilidad del Operador 1 de Mutación [0.0 - 1.0] (Defecto: 0.5)" << std::endl;
+    std::cout << "                      (Si op1=1.0 solo se usa Delete, si op1=0.0 solo Swap)" << std::endl;
+    std::cout << "==========================================================" << std::endl;
+}
+
 void ResetRandSeed();
 
 int main(int argc, char *argv[])
 {
 	set_exe_path(argv[0]);
-	// int total_run, numOfInstance;
-	// std::ifstream readf("../../SETTINGS/instances/Instance.txt");
-	// readf>>numOfInstance;
-	// readf>>total_run;
+	// --- VALORES POR DEFECTO ---
+    std::string instancePath = "";
+    rnd_uni_seed = 123;
+    NumberOfVariables = 324;
+    
+    // Parámetros Algoritmo
+    double mutationRate = 0.05;
+    double crossoverRate = 1.0;
+    double op1Prob = 0.5; // 50% swap, 50% bitflip (por ejemplo)
+
 	NumberOfObjectives = 2;
-	NumberOfVariables = 324;
-	NumberOfFuncEvals = 1000;
+    NumberOfFuncEvals = 1000; 
 
-	char alg_name[1024];
+    std::string variant = "location"; // o "relocation"
+    std::string problemType = "cam";  // o "drp"
+    std::string algName = "MOEAD";
 
-	sprintf(alg_name, "MOEAD");
-	// sprintf(alg_name,"MOEAD-DE");
+	if (argc < 2) {
+        PrintUsage();
+        return 0;
+    }
 
-	if (argc < 2)
-	{
-		cout << "Wrong number of parameters! " << endl;
-		cout << "Usage: ./MOEAD <instance_file> <random_seed> <num_variables>" << endl;
-		return 0;
-	}
-	char *instance(argv[1]);
-	rnd_uni_seed = atoi(argv[2]);
-	NumberOfVariables = atoi(argv[3]);
 
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        
+        if (arg == "-inst") { if (i + 1 < argc) instancePath = argv[++i]; }
+        else if (arg == "-seed") { if (i + 1 < argc) rnd_uni_seed = atoi(argv[++i]); }
+        else if (arg == "-nvars") { if (i + 1 < argc) NumberOfVariables = atoi(argv[++i]); }
+        else if (arg == "-neval") { if (i + 1 < argc) NumberOfFuncEvals = atoi(argv[++i]); } 
+
+        else if (arg == "-mut") { if (i + 1 < argc) mutationRate = atof(argv[++i]); }
+        else if (arg == "-cross") { if (i + 1 < argc) crossoverRate = atof(argv[++i]); }
+        else if (arg == "-op1") { if (i + 1 < argc) op1Prob = atof(argv[++i]); }
+
+        else if (arg == "-variant") { if (i + 1 < argc) variant = argv[++i]; }
+        else if (arg == "-type") { if (i + 1 < argc) problemType = argv[++i]; }
+
+        else if (arg == "-alg") { if (i + 1 < argc) algName = argv[++i]; }
+    }
+
+
+	if (instancePath == "") {
+        std::cerr << "Error: Debes especificar una instancia con -inst" << std::endl;
+        return 1;
+    }
 
 	srand(rnd_uni_seed);
 
 	// Lectura de Instancia
-	Reader r(instance);
+	Reader r(instancePath.c_str());
 	ProblemInstance *problemInstance;
 
 	clock_t start_read = clock();
 	problemInstance = r.readInputFile();
 	clock_t end_read = clock();
 
-	problemInstance->printAll();
+	// problemInstance->printAll();
 
 	double read_duration = static_cast<double>(end_read - start_read) / CLOCKS_PER_SEC;
 	
-	std::cout << "------------------------------------------------" << std::endl;
-    std::cout << "Instancia cargada: " << instance << std::endl;
-    std::cout << "N (Puntos): " << NumberOfVariables << std::endl;
-    std::cout << "Tiempo de lectura: " << read_duration << " s." << std::endl;
-    std::cout << "------------------------------------------------" << std::endl;
+	std::cout << "=== CONFIGURACION MOEAD ===" << std::endl;
+    std::cout << " Instancia   : " << instancePath << std::endl;
+    std::cout << " Tipo        : " << problemType << " | Variante: " << variant << std::endl;
+	std::cout << " N (Puntos)  : " << NumberOfVariables << std::endl;
+	std::cout << " Evaluaciones: " << NumberOfFuncEvals << std::endl;
+    std::cout << " Mutacion    : " << mutationRate << " (Op1 Prob: " << op1Prob << ")" << std::endl;
+    std::cout << " Crossover   : " << crossoverRate << std::endl;
+	std::cout << "Tiempo de lectura: " << read_duration << " s." << std::endl;
+    std::cout << "===========================" << std::endl;
 
-	char* basec = strdup(instance);
+	char* basec = strdup(instancePath.c_str());
 	char* bname = basename(basec);
 	strcpy(strTestInstance, bname);
-
-	//strcpy(strTestInstance, basename(instance));
 
     std::string rutaSalida = PrepararDirectorioSalida(std::string(bname));
 
@@ -124,15 +174,22 @@ int main(int argc, char *argv[])
 
 	std::fstream fout;
 
-	if (!strcmp(alg_name, "MOEAD"))
+	if (algName == "MOEAD")
 	{
 		CALG_EMO_MOEAD MOEAD;
 		MOEAD.problemInstance = problemInstance;
-		MOEAD.SetOutputDirectory(rutaSalida);
+
+		MOEAD.SetMutationRate(mutationRate);
+        MOEAD.SetCrossoverRate(crossoverRate);
+        MOEAD.SetOp1MutationProb(op1Prob);
+        MOEAD.SetProblemType(problemType);
+        MOEAD.SetVariant(variant); // Configura m_IsRelocation internamente
+        MOEAD.SetOutputDirectory(rutaSalida);
+
 		MOEAD.Execute(1); // Se ejecuta solo una vez
 	}
 
-	if (!strcmp(alg_name, "MOEAD-DE"))
+	if (algName == "MOEAD-DE")
 	{
 		CALG_EMO_MOEAD_DE MOEAD_DE;
 		MOEAD_DE.problemInstance = problemInstance;
@@ -143,19 +200,31 @@ int main(int argc, char *argv[])
 	double duration = static_cast<double>(finish - start) / CLOCKS_PER_SEC;
 
 	// Mostrar por consola
-	std::cout << "Tiempo de ejecución: " << duration << " segundos." << std::endl;
-	std::cout << "Seed: " << rnd_uni_seed << std::endl;
-	std::cout << "Inst: " << instance << std::endl;
+	std::cout << "------------------------------------------------" << std::endl;
+	std::cout << " Algoritmo : " << algName << std::endl;
+    std::cout << " Instancia : " << bname << std::endl;
+    std::cout << " N (Puntos): " << NumberOfVariables << std::endl;
+	std::cout << " Seed      : " << rnd_uni_seed << std::endl;
+    std::cout << " Mutacion  : " << mutationRate << std::endl;
+    std::cout << " Crossover : " << crossoverRate << std::endl;
+    std::cout << " Duracion  : " << duration << " segundos." << std::endl;
+    std::cout << "------------------------------------------------" << std::endl;
 
 	// Guardar en archivo
 	char timeLogFilename[1024];
 	sprintf(timeLogFilename, "%s/execution_time.log", exe_dir_path.c_str());
 	std::ofstream fout_time(timeLogFilename, std::ios::app);
 	fout_time << "Inst: " << bname
+			  << ", Problem Type: " << problemType
+			  << ", variant: " << variant
+              << ", N Var: " << NumberOfVariables
+              << ", N Eval: " << NumberOfFuncEvals
 			  << ", Seed: " << rnd_uni_seed
-			  << ", Dest. Route: " << rutaSalida
-			  << ", Tiempo (s): " << duration
-			  << std::endl;
+			  << ", Mutation Rate: " << mutationRate
+			  << ", Op1 Prob: " << op1Prob
+              << ", Crossover Rate: " << crossoverRate
+              << ", Time: " << duration
+              << std::endl;
 	fout_time.close();
 
 	std::cout << "Done!" << std::endl;

@@ -4,6 +4,11 @@
 CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 {
 	s_PBI_type = 3;
+	m_MutationRate = 0.05;
+    m_CrossoverRate = 1.0;
+    m_Op1MutationProb = 0.5;
+    m_IsRelocation = false; // Por defecto Location (fijo)
+    m_ProblemType = "cam";
 }
 
 CALG_EMO_MOEAD::~CALG_EMO_MOEAD(void)
@@ -430,20 +435,27 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		}
 		std::cout << std::endl; */
 
-		bool con_reubicacion = false;
+		// 1 CRUZAMIENTO
 
-		if (con_reubicacion)
-		{
-			UtilityToolBox.CruzamientoUniformeModificado_con_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
+		double random_number = UtilityToolBox.Get_Random_Number();
+		if (random_number <= m_CrossoverRate) {
+			if (m_IsRelocation) {
+				// Variante: RELOCATION (Flexible)
+				UtilityToolBox.CruzamientoUniformeModificado_con_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
 																		 m_PopulationSOP[p2].m_BestIndividual.x_var,
 																		 child.x_var, this->problemInstance);
-		}
-		else
-		{
-			UtilityToolBox.CruzamientoUniformeModificado_sin_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
+			} else {
+				// Variante LOCATION (Fixed)
+				UtilityToolBox.CruzamientoUniformeModificado_sin_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
 																		 m_PopulationSOP[p2].m_BestIndividual.x_var,
 																		 child.x_var, this->problemInstance);
+			}
+		} else {
+			// Sin cruzamiento: copiar un padre
+            child.x_var = m_PopulationSOP[p1].m_BestIndividual.x_var;
 		}
+
+		
 
 		/* UtilityToolBox.CruzamientoUniformeModificado(m_PopulationSOP[p1].m_BestIndividual.x_var,
 													 m_PopulationSOP[p2].m_BestIndividual.x_var,
@@ -459,13 +471,12 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		std::cout << std::endl; */
 
 		// UtilityToolBox.MutacionModificada(child.x_var, 1.0);
-		if (con_reubicacion)
-		{
-			UtilityToolBox.MutacionModificada_con_reubicacion(child.x_var, 1.0, this->problemInstance);
-		}
-		else
-		{
-			UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, 1.0, this->problemInstance);
+
+		// --- 2. MUTACIÓN ---
+		if (m_IsRelocation) {
+			UtilityToolBox.MutacionModificada_con_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
+		} else {
+			UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
 		}
 
 		/* std::cout << "Hijo generado despues de la mutacion: ";

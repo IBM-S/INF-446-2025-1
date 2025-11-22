@@ -11,7 +11,8 @@ TARGET = MOEAD
 INSTANCE    = ../datos/inst/150-11.dat
 SEED        = 123
 N_VARIABLES = 150
-ARGS        = $(INSTANCE) $(SEED) $(N_VARIABLES)
+N_EVAL      = 1000
+ARGS        = -inst $(INSTANCE) -seed $(SEED) -nvars $(N_VARIABLES) -neval $(N_EVAL)
 
 SOURCES := $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))

@@ -273,18 +273,29 @@ void CUtilityToolBox::MutacionModificada(vector<double> &x_var, double rate)
 	}
 }
 
-void CUtilityToolBox::MutacionModificada_sin_reubicacion(vector<double> &x_var, double rate, ProblemInstance *problemInstance)
+void CUtilityToolBox::MutacionModificada_sin_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance)
 {
 	int n = x_var.size();
 
 	const auto &nodos = problemInstance->getNodes();
 
-	if (Get_Random_Number() > rate)
+	if (Get_Random_Number() > mutation_rate)
 	{
 		return;
 	}
 
-	bool esSwap = (rand() % 2 == 1);
+	double rnd = Get_Random_Number();
+
+	bool esSwap = false ;
+
+	if (rnd <= prob_op1_delete) {
+        // Rango [0, prob_op1] -> Operador 1 (Solo Delete)
+        esSwap = false; 
+    } else {
+        // Rango (prob_op1, 1.0] -> Operador 2 (Swap)
+        esSwap = true;
+    }
+
 
 	int pos_eliminada = -1;
 	// === Paso 1: buscar un 1 para cambiarlo a 0 ===
@@ -324,16 +335,27 @@ void CUtilityToolBox::MutacionModificada_sin_reubicacion(vector<double> &x_var, 
 	std::cout << std::endl; */
 }
 
-void CUtilityToolBox::MutacionModificada_con_reubicacion(vector<double> &x_var, double rate, ProblemInstance *problemInstance)
+void CUtilityToolBox::MutacionModificada_con_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance)
 {
-	if (Get_Random_Number() > rate)
+	if (Get_Random_Number() > mutation_rate)
 	{
 		return;
 	}
 
 	int n = x_var.size();
 
-	bool esSwap = (rand() % 2 == 0);
+	double rnd = Get_Random_Number();
+    
+    bool esSwap = false;
+
+    if (rnd <= prob_op1_delete) {
+        // Rango [0, prob_op1] -> Operador 1 (Solo Delete)
+        esSwap = false; 
+    } else {
+        // Rango (prob_op1, 1.0] -> Operador 2 (Swap)
+        esSwap = true;
+    }
+
 	int pos_eliminada = -1;
 	int inicio1 = rand() % n;
 	// === Paso 1: buscar un 1 para cambiarlo a 0 ===
