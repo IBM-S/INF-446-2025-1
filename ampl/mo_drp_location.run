@@ -1,9 +1,8 @@
-#reset ;
+reset ;
+
 
 model mo_location_model.mod;
 # data DRP_con_probs.dat;
-# data ../datos/inst/100-3.dat;
-# data ../datos/inst/100-3.dat;
 # data ../datos/inst/100-3.dat;
 
 data ../datos/inst/cam_1390_MILPA_ALTA.dat;
@@ -27,15 +26,10 @@ data conf_execution.dat;
 
 /* GUROBI */
 option solver gurobi;
-# option gurobi_options 'threads= 3 ' ;
-option solver_msg 0 ;
-# option DisplayInterval 1 ;
-# option gurobi_options 'outlev 1 logfreq 1 timing 1 ' ;
-# option presolve 10 ;
-# option show_stats 1 ;
-# option gurobi_options 'timelim = 3600 return_mipgap 2 ' ;
 
-option gurobi_options 'timelim=600';
+option solver_msg 1 ;
+option show_stats 1;
+option gurobi_options 'timelimit=1';
 
 param mostrar_detalles default 0;
 param mostrar_pesos default 0;

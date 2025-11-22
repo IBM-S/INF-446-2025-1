@@ -42,7 +42,7 @@ def generar_pesos_ampl(num_puntos=51, epsilon=0.00001):
 # =====================================================
 # CONFIGURACIÓN: Cambia este número por el que desees
 # Recomendado para comparar con MOEA/D: 51 o 101
-CANTIDAD_DE_PUNTOS = 101 
+CANTIDAD_DE_PUNTOS = 11 
 # =====================================================
 
 generar_pesos_ampl(CANTIDAD_DE_PUNTOS)
