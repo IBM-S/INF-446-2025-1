@@ -44,7 +44,7 @@ std::string PrepararDirectorioSalida(std::string nombreInstancia) {
 
     // 2. Construir la ruta completa
     // Usamos strings de C++ para concatenar fácil
-    std::string rutaCompleta = exe_dir_path + "/../../datos/res/raw_moead/" + nombreCarpeta;
+    std::string rutaCompleta = exe_dir_path + "/../datos/res/raw_moead/" + nombreCarpeta;
 
     std::cout << "Preparando directorio: " << rutaCompleta << std::endl;
 

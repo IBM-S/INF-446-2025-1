@@ -1,5 +1,5 @@
 #cmake_minimum_required(VERSION 2.6)
-project(moead)
+project(solver_moead)
 
 #set(CMAKE_BUILD_TYPE Release)
 
@@ -12,19 +12,13 @@ endif()
 
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
-set(SOURCE_FILES 
-		 ALG_EMO_MAIN
-		 ALG_EMO_MOEAD_DE
-		 ALG_EMO_MOEAD
-		 DRP_ProblemInstance
-		 GlobalObject
-		 GlobalVariable
-		 IndividualBase
-		 Node_DRP
-		 Reader_DRP
-		 SubProblemBase
-		 TestInstance
-		 UtilityToolBox
-        )
 
-add_executable(moead ${SOURCE_FILES})
+# 1. Incluir el directorio src para que encuentre los headers (.h)
+include_directories(src)
+
+# 2. Buscar automáticamente todos los .cpp en src
+# Esto reemplaza tu lista manual SOURCE_FILES
+file(GLOB SOURCES "src/*.cpp")
+
+# 3. Crear el ejecutable
+add_executable(moead ${SOURCES})

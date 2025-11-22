@@ -1,8 +1,0 @@
-venv/
-*.o
-SAVING/
-FrentesDePareto/
-MOEAD
-aeds/
-INSTANCES Camera/
-__pycache__/

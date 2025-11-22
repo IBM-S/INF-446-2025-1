@@ -1,27 +1,40 @@
-#OBJS = Node.o Timeslot.o ProblemInstance.o Reader.o Truck.o GlobalObject.o GlobalVariable.o IndividualBase.o SubProblemBase.o TestInstance.o UtilityToolBox.o ALG_EMO_MAIN.o ALG_EMO_MOEAD_DE.o ALG_EMO_MOEAD.o
+CXX      = g++
+CXXFLAGS = -std=c++1y -O3 -g -ggdb -fprofile-use -Isrc
 
-OBJS = Node_DRP.o DRP_ProblemInstance.o Reader_DRP.o GlobalObject.o GlobalVariable.o IndividualBase.o SubProblemBase.o TestInstance.o UtilityToolBox.o ALG_EMO_MAIN.o ALG_EMO_MOEAD_DE.o ALG_EMO_MOEAD.o
+#Directorios
+SRCDIR = src
+OBJDIR = obj
+BINDIR = .
 
+TARGET = MOEAD
 
-CFLAGS = -std=c++1y -O3 -g -ggdb -fprofile-use
+INSTANCE    = ../datos/inst/150-11.dat
+SEED        = 123
+N_VARIABLES = 150
+ARGS        = $(INSTANCE) $(SEED) $(N_VARIABLES)
 
-instance=DRP.dat
-seed=123
-n_variables=21
-ARGS = $(instance) $(seed) $(n_variables)
+SOURCES := $(wildcard $(SRCDIR)/*.cpp)
+OBJECTS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
 
-all: MOEAD
+all: create_dirs $(TARGET)
 
-MOEAD: $(OBJS)
-	g++ -o MOEAD $(OBJS) $(CFLAGS)
+$(TARGET): $(OBJECTS)
+	$(CXX) -o $(TARGET) $(OBJECTS) $(CXXFLAGS)
 
-%.o: %.cpp
-	g++ -c $(CFLAGS) $< -o $@
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	@mkdir -p $(OBJDIR)
+	$(CXX) -c $(CXXFLAGS) $< -o $@
+
+create_dirs:
+	@mkdir -p $(OBJDIR)
 
 clean:
-	rm -f MOEAD *.o
-	rm core
+	rm -f $(OBJDIR)/*.o
+	rm -f $(TARGET) core
 
-exe:
-	./MOEAD ${ARGS}
 
+exe: $(TARGET)
+	./$(TARGET) ${ARGS}
+
+#exe:
+#	./MOEAD ${ARGS}

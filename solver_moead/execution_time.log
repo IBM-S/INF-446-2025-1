@@ -305,3 +305,15 @@ Inst: 100-3.dat, Seed: 1, Dest. Route: /home/ignacio/TT2/visualizador_web/../EMO
 Inst: cam_1390_MILPA_ALTA.dat, Seed: 0, Dest. Route: ./../../datos/res/raw_moead/cam_1390_MILPA_ALTA, Tiempo (s): 1.23935
 Inst: 1000-88_4.dat, Seed: 0, Dest. Route: ./../../datos/res/raw_moead/1000-88_4, Tiempo (s): 0.685771
 Inst: 1000-88_4.dat, Seed: 1, Dest. Route: /home/ignacio/TT2/visualizador_web/../EMO-D/MOEAD/../../datos/res/raw_moead/1000-88_4, Tiempo (s): 0.711003
+Inst: 100-3.dat, Seed: 123, Dest. Route: ./../../datos/res/raw_moead/100-3, Tiempo (s): 0.16301
+Inst: 150-11.dat, Seed: 123, Dest. Route: ./../../datos/res/raw_moead/150-11, Tiempo (s): 0.347457
+Inst: 150-11.dat, Seed: 123, Dest. Route: ./../../datos/res/raw_moead/150-11, Tiempo (s): 0.195999
+Inst: 150-11.dat, Seed: 123, Dest. Route: ./../../datos/res/raw_moead/150-11, Tiempo (s): 0.025033
+Inst: 150-11.dat, Seed: 123, Dest. Route: ./../../datos/res/raw_moead/150-11, Tiempo (s): 0.016774
+Inst: 150-11.dat, Seed: 123, Dest. Route: ./../../datos/res/raw_moead/150-11, Tiempo (s): 0.018416
+Inst: 150-11.dat, Seed: 123, Dest. Route: ./solver_moead/../../datos/res/raw_moead/150-11, Tiempo (s): 0.076782
+Inst: 150-11.dat, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Tiempo (s): 0.165573
+Inst: 150-11.dat, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Tiempo (s): 0.055687
+Inst: 150-11.dat, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Tiempo (s): 0.064857
+Inst: 150-11.dat, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Tiempo (s): 0.105615
+Inst: 150-11.dat, Seed: 123, Dest. Route: ./../datos/res/raw_moead/150-11, Tiempo (s): 0.057705

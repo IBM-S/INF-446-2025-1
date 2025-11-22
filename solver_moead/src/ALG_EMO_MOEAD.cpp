@@ -79,12 +79,32 @@ void CALG_EMO_MOEAD::InitializeParameter()
 	//sprintf(filename, "SETTINGS/algorithms/MOEAD.txt");
 	sprintf(filename, "%s/SETTINGS/algorithms/MOEAD.txt", exe_dir_path.c_str());
 
-	char str_temp[1024];
+	// --- DEBUG: Avisar qué estamos buscando ---
+	std::cout << ">>> Leyendo configuracion desde: " << filename << std::endl;
+
 	std::ifstream readf(filename);
+	
+	// --- VALIDACIÓN DE APERTURA ---
+	if (!readf.is_open()) {
+		std::cerr << "\n=======================================================" << std::endl;
+		std::cerr << " ERROR FATAL: No se pudo abrir el archivo de configuración." << std::endl;
+		std::cerr << " Ruta intentada: " << filename << std::endl;
+		std::cerr << " Verifica que la carpeta SETTINGS este junto al ejecutable." << std::endl;
+		std::cerr << "=======================================================\n" << std::endl;
+		exit(1); // Detener programa con error
+	}
+
+
+	char str_temp[1024];
+
 	// Pop_Size     NeighborhoodSize
 	readf >> s_PopulationSize;
 	readf >> s_NeighborhoodSize;
 	readf.close();
+
+	std::cout << "    Parametros leidos correctamente:" << std::endl;
+	std::cout << "         - Poblacion (Pop_Size): " << s_PopulationSize << std::endl;
+	std::cout << "         - Vecindario (NeighborhoodSize): " << s_NeighborhoodSize << std::endl;
 }
 
 void CALG_EMO_MOEAD::UpdateReference(vector<double> &obj_vect)
@@ -110,12 +130,21 @@ void CALG_EMO_MOEAD::InitializePopulation()
 	//sprintf(filename1, "SETTINGS/weightvectors/W%dD_%d.dat", NumberOfObjectives, s_PopulationSize);
 	
 	sprintf(filename1, "%s/SETTINGS/weightvectors/W%dD_%d.dat", exe_dir_path.c_str(), NumberOfObjectives, s_PopulationSize);
+	std::cout << ">>> Cargando vectores de peso desde: " << filename1 << std::endl;
 
 	std::ifstream readf(filename1);
+
 	if (!readf.is_open())
 	{
-		printf("ERROR: No se pudo abrir archivo de pesos: %s\n", filename1);
+		std::cerr << "\n=======================================================" << std::endl;
+		std::cerr << " ERROR FATAL: No se encontró el archivo de vectores de peso." << std::endl;
+		std::cerr << " Ruta intentada: " << filename1 << std::endl;
+		std::cerr << " Revisa que exista W" << NumberOfObjectives << "D_" << s_PopulationSize << ".dat en SETTINGS/weightvectors/" << std::endl;
+		std::cerr << "=======================================================\n" << std::endl;
+		exit(1); // Detener programa
 	}
+
+	std::cout << "    Archivo de pesos encontrado. Inicializando poblacion..." << std::endl;
 
 	for (i = 0; i < s_PopulationSize; i++)
 	{
@@ -178,6 +207,11 @@ void CALG_EMO_MOEAD::InitializePopulation()
 	// this->FindNadirPoint();
 
 	// if(s_PBI_type==3) 	NormalizeWeight();
+	
+	std::cout << "    Poblacion inicializada con exito (" << s_PopulationSize << " individuos)." << std::endl;
+	std::cerr << "--------------------------------------------------------\n" << std::endl;
+
+
 }
 
 void CALG_EMO_MOEAD::FindNadirPoint()
@@ -490,6 +524,13 @@ void CALG_EMO_MOEAD::SaveObjSpace(char saveFilename[1024])
 {
 	std::fstream fout;
 	fout.open(saveFilename, std::ios::out);
+
+	if (!fout.is_open()) {
+        std::cout << ">>> ERROR AL GUARDAR: No se pudo crear el archivo: " << saveFilename << std::endl;
+        std::cout << "    (Verifica que la carpeta exista y tengas permisos)" << std::endl;
+        return;
+    }
+
 	for (unsigned n = 0; n < s_PopulationSize; n++)
 	{
 		for (unsigned int k = 0; k < NumberOfObjectives; k++)

@@ -15,6 +15,8 @@ datos/geo/
 datos/res/
 
 solver_moead/venv/
-
+solver_moead/obj/
+solver_moead/__pycache__/
+solver_moead/MOEAD
 
 visualizador_web/venv/
