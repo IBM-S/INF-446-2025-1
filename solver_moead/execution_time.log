@@ -324,3 +324,17 @@ Inst: 150-11.dat, Problem Type: cam, variant: location, Seed: 123, Dest. Route: 
 Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.097414
 Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.136556
 Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.086609
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.168648
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.113796
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.136797
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.110606
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.078186
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.084281
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.039821
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.089503
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.084932
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.100763
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.057625
+Inst: 150-11.dat, Problem Type: cam, variant: location, N Var: 150, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 0.076437
+Inst: cam_1390_MILPA_ALTA.dat, Problem Type: cam, variant: location, N Var: 1390, N Eval: 1000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 2.30899
+Inst: cam_1390_MILPA_ALTA.dat, Problem Type: cam, variant: location, N Var: 1390, N Eval: 5000, Seed: 123, Mutation Rate: 0.05, Op1 Prob: 0.5, Crossover Rate: 1, Time: 8.39712

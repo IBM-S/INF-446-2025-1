@@ -9,6 +9,8 @@ CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
     m_Op1MutationProb = 0.5;
     m_IsRelocation = false; // Por defecto Location (fijo)
     m_ProblemType = "cam";
+	s_PopulationSize = 0;
+    s_NeighborhoodSize = 0;
 }
 
 CALG_EMO_MOEAD::~CALG_EMO_MOEAD(void)
@@ -18,7 +20,7 @@ CALG_EMO_MOEAD::~CALG_EMO_MOEAD(void)
 void CALG_EMO_MOEAD::Execute(int run_id)
 {
 
-	this->InitializeParameter();
+	//this->InitializeParameter();
 	this->InitializePopulation();
 	this->InitializeNeighborhood();
 
@@ -85,7 +87,7 @@ void CALG_EMO_MOEAD::InitializeParameter()
 	sprintf(filename, "%s/SETTINGS/algorithms/MOEAD.txt", exe_dir_path.c_str());
 
 	// --- DEBUG: Avisar qué estamos buscando ---
-	std::cout << ">>> Leyendo configuracion desde: " << filename << std::endl;
+	// std::cout << ">>> Leyendo configuracion desde: " << filename << std::endl;
 
 	std::ifstream readf(filename);
 	
@@ -97,19 +99,29 @@ void CALG_EMO_MOEAD::InitializeParameter()
 		std::cerr << " Verifica que la carpeta SETTINGS este junto al ejecutable." << std::endl;
 		std::cerr << "=======================================================\n" << std::endl;
 		exit(1); // Detener programa con error
-	}
+	} 
 
+	int filePop, fileNeighbor;
+		readf >> filePop;
+		readf >> fileNeighbor;
+		readf.close();
+	
+	if (s_PopulationSize == 0) {
+        // No se pasó por consola, usamos el del archivo
+        s_PopulationSize = filePop;
+    } 
+    // Si s_PopulationSize > 0, significa que se usó -pop, así que ignoramos filePop
 
-	char str_temp[1024];
+    // 2. Vecindario
+    if (s_NeighborhoodSize == 0) {
+        // No se pasó por consola, usamos el del archivo
+        s_NeighborhoodSize = fileNeighbor;
+    }
 
 	// Pop_Size     NeighborhoodSize
-	readf >> s_PopulationSize;
-	readf >> s_NeighborhoodSize;
-	readf.close();
-
-	std::cout << "    Parametros leidos correctamente:" << std::endl;
-	std::cout << "         - Poblacion (Pop_Size): " << s_PopulationSize << std::endl;
-	std::cout << "         - Vecindario (NeighborhoodSize): " << s_NeighborhoodSize << std::endl;
+	//readf >> s_PopulationSize;
+	//readf >> s_NeighborhoodSize;
+	//readf.close();
 }
 
 void CALG_EMO_MOEAD::UpdateReference(vector<double> &obj_vect)
@@ -135,7 +147,7 @@ void CALG_EMO_MOEAD::InitializePopulation()
 	//sprintf(filename1, "SETTINGS/weightvectors/W%dD_%d.dat", NumberOfObjectives, s_PopulationSize);
 	
 	sprintf(filename1, "%s/SETTINGS/weightvectors/W%dD_%d.dat", exe_dir_path.c_str(), NumberOfObjectives, s_PopulationSize);
-	std::cout << ">>> Cargando vectores de peso desde: " << filename1 << std::endl;
+	//std::cout << ">>> Cargando vectores de peso desde: " << filename1 << std::endl;
 
 	std::ifstream readf(filename1);
 
@@ -149,7 +161,7 @@ void CALG_EMO_MOEAD::InitializePopulation()
 		exit(1); // Detener programa
 	}
 
-	std::cout << "    Archivo de pesos encontrado. Inicializando poblacion..." << std::endl;
+	//std::cout << "    Archivo de pesos encontrado. Inicializando poblacion..." << std::endl;
 
 	for (i = 0; i < s_PopulationSize; i++)
 	{
@@ -213,8 +225,8 @@ void CALG_EMO_MOEAD::InitializePopulation()
 
 	// if(s_PBI_type==3) 	NormalizeWeight();
 	
-	std::cout << "    Poblacion inicializada con exito (" << s_PopulationSize << " individuos)." << std::endl;
-	std::cerr << "--------------------------------------------------------\n" << std::endl;
+	//std::cout << "    Poblacion inicializada con exito (" << s_PopulationSize << " individuos)." << std::endl;
+	//std::cerr << "--------------------------------------------------------\n" << std::endl;
 
 
 }

@@ -9,8 +9,6 @@ ProblemInstance::ProblemInstance()
     R = 0;
     c1 = 0;
     c2 = 0;
-    /* alpha = 0;
-    beta = 0; */
 }
 
 // Destructor
@@ -77,23 +75,31 @@ std::string ProblemInstance::getNombreInstancia() { return nombre_instancia; }
 // Debug: imprimir todo
 void ProblemInstance::printAll()
 {
-    std::cout << "Instancia: " << nombre_instancia << "\n";
-    std::cout << "Parámetros: Presupuesto = " << P << ", Radio equipo = " << R << "\n";
-    std::cout << "costo ubicacion (c1) = " << c1 << ", costo reubicacion (c2) = " << c2 << "\n";
+    std::cout << "\n  > Propiedades Instancia: " << nombre_instancia << std::endl;
+    std::cout << "    - Presupuesto (P)   : " << P << std::endl;
+    std::cout << "    - Radio (R)         : " << R << " m" << std::endl;
+    std::cout << "    - Costos (c1/c2)    : " << c1 << " / " << c2 << std::endl;
 
-    std::cout << "\nNodos (mostrando los primeros 3 de " << nodes.size() << "):\n";
+    int preinstalados = 0;
+    for(auto n : nodes) if(n->getFlag() == 1) preinstalados++;
+    
+    std::cout << "    - Total Nodos       : " << nodes.size() << std::endl;
+    std::cout << "    - Pre-instalados    : " << preinstalados << std::endl;
+    std::cout << "    - Candidatos Libres : " << nodes.size() - preinstalados << std::endl;
+
+    std::cout << "\n  > Nodos (mostrando los primeros 3 de " << nodes.size() << "):\n";
     int nodos_a_mostrar = std::min((size_t)3, nodes.size());
 
     for (int i = 0; i < nodos_a_mostrar; i++)
     {
         Node *node = nodes[i];
-        std::cout << "ID: " << node->getId()
+        std::cout << "    - ID: " << node->getId()
                   << ", Coord: (" << node->getX() << ", " << node->getY() << ")"
                   << ", Flag: " << node->getFlag()
                   << ", OHCA Prob: " << node->getProbOhca() << "\n";
     }
     if (nodes.size() > 3)
     {
-        std::cout << "...\n";
+        std::cout << "    - ...\n\n";
     }
 }

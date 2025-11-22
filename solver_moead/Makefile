@@ -12,7 +12,7 @@ INSTANCE    = ../datos/inst/150-11.dat
 SEED        = 123
 N_VARIABLES = 150
 N_EVAL      = 1000
-ARGS        = -inst $(INSTANCE) -seed $(SEED) -nvars $(N_VARIABLES) -neval $(N_EVAL)
+ARGS        = -inst $(INSTANCE) -seed $(SEED) -nvars $(N_VARIABLES) -neval $(N_EVAL) -neighbor 40
 
 SOURCES := $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))

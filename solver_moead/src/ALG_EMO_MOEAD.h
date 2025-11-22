@@ -51,6 +51,8 @@ public:
         if (v == "relocation" || v == "flexible") m_IsRelocation = true;
         else m_IsRelocation = false;
     }
+	void SetPopulationSize(int p) { s_PopulationSize = p; }
+    void SetNeighborhoodSize(int n) { s_NeighborhoodSize = n; }
 
 public:
 	ProblemInstance *problemInstance;

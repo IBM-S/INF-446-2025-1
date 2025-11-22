@@ -74,6 +74,8 @@ void PrintUsage() {
 
     std::cout << "\n--- Configuración del Algoritmo ---" << std::endl;
     std::cout << "  -alg <string>     : Algoritmo: 'MOEAD' o 'MOEAD-DE' (Defecto: MOEAD)" << std::endl;
+    std::cout << "  -pop <int>        : Tamaño Población (Sobrescribe MOEAD.txt)" << std::endl;
+    std::cout << "  -neighbor <int>   : Tamaño Vecindario T (Sobrescribe MOEAD.txt)" << std::endl;
     std::cout << "  -seed <int>       : Semilla aleatoria (Defecto: 123)" << std::endl;
     std::cout << "  -neval <int>      : Número máx. de evaluaciones (Criterio de parada) (Defecto: 1000)" << std::endl;
 
@@ -90,7 +92,10 @@ void ResetRandSeed();
 int main(int argc, char *argv[])
 {
 	set_exe_path(argv[0]);
-	// --- VALORES POR DEFECTO ---
+	// --- VALORES POR DEFECTO --- 
+    int userPop = 0;
+    int userNeighbor = 0;
+
     std::string instancePath = "";
     rnd_uni_seed = 123;
     NumberOfVariables = 324;
@@ -129,6 +134,8 @@ int main(int argc, char *argv[])
         else if (arg == "-type") { if (i + 1 < argc) problemType = argv[++i]; }
 
         else if (arg == "-alg") { if (i + 1 < argc) algName = argv[++i]; }
+        else if (arg == "-pop" || arg == "-population") {  if (i + 1 < argc) userPop = atoi(argv[++i]); }
+        else if (arg == "-neighbor" || arg == "-T") { if (i + 1 < argc) userNeighbor = atoi(argv[++i]); }
     }
 
 
@@ -139,34 +146,79 @@ int main(int argc, char *argv[])
 
 	srand(rnd_uni_seed);
 
-	// Lectura de Instancia
+	// 1 Lectura de Instancia
 	Reader r(instancePath.c_str());
 	ProblemInstance *problemInstance;
-
 	clock_t start_read = clock();
 	problemInstance = r.readInputFile();
 	clock_t end_read = clock();
 
-	// problemInstance->printAll();
-
 	double read_duration = static_cast<double>(end_read - start_read) / CLOCKS_PER_SEC;
-	
-	std::cout << "=== CONFIGURACION MOEAD ===" << std::endl;
-    std::cout << " Instancia   : " << instancePath << std::endl;
-    std::cout << " Tipo        : " << problemType << " | Variante: " << variant << std::endl;
-	std::cout << " N (Puntos)  : " << NumberOfVariables << std::endl;
-	std::cout << " Evaluaciones: " << NumberOfFuncEvals << std::endl;
-    std::cout << " Mutacion    : " << mutationRate << " (Op1 Prob: " << op1Prob << ")" << std::endl;
-    std::cout << " Crossover   : " << crossoverRate << std::endl;
-	std::cout << "Tiempo de lectura: " << read_duration << " s." << std::endl;
-    std::cout << "===========================" << std::endl;
 
 	char* basec = strdup(instancePath.c_str());
 	char* bname = basename(basec);
 	strcpy(strTestInstance, bname);
-
     std::string rutaSalida = PrepararDirectorioSalida(std::string(bname));
 
+    // 2 Configuracion del algoritmo
+    CALG_EMO_MOEAD* algoritmo = nullptr; // Puntero base (si usaras polimorfismo sería ideal)
+    CALG_EMO_MOEAD MOEAD;
+    CALG_EMO_MOEAD_DE MOEAD_DE; // Asumiendo que hereda o tiene estructura similar
+
+    int populationSize = 0;
+    int neighborSize = 0;
+
+    if (algName == "MOEAD") {
+        MOEAD.problemInstance = problemInstance;
+        MOEAD.SetOutputDirectory(rutaSalida);
+
+        if (userPop > 0) MOEAD.SetPopulationSize(userPop);
+        if (userNeighbor > 0) MOEAD.SetNeighborhoodSize(userNeighbor);
+
+        MOEAD.InitializeParameter(); 
+        
+        populationSize = MOEAD.s_PopulationSize;
+        neighborSize = MOEAD.s_NeighborhoodSize;
+    }
+    else if (algName == "MOEAD-DE") {
+        // Repetir lógica para DE si es necesario
+        MOEAD_DE.problemInstance = problemInstance;
+        // MOEAD_Differential.InitializeParameter(); 
+    }
+
+    int finalPop = (algName == "MOEAD") ? MOEAD.s_PopulationSize : 0; // Ajustar para DE
+    int finalNeighbor = (algName == "MOEAD") ? MOEAD.s_NeighborhoodSize : 0;
+
+    // 3. IMPRESIÓN DEL RESUMEN UNIFICADO
+    std::cout << "\n==========================================================" << std::endl;
+    std::cout << "               REPORTE DE EJECUCIÓN MOEAD                 " << std::endl;
+    std::cout << "==========================================================" << std::endl;
+    
+    std::cout << " [1] INFORMACIÓN DE LA INSTANCIA" << std::endl;
+    std::cout << "     Archivo       : " << bname << std::endl;
+    std::cout << "     Tiempo Lectura: " << read_duration << " s" << std::endl;
+    problemInstance->printAll(); // Llama a la función mejorada en DRP_ProblemInstance
+
+    std::cout << "\n [2] CONFIGURACIÓN DEL ALGORITMO" << std::endl;
+    std::cout << "     Algoritmo     : " << algName << std::endl;
+    std::cout << "     Tipo Problema : " << problemType << std::endl;
+    std::cout << "     Variante      : " << variant << (variant == "relocation" ? " (Flexible)" : " (Fija)") << std::endl;
+    std::cout << "     Semilla (Seed): " << rnd_uni_seed << std::endl;
+    std::cout << "     Evaluaciones  : " << NumberOfFuncEvals << std::endl;
+    std::string popSource = (userPop > 0) ? "(Manual)" : "(Archivo Default)";
+    std::string neighborSource = (userNeighbor > 0) ? "(Manual)" : "(Archivo Default)";
+    std::cout << "     Población     : " << finalPop << " " << popSource << std::endl;
+    std::cout << "     Vecindario (T): " << finalNeighbor << " " << neighborSource << std::endl;
+
+    std::cout << "\n [3] PARÁMETROS EVOLUTIVOS" << std::endl;
+    std::cout << "     Mutación Global : " << mutationRate * 100.0 << "%" << std::endl;
+    std::cout << "     Prob. Op1 (Del) : " << op1Prob * 100.0 << "%" << std::endl;
+    std::cout << "     Prob. Op2 (Swap): " << (1.0 - op1Prob) * 100.0 << "%" << std::endl;
+    std::cout << "     Cruzamiento     : " << crossoverRate * 100.0 << "%" << std::endl;
+    
+    std::cout << "\n [4] SALIDA DE DATOS" << std::endl;
+    std::cout << "     Destino       : " << rutaSalida << std::endl;
+    std::cout << "==========================================================\n" << std::endl;
 
 	clock_t start, temp, finish;
 	double last = 0;
@@ -176,9 +228,6 @@ int main(int argc, char *argv[])
 
 	if (algName == "MOEAD")
 	{
-		CALG_EMO_MOEAD MOEAD;
-		MOEAD.problemInstance = problemInstance;
-
 		MOEAD.SetMutationRate(mutationRate);
         MOEAD.SetCrossoverRate(crossoverRate);
         MOEAD.SetOp1MutationProb(op1Prob);
@@ -191,8 +240,6 @@ int main(int argc, char *argv[])
 
 	if (algName == "MOEAD-DE")
 	{
-		CALG_EMO_MOEAD_DE MOEAD_DE;
-		MOEAD_DE.problemInstance = problemInstance;
 		MOEAD_DE.Execute(1); // Se ejecuta solo una vez
 	}
 
@@ -200,14 +247,9 @@ int main(int argc, char *argv[])
 	double duration = static_cast<double>(finish - start) / CLOCKS_PER_SEC;
 
 	// Mostrar por consola
-	std::cout << "------------------------------------------------" << std::endl;
-	std::cout << " Algoritmo : " << algName << std::endl;
-    std::cout << " Instancia : " << bname << std::endl;
-    std::cout << " N (Puntos): " << NumberOfVariables << std::endl;
-	std::cout << " Seed      : " << rnd_uni_seed << std::endl;
-    std::cout << " Mutacion  : " << mutationRate << std::endl;
-    std::cout << " Crossover : " << crossoverRate << std::endl;
-    std::cout << " Duracion  : " << duration << " segundos." << std::endl;
+	std::cout << "\n------------------------------------------------" << std::endl;
+    std::cout << " ESTADO FINAL: TERMINADO" << std::endl;
+    std::cout << " Tiempo Total: " << duration << " segundos." << std::endl;
     std::cout << "------------------------------------------------" << std::endl;
 
 	// Guardar en archivo
