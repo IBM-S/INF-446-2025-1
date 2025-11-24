@@ -463,6 +463,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 
 		double random_number = UtilityToolBox.Get_Random_Number();
 		if (random_number <= m_CrossoverRate) {
+			//printf("Es con cruzamiento\n");
 			if (m_IsRelocation) {
 				// Variante: RELOCATION (Flexible)
 				UtilityToolBox.CruzamientoUniformeModificado_con_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
@@ -617,7 +618,7 @@ void CALG_EMO_MOEAD::SavePopulation(int run_id)
 		cleanName = cleanName.substr(0, lastindex);
 	}
 
-	sprintf(filename, "%s/POF_%s_GEN_%d.dat", this->outputDirectory.c_str(), cleanName.c_str(), run_id);
+	sprintf(filename, "%s/POF_%s_SEED_%d_GEN_%d.dat", this->outputDirectory.c_str(), cleanName.c_str(), rnd_uni_seed, run_id);
 
 	// sprintf(filename, "%s/SAVING/MOEAD/POF/POF_%s_GEN_%d.dat", exe_dir_path.c_str(), strTestInstance, run_id);
 

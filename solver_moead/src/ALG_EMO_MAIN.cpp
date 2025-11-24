@@ -33,7 +33,7 @@ void set_exe_path(const char* arg0){
 	}
 }
 
-std::string PrepararDirectorioSalida(std::string nombreInstancia, std::string tipoProblema) {
+std::string PrepararDirectorioSalida(std::string nombreInstancia, std::string tipoProblema, std::string subCarpeta) {
     
     // 1. Limpiar extensión .dat del nombre (ej: cam_1.dat -> cam_1)
     std::string nombreCarpeta = nombreInstancia;
@@ -44,9 +44,13 @@ std::string PrepararDirectorioSalida(std::string nombreInstancia, std::string ti
 
     // 2. Construir la ruta completa
     // Usamos strings de C++ para concatenar fácil
-    std::string rutaCompleta = exe_dir_path + "/../datos/res/raw_moead/" + tipoProblema + "/" + nombreCarpeta;
+    std::string rutaBase = exe_dir_path + "/../datos/res/raw_moead/" + tipoProblema + "/" + nombreCarpeta;
 
-    //std::cout << "Preparando directorio: " << rutaCompleta << std::endl;
+    std::string rutaCompleta = rutaBase;
+
+    if (!subCarpeta.empty()) {
+        rutaCompleta += "/" + subCarpeta;
+    }
 
     // 3. Crear comando para crear directorio (mkdir -p crea toda la ruta si no existe)
     std::string cmd_mkdir = "mkdir -p \"" + rutaCompleta + "\"";
@@ -89,6 +93,9 @@ void PrintUsage() {
     std::cout << "  -cross <double>   : Tasa de Cruzamiento [0.0 - 1.0] (Defecto: 1.0)" << std::endl;
     std::cout << "  -op1 <double>     : Probabilidad del Operador 1 de Mutación [0.0 - 1.0] (Defecto: 0.5)" << std::endl;
     std::cout << "                      (Si op1=1.0 solo se usa Delete, si op1=0.0 solo Swap)" << std::endl;
+    
+    std::cout << "\n--- Salida de Datos ---" << std::endl;
+    std::cout << "  -outDir <string>  : Directorio específico donde guardar resultados (Opcional)" << std::endl;
     std::cout << "==========================================================" << std::endl;
 }
 
@@ -106,7 +113,7 @@ int main(int argc, char *argv[])
     NumberOfVariables = 324;
     
     // Parámetros Algoritmo
-    double mutationRate = 0.05;
+    double mutationRate = 0.20;
     double crossoverRate = 1.0;
     double op1Prob = 0.5; // 50% swap, 50% bitflip (por ejemplo)
 
@@ -118,6 +125,8 @@ int main(int argc, char *argv[])
     std::string algName = "MOEAD";
 
     double maxTime = 0; 
+
+    std::string userOutputDir = ""; 
 
 	if (argc < 2) {
         PrintUsage();
@@ -149,6 +158,9 @@ int main(int argc, char *argv[])
         else if (arg == "-variant") { if (i + 1 < argc) variant = argv[++i]; }
         else if (arg == "-type") { if (i + 1 < argc) problemType = argv[++i]; }
         else if (arg == "-alg") { if (i + 1 < argc) algName = argv[++i]; }
+
+        else if (arg == "-outDir") { if (i + 1 < argc) userOutputDir = argv[++i]; }
+
     }
 
 
@@ -175,7 +187,7 @@ int main(int argc, char *argv[])
 	char* basec = strdup(instancePath.c_str());
 	char* bname = basename(basec);
 	strcpy(strTestInstance, bname);
-    std::string rutaSalida = PrepararDirectorioSalida(std::string(bname), problemType);
+    std::string rutaSalida = PrepararDirectorioSalida(std::string(bname), problemType, userOutputDir);
 
     // 2 Configuracion del algoritmo
     CALG_EMO_MOEAD* algoritmo = nullptr; // Puntero base (si usaras polimorfismo sería ideal)

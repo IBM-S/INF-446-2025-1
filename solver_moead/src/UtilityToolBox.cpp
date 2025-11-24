@@ -275,17 +275,41 @@ void CUtilityToolBox::MutacionModificada(vector<double> &x_var, double rate)
 
 void CUtilityToolBox::MutacionModificada_sin_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance)
 {
-	int n = x_var.size();
-
-	const auto &nodos = problemInstance->getNodes();
-
-	if (Get_Random_Number() > mutation_rate)
+	// 1 Verificar probabilidad
+	double prob_mutation_rate = Get_Random_Number();
+	if (prob_mutation_rate > mutation_rate)
 	{
+		//printf("No hay mutacion\n");
 		return;
 	}
 
-	double rnd = Get_Random_Number();
+	int n = x_var.size();
+	const auto &nodos = problemInstance->getNodes();
 
+	// 2 Identificar candidatos
+	std::vector<int> candidatos_borrar; // Donde hay 1s
+	std::vector<int> candidatos_poner; // Donde hay 0s
+	
+	for (int i = 0; i < n; ++i)
+	{
+		if (x_var[i] == 1 && nodos[i]->getFlag() == 0)
+		{
+			candidatos_borrar.push_back(i);
+		}
+		else {
+			candidatos_poner.push_back(i);
+		}
+	}
+
+	if (candidatos_borrar.empty())
+	{
+		// No hay 1s para eliminar
+		return;
+	}
+
+	// 3 Decidir operador (Delete vs swap)
+
+	double rnd = Get_Random_Number();
 	bool esSwap = false ;
 
 	if (rnd <= prob_op1_delete) {
@@ -296,56 +320,57 @@ void CUtilityToolBox::MutacionModificada_sin_reubicacion(vector<double> &x_var, 
         esSwap = true;
     }
 
-
-	int pos_eliminada = -1;
-	// === Paso 1: buscar un 1 para cambiarlo a 0 ===
-	int inicio1 = rand() % n;
-	for (int i = 0; i < n; ++i)
+	if (esSwap && candidatos_poner.empty())
 	{
-		int pos = (inicio1 + i) % n;
-		/* Si en la posicion es 1 y no es preinstalado entonces se cambia a 0 */
-		if (x_var[pos] == 1 && nodos[pos]->getFlag() == 0)
-		{
-			x_var[pos] = 0;
-			pos_eliminada = pos;
-			break;
-		}
+		// No hay 0s para poner
+		return;
 	}
 
-	if (esSwap && pos_eliminada != -1)
+	int idx_borrar = candidatos_borrar[rand() % candidatos_borrar.size()];
+	x_var[idx_borrar] = 0;
+
+	if (esSwap)
 	{
-		// === Paso 2: buscar un 0 para cambiarlo a 1 ===
-		int inicio0 = rand() % n;
-		for (int i = 0; i < n; ++i)
-		{
-			int pos = (inicio0 + i) % n;
-			if (x_var[pos] == 0 && pos != pos_eliminada)
-			{
-				x_var[pos] = 1;
-				break;
-			}
-		}
+		int idx_poner = candidatos_poner[rand() % candidatos_poner.size()];
+		x_var[idx_poner] = 1;
 	}
-	// imprmir x_var
-	/* std::cout << "Solución mutada (x_var): ";
-	for (double val : x_var)
-	{
-		std::cout << val << " ";
-	}
-	std::cout << std::endl; */
+
 }
 
 void CUtilityToolBox::MutacionModificada_con_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance)
 {
-	if (Get_Random_Number() > mutation_rate)
+	// 1 Verificar probabilidad
+	double prob_mutation_rate = Get_Random_Number();
+	if (prob_mutation_rate > mutation_rate)
 	{
 		return;
 	}
 
 	int n = x_var.size();
 
+	// 2 Identificar candidatos
+	std::vector<int> candidatos_borrar; // Donde hay 1s
+	std::vector<int> candidatos_poner; // Donde hay 0s
+
+	for (int i = 0; i < n; ++i)
+	{
+		if (x_var[i] == 1)
+		{
+			candidatos_borrar.push_back(i);
+		}
+		else {
+			candidatos_poner.push_back(i);
+		}
+	}
+
+	if (candidatos_borrar.empty())
+	{
+		// No hay 1s para eliminar
+		return;
+	}
+
+	// 3 Decidir operador (Delete vs swap)
 	double rnd = Get_Random_Number();
-    
     bool esSwap = false;
 
     if (rnd <= prob_op1_delete) {
@@ -356,40 +381,18 @@ void CUtilityToolBox::MutacionModificada_con_reubicacion(vector<double> &x_var, 
         esSwap = true;
     }
 
-	int pos_eliminada = -1;
-	int inicio1 = rand() % n;
-	// === Paso 1: buscar un 1 para cambiarlo a 0 ===
-	for (int i = 0; i < n; ++i)
-	{
-		int pos = (inicio1 + i) % n;
-		/* Si en la posicion es 1*/
-		if (x_var[pos] == 1)
-		{
-			x_var[pos] = 0;
-			pos_eliminada = pos;
-			break;
-		}
-	}
+	if (esSwap && candidatos_poner.empty()) {
+        return; // No hay huecos para mover, abortar swap.
+    }
 
-	if (pos_eliminada == -1)
-	{
-		return;
-	}
+	int idx_borrar = candidatos_borrar[rand() % candidatos_borrar.size()];
+    x_var[idx_borrar] = 0;
 
-	if (esSwap)
-	{
-		// === Paso 2: buscar un 0 para cambiarlo a 1 ===
-		int inicio0 = rand() % n;
-		for (int i = 0; i < n; ++i)
-		{
-			int pos = (inicio0 + i) % n;
-			if (x_var[pos] == 0 && pos != pos_eliminada)
-			{
-				x_var[pos] = 1;
-				break;
-			}
-		}
-	}
+	// Agregar (Swap)
+    if (esSwap) {
+        int idx_poner = candidatos_poner[rand() % candidatos_poner.size()];
+        x_var[idx_poner] = 1;
+    }
 
 	// imprmir x_var
 	/* std::cout << "Solución mutada (x_var): ";

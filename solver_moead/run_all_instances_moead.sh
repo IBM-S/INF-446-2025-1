@@ -16,16 +16,30 @@ NUM_RUNS=2
 # Parámetros Algoritmo
 POPULATION=100
 NEIGHBOR=20
-NEVALS=100000    # Criterio de parada por evaluaciones
-MAX_TIME=0      # Criterio de parada por tiempo (0 = desactivado)
-MUTATION=0.05
+NEVALS=50000    # Criterio de parada por evaluaciones
+MAX_TIME=3600      # Criterio de parada por tiempo (0 = desactivado)
+MUTATION=0.2
 CROSSOVER=1.0
 OP1_PROB=0.5
 
 # Lista de Instancias
 declare -a INSTANCE_ORDER=(
     "cam_1390_MILPA_ALTA.dat"
-    # Agrega el resto aquí...
+    #"cam_1800_CUAJIMALPA_DE_MORELOS.dat"
+    #"cam_3205_LA_MAGDALENA_CONTRERAS.dat"
+    #"cam_7256_TLAHUAC.dat"
+    #"cam_7408_XOCHIMILCO.dat"
+    #"cam_9673_AZCAPOTZALCO.dat"
+    #"cam_11096_IZTACALCO.dat"
+    #"cam_11410_TLALPAN.dat"
+    #"cam_11476_BENITO_JUAREZ.dat"
+    #"cam_12319_COYOACAN.dat"
+    #"cam_13802_MIGUEL_HIDALGO.dat"
+    #"cam_14468_VENUSTIANO_CARRANZA.dat"
+    #"cam_15743_ALVARO_OBREGON.dat"
+    #"cam_22238_CUAUHTEMOC.dat"
+    #"cam_24363_GUSTAVO_A._MADERO.dat"
+    #"cam_40264_IZTAPALAPA.dat"
 )
 
 # ================= INICIO =================
@@ -57,7 +71,7 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
     mkdir -p "${instanceResDir}"
     
     # Log resumen
-    summaryLog="${instanceResDir}/execution_summary.csv"
+    summaryLog="${instanceResDir}/execution_${instanceName}_summary.log"
     if [ ! -f "${summaryLog}" ]; then
         echo "Run,Seed,Time_s" > "${summaryLog}"
     fi
@@ -68,7 +82,9 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
         
         echo "  > Run ${run}/${NUM_RUNS} (Seed: ${currentSeed})..."
         
-        runDir="${instanceResDir}/run_${run}"
+        subFolder="run_${run}"
+
+        runDir="${instanceResDir}/${subFolder}"
 
         # --- LIMPIEZA DE CORRIDAS ANTERIORES ---
         # Si la carpeta run_X ya existe, la borramos completa para evitar mezclar datos.
@@ -96,15 +112,11 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
             -mut ${MUTATION} \
             -cross ${CROSSOVER} \
             -op1 ${OP1_PROB} \
+            -outDir "${subFolder}" \
             > "${consoleLog}" 2>&1
 
         endT=$(date +%s.%N)
         duration=$(echo "$endT - $startT" | bc)
-
-        # --- MOVER RESULTADOS ---
-        # C++ deja los archivos en la carpeta de la instancia (instanceResDir)
-        # Los movemos a la carpeta específica del run (runDir)
-        mv "${instanceResDir}"/POF_*.dat "${runDir}/" 2>/dev/null
         
         # --- CREAR PARETO_FRONT.TXT ---
         # Buscamos el archivo con el número de generación más alto (la última población)
