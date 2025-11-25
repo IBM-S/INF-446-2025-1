@@ -12,25 +12,25 @@ PROBLEM_TYPE="cam"
 INSTANCES_DIR="${BASE_DIR}/datos/inst"
 RESULTS_DIR="${BASE_DIR}/datos/res/raw_ampl/${PROBLEM_TYPE}"
 
-NUM_RUNS=2
+NUM_RUNS=10
 
 declare -a INSTANCE_ORDER=(
     "cam_1390_MILPA_ALTA.dat"
-    #"cam_1800_CUAJIMALPA_DE_MORELOS.dat"
-    #"cam_3205_LA_MAGDALENA_CONTRERAS.dat"
-    #"cam_7256_TLAHUAC.dat"
-    #"cam_7408_XOCHIMILCO.dat"
-    #"cam_9673_AZCAPOTZALCO.dat"
-    #"cam_11096_IZTACALCO.dat"
-    #"cam_11410_TLALPAN.dat"
-    #"cam_11476_BENITO_JUAREZ.dat"
-    #"cam_12319_COYOACAN.dat"
-    #"cam_13802_MIGUEL_HIDALGO.dat"
-    #"cam_14468_VENUSTIANO_CARRANZA.dat"
-    #"cam_15743_ALVARO_OBREGON.dat"
-    #"cam_22238_CUAUHTEMOC.dat"
-    #"cam_24363_GUSTAVO_A._MADERO.dat"
-    #"cam_40264_IZTAPALAPA.dat"
+    "cam_1800_CUAJIMALPA_DE_MORELOS.dat"
+    "cam_3205_LA_MAGDALENA_CONTRERAS.dat"
+    "cam_7256_TLAHUAC.dat"
+    "cam_7408_XOCHIMILCO.dat"
+    "cam_9673_AZCAPOTZALCO.dat"
+    "cam_11096_IZTACALCO.dat"
+    "cam_11410_TLALPAN.dat"
+    "cam_11476_BENITO_JUAREZ.dat"
+    "cam_12319_COYOACAN.dat"
+    "cam_13802_MIGUEL_HIDALGO.dat"
+    "cam_14468_VENUSTIANO_CARRANZA.dat"
+    "cam_15743_ALVARO_OBREGON.dat"
+    "cam_22238_CUAUHTEMOC.dat"
+    "cam_24363_GUSTAVO_A._MADERO.dat"
+    "cam_40264_IZTAPALAPA.dat"
 )
 
 # ================= INICIO DEL PROCESO =================
@@ -63,15 +63,24 @@ for instanceFile in ${INSTANCE_ORDER[@]}; do
 
     instanceLogFile="${instanceResDir}/execution_${instanceName}_summary.log"
 
-    if [ ! -f "${instanceLogFile}" ]; then
-        echo "Run,Tiempo(s)" > "${instanceLogFile}"
+    # Si existe el archivo de resumen anterior, LO BORRAMOS.
+    if [ -f "${instanceLogFile}" ]; then
+        # echo "   [Info] Borrando resumen anterior..."
+        rm "${instanceLogFile}"
     fi
+
+    # Creamos el archivo nuevo con el encabezado CSV
+    echo "Run,Time_s" > "${instanceLogFile}"
 
     for (( run=1; run <=${NUM_RUNS}; run++)); do
         echo "  Ejecución ${run}/${NUM_RUNS} para la instancia ${instanceFile}..."
         startTime="$(date +%s.%N)"
 
         outputDir="${instanceResDir}/run_${run}"
+
+        if [ -d "${outputDir}" ]; then
+            rm -rf "${outputDir}"
+        fi
         mkdir -p "${outputDir}"
 
         fullLogFile="${outputDir}/ampl_log_full.txt"

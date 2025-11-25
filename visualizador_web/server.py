@@ -31,14 +31,14 @@ DIR_DATOS = os.path.join(PROYECTO_ROOT, "datos")
 DIR_INSTANCES = os.path.join(DIR_DATOS, "inst")
 DIR_RESULTADOS = os.path.join(DIR_DATOS, "res")
 
-DIR_RAW_MOEAD = os.path.join(DIR_RESULTADOS, "raw_moead") 
+DIR_RAW_MOEAD = os.path.join(DIR_RESULTADOS, "raw_moead/cam") 
 
 # Carpetas para los resultados procesados (caché)
 DIR_FRENTES_PARETO = os.path.join(DIR_RESULTADOS, "cache_procesada", "frentes_pareto")
 DIR_AEDS_PROCESADOS = os.path.join(DIR_RESULTADOS, "cache_procesada", "aeds")
 DIR_STATIC_MAPS = os.path.join(BASE_DIR, "static", "maps")
 
-DIR_MOEAD_CORE = os.path.join(PROYECTO_ROOT, "EMO-D", "MOEAD")
+DIR_MOEAD_CORE = os.path.join(PROYECTO_ROOT, "solver_moead")
 PATH_MOEAD_EXEC = os.path.join(DIR_MOEAD_CORE, "MOEAD")
 
 # Asumiendo la estructura ../../material/hv-1.3-src/hv
@@ -281,11 +281,39 @@ def run():
     full_path = os.path.join(DIR_INSTANCES, instancia)
     print(f"Ejecutando MOEAD con instancia {instancia}")
 
-    subprocess.run([PATH_MOEAD_EXEC, full_path, str(semilla), str(num_var)], cwd=DIR_MOEAD_CORE)
+    cmd = [
+    PATH_MOEAD_EXEC,
+    "-inst", full_path,
+    "-seed", str(semilla),
+    "-nvars", str(num_var),
+    "-neval", "10000"
+    ]
+
+    print("[/run] Ejecutando:", " ".join(cmd), " (cwd=", DIR_MOEAD_CORE, ")", flush=True)
+
+    result = subprocess.run(
+        cmd,
+        cwd=DIR_MOEAD_CORE,
+        capture_output=True,
+        text=True
+    )
+
+    print("[/run] MOEAD returncode:", result.returncode, flush=True)
+    if result.stdout:
+        print("[/run] MOEAD stdout:\n", result.stdout, flush=True)
+    if result.stderr:
+        print("[/run] MOEAD stderr:\n", result.stderr, flush=True)
+
+    if result.returncode != 0:
+        # Si quieres, puedes retornar error al front en vez de seguir
+        return jsonify({
+            "error": "MOEAD falló al ejecutarse",
+            "stderr": result.stderr
+        }), 500
 
     base_name = parse_instance_name(instancia)
     instance_raw_dir = os.path.join(DIR_RAW_MOEAD, base_name)
-    patron_busqueda = os.path.join(instance_raw_dir, f"POF_{base_name}_GEN_*.dat")
+    patron_busqueda = os.path.join(instance_raw_dir, f"POF_{base_name}_SEED_1_GEN_*.dat")
     raw_files = glob.glob(patron_busqueda)
     #print("[/run] POF encontrados:", raw_files, flush=True)
     raw_files = sorted(raw_files, key=gen_number_from_path)

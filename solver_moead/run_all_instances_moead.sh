@@ -11,41 +11,42 @@ RAW_RESULTS_DIR="${BASE_DIR}/../datos/res/raw_moead"
 # ================= PARÁMETROS =================
 PROBLEM_TYPE="cam"       
 VARIANT="location"       
-NUM_RUNS=2              
+NUM_RUNS=10          
 
 # Parámetros Algoritmo
 POPULATION=100
 NEIGHBOR=20
-NEVALS=50000    # Criterio de parada por evaluaciones
+NEVALS=100000    # Criterio de parada por evaluaciones
 MAX_TIME=3600      # Criterio de parada por tiempo (0 = desactivado)
-MUTATION=0.2
+MUTATION=0.7
 CROSSOVER=1.0
 OP1_PROB=0.5
 
 # Lista de Instancias
 declare -a INSTANCE_ORDER=(
     "cam_1390_MILPA_ALTA.dat"
-    #"cam_1800_CUAJIMALPA_DE_MORELOS.dat"
-    #"cam_3205_LA_MAGDALENA_CONTRERAS.dat"
-    #"cam_7256_TLAHUAC.dat"
-    #"cam_7408_XOCHIMILCO.dat"
-    #"cam_9673_AZCAPOTZALCO.dat"
-    #"cam_11096_IZTACALCO.dat"
-    #"cam_11410_TLALPAN.dat"
-    #"cam_11476_BENITO_JUAREZ.dat"
-    #"cam_12319_COYOACAN.dat"
-    #"cam_13802_MIGUEL_HIDALGO.dat"
-    #"cam_14468_VENUSTIANO_CARRANZA.dat"
-    #"cam_15743_ALVARO_OBREGON.dat"
-    #"cam_22238_CUAUHTEMOC.dat"
-    #"cam_24363_GUSTAVO_A._MADERO.dat"
-    #"cam_40264_IZTAPALAPA.dat"
+    "cam_1800_CUAJIMALPA_DE_MORELOS.dat"
+    "cam_3205_LA_MAGDALENA_CONTRERAS.dat"
+    "cam_7256_TLAHUAC.dat"
+    "cam_7408_XOCHIMILCO.dat"
+    "cam_9673_AZCAPOTZALCO.dat"
+    "cam_11096_IZTACALCO.dat"
+    "cam_11410_TLALPAN.dat"
+    "cam_11476_BENITO_JUAREZ.dat"
+    "cam_12319_COYOACAN.dat"
+    "cam_13802_MIGUEL_HIDALGO.dat"
+    "cam_14468_VENUSTIANO_CARRANZA.dat"
+    "cam_15743_ALVARO_OBREGON.dat"
+    "cam_22238_CUAUHTEMOC.dat"
+    "cam_24363_GUSTAVO_A._MADERO.dat"
+    "cam_40264_IZTAPALAPA.dat"
 )
 
 # ================= INICIO =================
 echo "---------------------------------------------------------"
 echo " INICIANDO EXPERIMENTOS MOEA/D - TIPO: ${PROBLEM_TYPE}"
 echo " Variantes: ${VARIANT}"
+echo " Tiempo Máximo: ${MAX_TIME}s"
 echo " Runs por instancia: ${NUM_RUNS}"
 echo "---------------------------------------------------------"
 

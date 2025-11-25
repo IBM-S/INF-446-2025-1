@@ -1,8 +1,8 @@
-reset ;
+#reset ;
 
 
-model mo_location_model.mod;
-data DRP_con_probs.dat;
+# model mo_location_model.mod;
+# data DRP_con_probs.dat;
 # data casos_dats_prob/100-3.dat;
 # data ../datos/inst/100-3.dat;
 # data ../datos/inst/cam_1390_MILPA_ALTA.dat;
@@ -22,16 +22,16 @@ data DRP_con_probs.dat;
 # data ../datos/inst/cam_24363_GUSTAVO_A._MADERO.dat;
 # data ../datos/inst/cam_40264_IZTAPALAPA.dat;
 
-data conf_execution.dat;
+#data conf_execution.dat;
 
 /* GUROBI */
 option solver gurobi;
 
-option solver_msg 1 ;
+option solver_msg 0 ;
 option show_stats 1;
-option gurobi_options 'timelimit=600';
+option gurobi_options 'timelimit=3600';
 
-param mostrar_detalles default 0;
+param mostrar_detalles default 1;
 param mostrar_pesos default 0;
 param formato_salida default 3;
 
@@ -44,15 +44,23 @@ param formato_salida default 3;
 #display F ;
 #printf "Tiempo CPU: %d\n", Ttotal ;
 
-printf "\n#####################################################\n";
-printf "#         BI-OBJECTIVE AED LOCATION PROBLEM         #\n";
-printf "#####################################################\n";
-printf "Instance: %s\n", nombre_instancia;
-printf "Presupuesto (P): %s\n", P;
-printf "Radio (R): %s\n", R;
-printf "Costo Instalacion (c1): %s\n", c1;
-printf "Costo Relocacion (c2): %s (no usado en este modelo)\n", c2;
-printf "Cant. Preinstalados: %s\n\n", sum{i in N} flag[i];
+printf "\n==========================================================\n";
+printf "               REPORTE DE EJECUCION AMPL                  \n";
+printf "==========================================================\n";
+
+printf " [1] INFORMACION DE LA INSTANCIA\n";
+printf "     Instancia     : %s\n", nombre_instancia;
+printf "     N (Nodos)     : %d\n", N_total;
+printf "     Presupuesto   : %g\n", P;
+printf "     Radio (R)     : %g\n", R;
+printf "     Costos (c1/c2): %g / %g\n", c1, c2;
+printf "     Pre-instalados: %g\n", sum{i in N} flag[i];
+
+printf "\n [2] CONFIGURACION DEL SOLVER\n";
+printf "     Solver        : Gurobi\n";
+printf "     Time Limit    : 3600 s\n";
+printf "     Ejecuciones   : %d (Puntos en la frontera)\n", cantejc;
+printf "==========================================================\n\n";
 
 param count default 0;
 param Ttotal default 0 ;
@@ -69,16 +77,17 @@ param F2{ejecuciones}    default 0 ;
 param BT1{ejecuciones}   default 0 ;
 param BT2{ejecuciones}   default 0 ;
 
-# ############################################################################################
-# ############################# FASE 1: Busqueda del mejor y peor valor ######################
-# ############################################################################################
+# ==========================================================
+#  FASE 1: BÚSQUEDA DE EXTREMOS (Ideal / Nadir)
+# ==========================================================
+
+printf " [3] CALCULANDO PUNTOS EXTREMOS (Ideal/Nadir)...\n";
 
 # Paso 1: Crear una tabla para guardar los resultados de las soluciones extremas.
 param SolucionExtrema {objetivos, objetivos};
 
 # Paso 2: Resolver para cada objetivo individualmente y llenar la tabla.
 for {gg in objetivos} {
-    printf "\n--- Calculando extremo para Objetivo %s ---\n", gg;
     let g := gg;
     objective FO1;
     let Ttotal := time();
@@ -89,6 +98,8 @@ for {gg in objetivos} {
     for {i in objetivos} {
         let SolucionExtrema[gg, i] := F[i];
     }
+
+    printf "     -> Objetivo %d: F1=%.4f, F2=%.4f (%.2f s)\n", gg, F[1], F[2], TCPU1[gg];
 
     let f1[gg] := F[1];
     let f2[gg] := F[2];
@@ -126,11 +137,14 @@ for {i in objetivos} {
     let PVF[i] := PV[i];
 }
 
+printf "\n-> Rango F1: [%.4f, %.4f]\n", MV[1], PV[1];
+printf "-> Rango F2: [%.4f, %.4f]\n", MV[2], PV[2];
 
 
-# ############################################################################################
-# ############################# FASE 2: Busqueda de la frontera de Pareto ####################
-# ############################################################################################
+# ==========================================================
+#  FASE 2: MÉTODO DE SUMAS PONDERADAS (Pareto)
+# ==========================================================
+printf "\n [4] GENERANDO FRONTERA DE PARETO (Iteraciones)...\n";
 
 for {gg in ejecuciones} {
 
