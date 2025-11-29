@@ -113,12 +113,12 @@ int main(int argc, char *argv[])
     NumberOfVariables = 324;
     
     // Parámetros Algoritmo
-    double mutationRate = 0.20;
+    double mutationRate = 0.7;
     double crossoverRate = 1.0;
     double op1Prob = 0.5; // 50% swap, 50% bitflip (por ejemplo)
 
 	NumberOfObjectives = 2;
-    NumberOfFuncEvals = 1000; 
+    NumberOfFuncEvals = 100000; 
 
     std::string variant = "location"; // o "relocation"
     std::string problemType = "cam";  // o "drp"

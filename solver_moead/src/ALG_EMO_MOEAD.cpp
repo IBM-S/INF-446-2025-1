@@ -4,7 +4,7 @@
 CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 {
 	s_PBI_type = 3;
-	m_MutationRate = 0.8;
+	m_MutationRate = 0.7;
     m_CrossoverRate = 1.0;
     m_Op1MutationProb = 0.5;
     m_IsRelocation = false; // Por defecto Location (fijo)

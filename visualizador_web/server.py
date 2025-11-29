@@ -286,7 +286,7 @@ def run():
     "-inst", full_path,
     "-seed", str(semilla),
     "-nvars", str(num_var),
-    "-neval", "10000"
+    "-neval", "1000"
     ]
 
     print("[/run] Ejecutando:", " ".join(cmd), " (cwd=", DIR_MOEAD_CORE, ")", flush=True)

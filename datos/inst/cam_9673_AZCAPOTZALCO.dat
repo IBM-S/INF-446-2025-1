@@ -2,7 +2,7 @@
 param N_total:= 9673 ;
 
 /* PARAMETROS */
-param P:= 100000.0 ;
+param P:= 8915.0 ;
 param R:= 200.0 ;
 param c1:= 1.0 ;
 param c2:= 0.2 ;
