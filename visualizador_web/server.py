@@ -286,7 +286,11 @@ def run():
     "-inst", full_path,
     "-seed", str(semilla),
     "-nvars", str(num_var),
-    "-neval", "1000"
+    "-neval", "50000 ",
+    "-pop", "1000",
+    "-neighbor", "40",
+    "-type cam",
+    "-variant location"
     ]
 
     print("[/run] Ejecutando:", " ".join(cmd), " (cwd=", DIR_MOEAD_CORE, ")", flush=True)

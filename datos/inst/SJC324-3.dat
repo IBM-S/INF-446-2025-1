@@ -1,8 +1,8 @@
 /* CONJUNTOS */
-set N:= 324 ;
+param N_total:= 324 ;
 
 /* PARAMETROS */
-param P:= 3 ;
+param P:= 324 ;
 param R:= 800 ;
 param c1:= 1 ;
 param c2:= 0.2 ;
