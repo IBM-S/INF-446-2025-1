@@ -3,7 +3,7 @@
 
 CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 {
-	s_PBI_type = 3;
+	s_PBI_type = 1;
 	m_MutationRate = 0.7;
     m_CrossoverRate = 1.0;
     m_Op1MutationProb = 0.5;
@@ -233,7 +233,7 @@ void CALG_EMO_MOEAD::InitializePopulation()
 
 	readf.close();
 
-	// this->FindNadirPoint();
+	this->FindNadirPoint();
 
 	// if(s_PBI_type==3) 	NormalizeWeight();
 	
@@ -311,10 +311,79 @@ void CALG_EMO_MOEAD::NormalizeIndividual(CIndividualBase &ind)
 	// getchar();
 }
 
-void CALG_EMO_MOEAD::UpdateProblem(CIndividualBase &child,
-								   unsigned sp_id)
-{
 
+void CALG_EMO_MOEAD::UpdateNadirPoint(vector<double> &obj_vect)
+{
+	for (unsigned n = 0; n < NumberOfObjectives; n++)
+	{
+		if (obj_vect[n] > v_NadirPoint[n])
+		{
+			v_NadirPoint[n] = obj_vect[n];
+		}
+	}
+}
+
+void CALG_EMO_MOEAD::UpdateProblem_modificado(CIndividualBase &child,
+									   unsigned sp_id)
+{
+	double f1, f2;
+
+	int id1 = sp_id, id2;
+
+	vector<double> norm_child(NumberOfObjectives);
+	for(int k = 0;k<NumberOfObjectives;k++)
+	{
+		double range = v_NadirPoint[k] - v_IdealPoint[k];
+		if(range<1.0e-6) range=1.0e-6;
+		norm_child[k] = (child.f_obj[k]-v_IdealPoint[k])/range;
+	}
+
+	vector<double> zero_point(NumberOfObjectives, 0);
+
+
+
+	for (int i = 0; i < s_NeighborhoodSize; i++)
+	{
+
+		id2 = m_PopulationSOP[id1].v_Neighbor_Index[i];
+		vector<double> norm_parent(NumberOfObjectives);
+		for(int k = 0;k<NumberOfObjectives;k++)
+		{
+			double range = v_NadirPoint[k] - v_IdealPoint[k];
+			if(range<1.0e-6) range=1.0e-6;
+			norm_parent[k] = (m_PopulationSOP[id2].m_BestIndividual.f_obj[k]-v_IdealPoint[k])/range;
+		}
+
+		f1 = UtilityToolBox.ScalarizingFunction(norm_parent,
+												m_PopulationSOP[id2].v_Weight_Vector,
+												zero_point,
+												s_PBI_type); // 1 - TCH  3 - PBI
+
+		f2 = UtilityToolBox.ScalarizingFunction(norm_child,
+												m_PopulationSOP[id2].v_Weight_Vector,
+												zero_point,
+												s_PBI_type);
+		
+		// print all values for debugging
+		//printf("\n\n  Updating Subproblem %d ...\n", id2);
+		//printf("obj parent: %f %f", norm_parent[0], norm_parent[1]);
+		//printf("vs\n");
+		//printf("obj child: %f %f\n", norm_child[0], norm_child[1]);
+		//printf("weight vector: %f, %f \n", m_PopulationSOP[id2].v_Weight_Vector[0], m_PopulationSOP[id2].v_Weight_Vector[1]);
+		//printf("ideal point: %f  %f\n", zero_point[0], zero_point[1]);
+		//printf("f1 parent: %f  f2 child: %f\n", f1, f2);
+
+		if (f2 < f1)
+		{	
+			//printf("  Reemplazando en subproblema %d: f1=%f  f2=%f\n", id2, f1, f2);
+			m_PopulationSOP[id2].m_BestIndividual = child;
+		}
+	}
+}
+
+void CALG_EMO_MOEAD::UpdateProblem_original(CIndividualBase &child,
+								   unsigned sp_id)
+{	
 	double f1, f2;
 
 	int id1 = sp_id, id2;
@@ -325,19 +394,28 @@ void CALG_EMO_MOEAD::UpdateProblem(CIndividualBase &child,
 	{
 
 		id2 = m_PopulationSOP[id1].v_Neighbor_Index[i];
+		printf("\n\n  Updating Subproblem %d ...\n", id2);
+		printf("obj1 padre: %f  %f\n", m_PopulationSOP[id2].m_BestIndividual.f_obj[0], m_PopulationSOP[id2].m_BestIndividual.f_obj[1]);
+		printf("vs\n");
+		printf("obj child: %f  %f\n", child.f_obj[0], child.f_obj[1]);
+		printf("weight vector: %f, %f \n", m_PopulationSOP[id2].v_Weight_Vector[0], m_PopulationSOP[id2].v_Weight_Vector[1]);
+		printf("ideal point: %f  %f\n", v_IdealPoint[0], v_IdealPoint[1]);
 
-		//*
+		
 		f1 = UtilityToolBox.ScalarizingFunction(m_PopulationSOP[id2].m_BestIndividual.f_obj,
 												m_PopulationSOP[id2].v_Weight_Vector,
 												v_IdealPoint,
-												1); // 1 - TCH  3 - PBI
+												s_PBI_type); // 1 - TCH  3 - PBI
 
 		f2 = UtilityToolBox.ScalarizingFunction(child.f_obj,
 												m_PopulationSOP[id2].v_Weight_Vector,
 												v_IdealPoint,
-												1);
+												s_PBI_type);
+		
+		printf("f1 padre: %f  f2 child: %f\n", f1, f2);
+												
+		
 		/*
-
 		if(s_PBI_type==1)
 		{
 
@@ -384,11 +462,12 @@ void CALG_EMO_MOEAD::UpdateProblem(CIndividualBase &child,
 				m_PopulationSOP[id2].v_Weight_Vector2,
 				v_IdealPoint,
 				3);
-		}
-		//*/
+		}*/
+		
 
 		if (f2 < f1)
-		{
+		{	
+			printf("  Reemplazando en subproblema %d: f1=%f  f2=%f\n", id2, f1, f2);
 			m_PopulationSOP[id2].m_BestIndividual = child;
 		}
 	}
@@ -532,14 +611,15 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		// child.Show(0); getchar();
 
 		UpdateReference(child.f_obj);
+		UpdateNadirPoint(child.f_obj);
 
-		UpdateProblem(child, id_c);
+		UpdateProblem_modificado(child, id_c);
 
 		if (IsTerminated())
 			break;
 	}
 
-	// this->FindNadirPoint();
+	this->FindNadirPoint();
 
 	// if(s_PBI_type==3)  this->NormalizeWeight();
 }

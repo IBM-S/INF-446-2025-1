@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     double op1Prob = 0.5; // 50% swap, 50% bitflip (por ejemplo)
 
 	NumberOfObjectives = 2;
-    NumberOfFuncEvals = 100000; 
+    NumberOfFuncEvals = 40000; 
 
     std::string variant = "location"; // o "relocation"
     std::string problemType = "cam";  // o "drp"

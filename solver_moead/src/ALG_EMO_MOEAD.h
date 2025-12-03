@@ -23,7 +23,10 @@ public:
 	void InitializeParameter();
 
 	void UpdateReference(vector<double> &obj_vect);
-	void UpdateProblem(CIndividualBase &child, unsigned sp_id);
+	void UpdateNadirPoint(vector <double> &obj_vect);
+	void UpdateProblem_original(CIndividualBase &child, unsigned sp_id);
+	void UpdateProblem_modificado(CIndividualBase &child, unsigned sp_id);
+
 
 	void FindNadirPoint();
 	void NormalizeIndividual(CIndividualBase &ind);
