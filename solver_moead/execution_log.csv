@@ -218,3 +218,7 @@ cam_1390_MILPA_ALTA.dat,MOEAD,cam,location,300,30,1390,90000,0,45,1,0.2,1,8.5027
 cam_1800_CUAJIMALPA_DE_MORELOS.dat,MOEAD,cam,location,200,20,1800,10000,0,26,1,0.2,1,0.809363,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_1800_CUAJIMALPA_DE_MORELOS
 cam_1800_CUAJIMALPA_DE_MORELOS.dat,MOEAD,cam,location,200,20,1800,40000,0,51,1,0.2,1,4.03907,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_1800_CUAJIMALPA_DE_MORELOS
 cam_1800_CUAJIMALPA_DE_MORELOS.dat,MOEAD,cam,location,200,20,1800,80000,0,78,1,0.2,1,5.92802,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_1800_CUAJIMALPA_DE_MORELOS
+cam_1800_CUAJIMALPA_DE_MORELOS.dat,MOEAD,cam,location,100,20,1800,100000,0,95,1,0.2,1,10.5421,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_1800_CUAJIMALPA_DE_MORELOS
+cam_1800_CUAJIMALPA_DE_MORELOS.dat,MOEAD,cam,location,100,20,1800,200000,0,49,1,0.2,1,16.1288,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_1800_CUAJIMALPA_DE_MORELOS
+cam_1800_CUAJIMALPA_DE_MORELOS.dat,MOEAD,cam,location,100,10,1800,200000,0,39,1,0.2,1,17.957,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_1800_CUAJIMALPA_DE_MORELOS
+cam_1390_MILPA_ALTA.dat,MOEAD,cam,location,100,10,1390,200000,0,56,1,0.2,1,13.7124,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_1390_MILPA_ALTA
