@@ -379,22 +379,79 @@
             <label for="instancia">Instancia</label>
             <select id="instancia" name="instancia"></select>
           </div>
+
+
           <div class="field">
-            <label for="semilla">Semilla</label>
-            <input id="semilla" type="number" value="1" min="0" step="1" />
+            <label for="neval">N° eval</label>
+            <input id="neval" type="number" value="10000" min="100" step="1000" />
           </div>
+
           <div class="field">
-            <label for="num_var">N° variables</label>
-            <input id="num_var" type="number" value="100" min="1" step="1" />
+            <label for="pop">Población</label>
+            <select id="pop">
+              <option value="100">100</option>
+              <option value="200" selected>200</option>
+              <option value="300">300</option>
+              <option value="400">400</option>
+              <option value="500">500</option>
+              <option value="600">600</option>
+              <option value="700">700</option>
+              <option value="800">800</option>
+              <option value="900">900</option>
+              <option value="1000">1000</option>
+            </select>
           </div>
+
+          <div class="field">
+            <label for="neighbor">Vecindario</label>
+            <select id="neighbor">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20" selected>20</option>
+              <option value="25">25</option>
+              <option value="30">30</option>
+              <option value="40">40</option>
+              <option value="50">50</option>
+              <option value="60">60</option>
+              <option value="70">70</option>
+              <option value="80">80</option>
+              <option value="90">90</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+
+
           <button class="btn primary" id="btn-ejecutar">Ejecutar</button>
           <button class="btn" id="load-btn">Cargar generaciones</button>
+
+
+
+
           <label class="hint"><input type="checkbox" id="fix-scale" checked /> Usar misma escala</label>
           <label class="hint"><input type="checkbox" id="recalcular-hv" /> Recalcular HV</label>
+          <label class="hint">
+            HV cada
+            <input id="hv-every" type="number" min="1" step="1" value="10" style="width:60px" />
+            gens
+          </label>
+          <button class="btn" id="btn-hv-every">Aplicar</button>
           <label class="hint"><input type="checkbox" id="toggle-prob" checked /> Probabilidad en mapa</label>
+          <button class="btn" id="btn-hv-history">Ver historial HV</button>
           <span id="status" class="hint">Listo</span>
+
+          <div class="field">
+            <label for="ampl-instancia">Frente AMPL</label>
+            <select id="ampl-instancia" name="ampl-instancia">
+              <option value="">(Sin comparar)</option>
+            </select>
+          </div>
+
+          <button class="btn" id="load-ampl-btn">Cargar frente AMPL</button>
+          <span id="ampl-status" class="hint"></span>
         </div>
       </div>
+
 
       <div class="card" id="pareto-map-wrapper">
         <div id="plot-col">
@@ -613,8 +670,9 @@
     let lastIds = null;
     let lastInstancia = null;
     const selInst = $('#instancia');
-    const inputSeed = $('#semilla');
-    const inputVars = $('#num_var');
+    const inputNeval = $('#neval');
+    const inputPop = $('#pop');
+    const inputNeighbor = $('#neighbor');
     const statusEl = $('#status');
     const fixScaleCheckbox = $('#fix-scale');
 
@@ -622,6 +680,13 @@
     const sliderContainer = $('#slider-container');
     const slider = $('#slider');
     const genNum = $('#gen-num');
+
+    const selAmplInst = $('#ampl-instancia');
+    const amplStatusEl = $('#ampl-status');
+
+    const inputHvEvery = $('#hv-every');      // NUEVO
+    const btnHvEvery = $('#btn-hv-every');    // NUEVO
+
 
     // ==== Pestaña TODO ====
     const framesAll = {};    // inst -> [ [points], ... ]
@@ -643,12 +708,129 @@
     const rangesPerInst = {};       // inst -> { x:[min,max], y:[min,max] }
     const currentGenIndex = {};     // inst -> índice actual del slider
 
+    const btnHvHistory = document.getElementById('btn-hv-history');
+
+    btnHvHistory.addEventListener('click', async () => {
+      if (!selInst.value) {
+        alert('Primero selecciona una instancia');
+        return;
+      }
+
+      statusEl.textContent = 'Recalculando HV (todas las generaciones)…';
+
+      const payload = {
+        instancia: selInst.value,
+        recalcular: true,
+        strict: false,
+        hv_every: 1      // 👈 todas las generaciones
+      };
+
+      try {
+        const res = await fetch('/load', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          statusEl.textContent = 'Error al recalcular HV completo';
+          return;
+        }
+
+        const data = await res.json();
+        if (!data.files || !data.files.length) {
+          statusEl.textContent = '⚠️ No se encontraron generaciones.';
+          return;
+        }
+
+        // Historial completo
+        await loadGenerations(data.files, data.hv || [], 'full');
+        statusEl.textContent = `HV completo cargado (${frames.length} generaciones)`;
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'Error al recalcular HV completo';
+      }
+    });
 
 
     // ===== Data holders =====
     let frames = []; let hvValues = [];
     let globalXMin = Infinity, globalXMax = -Infinity, globalYMin = Infinity, globalYMax = -Infinity;
     let globalCovMin = Infinity, globalCovMax = -Infinity;
+
+    let amplPoints = null;
+    let amplPareto = [];
+    let amplDominados = [];
+
+    async function loadAmplFront() {
+      const instanciaAmpl = selAmplInst.value;
+
+      // Si el usuario elige “sin comparar”, limpiamos overlay
+      if (!instanciaAmpl) {
+        amplPoints = null;
+        amplPareto = [];
+        amplDominados = [];
+        amplStatusEl.textContent = 'Sin frente AMPL';
+        showGeneration(parseInt(slider.value || '0', 10));
+        return;
+      }
+
+      amplStatusEl.textContent = `Cargando frente AMPL (${instanciaAmpl})…`;
+
+      try {
+        const res = await fetch('/load_ampl_front', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ instancia: instanciaAmpl })
+        });
+
+        if (!res.ok) {
+          amplStatusEl.textContent = 'No se pudo cargar AMPL';
+          amplPoints = null;
+          amplPareto = [];
+          amplDominados = [];
+          showGeneration(parseInt(slider.value || '0', 10));
+          return;
+        }
+
+        const text = await res.text();
+
+        // Parseo + eliminación de duplicados
+        const rawPts = text.trim().split('\n')
+          .map(l => l.trim())
+          .filter(l => l && !l.startsWith('#'))
+          .map(l => {
+            const [a, b] = l.split(/\s+/);
+            return { x: parseFloat(a), y: parseFloat(b), ids: [] };
+          })
+          .filter(p => !Number.isNaN(p.x) && !Number.isNaN(p.y));
+
+        const uniqueMap = new Map();
+        rawPts.forEach(p => {
+          const key = `${p.x}:${p.y}`;
+          if (!uniqueMap.has(key)) uniqueMap.set(key, p);
+        });
+        const uniquePts = Array.from(uniqueMap.values());
+
+        // Calculamos dominancia con tu función
+        amplPoints = findParetoFront(uniquePts);
+        amplPareto = amplPoints.filter(p => p.isPareto);
+        amplDominados = amplPoints.filter(p => !p.isPareto);
+
+        amplStatusEl.textContent = `AMPL cargado (${amplPoints.length} pts)`;
+
+        // Redibujar la generación actual
+        showGeneration(parseInt(slider.value || '0', 10));
+
+      } catch (e) {
+        console.error(e);
+        amplStatusEl.textContent = 'Error al cargar AMPL';
+        amplPoints = null;
+        amplPareto = [];
+        amplDominados = [];
+        showGeneration(parseInt(slider.value || '0', 10));
+      }
+    }
 
     // ===== Instancias =====
     async function refreshInstanciaSelect() {
@@ -660,43 +842,50 @@
       } catch (e) { console.warn('No se pudo listar instancias', e); }
     }
 
-    async function fetchNFromInstance(filename) {
+    // Lista las instancias de AMPL desde datos/res/raw_ampl/cam/
+    async function refreshAmplSelect() {
       try {
-        const res = await fetch('/get_instance/' + filename);
-        if (!res.ok) return null; const txt = await res.text();
-        const m1 = txt.match(/set\s+N\s*:=\s*(\d+)\s*;/i); if (m1) return parseInt(m1[1], 10);
-        const start = txt.search(/param\s*:\s*coordx\s+coordy\s+flag\s+prob_ohca\s*:=/i);
-        if (start >= 0) {
-          const rest = txt.slice(start); const end = rest.search(/;\s*$/m);
-          const block = end >= 0 ? rest.slice(0, end) : rest;
-          const lines = block.split('\n').map(s => s.trim()).filter(s => /^\d+(\s|$)/.test(s));
-          if (lines.length > 0) return lines.length;
-        }
-      } catch (e) { console.warn('No se pudo leer N de la instancia:', e); }
-      return null;
+        const r = await fetch('/list_ampl_instances');
+        const j = await r.json();
+        const arr = Array.isArray(j) ? j : (j.instances || []);
+
+        // Dejo siempre la opción “sin comparar”
+        let html = `<option value="">(Sin comparar)</option>`;
+        html += arr.map(fn => `<option value="${fn}">${fn}</option>`).join('');
+        selAmplInst.innerHTML = html;
+
+        // OPCIONAL: si coincide nombre con la instancia actual, seleccionarla
+        const baseInst = (selInst.value || '').replace('.dat', '');
+        const matchOpt = arr.find(a => a === baseInst || a === selInst.value);
+        if (matchOpt) selAmplInst.value = matchOpt;
+
+      } catch (e) {
+        console.warn('No se pudo listar instancias AMPL', e);
+        selAmplInst.innerHTML = `<option value="">(Sin comparar)</option>`;
+      }
     }
-    function setNumVarTo(N) {
-      let opt = Array.from(inputVars.options || []).find(o => parseInt(o.value, 10) === N);
-      if (!opt) { opt = document.createElement('option'); opt.value = String(N); opt.textContent = String(N); inputVars.appendChild(opt); }
-      inputVars.value = String(N);
-    }
-    async function syncVariablesFromInstance(filename) { const N = await fetchNFromInstance(filename); if (N) setNumVarTo(N); }
+
+
+    async function fetchNFromInstance(filename) { return null; }
+    function setNumVarTo(N) { }
+    async function syncVariablesFromInstance(filename) { }
+
 
     // ===== Visualizador: Correr / Cargar =====
     async function runNow() {
-      const payload = { instancia: selInst.value, semilla: Number(inputSeed.value || 0), num_var: Number(inputVars.value || 0) };
+      const payload = { instancia: selInst.value, neval: Number(inputNeval.value || 10000), pop: Number(inputPop.value || 500), neighbor: Number(inputNeighbor.value || 100) };
       statusEl.textContent = 'Ejecutando…';
       const res = await fetch('/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!res.ok) { statusEl.textContent = 'Error en ejecución'; return; }
       const data = await res.json();
       if (!data.files || !data.files.length) { statusEl.textContent = '⚠️ No se generaron archivos.'; return; }
-      await loadGenerations(data.files, data.hv || []);
+      await loadGenerations(data.files, data.hv || [], 'simple');
       statusEl.textContent = `Listo: ${frames.length} generaciones`;
     }
 
     async function loadSaved() {
       statusEl.textContent = 'Cargando generaciones…';
-      const payload = { instancia: selInst.value, semilla: Number(inputSeed.value || 0), recalcular: $('#recalcular-hv').checked };
+      const payload = { instancia: selInst.value, recalcular: $('#recalcular-hv').checked };
       const res = await fetch('/load', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await res.json();
       if (!data.files || !data.files.length) { statusEl.textContent = '⚠️ No se encontraron generaciones.'; return; }
@@ -715,29 +904,137 @@
     }
     function getMultiColor(f) { const cs = ["#440154", "#3b528b", "#21918c", "#fde725", "#ff7f00"]; const s = f * (cs.length - 1); const i1 = Math.floor(s); const i2 = Math.min(i1 + 1, cs.length - 1); const t = s - i1; const c1 = cs[i1].slice(1), c2 = cs[i2].slice(1); const r1 = parseInt(c1.slice(0, 2), 16), g1 = parseInt(c1.slice(2, 4), 16), b1 = parseInt(c1.slice(4), 16); const r2 = parseInt(c2.slice(0, 2), 16), g2 = parseInt(c2.slice(2, 4), 16), b2 = parseInt(c2.slice(4), 16); const r = Math.round(r1 + t * (r2 - r1)), g = Math.round(g1 + t * (g2 - g1)), b = Math.round(b1 + t * (b2 - b1)); return `rgb(${r},${g},${b})`; }
 
-    async function loadGenerations(files, hvs) {
-      frames = []; hvValues = hvs; globalXMin = Infinity; globalXMax = -Infinity; globalYMin = Infinity; globalYMax = -Infinity; globalCovMin = Infinity; globalCovMax = -Infinity;
+    async function loadGenerations(files, hvs, hvMode = 'simple') {
+      frames = [];
+      hvValues = hvs;
+      globalXMin = Infinity; globalXMax = -Infinity;
+      globalYMin = Infinity; globalYMax = -Infinity;
+      globalCovMin = Infinity; globalCovMax = -Infinity;
+
       for (const file of files) {
-        const res = await fetch('/get/' + file); const text = await res.text();
-        const puntos = text.trim().split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#')).map(line => {
-          let coverage = null; let left = line; if (line.includes('|')) { const parts = line.split('|'); left = parts[0].trim(); const covStr = parts[1].trim().split(/\s+/)[0]; const covVal = parseFloat(covStr); if (!Number.isNaN(covVal)) coverage = covVal; }
-          const toks = left.split(/\s+/); const f1 = parseFloat(toks[0]); const f2 = parseFloat(toks[1]); let startIdx = 2; let isPareto;
-          if (Number.isNaN(parseFloat(toks[2]))) { if (toks[2] === 'P') { isPareto = true; startIdx = 3; } else if (toks[2] === 'D') { isPareto = false; startIdx = 3; } else if (toks[2] === '-' && line.includes('IDs instalados:')) { const right = line.split('IDs instalados:')[1] || ''; const ids = right.trim().split(/\s+/).map(Number).filter(n => !Number.isNaN(n)); updateRanges(f1, f2); return { x: f1, y: f2, ids, isPareto, coverage }; } }
-          const ids = toks.slice(startIdx).map(n => parseInt(n, 10)).filter(n => !Number.isNaN(n)); updateRanges(f1, f2); if (typeof coverage === 'number' && !Number.isNaN(coverage)) { if (coverage < globalCovMin) globalCovMin = coverage; if (coverage > globalCovMax) globalCovMax = coverage; }
-          return { x: f1, y: f2, ids, isPareto, coverage };
-        });
+        const res = await fetch('/get/' + file);
+        const text = await res.text();
+        const puntos = text.trim().split('\n')
+          .map(l => l.trim())
+          .filter(l => l && !l.startsWith('#'))
+          .map(line => {
+            let coverage = null;
+            let left = line;
+            if (line.includes('|')) {
+              const parts = line.split('|');
+              left = parts[0].trim();
+              const covStr = parts[1].trim().split(/\s+/)[0];
+              const covVal = parseFloat(covStr);
+              if (!Number.isNaN(covVal)) coverage = covVal;
+            }
+            const toks = left.split(/\s+/);
+            const f1 = parseFloat(toks[0]);
+            const f2 = parseFloat(toks[1]);
+            let startIdx = 2;
+            let isPareto;
+
+            if (Number.isNaN(parseFloat(toks[2]))) {
+              if (toks[2] === 'P') { isPareto = true; startIdx = 3; }
+              else if (toks[2] === 'D') { isPareto = false; startIdx = 3; }
+              else if (toks[2] === '-' && line.includes('IDs instalados:')) {
+                const right = line.split('IDs instalados:')[1] || '';
+                const ids = right.trim().split(/\s+/)
+                  .map(Number).filter(n => !Number.isNaN(n));
+                updateRanges(f1, f2);
+                return { x: f1, y: f2, ids, isPareto, coverage };
+              }
+            }
+
+            const ids = toks.slice(startIdx)
+              .map(n => parseInt(n, 10))
+              .filter(n => !Number.isNaN(n));
+
+            updateRanges(f1, f2);
+
+            if (typeof coverage === 'number' && !Number.isNaN(coverage)) {
+              if (coverage < globalCovMin) globalCovMin = coverage;
+              if (coverage > globalCovMax) globalCovMax = coverage;
+            }
+
+            return { x: f1, y: f2, ids, isPareto, coverage };
+          });
         frames.push(puntos);
       }
-      showGeneration(0); sliderContainer.style.display = 'block'; slider.max = frames.length - 1; slider.value = 0; genNum.innerText = 0;
-      // HV
-      Plotly.newPlot('hv-plot', [{ x: hvValues.map((_, i) => i), y: hvValues, mode: 'lines+markers', marker: { color: 'green' }, line: { color: 'green' }, name: 'Hipervolumen' }], { title: 'Evolución del Hipervolumen', xaxis: { title: 'Generación' }, yaxis: { title: 'Hipervolumen' }, paper_bgcolor: '#fff', plot_bgcolor: '#fff' });
-      document.getElementById('hv-plot').on('plotly_click', d => { const gen = d.points[0].x; slider.value = gen - 1; genNum.innerText = gen; showGeneration(gen - 1); });
-      // Historial
-      const traces = frames.map((pts, idx) => { const hasFlag = pts.every(p => typeof p.isPareto === 'boolean'); const all = hasFlag ? pts : findParetoFront(pts); const pareto = all.filter(p => p.isPareto); const color = getMultiColor(idx / Math.max(1, (frames.length - 1))); return { x: pareto.map(p => p.x), y: pareto.map(p => p.y), mode: 'markers', marker: { size: 6, color }, name: `Gen ${idx + 1}`, showlegend: false }; });
-      Plotly.newPlot('history-plot', traces, { title: 'Historial de Frentes de Pareto', xaxis: { title: 'f1' }, yaxis: { title: 'f2' } });
-      function updateRanges(f1, f2) { if (f1 < globalXMin) globalXMin = f1; if (f1 > globalXMax) globalXMax = f1; if (f2 < globalYMin) globalYMin = f2; if (f2 > globalYMax) globalYMax = f2; }
-    }
 
+      showGeneration(0);
+      sliderContainer.style.display = 'block';
+      slider.max = frames.length - 1;
+      slider.value = 0;
+      genNum.innerText = 0;
+
+      // ==== GRÁFICO HV SEGÚN MODO ====
+      let hvX = [];
+      let hvY = [];
+
+      if (hvValues && hvValues.length) {
+        if (hvMode === 'full') {
+          // Historial completo: todos los puntos
+          hvX = hvValues.map((_, i) => i);
+          hvY = hvValues;
+        } else {
+          // Modo simple: solo primera y última generación
+          const lastIdx = hvValues.length - 1;
+          hvX = [0, lastIdx];
+          hvY = [hvValues[0], hvValues[lastIdx]];
+        }
+      }
+
+      Plotly.newPlot('hv-plot', [{
+        x: hvX,
+        y: hvY,
+        mode: 'lines+markers',
+        marker: { color: 'green' },
+        line: { color: 'green' },
+        name: 'Hipervolumen'
+      }], {
+        title: 'Evolución del Hipervolumen',
+        xaxis: { title: 'Generación' },
+        yaxis: { title: 'Hipervolumen' },
+        paper_bgcolor: '#fff',
+        plot_bgcolor: '#fff'
+      });
+
+      document.getElementById('hv-plot').on('plotly_click', d => {
+        const gen = d.points[0].x;
+        slider.value = gen - 1;
+        genNum.innerText = gen;
+        showGeneration(gen - 1);
+      });
+
+      // ==== Historial de frentes (esto lo dejas tal cual) ====
+      const traces = frames.map((pts, idx) => {
+        const hasFlag = pts.every(p => typeof p.isPareto === 'boolean');
+        const all = hasFlag ? pts : findParetoFront(pts);
+        const pareto = all.filter(p => p.isPareto);
+        const color = getMultiColor(idx / Math.max(1, (frames.length - 1)));
+        return {
+          x: pareto.map(p => p.x),
+          y: pareto.map(p => p.y),
+          mode: 'markers',
+          marker: { size: 6, color },
+          name: `Gen ${idx + 1}`,
+          showlegend: false
+        };
+      });
+
+      Plotly.newPlot('history-plot', traces, {
+        title: 'Historial de Frentes de Pareto',
+        xaxis: { title: 'f1' },
+        yaxis: { title: 'f2' }
+      });
+
+      function updateRanges(f1, f2) {
+        if (f1 < globalXMin) globalXMin = f1;
+        if (f1 > globalXMax) globalXMax = f1;
+        if (f2 < globalYMin) globalYMin = f2;
+        if (f2 > globalYMax) globalYMax = f2;
+      }
+    }
     function showGeneration(index) {
       const points = frames[index]; if (!points || !Array.isArray(points)) return;
       const hasFlag = points.every(p => typeof p.isPareto === 'boolean');
@@ -762,7 +1059,7 @@
       const domText = dominatedPoints.map(p => mkHoverTextPt(p));
       const paretoText = paretoPoints.map(p => mkHoverTextPt(p));
 
-      Plotly.react(plotDiv, [
+      const traces = [
         {
           x: dominatedPoints.map(p => p.x),
           y: dominatedPoints.map(p => p.y),
@@ -785,12 +1082,52 @@
           hovertemplate: '%{text}<extra></extra>',
           hoverlabel: { align: 'left', namelength: 0 }
         }
-      ], layout);
+      ];
+
+      if (amplPoints && amplPoints.length) {
+        const amplDomText = amplDominados.map(
+          p => `AMPL<br>(${p.x.toFixed(2)}, ${p.y.toFixed(2)})`
+        );
+        const amplParText = amplPareto.map(
+          p => `AMPL Pareto<br>(${p.x.toFixed(2)}, ${p.y.toFixed(2)})`
+        );
+
+        traces.push(
+          {
+            x: amplDominados.map(p => p.x),
+            y: amplDominados.map(p => p.y),
+            mode: 'markers',
+            text: amplDomText,
+            marker: { size: 9, color: 'gray', symbol: 'square' },
+            name: 'AMPL dominados',
+            hovertemplate: '%{text}<extra></extra>',
+            hoverlabel: { align: 'left', namelength: 0 }
+          },
+          {
+            x: amplPareto.map(p => p.x),
+            y: amplPareto.map(p => p.y),
+            mode: 'markers',
+            text: amplParText,
+            marker: { size: 11, color: 'green', symbol: 'diamond-open' },
+            name: 'AMPL Pareto',
+            hovertemplate: '%{text}<extra></extra>',
+            hoverlabel: { align: 'left', namelength: 0 }
+          }
+        );
+      }
+
+      Plotly.react(plotDiv, traces, layout);
 
       // click: mapa + panel de detalle con todos los IDs (copiable)
       plotDiv.removeAllListeners?.('plotly_click');
       plotDiv.on('plotly_click', async d => {
         const point = d.points[0];
+
+        const serie = point.data?.name || point.fullData?.name || '';
+        if (serie.startsWith('AMPL')) {
+          return; // no abrimos mapa, ni usamos IDs
+        }
+
         const idsSel = point.customdata || [];
         const instanciaActual = selInst.value;
 
@@ -909,6 +1246,56 @@
     slider.addEventListener('input', () => { const i = parseInt(slider.value, 10); genNum.innerText = i; showGeneration(i); });
     $('#btn-ejecutar').addEventListener('click', runNow);
     $('#load-btn').addEventListener('click', loadSaved);
+    $('#load-ampl-btn').addEventListener('click', loadAmplFront);
+
+    btnHvEvery.addEventListener('click', async () => {
+      const val = parseInt(inputHvEvery.value, 10);
+      if (!Number.isInteger(val) || val <= 0) {
+        alert('X debe ser un entero positivo');
+        return;
+      }
+
+      if (!selInst.value) {
+        alert('Primero selecciona una instancia');
+        return;
+      }
+
+      statusEl.textContent = `Recalculando HV cada ${val} gens…`;
+
+      const payload = {
+        instancia: selInst.value,
+        recalcular: true,   // forzamos recálculo
+        strict: false,
+        hv_every: val       // 👈 clave: le pasamos X al backend
+      };
+
+      try {
+        const res = await fetch('/load', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          statusEl.textContent = 'Error al recalcular HV';
+          return;
+        }
+
+        const data = await res.json();
+        if (!data.files || !data.files.length) {
+          statusEl.textContent = '⚠️ No se encontraron generaciones.';
+          return;
+        }
+
+        await loadGenerations(data.files, data.hv || []);
+        statusEl.textContent = `HV recalculado cada ${val} gens (total ${frames.length} gens)`;
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'Error al recalcular HV';
+      }
+    });
+
+
     fixScaleCheckbox.addEventListener('change', () => showGeneration(parseInt(slider.value || '0', 10)));
 
     // ====== Builder logic ======
@@ -941,8 +1328,12 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
+    document.getElementById('load-ampl-btn')
+      .addEventListener('click', loadAmplFront);
+
+
     // ===== Inicio =====
-    window.addEventListener('DOMContentLoaded', async () => { await refreshInstanciaSelect(); showTab('visualizador'); statusEl.textContent = 'Listo'; drawBuilder(); });
+    window.addEventListener('DOMContentLoaded', async () => { await refreshInstanciaSelect(); await refreshAmplSelect(); showTab('visualizador'); statusEl.textContent = 'Listo'; drawBuilder(); });
 
     async function buildAllDashboard() {
       if (allBuilt) return;
@@ -1252,47 +1643,191 @@
     function renderInteractiveMap(targetDivId, jsonData) {
       if (!jsonData) return;
 
-      const { meta, demanda, preinstalados_movidos_origen, seleccionados_nuevos, seleccionados_existentes, coords_finales_aeds } = jsonData;
+      const {
+        meta,
+        demanda,
+        preinstalados_movidos_origen,
+        seleccionados_nuevos,
+        seleccionados_existentes,
+        coords_finales_aeds
+      } = jsonData;
 
-      const traces = [
-        // 1. Puntos de Demanda OHCA
-        {
-          x: demanda.x, y: demanda.y,
-          mode: 'markers', name: 'Nodos de demanda',
-          marker: { size: demanda.s.map(s => Math.sqrt(s)), color: 'blue', opacity: 0.6 }
-        },
-        // 2. Origen de AEDs preinstalados movidos
-        {
-          x: preinstalados_movidos_origen.x, y: preinstalados_movidos_origen.y,
-          mode: 'markers', name: 'AED movido',
-          marker: { size: preinstalados_movidos_origen.s.map(s => Math.sqrt(s)), color: 'red', opacity: 0.8, symbol: 'circle-open', line: { width: 2 } }
-        },
-        // 3. AEDs preinstalados que se mantuvieron
-        {
-          x: seleccionados_existentes.x, y: seleccionados_existentes.y,
-          mode: 'markers', name: 'Equipo Preinstalado (Mantenido)',
-          marker: { size: 14, color: 'orange', symbol: "star", line: { width: 1, color: 'black' } }
-        },
-        // 4. Nuevos AEDs instalados
-        {
-          x: seleccionados_nuevos.x, y: seleccionados_nuevos.y,
-          mode: 'markers', name: 'AED instalado (Nuevo)',
-          marker: { size: 14, color: 'green', symbol: "star", line: { width: 1, color: 'black' } }
+      const radio = meta && typeof meta.radio === 'number' ? meta.radio : 0;
+      const r2 = radio * radio;
+
+      // AEDs finales: preinstalados que se mantienen vs nuevos
+      const preX = (seleccionados_existentes.x || []);
+      const preY = (seleccionados_existentes.y || []);
+      const newX = (seleccionados_nuevos.x || []);
+      const newY = (seleccionados_nuevos.y || []);
+
+      // Buckets de demanda según cobertura:
+      //  - demandaNo: no cubierta
+      //  - demandaPre: cubierta por preinstalados
+      //  - demandaNew: cubierta por nuevos
+      const demandaNo = { x: [], y: [], s: [] };
+      const demandaPre = { x: [], y: [], s: [] };
+      const demandaNew = { x: [], y: [], s: [] };
+
+      for (let i = 0; i < (demanda.x || []).length; i++) {
+        const px = demanda.x[i];
+        const py = demanda.y[i];
+        // demanda.s viene con el tamaño ya escalado por prob o fijo según show_probs
+        const rawSize = demanda.s && demanda.s[i] != null ? demanda.s[i] : 20;
+        const size = Math.sqrt(rawSize);
+
+        let coveredPre = false;
+        let coveredNew = false;
+
+        // ¿Lo cubre algún preinstalado mantenido?
+        for (let j = 0; j < preX.length; j++) {
+          const dx = px - preX[j];
+          const dy = py - preY[j];
+          if (dx * dx + dy * dy <= r2) {
+            coveredPre = true;
+            break;
+          }
         }
-      ];
 
+        // Si no está cubierto por preinstalados, probamos con los nuevos
+        if (!coveredPre) {
+          for (let j = 0; j < newX.length; j++) {
+            const dx = px - newX[j];
+            const dy = py - newY[j];
+            if (dx * dx + dy * dy <= r2) {
+              coveredNew = true;
+              break;
+            }
+          }
+        }
+
+        if (coveredPre) {
+          demandaPre.x.push(px);
+          demandaPre.y.push(py);
+          demandaPre.s.push(size);
+        } else if (coveredNew) {
+          demandaNew.x.push(px);
+          demandaNew.y.push(py);
+          demandaNew.s.push(size);
+        } else {
+          demandaNo.x.push(px);
+          demandaNo.y.push(py);
+          demandaNo.s.push(size);
+        }
+      }
+
+      const traces = [];
+
+      // 1) Demanda NO cubierta
+      if (demandaNo.x.length) {
+        traces.push({
+          x: demandaNo.x,
+          y: demandaNo.y,
+          mode: 'markers',
+          name: 'Demanda no cubierta',
+          marker: {
+            size: demandaNo.s,
+            color: 'blue',
+            opacity: 0.9,
+            line: { width: 1, color: 'black' }
+          }
+        });
+      }
+
+      // 2) Demanda cubierta por preinstalados
+      if (demandaPre.x.length) {
+        traces.push({
+          x: demandaPre.x,
+          y: demandaPre.y,
+          mode: 'markers',
+          name: 'Demanda cubierta (preinstalados)',
+          marker: {
+            size: demandaPre.s,
+            color: 'orange',
+            opacity: 0.4,
+            line: { width: 1, color: 'black' }
+          }
+        });
+      }
+
+      // 3) Demanda cubierta por nuevos equipos
+      if (demandaNew.x.length) {
+        traces.push({
+          x: demandaNew.x,
+          y: demandaNew.y,
+          mode: 'markers',
+          name: 'Demanda cubierta (nuevos AED)',
+          marker: {
+            size: demandaNew.s,
+            color: 'green',
+            opacity: 0.4,
+            line: { width: 1, color: 'black' }
+          }
+        });
+      }
+
+      // 4) Origen de AEDs preinstalados movidos
+      if (preinstalados_movidos_origen.x && preinstalados_movidos_origen.x.length) {
+        traces.push({
+          x: preinstalados_movidos_origen.x,
+          y: preinstalados_movidos_origen.y,
+          mode: 'markers',
+          name: 'AED movido (origen)',
+          marker: {
+            size: (preinstalados_movidos_origen.s || []).map(v => Math.sqrt(v || 20)),
+            color: 'red',
+            symbol: 'circle-open',
+            opacity: 0.8,
+            line: { width: 2 }
+          }
+        });
+      }
+
+      // 5) AEDs preinstalados que se mantuvieron
+      if (preX.length) {
+        traces.push({
+          x: preX,
+          y: preY,
+          mode: 'markers',
+          name: 'Equipo preinstalado (mantenido)',
+          marker: {
+            size: 14,
+            color: 'orange',
+            symbol: 'star',
+            line: { width: 1, color: 'black' }
+          }
+        });
+      }
+
+      // 6) Nuevos AEDs instalados
+      if (newX.length) {
+        traces.push({
+          x: newX,
+          y: newY,
+          mode: 'markers',
+          name: 'AED instalado (nuevo)',
+          marker: {
+            size: 14,
+            color: 'green',
+            symbol: 'star',
+            line: { width: 1, color: 'black' }
+          }
+        });
+      }
+
+      // Círculos de cobertura
       const shapes = [];
-
-      for (const coords of coords_finales_aeds) {
-        const x = coords[0];
-        const y = coords[1];
+      for (const [ax, ay] of (coords_finales_aeds || [])) {
         shapes.push({
           type: 'circle',
-          xref: 'x', yref: 'y',
-          x0: x - meta.radio, y0: y - meta.radio,
-          x1: x + meta.radio, y1: y + meta.radio,
+          xref: 'x',
+          yref: 'y',
+          x0: ax - radio,
+          y0: ay - radio,
+          x1: ax + radio,
+          y1: ay + radio,
           fillcolor: 'rgba(128, 128, 128, 0.15)',
-          line: { color: 'rgba(128, 128, 128, 0.3)' },
+          line: { color: 'rgba(128, 128, 128, 0.3)' }
         });
       }
 
@@ -1304,8 +1839,10 @@
         legend: { x: 1.02, y: 1 },
         hovermode: 'closest'
       };
+
       Plotly.newPlot(targetDivId, traces, layout, { responsive: true, displayModeBar: true });
     }
+
 
     const btnToggleMap = $('#btn-toggle-map');
     const mapImgContainer = $('#map-image-container');

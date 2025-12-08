@@ -8,6 +8,8 @@ import base64
 import json
 from werkzeug.utils import secure_filename
 import shutil
+import random
+import time
 
 def gen_number_from_path(path: str) -> int:
     """
@@ -43,6 +45,7 @@ PATH_MOEAD_EXEC = os.path.join(DIR_MOEAD_CORE, "MOEAD")
 
 # Asumiendo la estructura ../../material/hv-1.3-src/hv
 PATH_HV_EXEC = os.path.join(PROYECTO_ROOT, "material", "hv-1.3-src", "hv") # Asumiendo que 'material' está en la raíz
+HV_EVERY = 10
 # ==============================================================================
 
 
@@ -139,19 +142,39 @@ def parse_line_with_ids(line):
     return (x, y, ids, flag, coverage)
 
 def calculate_hv(filepath, ref_point, gen_number=None):
-    cmd = [PATH_HV_EXEC, "-r", f"{ref_point[0]} {ref_point[1]}", filepath]
-    print("Ejecutando:", " ".join(cmd))
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    # String del punto de referencia
+    ref_str = f"{ref_point[0]} {ref_point[1]}"
+
+    # Rutas relativas respecto a BASE_DIR (visualizador_web)
+    hv_rel = os.path.relpath(PATH_HV_EXEC, BASE_DIR)
+    file_rel = os.path.relpath(filepath, BASE_DIR)
+
+    # Comando que REALMENTE se va a ejecutar
+    cmd = [hv_rel, "-r", ref_str, file_rel]
+
+    # Log bonito, con -r entre comillas
+    print(f'Ejecutando: {hv_rel} -r "{ref_str}" {file_rel}')
+
+    # Ejecutar desde BASE_DIR, así que ../material/... funciona
+    result = subprocess.run(
+        cmd,
+        cwd=BASE_DIR,          # 👈 clave para que las rutas relativas funcionen
+        capture_output=True,
+        text=True
+    )
+
     try:
         hv = float(result.stdout.strip())
-        if gen_number:
+        if gen_number is not None:
             print(f"Hipervolumen calculado para generación {gen_number}: {hv}")
         else:
             print("Hipervolumen calculado:", hv)
         return hv
     except ValueError:
-        print("Error al interpretar la salida:", result.stdout)
+        print("Error al interpretar la salida de hv:", repr(result.stdout))
+        print("stderr:", repr(result.stderr))
         return 0.0
+
 
 # --------- helpers para instancias / cobertura ----------
 RE_FLOAT = r'[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?'
@@ -274,9 +297,36 @@ def save_aeds_with_flags_and_coverage(entries_all, filepath):
 # ------------------- /run -------------------
 @app.route("/run", methods=["POST"])
 def run():
-    instancia = request.json["instancia"]
-    semilla = request.json["semilla"]
-    num_var = request.json["num_var"]
+    data = request.json or {}
+    instancia = data["instancia"]
+    semilla = data.get("semilla")
+
+    if semilla is None:
+    # semilla aleatoria grande
+        semilla = random.randint(1, 100)
+    else:
+        semilla = int(semilla)
+
+    tipo = data.get("tipo", "cam")
+    variante = data.get("variante", "location")
+
+    alg = data.get("algoritmo", "MOEAD")
+    neval = int(data.get("neval", 1000))
+    pop = int(data.get("pop", 100))
+    neighbor = int(data.get("neighbor", 10))
+    time_max = int(data.get("time_limit", 0)) 
+    
+    mut = data.get("mut")
+    cross = data.get("cross")
+    op1 = data.get("op1")
+
+    out_dir = data.get("outDir")  # opcional
+
+    hv_every = data.get("hv_every")
+    try:
+        hv_every = int(hv_every) if hv_every is not None else None
+    except ValueError:
+        hv_every = None
 
     full_path = os.path.join(DIR_INSTANCES, instancia)
     print(f"Ejecutando MOEAD con instancia {instancia}")
@@ -284,14 +334,24 @@ def run():
     cmd = [
     PATH_MOEAD_EXEC,
     "-inst", full_path,
+    "-type", tipo,
+    "-variant", variante,
+    "-alg", alg,
     "-seed", str(semilla),
-    "-nvars", str(num_var),
-    "-neval", "50000 ",
-    "-pop", "1000",
-    "-neighbor", "40",
-    "-type cam",
-    "-variant location"
+    "-neval", str(neval),
+    "-pop", str(pop),
+    "-neighbor", str(neighbor),
     ]
+
+    if mut is not None:
+        cmd += ["-mut", str(mut)]
+    if cross is not None:
+        cmd += ["-cross", str(cross)]
+    if op1 is not None:
+        cmd += ["-op1", str(op1)]
+    
+    if out_dir is not None:
+        cmd += ["-outDir", out_dir]
 
     print("[/run] Ejecutando:", " ".join(cmd), " (cwd=", DIR_MOEAD_CORE, ")", flush=True)
 
@@ -317,13 +377,12 @@ def run():
 
     base_name = parse_instance_name(instancia)
     instance_raw_dir = os.path.join(DIR_RAW_MOEAD, base_name)
-    patron_busqueda = os.path.join(instance_raw_dir, f"POF_{base_name}_SEED_1_GEN_*.dat")
+    patron_busqueda = os.path.join(instance_raw_dir, f"POF_{base_name}_SEED_*_GEN_*.dat")
     raw_files = glob.glob(patron_busqueda)
     #print("[/run] POF encontrados:", raw_files, flush=True)
     raw_files = sorted(raw_files, key=gen_number_from_path)
     #print("[/run] POF GEN ordenados:", [gen_number_from_path(p) for p in raw_files], flush=True)
     
-    hv_results = []
 
     fp_folder = os.path.join(DIR_FRENTES_PARETO, base_name)
     aeds_folder = os.path.join(DIR_AEDS_PROCESADOS, base_name)
@@ -341,10 +400,29 @@ def run():
     resumen_path = os.path.join(fp_folder, f"{base_name}_HV_summary.txt")
 
     aed_files = []
+
+    hv_results = []
+    last_hv = 0.0    
+    n_generations = len(raw_files)
+
+
     with open(resumen_path, "w") as resumen_file:
         resumen_file.write(f"{ref_point[0]} {ref_point[1]}\n")
         for i, file in enumerate(raw_files):
             actual_gen = gen_number_from_path(file)
+            # --- ¿Primera / última gen? ---
+            is_first = (i == 0)
+            is_last = (i == n_generations - 1)
+
+            # --- ¿Estamos en modo historial (HV cada X gens)? ---
+            modo_historial = (hv_every is not None and hv_every > 0)
+
+            # Si NO estamos en historial y NO es primera ni última,
+            # no vale la pena parsear ni calcular nada
+            if (not modo_historial) and (not is_first) and (not is_last):
+                # Solo copiamos el HV anterior en el vector
+                hv_results.append(last_hv)
+                continue
             entries_raw = []
             with open(file) as f:
                 for ln in f:
@@ -354,12 +432,15 @@ def run():
                         entries_raw.append((x, y, ids))
 
             if not entries_raw:
-                hv_results.append(0.0)
-                resumen_file.write(f"GEN{actual_gen} 0.0\n")
+                hv_results.append(last_hv)
+                if hv_every is not None and hv_every > 0:
+                    resumen_file.write(f"GEN{actual_gen} {last_hv:.4f}\n")
                 continue
 
             # separar P/D
+            t0 = time.perf_counter()
             nd_idx = get_non_dominated_idx([(x, y) for (x, y, _) in entries_raw])
+            t1 = time.perf_counter()            
             nd_set = set(nd_idx)
             nd_entries  = [(x, y, ids, True)  for k, (x, y, ids) in enumerate(entries_raw) if k in nd_set]
             dom_entries = [(x, y, ids, False) for k, (x, y, ids) in enumerate(entries_raw) if k not in nd_set]
@@ -370,17 +451,52 @@ def run():
                 coords_inst = [coords_by_id[k] for k in ids if k in coords_by_id]
                 _, prob_cov, porc, _, _ = cobertura_por_ids(coords_inst, demanda, preinst_coords, radio)
                 entries_all.append((x, y, ids, is_par, porc))
+            t2 = time.perf_counter()
+            if hv_every is not None and hv_every > 0:
+                guardar_aeds = True
+            else:
+                guardar_aeds = (i == 0 or i == n_generations - 1)
 
-            aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{actual_gen}.dat")
-            coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
-            aed_files.append(aeds_file)
+            if guardar_aeds:
+                aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{actual_gen}.dat")
+                coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
+                aed_files.append(aeds_file)
+            else:
+                # igual necesitamos las coords Pareto si toca calcular HV
+                coords_for_hv = [(x, y) for (x, y, ids, is_par, _) in entries_all if is_par]
 
-            fp_file = os.path.join(fp_folder, f"{base_name}_GEN{actual_gen}.dat")
-            save_front_to_file(coords_for_hv, fp_file)
+            recompute = False
+            if hv_every is not None and hv_every > 0:
+                # modo "cada X gens": X, 2X, 3X, ... y SIEMPRE la última
+                if (i % hv_every == 0) or (i == n_generations - 1):
+                    recompute = True
+            else:
+                # modo por defecto: solo primera (i=0) y última
+                if (i == 0) or (i == n_generations - 1):
+                    recompute = True
 
-            hv = calculate_hv(fp_file, ref_point, gen_number=actual_gen) or 0.0
+            if recompute:
+                # Solo aquí generamos el archivo de frente en frentes_pareto/
+                fp_file = os.path.join(fp_folder, f"{base_name}_GEN{actual_gen}.dat")
+                save_front_to_file(coords_for_hv, fp_file)
+                t3 = time.perf_counter()
+                hv = calculate_hv(fp_file, ref_point, gen_number=actual_gen) or 0.0
+                t4 = time.perf_counter()
+                print(f"[GEN {actual_gen}] ND={t1-t0:.4f}s  cobertura={t2-t1:.4f}s  write_fp={t3-t2:.4f}s  hv={t4-t3:.4f}s")
+
+                last_hv = hv
+            else:
+                # Reutilizamos el último HV calculado, pero NO escribimos un GEN*.dat
+                hv = last_hv
+
             hv_results.append(hv)
-            resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
+            if hv_every is not None and hv_every > 0:
+                # Modo historial: guardo TODAS las gens (como antes)
+                resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
+            else:
+                # Modo normal: SOLO las gens donde recalculé HV
+                if recompute:
+                    resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
         resumen_file.write("#\n")
 
     """ print("Archivos AEDs que voy a devolver al front:")
@@ -398,6 +514,15 @@ def load():
     instancia = data["instancia"]
     recalcular = data.get("recalcular", False)
     is_strict_mode = data.get("strict", False)
+
+    hv_every = data.get("hv_every")
+    try:
+        hv_every = int(hv_every) if hv_every is not None else None
+    except ValueError:
+        hv_every = None
+    if hv_every is not None:
+        recalcular = True
+
 
     base_name = parse_instance_name(instancia)
     fp_folder = os.path.join(DIR_FRENTES_PARETO, base_name)
@@ -455,11 +580,29 @@ def load():
     ref_point = calcular_referencia_global(raw_files)
     hv_results = []
     aed_files_recalculados = []
+    last_hv = 0.0
+    n_generations = len(raw_files)
+
 
     with open(resumen_path, "w") as resumen_file:
         resumen_file.write(f"{ref_point[0]} {ref_point[1]}\n")
         for i, file in enumerate(raw_files):
             actual_gen = gen_number_from_path(file)
+
+            # --- ¿Primera / última gen? ---
+            is_first = (i == 0)
+            is_last = (i == n_generations - 1)
+
+            # --- ¿Estamos en modo historial (HV cada X gens)? ---
+            modo_historial = (hv_every is not None and hv_every > 0)
+
+            # Si NO estamos en historial y NO es primera ni última,
+            # no vale la pena parsear ni calcular nada
+            if (not modo_historial) and (not is_first) and (not is_last):
+                # Solo copiamos el HV anterior en el vector
+                hv_results.append(last_hv)
+                continue
+
             entries_raw = []
             with open(file) as f:
                 for ln in f:
@@ -469,8 +612,9 @@ def load():
                         entries_raw.append((x, y, ids))
 
             if not entries_raw:
-                hv_results.append(0.0)
-                resumen_file.write(f"GEN{actual_gen} 0.0\n")
+                hv_results.append(last_hv)
+                if hv_every is not None and hv_every > 0:
+                    resumen_file.write(f"GEN{actual_gen} {last_hv:.4f}\n")
                 continue
 
             nd_idx = get_non_dominated_idx([(x, y) for (x, y, _) in entries_raw])
@@ -484,16 +628,42 @@ def load():
                 _, prob_cov, porc, _, _ = cobertura_por_ids(coords_inst, demanda, preinst_coords, radio)
                 entries_all.append((x, y, ids, is_par, porc))
 
-            aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{actual_gen}.dat")
-            coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
-            aed_files_recalculados.append(aeds_file)
+            # --- decidir si guardamos archivo de ubicaciones ---
+            if hv_every is not None and hv_every > 0:
+                guardar_aeds = True
+            else:
+                guardar_aeds = (i == 0 or i == n_generations - 1)
 
-            fp_file = os.path.join(fp_folder, f"{base_name}_GEN{actual_gen}.dat")
-            save_front_to_file(coords_for_hv, fp_file)
+            if guardar_aeds:
+                aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{actual_gen}.dat")
+                coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
+                aed_files_recalculados.append(aeds_file)
+            else:
+                coords_for_hv = [(x, y) for (x, y, ids, is_par, _) in entries_all if is_par]
 
-            hv = calculate_hv(fp_file, ref_point, gen_number=actual_gen) or 0.0
+
+            recompute = False
+            if hv_every is not None and hv_every > 0:
+                if (i % hv_every == 0) or (i == n_generations - 1):
+                    recompute = True
+            else:
+                if (i == 0) or (i == n_generations - 1):
+                    recompute = True
+
+            if recompute:
+                fp_file = os.path.join(fp_folder, f"{base_name}_GEN{actual_gen}.dat")
+                save_front_to_file(coords_for_hv, fp_file)
+                hv = calculate_hv(fp_file, ref_point, gen_number=actual_gen) or 0.0
+                last_hv = hv
+            else:
+                hv = last_hv
+
             hv_results.append(hv)
-            resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
+            if hv_every is not None and hv_every > 0:
+                resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
+            else:
+                if recompute:
+                    resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
         resumen_file.write("#\n")
 
     files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files_recalculados]
@@ -543,11 +713,43 @@ def generar_mapa():
     nodes, coords_por_id, demanda, preinstalados, radio = cargar_instancia_coords_y_demanda(archivo)
     ids_seleccionados_set = set(ids_instalados)
 
-    demanda_x, demanda_y, demanda_s = [], [], []
+    # Mapa id -> flag (0 demanda, 1 preinstalado)
+    flag_by_id = {idx: flag for (idx, x, y, flag, prob) in nodes}
+
+    # AEDs finales separados por tipo
+    aeds_existentes_final = [
+        coords_por_id[i] for i in ids_instalados
+        if i in coords_por_id and flag_by_id.get(i) == 1
+    ]
+    aeds_nuevos_final = [
+        coords_por_id[i] for i in ids_instalados
+        if i in coords_por_id and flag_by_id.get(i) == 0
+    ]
+
+    # Para cálculo global de cobertura (todos los AED finales)
+    puntos_instalados_finales = [
+        coords_por_id[i] for i in ids_instalados if i in coords_por_id
+    ]
+    r2 = radio * radio
+
+    def cubierto_por(aeds, px, py):
+        """True si (px,py) está cubierto por algún AED de la lista aeds."""
+        for (ax, ay) in aeds:
+            if (px - ax) * (px - ax) + (py - ay) * (py - ay) <= r2:
+                return True
+        return False
+
+
+    demanda_cov_pre_x, demanda_cov_pre_y, demanda_cov_pre_s = [], [], []
+    demanda_cov_new_x, demanda_cov_new_y, demanda_cov_new_s = [], [], []
+    demanda_ncov_x, demanda_ncov_y, demanda_ncov_s = [], [], []
+
+
     movidos_x, movidos_y, movidos_s = [], [], []
     nuevos_x, nuevos_y = [], []
     existentes_x, existentes_y = [], []
     coords_finales_aeds = []
+
 
     for idx, x, y, flag, prob in nodes:
         size = (prob * 200) if show_probs else 20  # 36 ≈ punto fijo
@@ -560,10 +762,25 @@ def generar_mapa():
                 existentes_x.append(x); existentes_y.append(y)
                 coords_finales_aeds.append((x, y))
         else:
+            # Nodos NO seleccionados como AED
             if flag == 0:
-                demanda_x.append(x); demanda_y.append(y); demanda_s.append(size)
+                # Nodo de demanda: ¿lo cubre un preinstalado? ¿un nuevo?
+                if aeds_existentes_final and cubierto_por(aeds_existentes_final, x, y):
+                    demanda_cov_pre_x.append(x)
+                    demanda_cov_pre_y.append(y)
+                    demanda_cov_pre_s.append(size)
+                elif aeds_nuevos_final and cubierto_por(aeds_nuevos_final, x, y):
+                    demanda_cov_new_x.append(x)
+                    demanda_cov_new_y.append(y)
+                    demanda_cov_new_s.append(size)
+                else:
+                    demanda_ncov_x.append(x)
+                    demanda_ncov_y.append(y)
+                    demanda_ncov_s.append(size)
             elif flag == 1:
+                # Origen de AED preinstalado que podría haberse movido
                 movidos_x.append(x); movidos_y.append(y); movidos_s.append(size)
+
     
     puntos_instalados_finales = [coords_por_id[i] for i in ids_instalados if i in coords_por_id]
     # métricas
@@ -585,9 +802,40 @@ def generar_mapa():
     fig, ax = plt.subplots(figsize=(15, 8), dpi=180)
 
     # Demanda no cubierta
-    ax.scatter(demanda_x, demanda_y, s=demanda_s, c='blue', label='Nodos Demanda', alpha=0.6, edgecolors='k')
+    if demanda_ncov_x:
+        ax.scatter(
+            demanda_ncov_x, demanda_ncov_y, s=demanda_ncov_s,
+            c='blue', alpha=0.9,
+            label='Demanda no cubierta',
+            edgecolors='k'
+        )
+
+    # Demanda cubierta por preinstalados (más clara y color distinto)
+    if demanda_cov_pre_x:
+        ax.scatter(
+            demanda_cov_pre_x, demanda_cov_pre_y, s=demanda_cov_pre_s,
+            c='orange', alpha=0.4,
+            label='Demanda cubierta (preinstalados)',
+            edgecolors='k'
+        )
+
+    # Demanda cubierta por nuevos AED
+    if demanda_cov_new_x:
+        ax.scatter(
+            demanda_cov_new_x, demanda_cov_new_y, s=demanda_cov_new_s,
+            c='green', alpha=0.4,
+            label='Demanda cubierta (nuevos AED)',
+            edgecolors='k'
+        )
+
+
     # Origen AEDs movidos
-    ax.scatter(movidos_x, movidos_y, s=movidos_s, facecolors='none', edgecolors='red', linewidth=1.5, label='AED movido')
+    ax.scatter(
+        movidos_x, movidos_y, s=movidos_s,
+        facecolors='none', edgecolors='red',
+        linewidth=1.5, label='AED movido'
+    )
+
     # AEDs preinstalados que se quedaron
     ax.scatter(existentes_x, existentes_y, c='orange', s=120, marker='*', label='Preinstalado (mantenido)', edgecolors='k', zorder=4)
     # Nuevos AEDs instalados
@@ -832,6 +1080,48 @@ def list_instances():
         if fn.lower().endswith(".dat"):
             files.append(fn)
     return jsonify({"instances": files})
+
+
+@app.route('/list_ampl_instances', methods=['GET'])
+def list_ampl_instances():
+    base = os.path.join(PROYECTO_ROOT, 'datos/res/raw_ampl/cam')
+    print(f"[/list_ampl_instances] Leyendo directorio: {base}")
+    if not os.path.isdir(base):
+      return jsonify([])
+
+    instances = []
+    for entry in os.listdir(base):
+        full = os.path.join(base, entry)
+        pf = os.path.join(full, 'run_1', 'pareto_front.txt')
+        if os.path.isdir(full) and os.path.isfile(pf):
+            instances.append(entry)
+
+    instances.sort()
+    return jsonify(instances)
+
+@app.route('/load_ampl_front', methods=['POST'])
+def load_ampl_front():
+    data = request.get_json()
+    instancia = (data.get('instancia') or '').strip()
+
+    if not instancia:
+        return "instancia requerida", 400
+
+    # si llega "100-3.dat" o similar, se puede normalizar
+    base = instancia.replace('.dat', '')
+
+    path = os.path.join(
+        PROYECTO_ROOT, 'datos/res/raw_ampl/cam',
+        base, 'run_1', 'pareto_front.txt'
+    )
+
+    if not os.path.exists(path):
+        return f'No existe {path}', 404
+
+    with open(path, 'r') as f:
+        content = f.read()
+
+    return content, 200, {'Content-Type': 'text/plain; charset=utf-8'}
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

@@ -14,11 +14,11 @@ VARIANT="location"
 NUM_RUNS=10          
 
 # Parámetros Algoritmo
-POPULATION=100
-NEIGHBOR=20
-NEVALS=100000    # Criterio de parada por evaluaciones
+POPULATION=400
+NEIGHBOR=80
+NEVALS=80000    # Criterio de parada por evaluaciones
 MAX_TIME=3600      # Criterio de parada por tiempo (0 = desactivado)
-MUTATION=0.7
+MUTATION=0.8
 CROSSOVER=1.0
 OP1_PROB=0.5
 
@@ -42,7 +42,7 @@ declare -a INSTANCE_ORDER=(
     "cam_40264_IZTAPALAPA.dat"
 )
 
-# ================= INICIO =================
+# ================= INICIO =================cd
 echo "---------------------------------------------------------"
 echo " INICIANDO EXPERIMENTOS MOEA/D - TIPO: ${PROBLEM_TYPE}"
 echo " Variantes: ${VARIANT}"

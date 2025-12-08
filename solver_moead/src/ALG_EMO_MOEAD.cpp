@@ -580,7 +580,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		if (m_IsRelocation) {
 			UtilityToolBox.MutacionModificada_con_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
 		} else {
-			UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
+			UtilityToolBox.MutacionBitFlip(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
 		}
 
 		/* std::cout << "Hijo generado despues de la mutacion: ";

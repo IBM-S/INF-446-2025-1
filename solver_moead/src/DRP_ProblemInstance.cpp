@@ -103,3 +103,63 @@ void ProblemInstance::printAll()
         std::cout << "    - ...\n\n";
     }
 }
+
+void ProblemInstance::PrecalcularCoberturas()
+{
+    //std::cout << ">>> Precalculando PARES_CUBRIBLES (Esto puede tardar unos segundos)..." << std::endl;
+    int n = nodes.size();
+    coverageMap.assign(n, std::vector<int>());
+    is_base_covered.assign(n, false);
+
+
+    double R2 = R * R; // Usamos radio al cuadrado para evitar sqrt
+
+    for (int i = 0; i < n; ++i) 
+    {
+        // Si el nodo i es un candidato (flag=0 o flag=1 si queremos saber a quién cubre la cámara)
+        double ax = nodes[i]->getX();
+        double ay = nodes[i]->getY();
+
+        for (int j = 0; j < n; ++j) 
+        {
+            // Solo nos importa cubrir nodos de demanda (flag 0)
+            //if (nodes[j]->getFlag() == 0) 
+            //{
+                // Si i y j son el mismo, obviamente se cubre (si prob > 0)
+                // Si son distintos, checamos distancia
+                double dx = ax - nodes[j]->getX();
+                double dy = nodes[j]->getY() - ay; // corrección typo ay
+                
+                // Distancia euclidiana optimizada
+                if ((dx*dx + dy*dy) <= R2) 
+                {
+                    // ¡Encontrado! El nodo i puede cubrir al nodo j
+                    coverageMap[i].push_back(j);
+                }
+            //}
+        }
+    }
+    // 3. Pre-calcular qué está cubierto por la infraestructura FIJA (Cámaras/Flag 1)
+    //    Esto servirá para que la Mutación sea inteligente.
+    for (int i = 0; i < n; ++i)
+    {
+        if (nodes[i]->getFlag() == 1) // Es una cámara / Preinstalado
+        {
+            // Todos los vecinos de esta camara ya estan cubiertos
+            const std::vector<int>& vecinos = coverageMap[i];
+            for (int vecino_id : vecinos) {
+                is_base_covered[vecino_id] = true;
+            }
+        }
+    }
+    
+    // std::cout << ">>> Precalculo terminado (Mapa + Cobertura Base)." << std::endl;
+}
+
+const std::vector<int>& ProblemInstance::getNodosCubiertosPor(int aed_id) {
+    return coverageMap[aed_id];
+}
+
+const std::vector<bool>& ProblemInstance::getBaseCoverage() {
+    return is_base_covered;
+}

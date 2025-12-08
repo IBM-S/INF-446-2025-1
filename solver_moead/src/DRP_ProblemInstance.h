@@ -7,6 +7,9 @@
 #include "Node_DRP.h"
 
 class ProblemInstance {
+private:
+    std::vector<std::vector<int>> coverageMap;
+    std::vector<bool> is_base_covered;
 public:
     ProblemInstance();
     ~ProblemInstance();
@@ -46,6 +49,10 @@ public:
     std::vector<Node*>& getNodes();
     std::vector<int> getCandidateLocations();
     void printAll();
+
+    void PrecalcularCoberturas(); 
+    const std::vector<int>& getNodosCubiertosPor(int aed_id);
+    const std::vector<bool>& getBaseCoverage(); // Para obtener la lista inicial rapido
 };
 
 #endif

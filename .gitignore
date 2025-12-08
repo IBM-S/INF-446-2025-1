@@ -20,3 +20,5 @@ solver_moead/__pycache__/
 solver_moead/MOEAD
 
 visualizador_web/venv/
+
+sintonizador/
