@@ -39,6 +39,7 @@ public:
 	void SaveObjSpace(char saveFilename[1024]);
 	void SaveVarSpace(char saveFilename[1024]);
 	void SavePopulation(int run_id);
+	void SaveFinalPopulation();
 
 	std::string outputDirectory;
 	void SetOutputDirectory(std::string path) {

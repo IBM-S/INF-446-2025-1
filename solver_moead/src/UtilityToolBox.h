@@ -67,11 +67,13 @@ public:
 	void CruzamientoUniformeModificado_sin_reubicacion(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, ProblemInstance *problemInstance);
 	void MutacionModificada_sin_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
 	void MutacionBitFlip(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
-	void MutacionModificada_sin_reubicacion_Inteligente(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
 	void MutacionPorcentual(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
-	void MutacionIterativaDeleteSwap(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
-	double CalcularCoberturaYMapa(const vector<double> &x_var, const vector<Node*> &nodos, double R2, vector<int> &veces_cubierto);
 	bool EsBuenCandidato(int idx_candidato, ProblemInstance *instance);
+	void MutacionIntercambioHeuristico(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *instance);
+	void MutacionBitFlip_v2(vector<double> &x_var, double mutation_rate, double prob_bit_flip, ProblemInstance *problemInstance);
+	void MutacionAdaptativaFases(vector<double> &x_var, double mutation_rate, double progress, ProblemInstance *problemInstance);
+	void MutacionRefuerzoZonasDebiles(vector<double> &x_var, double mutation_rate, double prob_bit_flip, ProblemInstance *problemInstance);
+
 
 	void CruzamientoUniformeModificado_con_reubicacion(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, ProblemInstance *problemInstance);
 	void MutacionModificada_con_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);

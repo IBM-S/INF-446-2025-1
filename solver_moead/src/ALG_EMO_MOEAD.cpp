@@ -4,9 +4,9 @@
 CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 {
 	s_PBI_type = 1;
-	m_MutationRate = 0.7;
-    m_CrossoverRate = 1.0;
-    m_Op1MutationProb = 0.5;
+	m_MutationRate = 0.3;
+    m_CrossoverRate = 0.8;
+    m_Op1MutationProb = 0.0;
     m_IsRelocation = false; // Por defecto Location (fijo)
     m_ProblemType = "cam";
 	s_PopulationSize = 0;
@@ -54,6 +54,8 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 
 		gen++;
 	}
+
+	this->SaveFinalPopulation();
 
 	m_PopulationSOP.clear();
 	v_IdealPoint.clear();
@@ -577,10 +579,42 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		// UtilityToolBox.MutacionModificada(child.x_var, 1.0);
 
 		// --- 2. MUTACIÓN ---
-		if (m_IsRelocation) {
+		/*if (m_IsRelocation) {
 			UtilityToolBox.MutacionModificada_con_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
 		} else {
 			UtilityToolBox.MutacionBitFlip(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
+		}*/
+
+		// --- 2. MUTACIÓN OPTIMIZADA ---
+		// Usamos m_MutationRate como la probabilidad de que ocurra ALGUNA mutación.
+		
+		// Decidimos qué tipo de mutación aplicar.
+		// Usamos m_Op1MutationProb para balancear entre BitFlip (suave) y Porcentual (fuerte).
+		// Si m_Op1Prob es 0.2, significa 20% Porcentual (fuerte) y 80% BitFlip (suave).
+		// Nota: Reutilizamos tu variable m_Op1MutationProb para esto.
+		
+		double tipo_mutacion = UtilityToolBox.Get_Random_Number();
+		double progress = (double)s_Fevals_Count / (double)NumberOfFuncEvals;
+		if (progress > 1.0) progress = 1.0;
+		//UtilityToolBox.MutacionAdaptativaFases(child.x_var, 1.0, progress, this->problemInstance);
+
+		
+		// Probabilidad pequeña (ej. 0.2) para la mutación agresiva "Porcentual"
+		if (tipo_mutacion < 0.25) 
+		{
+			// Mutación Fuerte: Mueve un porcentaje de equipos para salir de óptimos locales.
+			// El 0.5 es la probabilidad interna de "Solo Borrar vs Swap".
+			// UtilityToolBox.MutacionIntercambioHeuristico(child.x_var, m_MutationRate, 0.5, this->problemInstance);
+			//UtilityToolBox.MutacionBitFlip_v2(child.x_var, 1.0, 0.1, this->problemInstance);
+			UtilityToolBox.MutacionRefuerzoZonasDebiles(child.x_var, 1.0, 0.0, this->problemInstance);
+		} 
+		else 
+		{
+			// Mutación Suave: Bit Flip estándar (1/N) con filtro inteligente.
+			// El tercer parámetro (0.0) es dummy, ya no se usa.
+			// UtilityToolBox.MutacionBitFlip(child.x_var, 1.0, 0.0, this->problemInstance);
+			//UtilityToolBox.MutacionBitFlip_v2(child.x_var, 1.0, 0.1, this->problemInstance);
+			UtilityToolBox.MutacionAdaptativaFases(child.x_var, 1.0, progress, this->problemInstance);
 		}
 
 		/* std::cout << "Hijo generado despues de la mutacion: ";
@@ -706,4 +740,25 @@ void CALG_EMO_MOEAD::SavePopulation(int run_id)
 
 	// sprintf_s(filename,"Saving/MOEAD/POS_%s_RUN%d.dat",strTestInstance, run_id);
 	// SaveVarSpace(filename);
+}
+
+void CALG_EMO_MOEAD::SaveFinalPopulation()
+{
+	char filename[2048];
+
+	if (this->outputDirectory.empty()) {
+		this->outputDirectory = "SAVING/MOEAD/POF";
+	}
+
+	std::string cleanName = strTestInstance;
+	size_t lastindex = cleanName.find_last_of(".");
+	if (lastindex != std::string::npos) {
+		cleanName = cleanName.substr(0, lastindex);
+	}
+
+	sprintf(filename, "%s/last_gen_%s.dat", this->outputDirectory.c_str(), cleanName.c_str());
+
+	SaveObjSpace(filename);
+
+	std::cout << ">>> Copia de ultima gen guardada en: " << filename << std::endl;
 }

@@ -113,9 +113,9 @@ int main(int argc, char *argv[])
     NumberOfVariables = 324;
     
     // Parámetros Algoritmo
-    double mutationRate = 1.0;
-    double crossoverRate = 1.0;
-    double op1Prob = 0.2; // 20% delete, 80% swap (por ejemplo)
+    double mutationRate = 0.3;
+    double crossoverRate = 0.8;
+    double op1Prob = 0.0; // 20% delete, 80% swap (por ejemplo)
 
 	NumberOfObjectives = 2;
     NumberOfFuncEvals = 40000; 

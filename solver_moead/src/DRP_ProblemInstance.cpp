@@ -163,3 +163,16 @@ const std::vector<int>& ProblemInstance::getNodosCubiertosPor(int aed_id) {
 const std::vector<bool>& ProblemInstance::getBaseCoverage() {
     return is_base_covered;
 }
+
+bool ProblemInstance::isPreCubierto(int node_id) 
+{
+    // Validación de seguridad por si acaso mandan un ID inválido
+    if (node_id < 0 || node_id >= (int)is_base_covered.size()) 
+    {
+        return false;
+    }
+    
+    // Retorna true si el nodo está cubierto por infraestructura fija (cámaras)
+    // Retorna false si el nodo está desprotegido (aquí es donde queremos poner AEDs)
+    return is_base_covered[node_id];
+}

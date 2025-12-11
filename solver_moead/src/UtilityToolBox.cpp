@@ -275,367 +275,445 @@ void CUtilityToolBox::MutacionModificada(vector<double> &x_var, double rate)
 
 void CUtilityToolBox::MutacionBitFlip(vector<double> &x_var, double mutation_rate, double prob_bit_flip, ProblemInstance *problemInstance)
 {
-    // 1. Verificar si se ejecuta el operador (Probabilidad global de mutación del individuo)
+    // A. Probabilidad global de que el individuo mute
     if (Get_Random_Number() > mutation_rate) 
         return;
 
     int n = x_var.size();
     const auto &nodos = problemInstance->getNodes();
     
-    // =========================================================================
-    // CORRECCIÓN: La probabilidad estándar es 1/N.
-    // Esto asegura que, en promedio, solo 1 bit cambie por mutación.
-    // =========================================================================
-    double prob_bit_flip_estandar = 10*(1.0 / (double)n);
+    // Probabilidad por gen: 1/N (Estándar).
+    // Si quieres ser más agresivo, usa 2.0/N o 5.0/N.
+    double prob_por_gen = 1.0 / (double)n;
 
-    // 2. Realizar el Bit Flip
+    // B. Bucle de Mutación
     for (int i = 0; i < n; ++i)
     {
-        // No tocar nodos preinstalados (Flag 1)
+        // Nunca tocar nodos preinstalados (Cámaras)
         if (nodos[i]->getFlag() == 1) continue;
 
-        // Evaluamos cada bit independientemente con la probabilidad 1/N
-        if (Get_Random_Number() <= prob_bit_flip_estandar)
+        if (Get_Random_Number() <= prob_por_gen)
         {
-            // Invertir el bit: si es 1 pasa a 0, si es 0 pasa a 1
             if (x_var[i] == 1) {
-				x_var[i] = 0;
-			} else {
-				if (EsBuenCandidato(i, problemInstance)) {
+                // Si está puesto, lo quitamos (Borrar siempre es válido).
+                x_var[i] = 0;
+            } 
+            else {
+                // Si está vacío, intentamos ponerlo.
+                // AQUÍ USAMOS LA INTELIGENCIA: Solo poner si sirve de algo.
+                if (EsBuenCandidato(i, problemInstance)) {
                     x_var[i] = 1;
                 }
-			}
+            }
         }
     }
 
-    // -------------------------------------------------------------------------
-    // RESTRICCIÓN DE PRESUPUESTO Y REPARACIÓN
-    // (El código original de reparación inteligente se mantiene porque es necesario)
-    // -------------------------------------------------------------------------
-    
+    // C. Reparación de Presupuesto (Si nos pasamos)
     int max_presupuesto = problemInstance->getP(); 
     std::vector<int> aeds_activos;
     int contador_instalados = 0;
 
-    // Contar activos
-    for (int i = 0; i < n; ++i)
-    {
-        if (x_var[i] == 1)
-        {
+    for (int i = 0; i < n; ++i) {
+        if (x_var[i] == 1) {
             contador_instalados++;
-            if (nodos[i]->getFlag() != 1) { // Solo los movibles
-                aeds_activos.push_back(i);
-            }
+            // Solo podemos borrar los que no son fijos
+            if (nodos[i]->getFlag() == 0) aeds_activos.push_back(i);
         }
     }
 
-    // Si nos pasamos del presupuesto, reparamos quitando los que menos cubren
     if (contador_instalados > max_presupuesto)
     {
         int a_eliminar = contador_instalados - max_presupuesto;
         
-        // Estructura: <Cobertura, Indice>
+        // Estrategia: Eliminar los que menos aportan (Calidad)
         std::vector<std::pair<double, int>> calidad_aeds;
-        double R = problemInstance->getR();
-        double R2 = R * R;
-
-        // Calcular calidad de cada AED instalado (solo si es necesario reparar)
-        for (int idx_aed : aeds_activos)
-        {
-            double cobertura_total = 0.0;
-            double ax = nodos[idx_aed]->getX();
-            double ay = nodos[idx_aed]->getY();
-
-            for (int j = 0; j < n; ++j)
-            {
-                if (nodos[j]->getFlag() == 0) // Nodos de demanda
-                {
-                    double dx = ax - nodos[j]->getX();
-                    double dy = ay - nodos[j]->getY();
-                    if ((dx*dx + dy*dy) <= R2)
-                    {
-                        cobertura_total += nodos[j]->getProbOhca();
-                    }
+        
+        for (int idx_aed : aeds_activos) {
+            // Calcular aporte marginal real
+            double aporte = 0.0;
+            const std::vector<int>& vecinos = problemInstance->getNodosCubiertosPor(idx_aed);
+            
+            for (int vec : vecinos) {
+                // Sumar solo si no está cubierto por base (para ser justos en la eliminación)
+                if (nodos[vec]->getFlag() == 0 && !problemInstance->isPreCubierto(vec)) {
+                    aporte += nodos[vec]->getProbOhca();
                 }
             }
-            calidad_aeds.push_back({cobertura_total, idx_aed});
+            calidad_aeds.push_back({aporte, idx_aed});
         }
 
-        // Ordenar de MENOR a MAYOR cobertura (los peores primero)
+        // Ordenar menor a mayor (los peores al principio)
+        std::sort(calidad_aeds.begin(), calidad_aeds.end());
+
+        for (int k = 0; k < a_eliminar && k < (int)calidad_aeds.size(); ++k) {
+            x_var[calidad_aeds[k].second] = 0;
+        }
+    }
+}
+
+
+// =========================================================================
+// MUTACIÓN BIT FLIP V2 (Probabilidad Manual)
+// =========================================================================
+// A diferencia de la estándar (1/N), aquí tú defines la intensidad.
+// prob_bit_flip: Probabilidad de que cada bit individual cambie.
+// Ejemplo: Si prob_bit_flip = 0.01 y N=1000, cambiarán aprox 10 bits.
+void CUtilityToolBox::MutacionBitFlip_v2(vector<double> &x_var, double mutation_rate, double prob_bit_flip, ProblemInstance *problemInstance)
+{
+    // 1. Probabilidad global de ejecutar el operador
+    if (Get_Random_Number() > mutation_rate) 
+        return;
+
+    int n = x_var.size();
+    const auto &nodos = problemInstance->getNodes();
+
+    // 2. Recorrer cada gen (bit)
+    for (int i = 0; i < n; ++i)
+    {
+        // Protección: Nunca tocar cámaras/preinstalados
+        if (nodos[i]->getFlag() == 1) continue;
+
+        // Evaluación de probabilidad independiente para cada bit
+        if (Get_Random_Number() <= prob_bit_flip)
+        {
+            if (x_var[i] == 1) 
+            {
+                // Si estaba encendido -> Apagar (Delete)
+                // Esto siempre es seguro y ayuda a bajar costos
+                x_var[i] = 0;
+            }
+            else 
+            {
+                // Si estaba apagado -> Encender (Add)
+                // AQUÍ USAMOS TU FILTRO INTELIGENTE
+                // Solo permitimos el flip a 1 si el candidato aporta valor real.
+                if (EsBuenCandidato(i, problemInstance)) 
+                {
+                    x_var[i] = 1;
+                }
+            }
+        }
+    }
+
+    // 3. Reparación de Presupuesto (Vital en este operador)
+    // Como la probabilidad es manual, es fácil pasarse del presupuesto.
+    int max_presupuesto = problemInstance->getP(); 
+    std::vector<int> aeds_activos;
+    int contador_instalados = 0;
+
+    for (int i = 0; i < n; ++i) {
+        if (x_var[i] == 1) {
+            contador_instalados++;
+            if (nodos[i]->getFlag() == 0) aeds_activos.push_back(i);
+        }
+    }
+
+    if (contador_instalados > max_presupuesto)
+    {
+        int a_eliminar = contador_instalados - max_presupuesto;
+        
+        // Calculamos la calidad marginal para borrar los peores
+        std::vector<std::pair<double, int>> calidad_aeds;
+        
+        for (int idx_aed : aeds_activos) {
+            double aporte = 0.0;
+            const std::vector<int>& vecinos = problemInstance->getNodosCubiertosPor(idx_aed);
+            
+            for (int vec : vecinos) {
+                // Solo sumamos si es demanda y NO está cubierta por la base
+                if (nodos[vec]->getFlag() == 0 && !problemInstance->isPreCubierto(vec)) {
+                    aporte += nodos[vec]->getProbOhca();
+                }
+            }
+            calidad_aeds.push_back({aporte, idx_aed});
+        }
+
+        // Ordenar de menor a mayor (los de menor aporte al principio)
         std::sort(calidad_aeds.begin(), calidad_aeds.end());
 
         // Eliminar los sobrantes
-        for (int k = 0; k < a_eliminar && k < (int)calidad_aeds.size(); ++k)
-        {
-            int idx_a_borrar = calidad_aeds[k].second;
-            x_var[idx_a_borrar] = 0;
+        for (int k = 0; k < a_eliminar && k < (int)calidad_aeds.size(); ++k) {
+            x_var[calidad_aeds[k].second] = 0;
         }
     }
 }
 
-double CUtilityToolBox::CalcularCoberturaYMapa(const vector<double> &x_var, const vector<Node*> &nodos, double R2, vector<int> &veces_cubierto)
+
+
+// =========================================================================
+// MUTACIÓN ADAPTATIVA POR FASES (Delete -> Swap)
+// =========================================================================
+void CUtilityToolBox::MutacionAdaptativaFases(vector<double> &x_var, double mutation_rate, double progress, ProblemInstance *problemInstance)
 {
-    double cobertura_total = 0.0;
-    int n = x_var.size();
-    std::fill(veces_cubierto.begin(), veces_cubierto.end(), 0); // Reiniciar mapa
-
-    // 1. Llenar el mapa de cobertura
-    for (int i = 0; i < n; ++i)
-    {
-        // Si hay un AED (ya sea variable=1 o fijo=1)
-        if (x_var[i] == 1 || nodos[i]->getFlag() == 1) 
-        {
-            double ax = nodos[i]->getX();
-            double ay = nodos[i]->getY();
-
-            for (int j = 0; j < n; ++j)
-            {
-                if (nodos[j]->getFlag() == 0) // Solo nodos de demanda
-                {
-                    double dx = ax - nodos[j]->getX();
-                    double dy = ay - nodos[j]->getY();
-                    if ((dx*dx + dy*dy) <= R2)
-                    {
-                        veces_cubierto[j]++;
-                    }
-                }
-            }
-        }
-    }
-
-    // 2. Calcular el valor total basado en el mapa
-    for (int j = 0; j < n; ++j)
-    {
-        if (nodos[j]->getFlag() == 0 && veces_cubierto[j] > 0)
-        {
-            cobertura_total += nodos[j]->getProbOhca();
-        }
-    }
-    return cobertura_total;
-}
-
-
-
-void CUtilityToolBox::MutacionIterativaDeleteSwap(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance)
-{
-    // 1. Verificar si muta
+    // 1. Probabilidad global
     if (Get_Random_Number() > mutation_rate) return;
 
     int n = x_var.size();
     const auto &nodos = problemInstance->getNodes();
-    double R = problemInstance->getR();
-    double R2 = R * R;
 
-    // Identificar activos para la fase de DELETE
-    std::vector<int> aeds_instalados;
-    for (int i = 0; i < n; ++i) {
-        if (x_var[i] == 1 && nodos[i]->getFlag() != 1) {
-            aeds_instalados.push_back(i);
-        }
-    }
-
-    if (aeds_instalados.empty()) return;
-
-    // =============================================================
-    // FASE 1: DELETE (Reducir Costo)
-    // =============================================================
-    
-    // Porcentaje agresivo si hay muchos, suave si hay pocos (Lógica adaptativa simple)
-    double porcentaje_borrado = 0.05; // 5% base
-    if (aeds_instalados.size() > 50) porcentaje_borrado = 0.50; // 10% si hay muchos
-    
-    int cantidad_borrar = std::ceil(aeds_instalados.size() * porcentaje_borrado);
-    if (cantidad_borrar < 1) cantidad_borrar = 1;
-
-    std::random_shuffle(aeds_instalados.begin(), aeds_instalados.end());
-    
-    // Aplicamos el borrado
-    for (int k = 0; k < cantidad_borrar; ++k) {
-        x_var[aeds_instalados[k]] = 0;
-    }
-
-    // =============================================================
-    // FASE 2: SWAP ITERATIVO (Optimizar Cobertura)
-    // =============================================================
-    
-    // Estructuras para evaluación rápida
-    vector<int> veces_cubierto(n, 0);
-    double mejor_cobertura = CalcularCoberturaYMapa(x_var, nodos, R2, veces_cubierto);
-    
-    // Volvemos a listar disponibles tras el borrado
-    std::vector<int> actuales;
+    // 2. Identificar AEDs instalados (móviles)
+    std::vector<int> instalados;
     std::vector<int> vacios;
+
     for (int i = 0; i < n; ++i) {
-        if (nodos[i]->getFlag() == 1) continue;
-        if (x_var[i] == 1) actuales.push_back(i);
+        if (nodos[i]->getFlag() == 1) continue; // Ignorar cámaras
+
+        if (x_var[i] == 1) instalados.push_back(i);
         else vacios.push_back(i);
     }
 
-    if (actuales.empty() || vacios.empty()) return;
+    if (instalados.empty()) return;
 
-    int max_intentos = 10;
+    // 3. CALCULAR PROBABILIDAD DINÁMICA
+    // Queremos que prob_solo_borrar sea ALTA al principio y BAJA al final.
+    // progress va de 0.0 a 1.0
+    // Fórmula: 1.0 - progress. 
+    // Inicio (0.0) -> 100% chance de borrar.
+    // Final (1.0) -> 0% chance de borrar (100% swap).
     
-    // Bucle de intentos (Hill Climbing / Steepest Descent)
-    for (int iter = 0; iter < max_intentos; ++iter)
+    // Le ponemos un pequeño margen (0.05) para que al final aun exista una 
+    // pequeñisima posibilidad de borrar para salir de saturación.
+    double prob_solo_borrar = 1.0 - progress; 
+    if (prob_solo_borrar < 0.05) prob_solo_borrar = 0.05;
+
+    bool modo_delete = (Get_Random_Number() <= prob_solo_borrar);
+
+    // 4. Determinar Cantidad a Modificar
+    // Cambiamos un % pequeño (ej. 1% o mínimo 1) para mantener estabilidad
+    int cantidad = std::max(1, (int)(instalados.size() * 0.01)); 
+
+    // Mezclar para aleatoriedad
+    std::random_shuffle(instalados.begin(), instalados.end());
+
+    // --- ACCIÓN: BORRAR (Común para Delete y la primera mitad de Swap) ---
+    // Borramos los 'cantidad' primeros de la lista barajada
+    // (O podrías usar una heurística para borrar los peores, pero aleatorio da velocidad)
+    for (int k = 0; k < cantidad && k < (int)instalados.size(); ++k) {
+        x_var[instalados[k]] = 0;
+    }
+
+    // --- ACCIÓN: INSERTAR (Solo si NO es modo delete -> es decir, es Swap) ---
+    if (!modo_delete)
     {
-        // 1. Seleccionar candidatos para el Swap
-        int idx_quitar = actuales[rand() % actuales.size()];
-        int idx_poner = vacios[rand() % vacios.size()];
+        if (vacios.empty()) return;
+        std::random_shuffle(vacios.begin(), vacios.end());
 
-        // 2. Evaluar cambio incrementalmente (Delta Evaluation)
-        // No recalculamos todo, solo vemos qué ganamos y qué perdemos
-        double delta_cobertura = 0.0;
+        int insertados = 0;
+        int intentos = 0;
+        int max_intentos = vacios.size(); 
+        if (max_intentos > 500) max_intentos = 500; // Tope para velocidad
 
-        // A. Simular quitar 'idx_quitar'
-        double ax_q = nodos[idx_quitar]->getX();
-        double ay_q = nodos[idx_quitar]->getY();
-        
-        // Nodos que dejarían de estar cubiertos si quitamos este AED
-        // (Solo perdemos cobertura si veces_cubierto == 1)
-        for (int j = 0; j < n; ++j) {
-            if (nodos[j]->getFlag() == 0) { // Demanda
-                double dx = ax_q - nodos[j]->getX();
-                double dy = ay_q - nodos[j]->getY();
-                if ((dx*dx + dy*dy) <= R2) {
-                    if (veces_cubierto[j] == 1) { 
-                        delta_cobertura -= nodos[j]->getProbOhca(); // Perdida
-                    }
-                }
-            }
-        }
-
-        // B. Simular poner 'idx_poner'
-        double ax_p = nodos[idx_poner]->getX();
-        double ay_p = nodos[idx_poner]->getY();
-
-        // Nodos que ganarían cobertura
-        // (Solo ganamos cobertura si veces_cubierto == 0, OJO: considerando que acabamos de quitar uno virtualmente)
-        // Para hacerlo exacto sin modificar el vector 'veces_cubierto' aún, es complejo.
-        // ESTRATEGIA SEGURA: Modificar vector temporalmente y revertir si falla.
-        
-        // Aplicar cambios temporales al mapa
-        bool mejora = false;
-        double cobertura_temp = mejor_cobertura;
-        
-        // -- Quitar del mapa --
-        for (int j = 0; j < n; ++j) {
-            if (nodos[j]->getFlag() != 0) continue;
-            double dx = ax_q - nodos[j]->getX();
-            double dy = ay_q - nodos[j]->getY();
-            if ((dx*dx + dy*dy) <= R2) {
-                veces_cubierto[j]--; // Reducimos contador
-                if (veces_cubierto[j] == 0) cobertura_temp -= nodos[j]->getProbOhca();
-            }
-        }
-
-        // -- Poner en el mapa --
-        for (int j = 0; j < n; ++j) {
-             if (nodos[j]->getFlag() != 0) continue;
-            double dx = ax_p - nodos[j]->getX();
-            double dy = ay_p - nodos[j]->getY();
-            if ((dx*dx + dy*dy) <= R2) {
-                if (veces_cubierto[j] == 0) cobertura_temp += nodos[j]->getProbOhca();
-                veces_cubierto[j]++; // Aumentamos contador
-            }
-        }
-
-        // 3. Verificar si mejoró
-        if (cobertura_temp > mejor_cobertura) // + EPS si usas flotantes
+        int idx_vac = 0;
+        while (insertados < cantidad && idx_vac < (int)vacios.size() && intentos < max_intentos)
         {
-            // ACEPTAR CAMBIO
-            mejor_cobertura = cobertura_temp;
-            
-            // Actualizar genotipo real
-            x_var[idx_quitar] = 0;
-            x_var[idx_poner] = 1;
+            int cand = vacios[idx_vac];
+            idx_vac++;
+            intentos++;
 
-            // Actualizar listas de indices para siguientes iteraciones
-            // (Borrar y poner es costoso en vector, simplemente reemplazamos valores si iteramos mucho,
-            // pero como son solo 10 veces, podemos dejarlo asi o actualizar listas).
-            // Manera rapida: buscar y reemplazar en los vectores de indices
-            std::replace(actuales.begin(), actuales.end(), idx_quitar, idx_poner);
-            std::replace(vacios.begin(), vacios.end(), idx_poner, idx_quitar);
-        }
-        else
-        {
-            // RECHAZAR CAMBIO (Revertir mapa de cobertura)
-            
-            // -- Revertir poner --
-             for (int j = 0; j < n; ++j) {
-                if (nodos[j]->getFlag() != 0) continue;
-                double dx = ax_p - nodos[j]->getX();
-                double dy = ay_p - nodos[j]->getY();
-                if ((dx*dx + dy*dy) <= R2) {
-                    veces_cubierto[j]--; 
-                }
-            }
-            // -- Revertir quitar --
-            for (int j = 0; j < n; ++j) {
-                if (nodos[j]->getFlag() != 0) continue;
-                double dx = ax_q - nodos[j]->getX();
-                double dy = ay_q - nodos[j]->getY();
-                if ((dx*dx + dy*dy) <= R2) {
-                    veces_cubierto[j]++;
-                }
+            // Usamos el filtro INTELIGENTE
+            if (EsBuenCandidato(cand, problemInstance)) 
+            {
+                x_var[cand] = 1;
+                insertados++;
             }
         }
     }
+
+    // 5. REPARACIÓN DE PRESUPUESTO (Siempre necesaria por seguridad)
+    // El código de reparación estándar que ya tienes...
+    int max_P = problemInstance->getP();
+    int current_P = 0;
+    std::vector<int> final_instalados;
+    
+    for(int i=0; i<n; ++i) {
+        if(x_var[i] == 1) {
+            current_P++;
+            if(nodos[i]->getFlag() == 0) final_instalados.push_back(i);
+        }
+    }
+
+    if (current_P > max_P) {
+        int eliminar = current_P - max_P;
+        // Ordenamiento rápido por calidad para eliminar lo peor
+        std::vector<std::pair<double, int>> calidad;
+        for(int idx : final_instalados) {
+            double aporte = 0;
+            const auto& vec = problemInstance->getNodosCubiertosPor(idx);
+            for(int v : vec) if(!problemInstance->isPreCubierto(v)) aporte += nodos[v]->getProbOhca();
+            calidad.push_back({aporte, idx});
+        }
+        std::sort(calidad.begin(), calidad.end());
+        for(int k=0; k<eliminar && k<(int)calidad.size(); ++k) {
+            x_var[calidad[k].second] = 0;
+        }
+    }
+}
+
+void CUtilityToolBox::MutacionRefuerzoZonasDebiles(
+    std::vector<double> &x_var,
+    double mutation_rate,
+	double prob_bit_flip,
+    ProblemInstance *instance
+) {
+    // 1. Probabilidad global
+    if (Get_Random_Number() > mutation_rate) return;
+    int n = x_var.size();
+    const auto &nodos = instance->getNodes();
+    // 2. Construir conteo de cobertura actual por nodo de demanda
+    int N = nodos.size();
+    std::vector<int> cobertura(N, 0);
+    // Cobertura por AEDs activos
+    for (int i = 0; i < n; ++i) {
+        if (x_var[i] == 1) {
+            const std::vector<int> &vecinos = instance->getNodosCubiertosPor(i);
+            for (int v : vecinos) {
+                cobertura[v] += 1;
+            }
+        }
+    }
+    // 3. Buscar demandas débiles (no pre-cubiertas) con alta probabilidad
+    int mejor_demanda = -1;
+    double peor_score = -1.0;  // maximizamos prob / (1 + cobertura)
+    for (int d = 0; d < N; ++d) {
+        // Solo demandas
+        if (nodos[d]->getFlag() != 0) continue;
+        if (instance->isPreCubierto(d)) continue;  // ya la cubre la base
+        double prob = nodos[d]->getProbOhca();
+        if (prob <= 0.0) continue;
+        int cov = cobertura[d];
+        // Score: alta prob y poca cobertura -> valor muy grande
+        double score = prob / (1.0 + (double)cov);
+        if (score > peor_score) {
+            peor_score = score;
+            mejor_demanda = d;
+        }
+    }
+    // Si no encontramos ninguna demanda interesante, no mutamos
+    if (mejor_demanda == -1) return;
+    // 4. Buscar mejor sitio para reforzar esa demanda
+    int mejor_sitio = -1;
+    double mejor_ganancia = -1.0;
+    for (int j = 0; j < n; ++j) {
+        // No usar cámaras ni sitios ya ocupados
+        if (nodos[j]->getFlag() == 1) continue;
+        if (x_var[j] == 1) continue;
+        const std::vector<int> &vecinos = instance->getNodosCubiertosPor(j);
+        // Este sitio debe cubrir a la demanda elegida
+        bool cubre_demanda = false;
+        for (int v : vecinos) {
+            if (v == mejor_demanda) {
+                cubre_demanda = true;
+                break;
+            }
+        }
+        if (!cubre_demanda) continue;
+        // Estimamos ganancia total de este candidato (similar a lo que ya haces)
+        double ganancia = 0.0;
+        for (int v : vecinos) {
+            if (nodos[v]->getFlag() == 0 && !instance->isPreCubierto(v)) {
+                // Si ya tiene mucha cobertura de AEDs y base, podemos penalizar
+                if (cobertura[v] == 0) {
+                    ganancia += nodos[v]->getProbOhca();
+                } else if (cobertura[v] == 1) {
+                    ganancia += 0.5 * nodos[v]->getProbOhca();
+                }
+            }
+        }
+        if (ganancia > mejor_ganancia) {
+            mejor_ganancia = ganancia;
+            mejor_sitio = j;
+        }
+    }
+    // Sin candidato útil → abortar
+    if (mejor_sitio == -1 || mejor_ganancia <= 0.0) return;
+    // 5. Verificar presupuesto actual
+    int max_P = instance->getP();
+    int current_P = 0;
+    std::vector<int> instalados_moviles;
+    for (int i = 0; i < n; ++i) {
+        if (x_var[i] == 1) {
+            current_P++;
+            if (nodos[i]->getFlag() == 0) {
+                instalados_moviles.push_back(i);
+            }
+        }
+    }
+    // 6. Si rompería el presupuesto, buscamos un AED malo para apagar
+    int sitio_a_apagar = -1;
+    if (current_P >= max_P) {
+        double min_aporte = 1.0e30;
+        // Muestra pequeña (para rapidez)
+        std::random_shuffle(instalados_moviles.begin(), instalados_moviles.end());
+        int sample_size = std::min((int)instalados_moviles.size(), 20);
+        for (int k = 0; k < sample_size; ++k) {
+            int idx = instalados_moviles[k];
+            const std::vector<int> &vecinos = instance->getNodosCubiertosPor(idx);
+            double aporte = 0.0;
+            for (int v : vecinos) {
+                if (nodos[v]->getFlag() == 0 && !instance->isPreCubierto(v)) {
+                    aporte += nodos[v]->getProbOhca();
+                }
+            }
+            if (aporte < min_aporte) {
+                min_aporte = aporte;
+                sitio_a_apagar = idx;
+            }
+        }
+    }
+    // 7. Aplicar mutación (swap o solo add si hay espacio)
+    if (sitio_a_apagar != -1) {
+        x_var[sitio_a_apagar] = 0;
+    }
+    x_var[mejor_sitio] = 1;
 }
 
 bool CUtilityToolBox::EsBuenCandidato(int idx_candidato, ProblemInstance *instance)
 {
     const auto &nodos = instance->getNodes();
     
-    // 1. Si intento poner un AED sobre una cámara existente, es redundante.
+    // Regla 0: Si es una cámara existente (Flag 1), no podemos poner otro AED encima.
     if (nodos[idx_candidato]->getFlag() == 1) return false;
 
-    // 2. Obtener lista de demanda que este candidato cubriría
+    // Regla 1: Usamos el mapa precalculado para velocidad.
     const std::vector<int>& vecinos = instance->getNodosCubiertosPor(idx_candidato);
-    const std::vector<bool>& base_covered = instance->getBaseCoverage();
-
+    
+    // Regla 2: Verificamos contra la cobertura base (cámaras).
+    // Nota: isPreCubierto devuelve true si el nodo ya está cubierto por una cámara.
+    // Nosotros queremos encontrar gente donde isPreCubierto == false.
+    
     int ganancia_marginal = 0;
-
+    
     for (int id_vecino : vecinos) 
     {
-        // CONDICIÓN DE ORO:
-        // El vecino debe ser demanda útil (prob > 0)
-        // Y NO DEBE ESTAR CUBIERTO POR LA BASE (false en base_covered)
-        
-        if (nodos[id_vecino]->getProbOhca() > 0.0 && !base_covered[id_vecino]) 
+        // Solo cuenta si es Demanda (Flag 0) y NO está cubierto por base.
+        if (nodos[id_vecino]->getFlag() == 0 && !instance->isPreCubierto(id_vecino)) 
         {
-            ganancia_marginal++;
-            
-            // Si encontramos al menos 1 persona NUEVA que salvamos, vale la pena.
-            if (ganancia_marginal >= 1) return true;
+            // Opcional: Verificar que tenga probabilidad > 0
+            if (nodos[id_vecino]->getProbOhca() > 0.0) {
+                ganancia_marginal++;
+                // Optimización: Con encontrar 1, ya sabemos que no es redundante.
+                if (ganancia_marginal >= 1) return true;
+            }
         }
     }
-
-    // Si terminamos el bucle y ganancia_marginal es 0, significa que 
-    // toda la gente que este candidato cubre YA ESTABA CUBIERTA por las cámaras.
-    // Poner un AED aquí es tirar el dinero.
+    
+    // Si llegamos aquí, el candidato es inútil (solo cubre cámaras o gente ya salvada).
     return false;
 }
 
 void CUtilityToolBox::MutacionPorcentual(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance)
 {
-	  double base_percentage = 0.5; // Base conservadora, el algoritmo la escala.
-    
-    // 1. Probabilidad global
-    if (Get_Random_Number() > mutation_rate)
-        return;
+    if (Get_Random_Number() > mutation_rate) return;
 
     int n = x_var.size();
     const auto &nodos = problemInstance->getNodes();
-    double R = problemInstance->getR();
-    double R2 = R * R;
 
-    // 2. Clasificar índices
+    // 1. Clasificar
     std::vector<int> aeds_instalados;
     std::vector<int> espacios_vacios;
 
-    for (int i = 0; i < n; ++i)
-    {
-        if (nodos[i]->getFlag() == 1) continue; // Ignorar preinstalados
+    for (int i = 0; i < n; ++i) {
+        if (nodos[i]->getFlag() == 1) continue; // Ignorar cámaras
 
         if (x_var[i] == 1) aeds_instalados.push_back(i);
         else espacios_vacios.push_back(i);
@@ -644,251 +722,149 @@ void CUtilityToolBox::MutacionPorcentual(vector<double> &x_var, double mutation_
     int num_instalados = aeds_instalados.size();
     if (num_instalados == 0) return;
 
-    // =========================================================
-    // LÓGICA ADAPTATIVA
-    // =========================================================
-    
+    // 2. Lógica Adaptativa (Ajustar intensidad según tamaño)
+    double base_percentage = 0.05; // 5% por defecto
     double referencia_alta = 50.0; 
-    double factor_agresividad = 1.0 + (num_instalados / referencia_alta);
     
-    // Topes de agresividad (ajustados a tu código previo)
-    if (factor_agresividad > 5.0) factor_agresividad = 5.0;
+    // Si hay muchos equipos, somos más agresivos para limpiar
+    double factor = 1.0 + (num_instalados / referencia_alta);
+    if (factor > 4.0) factor = 4.0; 
 
-    // A. Porcentaje Dinámico
-    double porcentaje_final = base_percentage * factor_agresividad;
-    if (porcentaje_final > 0.50) porcentaje_final = 0.50; // Ojo: 1.0 es borrar todo, 0.5 es más seguro
+    double porcentaje_final = base_percentage * factor;
+    if (porcentaje_final > 0.4) porcentaje_final = 0.4; // Tope de seguridad
 
     int cantidad_cambios = static_cast<int>(std::ceil(num_instalados * porcentaje_final));
     if (cantidad_cambios < 1) cantidad_cambios = 1;
 
-    // B. Probabilidad Dinámica de Borrado
-    double prob_solo_borrar = 0.20 + (0.40 * (num_instalados / (referencia_alta * 2))); 
-    if (prob_solo_borrar > 0.7) prob_solo_borrar = 0.7;
+    // Aumentar probabilidad de borrado si estamos muy llenos
+    double prob_borrar_dinamica = prob_op1_delete;
+    if (num_instalados > referencia_alta * 2) prob_borrar_dinamica += 0.2;
+    if (prob_borrar_dinamica > 0.8) prob_borrar_dinamica = 0.8;
 
-    // =========================================================
+    bool es_solo_borrar = (Get_Random_Number() <= prob_borrar_dinamica);
 
-    // 3. Ejecución del Operador
-    bool es_solo_borrar = (Get_Random_Number() <= prob_solo_borrar);
-
-    // Mezclar instalados para borrar al azar
+    // 3. Ejecutar Borrado
     std::random_shuffle(aeds_instalados.begin(), aeds_instalados.end());
-
-    // Fase 1: Eliminar
-    for (int k = 0; k < cantidad_cambios && k < aeds_instalados.size(); ++k) {
+    for (int k = 0; k < cantidad_cambios && k < (int)aeds_instalados.size(); ++k) {
         x_var[aeds_instalados[k]] = 0;
     }
 
-    // Fase 2: Insertar (Solo si es Swap) CON FILTRO INTELIGENTE
+    // 4. Ejecutar Inserción (Solo si es Swap)
     if (!es_solo_borrar) 
     {
         if (espacios_vacios.empty()) return;
-
-        // Mezclar espacios vacíos
         std::random_shuffle(espacios_vacios.begin(), espacios_vacios.end());
 
         int cantidad_poner = cantidad_cambios;
         
-        // Ajuste: si hay muchos, ponemos un poquito menos para ayudar a bajar costos
-        if (num_instalados > referencia_alta) {
-             // Reducimos un 10% la reposición para generar presión de ahorro
-             // cantidad_poner = (int)(cantidad_poner * 0.9);
-             // if (cantidad_poner < 1) cantidad_poner = 1;
-        }
-
-        if (cantidad_poner > espacios_vacios.size()) cantidad_poner = espacios_vacios.size();
-
-        // ---------------------------------------------------------
-        // AQUI ESTA EL FILTRO (Similar a PARES_CUBRIBLES)
-        // ---------------------------------------------------------
+        // Bucle de búsqueda inteligente
         int instalados_ahora = 0;
         int idx_vec = 0;
-        int max_intentos_por_aed = 10; // Intentos para encontrar uno bueno
+        int max_intentos_totales = espacios_vacios.size(); 
+        if (max_intentos_totales > 1000) max_intentos_totales = 1000; // Límite de seguridad
 
-        while (instalados_ahora < cantidad_poner && idx_vec < espacios_vacios.size())
+        while (instalados_ahora < cantidad_poner && idx_vec < (int)espacios_vacios.size())
         {
-            int candidato_final = -1;
+            int candidato = espacios_vacios[idx_vec];
+            idx_vec++;
 
-            // Intentamos encontrar un buen candidato en los siguientes del vector
-            for (int intento = 0; intento < max_intentos_por_aed; ++intento)
+            // FILTRO INTELIGENTE:
+            if (EsBuenCandidato(candidato, problemInstance)) 
             {
-                if (idx_vec >= espacios_vacios.size()) break;
-
-                int candidato_temp = espacios_vacios[idx_vec];
-                idx_vec++; // Avanzamos en la lista barajada
-
-                // Verificamos si vale la pena (cubre a mas de 1 persona)
-                if (EsBuenCandidato(candidato_temp, problemInstance))
-                {
-                    candidato_final = candidato_temp;
-                    break; // Encontramos uno bueno
-                }
-                
-                // Si no es bueno, el loop continua y probamos el siguiente vacío
-                // Pero guardamos el último "malo" por si no encontramos ninguno bueno
-                candidato_final = candidato_temp; 
-            }
-
-            // Instalamos el candidato elegido
-            if (candidato_final != -1)
-            {
-                x_var[candidato_final] = 1;
+                x_var[candidato] = 1;
                 instalados_ahora++;
             }
+            // Si el candidato era malo (cubría cámaras), pasamos al siguiente en el vector barajado.
+            
+            if (idx_vec >= max_intentos_totales) break; // Evitar bucles infinitos
         }
     }
 }
 
-void CUtilityToolBox::MutacionModificada_sin_reubicacion_Inteligente(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance)
+
+void CUtilityToolBox::MutacionIntercambioHeuristico(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *instance)
 {
-	// 1 Verificar probabilidad
-	if (Get_Random_Number() > mutation_rate) return;
+    if (Get_Random_Number() > mutation_rate) return;
 
-	const auto &nodos = problemInstance->getNodes();
-	double R = problemInstance->getR();
-	double R2 = R * R;
-	int n = x_var.size();
-	
-	std::vector<int> aeds_activos;
-	std::vector<int> candidatos_libres;
-	std::vector<int> nodos_demanda;
+    int n = x_var.size();
+    const auto &nodos = instance->getNodes();
 
-	for (int i = 0; i < n; ++i)
-	{
-		if (nodos[i] -> getFlag() == 0) {
-			nodos_demanda.push_back(i);
-			if (x_var[i] == 1) {
-				aeds_activos.push_back(i);
-			} else {
-				candidatos_libres.push_back(i);
-			}
-		}
-		else if (nodos[i] -> getFlag() == 1) {
-			// AED preinstalado, no se toca
-		}
-	}
-	double rnd_op = Get_Random_Number();
+    // 1. Identificar AEDs instalados (que no sean fijos)
+    std::vector<int> instalados_moviles;
+    std::vector<int> espacios_vacios;
 
-	if (rnd_op < 0.5) {
-		// Operador 1: Eliminar un AED activo
-		std::vector<bool> is_covered(n, false);
-
-		for (int i = 0; i < n;++i) {
-			if (x_var[i] == 1 || nodos[i]-> getFlag() == 1) {
-				double ax = nodos[i]->getX();
-				double ay = nodos[i]->getY();
-
-				for (int dem_idx : nodos_demanda) {
-					if (is_covered[dem_idx]) continue;
-
-					double dx = nodos[dem_idx]->getX();
-					double dy = nodos[dem_idx]->getY();
-					if ((dx*dx + dy*dy) <= R2) {
-						is_covered[dem_idx] = true;
-					}
-				}
-			}
-		}
-
-		// B. Buscar el candidato libre que cubra más demanda NO CUBIERTA
-        int best_candidate = -1;
-        double max_gain = -1.0;
-
-        // Para no hacerlo eterno, probamos un subconjunto aleatorio si hay muchos candidatos
-        int attempts = std::min((int)candidatos_libres.size(), 50); 
-        // Si quieres precisión máxima, quita el límite y recorre todos, pero será lento.
+    for(int i=0; i<n; ++i) {
+        if (nodos[i]->getFlag() == 1) continue; // Ignorar cámaras
         
-        for (int k = 0; k < attempts; ++k) {
-            // Selección aleatoria para diversidad o secuencial si son pocos
-            int idx_cand = candidatos_libres[rand() % candidatos_libres.size()]; 
+        if (x_var[i] == 1) instalados_moviles.push_back(i);
+        else espacios_vacios.push_back(i);
+    }
 
-            double current_gain = 0.0;
-            double cx = nodos[idx_cand]->getX();
-            double cy = nodos[idx_cand]->getY();
+    if (instalados_moviles.empty() || espacios_vacios.empty()) return;
 
-            for (int dem_idx : nodos_demanda) {
-                if (is_covered[dem_idx]) continue; // Solo nos importa la demanda virgen
+    // 2. ENCONTRAR EL "PEOR" INSTALADO (Para eliminarlo)
+    // El "peor" es el que tiene menos ganancia marginal (aporta poco o nada nuevo)
+    int peor_idx = -1;
+    double min_aporte = 1.0e30;
 
-                double dx = cx - nodos[dem_idx]->getX();
-                double dy = cy - nodos[dem_idx]->getY();
-                
-                if ((dx*dx + dy*dy) <= R2) {
-                    current_gain += nodos[dem_idx]->getProbOhca(); // Sumar probabilidad/importancia
-                }
-            }
+    // Para no evaluar todos (lento), tomamos una muestra aleatoria (Torneo)
+    int sample_size = std::min((int)instalados_moviles.size(), 10); // Miramos 10 al azar
+    std::random_shuffle(instalados_moviles.begin(), instalados_moviles.end());
 
-            if (current_gain > max_gain) {
-                max_gain = current_gain;
-                best_candidate = idx_cand;
+    for(int k=0; k<sample_size; ++k) 
+    {
+        int idx = instalados_moviles[k];
+        const std::vector<int>& vecinos = instance->getNodosCubiertosPor(idx);
+        
+        double aporte_marginal = 0.0;
+        for(int v : vecinos) {
+            // Un nodo aporta valor si es demanda y NO está cubierto por las cámaras
+            // NOTA: Para ser perfecto, deberíamos ver si no está cubierto por OTROS aeds, 
+            // pero eso es costoso. Usar la base de cámaras es una buena heurística rápida.
+            if(nodos[v]->getFlag() == 0 && !instance->isPreCubierto(v)) {
+                aporte_marginal += nodos[v]->getProbOhca();
             }
         }
 
-        // C. Aplicar cambio
-        if (best_candidate != -1 && max_gain > 0) {
-            x_var[best_candidate] = 1;
-        } else {
-            // Si no encontramos nada útil, agregar uno al azar para no estancarse
-            if (!candidatos_libres.empty())
-                x_var[candidatos_libres[rand() % candidatos_libres.size()]] = 1;
+        // Buscamos el que tenga MENOR aporte para eliminarlo
+        if(aporte_marginal < min_aporte) {
+            min_aporte = aporte_marginal;
+            peor_idx = idx;
+            // Si encontramos uno que aporta 0 (totalmente inútil), lo borramos de inmediato.
+            if (min_aporte <= 0.0001) break; 
         }
     }
 
-	else 
+    // 3. ENCONTRAR EL "MEJOR" CANDIDATO (Para agregarlo)
+    int mejor_candidato = -1;
+    // Usamos la función que ya hicimos para filtrar rápidos
+    // Intentamos 10 veces encontrar algo bueno
+    int intentos = 0;
+    std::random_shuffle(espacios_vacios.begin(), espacios_vacios.end());
+
+    while(intentos < 20 && intentos < espacios_vacios.size()) 
     {
-        if (aeds_activos.empty()) return;
-
-        // A. Contar cuántos AEDs cubren a cada nodo de demanda
-        std::vector<int> cover_count(n, 0);
-
-        for (int i = 0; i < n; ++i) {
-            if (x_var[i] == 1 || nodos[i]->getFlag() == 1) { // AED activo o fijo
-                double ax = nodos[i]->getX();
-                double ay = nodos[i]->getY();
-                for (int dem_idx : nodos_demanda) {
-                    double dx = ax - nodos[dem_idx]->getX();
-                    double dy = ay - nodos[dem_idx]->getY();
-                    if ((dx*dx + dy*dy) <= R2) {
-                        cover_count[dem_idx]++;
-                    }
-                }
-            }
+        int cand = espacios_vacios[intentos];
+        // Reutilizamos tu filtro inteligente
+        if (EsBuenCandidato(cand, instance)) {
+            mejor_candidato = cand;
+            break; // Encontramos uno que sirve
         }
+        intentos++;
+    }
 
-        // B. Buscar el AED activo cuya eliminación cause la MENOR pérdida
-        int best_victim = -1;
-        double min_loss = 1.0e30; // Infinito
-
-        // Revisamos un subconjunto para velocidad
-        int attempts = std::min((int)aeds_activos.size(), 50);
-
-        for (int k = 0; k < attempts; ++k) {
-            int idx_aed = aeds_activos[rand() % aeds_activos.size()];
-            
-            double current_loss = 0.0;
-            double ax = nodos[idx_aed]->getX();
-            double ay = nodos[idx_aed]->getY();
-
-            for (int dem_idx : nodos_demanda) {
-                // Solo perdemos cobertura si este AED cubre el nodo Y es el ÚNICO que lo hace (count == 1)
-                if (cover_count[dem_idx] == 1) {
-                    double dx = ax - nodos[dem_idx]->getX();
-                    double dy = ay - nodos[dem_idx]->getY();
-                    if ((dx*dx + dy*dy) <= R2) {
-                        current_loss += nodos[dem_idx]->getProbOhca();
-                    }
-                }
-            }
-
-            if (current_loss < min_loss) {
-                min_loss = current_loss;
-                best_victim = idx_aed;
-                if (min_loss == 0.0) break; // Si encontramos uno redundante, borrarlo de inmediato
-            }
-        }
-
-        // C. Aplicar cambio
-        if (best_victim != -1) {
-            x_var[best_victim] = 0;
-        }
+    // 4. APLICAR EL SWAP
+    if (peor_idx != -1 && mejor_candidato != -1) {
+        x_var[peor_idx] = 0;       // Quitamos el malo
+        x_var[mejor_candidato] = 1; // Ponemos el bueno
+    }
+    // Si no encontramos mejor candidato, podríamos solo borrar el malo para ahorrar costo,
+    // o hacer un movimiento aleatorio para mantener diversidad.
+    else if (peor_idx != -1) {
+        // Opción: Movimiento aleatorio si no hallamos uno "bueno" inteligente
+        int random_pos = espacios_vacios[rand() % espacios_vacios.size()];
+        x_var[peor_idx] = 0;
+        x_var[random_pos] = 1; 
     }
 }
 

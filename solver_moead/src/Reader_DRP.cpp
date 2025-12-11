@@ -112,7 +112,7 @@ void Reader::readOHCAs(ProblemInstance *problemInstance)
             node->setFlag(flag);
 
             if (flag == 1) {
-                node->setProbOhca(1.0);
+                node->setProbOhca(0.0);
             } else {
             node->setProbOhca(prob);
             }

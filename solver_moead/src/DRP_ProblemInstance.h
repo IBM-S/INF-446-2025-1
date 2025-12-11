@@ -53,6 +53,8 @@ public:
     void PrecalcularCoberturas(); 
     const std::vector<int>& getNodosCubiertosPor(int aed_id);
     const std::vector<bool>& getBaseCoverage(); // Para obtener la lista inicial rapido
+
+    bool isPreCubierto(int node_id); 
 };
 
 #endif
