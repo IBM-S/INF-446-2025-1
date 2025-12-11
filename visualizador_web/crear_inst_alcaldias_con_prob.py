@@ -11,7 +11,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 
 # Subimos niveles para llegar a la carpeta de datos de EMO-D
-PATH_INPUT_DIR = BASE_DIR.parent / "EMO-D" / "MOEAD" / "INSTANCES Camera" / "DatosProcesadosGeoJSON" / "GeoJSON"
+PATH_INPUT_DIR = BASE_DIR.parent / "datos/geo"
 FILE_DELITOS = PATH_INPUT_DIR / "reportes_incidenciaU.geojson"
 FILE_CAMARAS = PATH_INPUT_DIR / "camaraPosU.geojson"
 
@@ -19,7 +19,6 @@ FILE_CAMARAS = PATH_INPUT_DIR / "camaraPosU.geojson"
 PATH_OUTPUT_DIR = BASE_DIR.parent / "datos" / "inst"
 
 # Parámetros fijos del algoritmo
-PARAM_P = 100000.0
 PARAM_R = 200.0
 PARAM_C1 = 1.0
 PARAM_C2 = 0.2
@@ -140,7 +139,7 @@ def generar_instancias():
                 'x': row['coord_x'],
                 'y': row['coord_y'],
                 'flag': 1,
-                'prob': 1.00
+                'prob': 0.00
             })
 
         # B. Agregar Delitos (Flag=0, Prob=Calculada)
@@ -169,7 +168,7 @@ def generar_instancias():
         lines.append(f"param N_total:= {N} ;")
         lines.append("")
         lines.append("/* PARAMETROS */")
-        lines.append(f"param P:= {PARAM_P} ;")
+        lines.append(f"param P:= {float(len(datos_delitos))} ;")
         lines.append(f"param R:= {PARAM_R} ;")
         lines.append(f"param c1:= {PARAM_C1} ;")
         lines.append(f"param c2:= {PARAM_C2} ;")

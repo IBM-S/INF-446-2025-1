@@ -111,11 +111,25 @@ def calcular_cobertura_geometrica(nodos, R):
     }
 
 
-def procesar_instancia(path_dat):
+def procesar_instancia(path_dat, mode="normal"):
     nodos, R = leer_nodos_y_R(path_dat)
     stats = calcular_cobertura_geometrica(nodos, R)
     base = os.path.basename(path_dat)
+    nombre_instancia = os.path.splitext(base)[0]
 
+    prob_cubierta = stats["prob_cubierta"]
+    n_demanda_total = stats["n_demanda_total"]
+
+    if mode == "ref":
+        # MODO REFERENCIA:
+        # {instancia} {(prob demanda cubierta * -1) + (prob demanda cubierta*0.1)} {Nodos demanda total*1.1}
+        ref_x = (-0.99 * prob_cubierta)   # = -0.9 * prob_cubierta
+        ref_y = n_demanda_total * 1.005
+
+        print(f"{nombre_instancia} {ref_x:.6f} {ref_y:.6f}")
+        return
+
+    # --------- MODO NORMAL (RESUMEN COMPLETO) ----------
     print(f"Instancia: {base}")
     print(f"  R = {R}")
     print(f"  AEDs (flag = 1)            : {sum(1 for (_,_,_,f,_) in nodos if f == 1)}")
@@ -124,21 +138,18 @@ def procesar_instancia(path_dat):
     print(f"  Nodos demanda cubiertos    : {stats['n_cubiertos']}")
     print(f"  Prob demanda cubierta      : {stats['prob_cubierta']:.4f}")
     
-    # Cobertura faltante (en cantidad y probabilidad)
     nodos_no_cubiertos = stats['n_demanda_total'] - stats['n_cubiertos']
     prob_no_cubierta = stats['prob_demanda_total'] - stats['prob_cubierta']
 
     print(f"  Nodos demanda NO cubiertos : {nodos_no_cubiertos}")
     print(f"  Prob demanda NO cubierta   : {prob_no_cubierta:.4f}")
 
-    
     if stats['n_demanda_total'] > 0:
         porc_nodos = 100.0 * stats['n_cubiertos'] / stats['n_demanda_total']
         porc_prob = 100.0 * stats['prob_cubierta'] / stats['prob_demanda_total']
         print(f"  % de nodos cubiertos       : {porc_nodos:.2f}%")
         print(f"  % de probabilidad cubierta : {porc_prob:.2f}%")
     print()
-
 
 def main():
     import argparse
@@ -152,6 +163,12 @@ def main():
         help="Nombre de archivo .dat dentro de datos/inst. "
              "Si se omite, se procesan todas las instancias.",
     )
+    parser.add_argument(
+        "--mode", "-m",
+        choices=["normal", "ref"],
+        default="normal",
+        help="Formato de salida: 'normal' (resumen) o 'ref' (instancia ref_x ref_y)."
+    )
     args = parser.parse_args()
 
     if args.instancia:
@@ -159,7 +176,7 @@ def main():
         if not os.path.exists(path):
             print(f"No existe el archivo: {path}")
             return
-        procesar_instancia(path)
+        procesar_instancia(path, mode=args.mode)
     else:
         # procesar todas las .dat
         patrones = glob.glob(os.path.join(DIR_INSTANCES, "*.dat"))
@@ -167,7 +184,7 @@ def main():
             print(f"No se encontraron .dat en {DIR_INSTANCES}")
             return
         for path in sorted(patrones):
-            procesar_instancia(path)
+            procesar_instancia(path, mode=args.mode)
 
 
 if __name__ == "__main__":

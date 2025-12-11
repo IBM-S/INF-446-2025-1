@@ -46,8 +46,10 @@ PATH_MOEAD_EXEC = os.path.join(DIR_MOEAD_CORE, "MOEAD")
 # Asumiendo la estructura ../../material/hv-1.3-src/hv
 PATH_HV_EXEC = os.path.join(PROYECTO_ROOT, "material", "hv-1.3-src", "hv") # Asumiendo que 'material' está en la raíz
 HV_EVERY = 10
-# ==============================================================================
 
+OPTIMOS_PATH = os.path.join(PROYECTO_ROOT, "Tuning/optimos.txt")
+OPTIMOS_CACHE = None
+# ==============================================================================
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 
@@ -57,6 +59,51 @@ def main():
 
 def parse_instance_name(filename):
     return os.path.splitext(os.path.basename(filename))[0]
+
+def load_optimos():
+    """
+    Lee Tuning/optimos.txt si existe.
+    Formato esperado por línea (se ignoran comentarios/vacías):
+
+    cam_1390_MILPA_ALTA.dat  89722.669400   -162.362520   1292.500000
+
+    Retorna dict:
+       base_name -> {"hv_opt": float, "ref": (ref1, ref2)}
+    donde base_name es el nombre SIN .dat (ej: 'cam_1390_MILPA_ALTA').
+    """
+    global OPTIMOS_CACHE
+    if OPTIMOS_CACHE is not None:
+        return OPTIMOS_CACHE
+
+    d = {}
+    if not os.path.exists(OPTIMOS_PATH):
+        print(f"[optimos] No se encontró {OPTIMOS_PATH}, se usará el cálculo global", flush=True)
+        OPTIMOS_CACHE = d
+        return d
+
+    with open(OPTIMOS_PATH, "r") as f:
+        for line in f:
+            s = line.strip()
+            if not s or s.startswith("#"):
+                continue
+            parts = s.split()
+            if len(parts) < 4:
+                continue
+            inst_raw = parts[0]
+            try:
+                hv_opt = float(parts[1])
+                ref1 = float(parts[2])
+                ref2 = float(parts[3])
+            except ValueError:
+                continue
+
+            key = parse_instance_name(inst_raw)  # quita .dat si viene
+            d[key] = {"hv_opt": hv_opt, "ref": (ref1, ref2)}
+
+    OPTIMOS_CACHE = d
+    print(f"[optimos] Cargadas {len(d)} instancias desde {OPTIMOS_PATH}", flush=True)
+    return d
+
 
 def get_non_dominated_idx(points_xy):
     """Devuelve índices de no-dominados para lista [(x,y), ...]."""
@@ -396,7 +443,16 @@ def run():
     # cargar instancia para cobertura
     nodes, coords_by_id, demanda, preinst_coords, radio = cargar_instancia_coords_y_demanda(os.path.join(DIR_INSTANCES, instancia))
 
-    ref_point = calcular_referencia_global(raw_files)
+    optimos = load_optimos()
+    opt_info = optimos.get(base_name)
+    hv_opt = None
+    if opt_info:
+        ref_point = opt_info["ref"]
+        hv_opt = opt_info["hv_opt"]
+        print(f"[run] Usando referencia de optimos.txt para {base_name}: {ref_point}, HV*={hv_opt}", flush=True)
+    else:
+        ref_point = calcular_referencia_global(raw_files)
+
     resumen_path = os.path.join(fp_folder, f"{base_name}_HV_summary.txt")
 
     aed_files = []
@@ -407,7 +463,10 @@ def run():
 
 
     with open(resumen_path, "w") as resumen_file:
-        resumen_file.write(f"{ref_point[0]} {ref_point[1]}\n")
+        if hv_opt is not None:
+            resumen_file.write(f"{ref_point[0]} {ref_point[1]} {hv_opt}\n")
+        else:
+            resumen_file.write(f"{ref_point[0]} {ref_point[1]}\n")
         for i, file in enumerate(raw_files):
             actual_gen = gen_number_from_path(file)
             # --- ¿Primera / última gen? ---
@@ -505,7 +564,15 @@ def run():
 
     files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files]
 
-    return jsonify({"files": files_relativos, "hv": hv_results})
+    return jsonify({
+        "files": files_relativos, 
+        "hv": hv_results, 
+        "hv_opt": hv_opt, 
+        "ref_point": {
+            "x": float(ref_point[0]), 
+            "y": float(ref_point[1])
+        }
+    })
 
 # ------------------- /load -------------------
 @app.route("/load", methods=["POST"])
@@ -528,6 +595,10 @@ def load():
     fp_folder = os.path.join(DIR_FRENTES_PARETO, base_name)
     aeds_folder = os.path.join(DIR_AEDS_PROCESADOS, base_name)
     resumen_path = os.path.join(fp_folder, f"{base_name}_HV_summary.txt")
+
+    optimos = load_optimos()
+    opt_info = optimos.get(base_name)
+    hv_opt = opt_info["hv_opt"] if opt_info else None
     
     aed_files = sorted(
         glob.glob(os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN*.dat")), 
@@ -536,13 +607,41 @@ def load():
 
     if not recalcular and os.path.exists(resumen_path) and aed_files:
         hv_results = []
+        ref_point = None
+        hv_opt = None
+
         with open(resumen_path) as f:
             lines = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+
+        if lines:
+            header = lines[0].split()
+            # primera y segunda columna: refX refY
+            ref_x, ref_y = map(float, header[:2])
+            ref_point = (ref_x, ref_y)
+
+            # si guardaste HV óptimo de AMPL en la 3ª col:
+            if len(header) >= 3:
+                try:
+                    hv_opt = float(header[2])
+                except ValueError:
+                    hv_opt = None
+
+            # resto de líneas: GENk hv_k
             if len(lines) > 1:
                 hv_results = [float(line.split()[1]) for line in lines[1:]]
+
         files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files]
         print(f"[/load] Éxito: Cargando cache para {instancia}")
-        return jsonify({"files": files_relativos, "hv": hv_results})
+
+        return jsonify({
+            "files": files_relativos,
+            "hv": hv_results,
+            "hvAmpl": hv_opt,
+            "refPointGlobal": (
+                {"x": ref_point[0], "y": ref_point[1]}
+                if ref_point is not None else None
+            ),
+        })
 
     if is_strict_mode and not aed_files:
         print(f"[/load] Modo Estricto: No se encontraron datos cacheados para {instancia}. No se recalculará.")
@@ -577,7 +676,13 @@ def load():
     os.makedirs(aeds_folder, exist_ok=True)
 
     nodes, coords_by_id, demanda, preinst_coords, radio = cargar_instancia_coords_y_demanda(os.path.join(DIR_INSTANCES, instancia))
-    ref_point = calcular_referencia_global(raw_files)
+    if opt_info:
+        ref_point = opt_info["ref"]
+        hv_opt = opt_info["hv_opt"]
+        print(f"[/load] Usando referencia de optimos.txt para {base_name}: {ref_point}, HV*={hv_opt}", flush=True)
+    else:
+        ref_point = calcular_referencia_global(raw_files)
+
     hv_results = []
     aed_files_recalculados = []
     last_hv = 0.0
@@ -585,7 +690,11 @@ def load():
 
 
     with open(resumen_path, "w") as resumen_file:
-        resumen_file.write(f"{ref_point[0]} {ref_point[1]}\n")
+        if hv_opt is not None:
+            resumen_file.write(f"{ref_point[0]} {ref_point[1]} {hv_opt}\n")
+        else:
+            resumen_file.write(f"{ref_point[0]} {ref_point[1]}\n")
+
         for i, file in enumerate(raw_files):
             actual_gen = gen_number_from_path(file)
 
@@ -667,7 +776,15 @@ def load():
         resumen_file.write("#\n")
 
     files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files_recalculados]
-    return jsonify({"files": files_relativos, "hv": hv_results})
+    return jsonify({
+        "files": files_relativos, 
+        "hv": hv_results, 
+        "hv_opt": hv_opt, 
+        "ref_point": {
+            "x": float(ref_point[0]), 
+            "y": float(ref_point[1])
+        }
+    })
 
 def compress_ranges(seq):
     """
@@ -1100,6 +1217,7 @@ def list_ampl_instances():
     return jsonify(instances)
 
 @app.route('/load_ampl_front', methods=['POST'])
+@app.route('/load_ampl_front', methods=['POST'])
 def load_ampl_front():
     data = request.get_json()
     instancia = (data.get('instancia') or '').strip()
@@ -1107,7 +1225,7 @@ def load_ampl_front():
     if not instancia:
         return "instancia requerida", 400
 
-    # si llega "100-3.dat" o similar, se puede normalizar
+    # si llega "MILPA_ALTA" o "MILPA_ALTA.dat", normalizamos
     base = instancia.replace('.dat', '')
 
     path = os.path.join(
@@ -1118,9 +1236,29 @@ def load_ampl_front():
     if not os.path.exists(path):
         return f'No existe {path}', 404
 
-    with open(path, 'r') as f:
-        content = f.read()
+    new_lines = []
 
+    with open(path, 'r') as f:
+        for line in f:
+            stripped = line.strip()
+
+            # Mantener líneas vacías o comentarios tal cual
+            if not stripped or stripped.startswith("#"):
+                new_lines.append(line)
+                continue
+
+            parts = stripped.split()
+
+            # Intentar interpretar la primera columna como f1 (x)
+            try:
+                x = float(parts[0])
+                parts[0] = f"{x:.10f}"   # o sin formatear: str(x)
+                new_lines.append(" ".join(parts) + "\n")
+            except ValueError:
+                # si por alguna razón no se puede parsear, la dejamos igual
+                new_lines.append(line)
+
+    content = "".join(new_lines)
     return content, 200, {'Content-Type': 'text/plain; charset=utf-8'}
 
 if __name__ == "__main__":
