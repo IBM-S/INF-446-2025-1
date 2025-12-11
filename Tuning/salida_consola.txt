@@ -1,0 +1,89 @@
+
+==========================================================
+               REPORTE DE EJECUCIÓN MOEAD                 
+==========================================================
+ [1] INFORMACIÓN DE LA INSTANCIA
+     Archivo       : cam_1390_MILPA_ALTA.dat
+     Tiempo Lectura: 0.021126 s
+
+  > Propiedades Instancia: ../datos/inst/cam_1390_MILPA_ALTA.dat
+    - Presupuesto (P)   : 1175
+    - Radio (R)         : 200 m
+    - Costos (c1/c2)    : 1 / 0.2
+    - Total Nodos       : 1390
+    - Pre-instalados    : 215
+    - Candidatos Libres : 1175
+
+  > Nodos (mostrando los primeros 3 de 1390):
+    - ID: 0, Coord: (492373, 2.12149e+06), Flag: 1, OHCA Prob: 0
+    - ID: 1, Coord: (492552, 2.12131e+06), Flag: 1, OHCA Prob: 0
+    - ID: 2, Coord: (492354, 2.12122e+06), Flag: 1, OHCA Prob: 0
+    - ...
+
+
+ [2] CONFIGURACIÓN DEL ALGORITMO
+     Algoritmo     : MOEAD
+     Tipo Problema : cam
+     Variante      : location (Fija)
+     Semilla (Seed): 599162946
+     Población     : 300 (Manual)
+     Vecindario (T): 50 (Manual)
+     N de variables: 1390
+
+ [3] CRITERIOS DE PARADA
+     Evaluaciones  : 10000
+     Tiempo Máx    : Sin Límite
+
+ [4] PARÁMETROS EVOLUTIVOS
+     Mutación Global : 80%
+     Prob. Op1 (Del) : 80%
+     Prob. Op2 (Swap): 20%
+     Cruzamiento     : 50%
+
+ [5] SALIDA DE DATOS
+     Destino       : ./../solver_moead/../datos/res/raw_moead/cam/cam_1390_MILPA_ALTA
+==========================================================
+
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 0 (Inicio)
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 1
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 2
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 3
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 4
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 5
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 6
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 7
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 8
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 9
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 10
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 11
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 12
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 13
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 14
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 15
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 16
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 17
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 18
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 19
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 20
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 21
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 22
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 23
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 24
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 25
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 26
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 27
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 28
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 29
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 30
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 31
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 32
+Instance:  cam_1390_MILPA_ALTA.dat  RUN:  1  GEN = 33
+>>> Copia de ultima gen guardada en: ./../solver_moead/../datos/res/raw_moead/cam/cam_1390_MILPA_ALTA/last_gen_cam_1390_MILPA_ALTA.dat
+Total de generaciones: 33
+
+------------------------------------------------
+ ESTADO FINAL: TERMINADO
+ Tiempo Total: 1.59886 segundos.
+------------------------------------------------
+Log guardado en execution_log.csv
+Done!
