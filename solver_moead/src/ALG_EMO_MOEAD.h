@@ -58,6 +58,8 @@ public:
 	void SetPopulationSize(int p) { s_PopulationSize = p; }
     void SetNeighborhoodSize(int n) { s_NeighborhoodSize = n; }
 	void SetMaxTime(double t) { m_MaxTimeSeconds = t; }
+	void SetDecompositionType(int type) { s_PBI_type = type; }
+	void SetSaveInterval(int interval) { m_SaveInterval = interval; }
 
 
 public:
@@ -85,5 +87,7 @@ private:
     std::string m_ProblemType;  // Para logs o lógica específica (CAM/DRP)
 
 	double m_MaxTimeSeconds; // Tiempo máximo en segundos (0 = sin límite)
+
+	int m_SaveInterval;
 
 };

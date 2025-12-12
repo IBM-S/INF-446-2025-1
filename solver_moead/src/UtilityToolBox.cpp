@@ -667,40 +667,6 @@ void CUtilityToolBox::MutacionRefuerzoZonasDebiles(
     x_var[mejor_sitio] = 1;
 }
 
-bool CUtilityToolBox::EsBuenCandidato(int idx_candidato, ProblemInstance *instance)
-{
-    const auto &nodos = instance->getNodes();
-    
-    // Regla 0: Si es una cámara existente (Flag 1), no podemos poner otro AED encima.
-    if (nodos[idx_candidato]->getFlag() == 1) return false;
-
-    // Regla 1: Usamos el mapa precalculado para velocidad.
-    const std::vector<int>& vecinos = instance->getNodosCubiertosPor(idx_candidato);
-    
-    // Regla 2: Verificamos contra la cobertura base (cámaras).
-    // Nota: isPreCubierto devuelve true si el nodo ya está cubierto por una cámara.
-    // Nosotros queremos encontrar gente donde isPreCubierto == false.
-    
-    int ganancia_marginal = 0;
-    
-    for (int id_vecino : vecinos) 
-    {
-        // Solo cuenta si es Demanda (Flag 0) y NO está cubierto por base.
-        if (nodos[id_vecino]->getFlag() == 0 && !instance->isPreCubierto(id_vecino)) 
-        {
-            // Opcional: Verificar que tenga probabilidad > 0
-            if (nodos[id_vecino]->getProbOhca() > 0.0) {
-                ganancia_marginal++;
-                // Optimización: Con encontrar 1, ya sabemos que no es redundante.
-                if (ganancia_marginal >= 1) return true;
-            }
-        }
-    }
-    
-    // Si llegamos aquí, el candidato es inútil (solo cubre cámaras o gente ya salvada).
-    return false;
-}
-
 void CUtilityToolBox::MutacionPorcentual(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance)
 {
     if (Get_Random_Number() > mutation_rate) return;
@@ -1410,4 +1376,203 @@ double CUtilityToolBox::Rnd_Uni(long *idum)
 		return RNMX;
 	else
 		return temp;
+}
+
+
+// =========================================================================
+// 1. FILTRO INTELIGENTE
+// =========================================================================
+bool CUtilityToolBox::EsBuenCandidato(int idx_candidato, ProblemInstance *instance)
+{
+    const auto &nodos = instance->getNodes();
+    
+    // Si es cámara, no poner otro.
+    if (nodos[idx_candidato]->getFlag() == 1) return false;
+
+    const std::vector<int>& vecinos = instance->getNodosCubiertosPor(idx_candidato);
+    
+    int ganancia = 0;
+    for (int id_vecino : vecinos) 
+    {
+        // Es buen candidato si cubre demanda (Flag 0) que NO está pre-cubierta por cámaras
+        if (nodos[id_vecino]->getFlag() == 0 && !instance->isPreCubierto(id_vecino)) 
+        {
+            ganancia++;
+            if (ganancia >= 1) return true; // Con cubrir a 1 nuevo basta
+        }
+    }
+    return false;
+}
+
+// =========================================================================
+// 2. CRUZAMIENTO INTELIGENTE (Preserva estructuras)
+// =========================================================================
+void CUtilityToolBox::CruzamientoInteligente(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance)
+{
+    int n = parent1.size();
+    child.assign(n, 0.0);
+    const auto &nodos = instance->getNodes();
+
+    std::vector<int> pool_disputa; 
+    int c1 = 0, c2 = 0, herencia_comun = 0;
+
+    for (int i = 0; i < n; ++i) {
+        if (nodos[i]->getFlag() == 1) { child[i] = 1.0; continue; } // Heredar Cámaras
+
+        bool p1 = (parent1[i] == 1);
+        bool p2 = (parent2[i] == 1);
+        if (p1) c1++;
+        if (p2) c2++;
+
+        if (p1 && p2) { // Intersección: Ambos padres lo tienen -> Heredar
+            child[i] = 1.0;
+            herencia_comun++;
+        } else if (p1 || p2) { // Unión: Solo uno -> Disputa
+            pool_disputa.push_back(i);
+        }
+    }
+
+    // Objetivo: Promedio de padres, limitado por presupuesto
+    int target = std::min((c1 + c2) / 2, (int)instance->getP());
+    int faltan = target - herencia_comun;
+
+    if (faltan > 0) {
+        std::random_shuffle(pool_disputa.begin(), pool_disputa.end());
+        int agregados = 0;
+        
+        // Ronda 1: Solo los buenos
+        for (int idx : pool_disputa) {
+            if (agregados >= faltan) break;
+            if (EsBuenCandidato(idx, instance)) {
+                child[idx] = 1.0;
+                agregados++;
+            }
+        }
+        // Ronda 2: Relleno si falta
+        if (agregados < faltan) {
+            for (int idx : pool_disputa) {
+                if (agregados >= faltan) break;
+                if (child[idx] == 0) { child[idx] = 1.0; agregados++; }
+            }
+        }
+    }
+}
+
+// =========================================================================
+// 3. MUTACIÓN BIT FLIP INTELIGENTE (Explotación / Ajuste Fino)
+// =========================================================================
+void CUtilityToolBox::MutacionBitFlipInteligente(vector<double> &x_var, double mutation_rate, ProblemInstance *instance)
+{
+    if (Get_Random_Number() > mutation_rate) return;
+
+    int n = x_var.size();
+    const auto &nodos = instance->getNodes();
+    double prob = 1.0 / (double)n; // Estándar 1/N
+
+    // A. Bit Flip con Filtro
+    for (int i = 0; i < n; ++i) {
+        if (nodos[i]->getFlag() == 1) continue;
+
+        if (Get_Random_Number() <= prob) {
+            if (x_var[i] == 1) {
+                x_var[i] = 0; // Borrar es seguro
+            } else {
+                // Agregar solo si sirve
+                if (EsBuenCandidato(i, instance)) x_var[i] = 1;
+            }
+        }
+    }
+
+    // B. Reparación de Presupuesto (Eliminar los peores)
+    int max_P = instance->getP();
+    std::vector<int> activos;
+    for(int i=0; i<n; ++i) if(x_var[i]==1 && nodos[i]->getFlag()==0) activos.push_back(i);
+
+    if ((int)activos.size() + (int)(n - instance->getCandidateLocations().size()) > max_P) { // Ajuste aprox de conteo
+        // Recalcular conteo exacto
+        int total = 0; 
+        activos.clear();
+        for(int i=0; i<n; ++i) if(x_var[i]==1) {
+            total++;
+            if(nodos[i]->getFlag()==0) activos.push_back(i);
+        }
+
+        if (total > max_P) {
+            int quitar = total - max_P;
+            std::vector<std::pair<double, int>> calidad;
+            
+            for(int idx : activos) {
+                double aporte = 0;
+                const auto& vec = instance->getNodosCubiertosPor(idx);
+                for(int v : vec) {
+                    if(!instance->isPreCubierto(v)) aporte += nodos[v]->getProbOhca();
+                }
+                calidad.push_back({aporte, idx});
+            }
+            std::sort(calidad.begin(), calidad.end()); // Menor aporte primero
+            
+            for(int k=0; k<quitar && k<(int)calidad.size(); ++k) {
+                x_var[calidad[k].second] = 0;
+            }
+        }
+    }
+}
+
+// =========================================================================
+// 4. MUTACIÓN INTERCAMBIO HEURÍSTICO (Exploración / SOTA)
+// =========================================================================
+void CUtilityToolBox::MutacionIntercambioHeuristico(vector<double> &x_var, double mutation_rate, ProblemInstance *instance)
+{
+    if (Get_Random_Number() > mutation_rate) return;
+
+    int n = x_var.size();
+    const auto &nodos = instance->getNodes();
+    std::vector<int> moviles;
+    std::vector<int> vacios;
+
+    for(int i=0; i<n; ++i) {
+        if(nodos[i]->getFlag() == 1) continue;
+        if(x_var[i] == 1) moviles.push_back(i);
+        else vacios.push_back(i);
+    }
+
+    if(moviles.empty() || vacios.empty()) return;
+
+    // A. Encontrar el PEOR instalado (Muestra aleatoria para velocidad)
+    int peor_idx = -1;
+    double min_val = 1e30;
+    std::random_shuffle(moviles.begin(), moviles.end());
+    int check_count = std::min((int)moviles.size(), 10);
+
+    for(int k=0; k<check_count; ++k) {
+        int idx = moviles[k];
+        double val = 0;
+        const auto& vec = instance->getNodosCubiertosPor(idx);
+        for(int v : vec) if(!instance->isPreCubierto(v)) val += nodos[v]->getProbOhca();
+        
+        if(val < min_val) { min_val = val; peor_idx = idx; }
+    }
+
+    // B. Encontrar el MEJOR vacío (Intentos aleatorios)
+    int mejor_idx = -1;
+    std::random_shuffle(vacios.begin(), vacios.end());
+    int attempts = 0;
+    
+    while(attempts < 20 && attempts < (int)vacios.size()) {
+        int cand = vacios[attempts];
+        if(EsBuenCandidato(cand, instance)) {
+            mejor_idx = cand;
+            break;
+        }
+        attempts++;
+    }
+
+    // C. Swap
+    if(peor_idx != -1 && mejor_idx != -1) {
+        x_var[peor_idx] = 0;
+        x_var[mejor_idx] = 1;
+    } else if (peor_idx != -1 && Get_Random_Number() < 0.5) {
+        // Si no hay bueno, a veces borramos el malo igual para ahorrar
+        x_var[peor_idx] = 0; 
+    }
 }

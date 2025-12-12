@@ -83,6 +83,8 @@ void PrintUsage() {
     std::cout << "  -seed <int>       : Semilla aleatoria (Defecto: 123)" << std::endl;
     std::cout << "  -pop <int>        : Tamaño Población (Sobrescribe MOEAD.txt)" << std::endl;
     std::cout << "  -neighbor <int>   : Tamaño Vecindario T (Sobrescribe MOEAD.txt)" << std::endl;
+    std::cout << "  -decomp <int>     : Tipo Descomposicion (1: TCH, 2: Mod, 3: PBI) (Defecto: 1)" << std::endl;
+    std::cout << "  -save <int>       : Guardar cada X gens (0 = Solo Inicio/Fin) (Defecto: 0)" << std::endl;
     
     std::cout << "\n--- Criterios de Parada ---" << std::endl;
     std::cout << "  -neval <int>      : Número máx. de evaluaciones (Defecto: 1000)" << std::endl;
@@ -114,8 +116,8 @@ int main(int argc, char *argv[])
     
     // Parámetros Algoritmo
     double mutationRate = 0.3;
-    double crossoverRate = 0.8;
-    double op1Prob = 0.0; // 20% delete, 80% swap (por ejemplo)
+    double crossoverRate = 1.0;
+    double op1Prob = 0.2; // 20% delete, 80% swap (por ejemplo)
 
 	NumberOfObjectives = 2;
     NumberOfFuncEvals = 40000; 
@@ -127,6 +129,9 @@ int main(int argc, char *argv[])
     double maxTime = 0; 
 
     std::string userOutputDir = ""; 
+
+    int decompType = 1;   // 1 por defecto (Tchebycheff)
+    int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
 	if (argc < 2) {
         PrintUsage();
@@ -148,6 +153,8 @@ int main(int argc, char *argv[])
         // Configuración Algoritmo
         else if (arg == "-pop") { if (i + 1 < argc) userPop = atoi(argv[++i]); }
         else if (arg == "-neighbor") { if (i + 1 < argc) userNeighbor = atoi(argv[++i]); }
+        else if (arg == "-decomp") { if (i + 1 < argc) decompType = atoi(argv[++i]); }
+        else if (arg == "-save") { if (i + 1 < argc) saveInterval = atoi(argv[++i]); }
 
         // Evolutivos
         else if (arg == "-mut") { if (i + 1 < argc) mutationRate = atof(argv[++i]); }
@@ -219,6 +226,13 @@ int main(int argc, char *argv[])
     int finalPop = (algName == "MOEAD") ? MOEAD.s_PopulationSize : 0; // Ajustar para DE
     int finalNeighbor = (algName == "MOEAD") ? MOEAD.s_NeighborhoodSize : 0;
 
+    std::string strDecomp = "Desconocido";
+    if (decompType == 1) strDecomp = "Tchebycheff (TCH)";
+    else if (decompType == 2) strDecomp = "TCH Modificado";
+    else if (decompType == 3) strDecomp = "PBI (Penalty-based Boundary)";
+
+    std::string strSave = (saveInterval > 0) ? "Cada " + std::to_string(saveInterval) + " gens" : "Solo Inicio/Fin";
+
     // 3. IMPRESIÓN DEL RESUMEN UNIFICADO
     std::cout << "\n==========================================================" << std::endl;
     std::cout << "               REPORTE DE EJECUCIÓN MOEAD                 " << std::endl;
@@ -237,6 +251,7 @@ int main(int argc, char *argv[])
     std::cout << "     Población     : " << finalPop << (userPop > 0 ? " (Manual)" : " (Archivo)") << std::endl;
     std::cout << "     Vecindario (T): " << finalNeighbor << (userNeighbor > 0 ? " (Manual)" : " (Archivo)") << std::endl;
     std::cout << "     N de variables: " << NumberOfVariables << std::endl;
+    std::cout << "     Decomposition : " << strDecomp << " (" << decompType << ")" << std::endl;
     
     std::cout << "\n [3] CRITERIOS DE PARADA" << std::endl;
     std::cout << "     Evaluaciones  : " << NumberOfFuncEvals << std::endl;
@@ -250,6 +265,7 @@ int main(int argc, char *argv[])
     
     std::cout << "\n [5] SALIDA DE DATOS" << std::endl;
     std::cout << "     Destino       : " << rutaSalida << std::endl;
+    std::cout << "     Intervalo     : " << strSave << std::endl; 
     std::cout << "==========================================================\n" << std::endl;
 
 	clock_t start, temp, finish;
@@ -267,6 +283,8 @@ int main(int argc, char *argv[])
         MOEAD.SetVariant(variant); // Configura m_IsRelocation internamente
         MOEAD.SetOutputDirectory(rutaSalida);
         MOEAD.SetMaxTime(maxTime);
+        MOEAD.SetDecompositionType(decompType);
+        MOEAD.SetSaveInterval(saveInterval);
 
 		MOEAD.Execute(1); // Se ejecuta solo una vez
 	}
@@ -295,12 +313,13 @@ int main(int argc, char *argv[])
     checkFile.close();
 
 	std::ofstream fout_time(timeLogFilename, std::ios::app);
-        if (writeHeader) fout_time << "Instance,Alg,Type,Variant,Pop,Neigh,NVars,NEvals,MaxTime,Seed,Mut,Op1,Cross,Time_s,OutDir" << std::endl;
+        if (writeHeader) fout_time << "Instance,Alg,Type,Variant,Pop,Neigh,NVars,NEvals,MaxTime,Seed,Mut,Op1,Cross,DecomType,SaveInterval,Time_s,OutDir" << std::endl;
 
 	fout_time << bname << "," << algName << "," << problemType << "," << variant << ","
               << finalPop << "," << finalNeighbor << "," << NumberOfVariables << ","
               << NumberOfFuncEvals << "," << maxTime << "," << rnd_uni_seed << "," 
               << mutationRate << "," << op1Prob << "," << crossoverRate << "," 
+              << decompType << "," << saveInterval << ","
               << duration << "," << rutaSalida << std::endl;
 	fout_time.close();
 

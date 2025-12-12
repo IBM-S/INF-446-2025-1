@@ -22,9 +22,6 @@ public:
 
     void DRP_Evaluate(const vector<double>& x, vector<double>& f, ProblemInstance* instance);
     void DRP_Evaluate_v2(const vector<double>& x, vector<double>& f, ProblemInstance* instance);
-    void DRP_Evaluate_v3(const vector<double>& x, vector<double>& f, ProblemInstance* instance);
-    void DRP_Evaluate_v4(const vector<double>& x, vector<double>& f, ProblemInstance* instance);
-    void DRP_Evaluate_v5(const vector<double>& x, vector<double>& f, ProblemInstance* instance);
     void DRP_Evaluate_v6(const vector<double>& x, vector<double>& f, ProblemInstance* instance);
 
 

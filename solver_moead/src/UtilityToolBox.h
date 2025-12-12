@@ -74,6 +74,16 @@ public:
 	void MutacionAdaptativaFases(vector<double> &x_var, double mutation_rate, double progress, ProblemInstance *problemInstance);
 	void MutacionRefuerzoZonasDebiles(vector<double> &x_var, double mutation_rate, double prob_bit_flip, ProblemInstance *problemInstance);
 
+	// 2. Cruzamiento (State of the Art para Binario con Presupuesto)
+    void CruzamientoInteligente(const vector<double> &p1, const vector<double> &p2, vector<double> &child, ProblemInstance *instance);
+
+    // 3. Mutaciones
+    // A. BitFlip Inteligente (Probabilidad 1/N, filtrado) -> Para ajuste fino
+    void MutacionBitFlipInteligente(vector<double> &x_var, double mutation_rate, ProblemInstance *instance);
+
+    // B. Intercambio Heurístico (Greedy Swap) -> Para salir de óptimos locales
+    void MutacionIntercambioHeuristico(vector<double> &x_var, double mutation_rate, ProblemInstance *instance);
+
 
 	void CruzamientoUniformeModificado_con_reubicacion(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, ProblemInstance *problemInstance);
 	void MutacionModificada_con_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);

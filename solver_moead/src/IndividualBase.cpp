@@ -171,7 +171,7 @@ void CIndividualBase::Evaluate()
 	// if(!strcmp("ZDT1", strTestInstance))   TestInstance.ZDT1(x_var, f_obj, x_var.size());
 	// TestInstance.fdvrp(x_var, f_obj, x_var.size());
 
-	TestInstance.DRP_Evaluate_v6(x_var, f_obj, problemInstance);
+	TestInstance.DRP_Evaluate(x_var, f_obj, problemInstance);
 	// TestInstance.DRP_Evaluate(x_var, f_obj, problemInstance);
 }
 

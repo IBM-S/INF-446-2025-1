@@ -34,6 +34,8 @@ DIR_INSTANCES = os.path.join(DIR_DATOS, "inst")
 DIR_RESULTADOS = os.path.join(DIR_DATOS, "res")
 
 DIR_RAW_MOEAD = os.path.join(DIR_RESULTADOS, "raw_moead/cam") 
+DIR_RAW_AMPL = os.path.join(DIR_RESULTADOS, "raw_ampl/cam") 
+
 
 # Carpetas para los resultados procesados (caché)
 DIR_FRENTES_PARETO = os.path.join(DIR_RESULTADOS, "cache_procesada", "frentes_pareto")
@@ -144,6 +146,120 @@ def calcular_referencia_global(files):
     if ref_x == 0: ref_x = 0.1
     print(f"Punto de referencia global: ({ref_x}, {ref_y})")
     return (ref_x, ref_y)
+
+def get_moead_time(base_name: str):
+    """
+    Busca en datos/res/raw_moead/cam/{base_name}/ algún archivo execution_*
+    con cabecera ... Time_s ...
+    Devuelve el tiempo promedio (float) o None.
+    """
+    instance_dir = os.path.join(DIR_RAW_MOEAD, base_name)
+    if not os.path.isdir(instance_dir):
+        return None
+
+    pattern = os.path.join(instance_dir, "execution_*")
+    for path in glob.glob(pattern):
+        try:
+            with open(path, "r", encoding="utf-8", errors="ignore") as f:
+                lines = [ln.strip() for ln in f if ln.strip()]
+        except OSError:
+            continue
+
+        if not lines:
+            continue
+
+        header = lines[0].split(",")
+        if "Time_s" not in header:
+            continue
+
+        idx_time = header.index("Time_s")
+        tiempos = []
+        for row in lines[1:]:
+            cols = row.split(",")
+            if len(cols) <= idx_time:
+                continue
+            try:
+                tiempos.append(float(cols[idx_time]))
+            except ValueError:
+                pass
+
+        if tiempos:
+            return sum(tiempos) / len(tiempos)
+
+    return None
+
+
+def get_ampl_time(base_name: str):
+    """
+    Lee datos/res/raw_ampl/cam/{base_name}/execution_{base_name}_summary.log
+    y devuelve el tiempo promedio en segundos o None.
+    """
+    log_path = os.path.join(
+        DIR_RAW_AMPL,
+        base_name,
+        f"execution_{base_name}_summary.log"
+    )
+
+    if not os.path.exists(log_path):
+        return None
+
+    tiempos = []
+    with open(log_path, "r", encoding="utf-8", errors="ignore") as f:
+        for i, line in enumerate(f):
+            line = line.strip()
+            if not line:
+                continue
+            # primera línea es "Run,Time_s"
+            if i == 0 and line.startswith("Run"):
+                continue
+            parts = line.split(",")
+            if len(parts) < 2:
+                continue
+            try:
+                tiempos.append(float(parts[1]))
+            except ValueError:
+                pass
+
+    if not tiempos:
+        return None
+
+    return sum(tiempos) / len(tiempos)
+
+def get_ampl_time(base_name: str):
+    """
+    Lee datos/res/raw_ampl/cam/{base_name}/execution_{base_name}_summary.log
+    y devuelve el tiempo promedio en segundos o None.
+    """
+    log_path = os.path.join(
+        DIR_RAW_AMPL,
+        base_name,
+        f"execution_{base_name}_summary.log"
+    )
+
+    if not os.path.exists(log_path):
+        return None
+
+    tiempos = []
+    with open(log_path, "r", encoding="utf-8", errors="ignore") as f:
+        for i, line in enumerate(f):
+            line = line.strip()
+            if not line:
+                continue
+            # primera línea es "Run,Time_s"
+            if i == 0 and line.startswith("Run"):
+                continue
+            parts = line.split(",")
+            if len(parts) < 2:
+                continue
+            try:
+                tiempos.append(float(parts[1]))
+            except ValueError:
+                pass
+
+    if not tiempos:
+        return None
+
+    return sum(tiempos) / len(tiempos)
 
 def parse_line_with_ids(line):
     """
@@ -402,12 +518,17 @@ def run():
 
     print("[/run] Ejecutando:", " ".join(cmd), " (cwd=", DIR_MOEAD_CORE, ")", flush=True)
 
+    t0 = time.perf_counter()
     result = subprocess.run(
         cmd,
         cwd=DIR_MOEAD_CORE,
         capture_output=True,
         text=True
     )
+
+    t1 = time.perf_counter()
+    elapsed_moead = t1 - t0
+    print(f"[/run] MOEAD tardó {elapsed_moead:.3f} s", flush=True)
 
     print("[/run] MOEAD returncode:", result.returncode, flush=True)
     if result.stdout:
@@ -564,6 +685,15 @@ def run():
 
     files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files]
 
+    time_moead = get_moead_time(base_name)
+    time_ampl  = get_ampl_time(base_name)
+
+    time_gap = None
+    if time_moead is not None and time_ampl is not None and time_ampl > 0:
+        # GAP en %: cuánto más rápido es MOEA/D respecto a AMPL
+        # (igual que el HV: ((AMPL - MOEAD)/AMPL)*100 )
+        time_gap = (time_ampl - time_moead) / time_ampl * 100.0
+
     return jsonify({
         "files": files_relativos, 
         "hv": hv_results, 
@@ -571,7 +701,10 @@ def run():
         "ref_point": {
             "x": float(ref_point[0]), 
             "y": float(ref_point[1])
-        }
+        },
+        "timeAmpl": time_ampl,
+        "timeMoead": elapsed_moead,
+        "timeGap": time_gap
     })
 
 # ------------------- /load -------------------
@@ -633,6 +766,13 @@ def load():
         files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files]
         print(f"[/load] Éxito: Cargando cache para {instancia}")
 
+        base_name = parse_instance_name(instancia)
+        time_moead = get_moead_time(base_name)
+        time_ampl  = get_ampl_time(base_name)
+        time_gap = None
+        if time_moead is not None and time_ampl is not None and time_ampl > 0:
+            time_gap = (time_ampl - time_moead) / time_ampl * 100.0
+
         return jsonify({
             "files": files_relativos,
             "hv": hv_results,
@@ -641,6 +781,9 @@ def load():
                 {"x": ref_point[0], "y": ref_point[1]}
                 if ref_point is not None else None
             ),
+            "timeAmpl": time_ampl,
+            "timeMoead": time_moead,
+            "timeGap": time_gap
         })
 
     if is_strict_mode and not aed_files:
@@ -776,6 +919,13 @@ def load():
         resumen_file.write("#\n")
 
     files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files_recalculados]
+
+    time_moead = get_moead_time(base_name)
+    time_ampl  = get_ampl_time(base_name)
+    time_gap = None
+    if time_moead is not None and time_ampl is not None and time_ampl > 0:
+        time_gap = (time_ampl - time_moead) / time_ampl * 100.0
+
     return jsonify({
         "files": files_relativos, 
         "hv": hv_results, 
@@ -783,7 +933,10 @@ def load():
         "ref_point": {
             "x": float(ref_point[0]), 
             "y": float(ref_point[1])
-        }
+        },
+        "timeAmpl": time_ampl,
+        "timeMoead": time_moead,
+        "timeGap": time_gap
     })
 
 def compress_ranges(seq):

@@ -15,6 +15,7 @@ neighbor=0
 mut=0
 cross=0
 op1=0
+ngen=0
 descomposition=0
 
 instance=""
@@ -44,6 +45,7 @@ while [ $# -gt 0 ]; do
         -mut) mut="$2"; shift 2 ;;
         -cross) cross="$2"; shift 2 ;;
         -op1) op1="$2"; shift 2 ;;
+        -ngen) ngen="$2"; shift 2 ;;
         *)
             # Si el argumento es numérico o una cadena vacía, lo añadimos a la lista de parámetros de ejecución
             if [[ "$flag" =~ ^[0-9]+(\.[0-9]+)?$ ]] || [ "$flag" = "" ]; then
@@ -58,9 +60,9 @@ while [ $# -gt 0 ]; do
 done
 
 # Calcular mi, número de objetivos y parámetros
-gen=$(awk "BEGIN {printf \"%d\",(${evaluaciones}/${pop})}")
+gen=$(awk "BEGIN {printf \"%d\",(${ngen}*${pop})}")
 no=2 # número de objetivos
-params="-neval ${evaluaciones} -pop ${pop} -neighbor ${neighbor} -mut ${mut} -cross ${cross} -op1 ${op1}"
+params="-neval ${gen} -pop ${pop} -neighbor ${neighbor} -mut ${mut} -cross ${cross} -op1 ${op1}"
 echo "Parámetros: ${params}"
 
 screen="salida_consola.txt"

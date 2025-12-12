@@ -448,7 +448,6 @@
       border-radius: 3px;
       background: var(--border);
       outline: none;
-      -webkit-appearance: none;
     }
 
     input[type="range"]::-webkit-slider-thumb {
@@ -846,6 +845,32 @@
           </div>
         </div>
 
+        <div class="card">
+          <div class="card-title">Estadísticas de tiempo</div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Tiempo promedio AMPL</div>
+              <div class="stat-value">
+                <span id="time-ampl-span">-</span> s
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Tiempo MOEA/D (aproximado)</div>
+              <div class="stat-value">
+                <span id="time-moead-span">-</span> s
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Gap de tiempo</div>
+              <div class="stat-value">
+                <span id="time-gap-span">-</span> %
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
         <div class="split-view">
           <div>
             <div class="card">
@@ -1151,6 +1176,7 @@
             // Historial completo
             await loadGenerations(data.files, data.hv || [], 'full');
             statusEl.textContent = `HV completo cargado (${frames.length} generaciones)`;
+            updateHvSummary();
           } catch (err) {
             console.error(err);
             statusEl.textContent = 'Error al recalcular HV completo';
@@ -1162,6 +1188,9 @@
         let frames = []; let hvValues = []; let hvOptGlobal = null; let refPointGlobal = null;
         let globalXMin = Infinity, globalXMax = -Infinity, globalYMin = Infinity, globalYMax = -Infinity;
         let globalCovMin = Infinity, globalCovMax = -Infinity;
+        let timeAmplGlobal = null;
+        let timeMoeadGlobal = null;
+        let timeGapGlobal = null;
 
         let amplPoints = null;
         let amplPareto = [];
@@ -1293,6 +1322,16 @@
             refPointGlobal = null;
           }
 
+          timeAmplGlobal = (typeof data.timeAmpl === "number") ? data.timeAmpl : null;
+          timeMoeadGlobal = (typeof data.timeMoead === "number") ? data.timeMoead : null;
+
+          // si no te llega timeGap, lo puedes calcular acá:
+          if (timeAmplGlobal != null && timeMoeadGlobal != null && timeAmplGlobal > 0) {
+            timeGapGlobal = ((timeMoeadGlobal - timeAmplGlobal) / timeAmplGlobal) * 100;
+          } else {
+            timeGapGlobal = null;
+          }
+
 
           await loadGenerations(data.files, data.hv || [], 'simple');
           statusEl.textContent = `Listo: ${frames.length} generaciones`;
@@ -1311,6 +1350,16 @@
             refPointGlobal = { x: data.ref_point.x, y: data.ref_point.y };
           } else {
             refPointGlobal = null;
+          }
+
+          timeAmplGlobal = (typeof data.timeAmpl === "number") ? data.timeAmpl : null;
+          timeMoeadGlobal = (typeof data.timeMoead === "number") ? data.timeMoead : null;
+
+          // si no te llega timeGap, lo puedes calcular acá:
+          if (timeAmplGlobal != null && timeMoeadGlobal != null && timeAmplGlobal > 0) {
+            timeGapGlobal = ((timeMoeadGlobal - timeAmplGlobal) / timeAmplGlobal) * 100;
+          } else {
+            timeGapGlobal = null;
           }
 
 
@@ -1338,20 +1387,38 @@
             const hvMoead = hvValues[hvValues.length - 1];
             hvMoeadEl.textContent = hvMoead.toFixed(3);
 
-            if (typeof hvOptGlobal === 'number') {
+            if (typeof hvOptGlobal === "number") {
               hvAmplOptEl.textContent = hvOptGlobal.toFixed(3);
               const gap = ((hvOptGlobal - hvMoead) / hvOptGlobal) * 100;
-              hvGapEl.textContent = gap.toFixed(2) + '%';
+              hvGapEl.textContent = gap.toFixed(2) + "%";
             } else {
-              hvAmplOptEl.textContent = '–';
-              hvGapEl.textContent = '–';
+              hvAmplOptEl.textContent = "-";
+              hvGapEl.textContent = "-";
             }
           } else {
-            hvAmplOptEl.textContent = '–';
-            hvMoeadEl.textContent = '–';
-            hvGapEl.textContent = '–';
+            hvAmplOptEl.textContent = "-";
+            hvMoeadEl.textContent = "-";
+            hvGapEl.textContent = "-";
+          }
+
+          const timeAmplSpan = document.getElementById("time-ampl-span");
+          const timeMoeadSpan = document.getElementById("time-moead-span");
+          const timeGapSpan = document.getElementById("time-gap-span");
+
+          if (timeAmplSpan) {
+            timeAmplSpan.textContent =
+              typeof timeAmplGlobal === "number" ? timeAmplGlobal.toFixed(2) : "—";
+          }
+          if (timeMoeadSpan) {
+            timeMoeadSpan.textContent =
+              typeof timeMoeadGlobal === "number" ? timeMoeadGlobal.toFixed(2) : "—";
+          }
+          if (timeGapSpan) {
+            timeGapSpan.textContent =
+              typeof timeGapGlobal === "number" ? timeGapGlobal.toFixed(2) : "—";
           }
         }
+
 
         async function loadGenerations(files, hvs, hvMode = 'simple') {
           frames = [];

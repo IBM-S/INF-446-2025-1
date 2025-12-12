@@ -5,13 +5,14 @@ CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 {
 	s_PBI_type = 1;
 	m_MutationRate = 0.3;
-    m_CrossoverRate = 0.8;
-    m_Op1MutationProb = 0.0;
+    m_CrossoverRate = 1.0;
+    m_Op1MutationProb = 0.2;
     m_IsRelocation = false; // Por defecto Location (fijo)
     m_ProblemType = "cam";
 	s_PopulationSize = 0;
     s_NeighborhoodSize = 0;
 	m_MaxTimeSeconds = 0; // Sin límite por defecto
+	m_SaveInterval = 0;
 }
 
 CALG_EMO_MOEAD::~CALG_EMO_MOEAD(void)
@@ -36,8 +37,11 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 	{
 		this->EvolvePopulation();
 
-		printf("Instance:  %s  RUN:  %d  GEN = %d\n", strTestInstance, run_id, gen);
-		this->SavePopulation(gen);
+		if (m_SaveInterval > 0 && (gen % m_SaveInterval == 0)) 
+        {
+            printf("Instance:  %s  RUN:  %d  GEN = %d\n", strTestInstance, run_id, gen);
+            this->SavePopulation(gen);
+        }
 
 		if (IsTerminated())
 		{
@@ -54,7 +58,8 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 
 		gen++;
 	}
-
+	printf("Instance:  %s  RUN:  %d  GEN = %d (Final)\n", strTestInstance, run_id, gen);
+	this->SavePopulation(gen);
 	this->SaveFinalPopulation();
 
 	m_PopulationSOP.clear();
@@ -541,7 +546,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		std::cout << std::endl; */
 
 		// 1 CRUZAMIENTO
-
+		/*
 		double random_number = UtilityToolBox.Get_Random_Number();
 		if (random_number <= m_CrossoverRate) {
 			//printf("Es con cruzamiento\n");
@@ -567,7 +572,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 													 m_PopulationSOP[p2].m_BestIndividual.x_var,
 													 child.x_var); */
 
-		child.problemInstance = this->problemInstance;
+		//child.problemInstance = this->problemInstance;
 
 		/* std::cout << "Hijo generado antes de la mutacion:   ";
 		for (double val : child.x_var)
@@ -592,7 +597,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		// Usamos m_Op1MutationProb para balancear entre BitFlip (suave) y Porcentual (fuerte).
 		// Si m_Op1Prob es 0.2, significa 20% Porcentual (fuerte) y 80% BitFlip (suave).
 		// Nota: Reutilizamos tu variable m_Op1MutationProb para esto.
-		
+		/*
 		double tipo_mutacion = UtilityToolBox.Get_Random_Number();
 		double progress = (double)s_Fevals_Count / (double)NumberOfFuncEvals;
 		if (progress > 1.0) progress = 1.0;
@@ -624,12 +629,27 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		}
 		std::cout << std::endl; */
 
-		/*
-		Aqui modificar Utility Box y agregar la mutation y crossover
-		Ya agregado
-		Ahora considerar la representacion binaria
+		if (UtilityToolBox.Get_Random_Number() <= m_CrossoverRate) {
+            UtilityToolBox.CruzamientoInteligente(
+                m_PopulationSOP[p1].m_BestIndividual.x_var,
+                m_PopulationSOP[p2].m_BestIndividual.x_var,
+                child.x_var, this->problemInstance
+            );
+        } else {
+            child.x_var = m_PopulationSOP[p1].m_BestIndividual.x_var;
+        }
 
-		*/
+        child.problemInstance = this->problemInstance;
+
+        // 2. MUTACIÓN (HÍBRIDA)
+        // Usamos m_Op1MutationProb (ej. 0.2) para controlar la mezcla
+        // 20% Heurística (Fuerte) | 80% BitFlip (Suave)
+        
+        if (UtilityToolBox.Get_Random_Number() < m_Op1MutationProb) {
+            UtilityToolBox.MutacionIntercambioHeuristico(child.x_var, m_MutationRate, this->problemInstance);
+        } else {
+            UtilityToolBox.MutacionBitFlipInteligente(child.x_var, m_MutationRate, this->problemInstance);
+        }
 
 		child.Evaluate();
 		s_Fevals_Count++;

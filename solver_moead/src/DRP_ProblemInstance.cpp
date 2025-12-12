@@ -112,7 +112,7 @@ void ProblemInstance::PrecalcularCoberturas()
     is_base_covered.assign(n, false);
 
 
-    double R2 = R * R; // Usamos radio al cuadrado para evitar sqrt
+    double R2 = (double)R * (double)R; // Usamos radio al cuadrado para evitar sqrt
 
     for (int i = 0; i < n; ++i) 
     {
@@ -122,21 +122,16 @@ void ProblemInstance::PrecalcularCoberturas()
 
         for (int j = 0; j < n; ++j) 
         {
-            // Solo nos importa cubrir nodos de demanda (flag 0)
-            //if (nodes[j]->getFlag() == 0) 
-            //{
-                // Si i y j son el mismo, obviamente se cubre (si prob > 0)
-                // Si son distintos, checamos distancia
-                double dx = ax - nodes[j]->getX();
-                double dy = nodes[j]->getY() - ay; // corrección typo ay
-                
-                // Distancia euclidiana optimizada
-                if ((dx*dx + dy*dy) <= R2) 
-                {
-                    // ¡Encontrado! El nodo i puede cubrir al nodo j
-                    coverageMap[i].push_back(j);
-                }
-            //}
+            // Calculamos distancia al cuadrado
+            double dx = ax - nodes[j]->getX();
+            double dy = nodes[j]->getY() - ay; // corrección typo ay
+            
+            // Distancia euclidiana optimizada
+            if ((dx*dx + dy*dy) <= R2) 
+            {
+                // El nodo i puede cubrir al nodo j
+                coverageMap[i].push_back(j);
+            }
         }
     }
     // 3. Pre-calcular qué está cubierto por la infraestructura FIJA (Cámaras/Flag 1)
