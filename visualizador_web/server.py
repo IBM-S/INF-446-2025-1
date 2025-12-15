@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 import shutil
 import random
 import time
+from datetime import datetime
 
 def gen_number_from_path(path: str) -> int:
     """
@@ -47,10 +48,12 @@ PATH_MOEAD_EXEC = os.path.join(DIR_MOEAD_CORE, "MOEAD")
 
 # Asumiendo la estructura ../../material/hv-1.3-src/hv
 PATH_HV_EXEC = os.path.join(PROYECTO_ROOT, "material", "hv-1.3-src", "hv") # Asumiendo que 'material' está en la raíz
-HV_EVERY = 10
 
 OPTIMOS_PATH = os.path.join(PROYECTO_ROOT, "Tuning/optimos.txt")
 OPTIMOS_CACHE = None
+
+DIR_RUN_STATS = os.path.join(DIR_RESULTADOS, "cache_procesada", "run_stats")
+
 # ==============================================================================
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
@@ -61,6 +64,11 @@ def main():
 
 def parse_instance_name(filename):
     return os.path.splitext(os.path.basename(filename))[0]
+
+def append_jsonl(path: str, obj: dict):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(obj, ensure_ascii=False) + "\n")
 
 def load_optimos():
     """
@@ -462,34 +470,35 @@ def save_aeds_with_flags_and_coverage(entries_all, filepath):
 def run():
     data = request.json or {}
     instancia = data["instancia"]
-    semilla = data.get("semilla")
-
-    if semilla is None:
-    # semilla aleatoria grande
-        semilla = random.randint(1, 100)
-    else:
-        semilla = int(semilla)
-
+    semilla = int(data.get("semilla") or random.randint(1, 100))
     tipo = data.get("tipo", "cam")
     variante = data.get("variante", "location")
-
     alg = data.get("algoritmo", "MOEAD")
     neval = int(data.get("neval", 1000))
     pop = int(data.get("pop", 100))
     neighbor = int(data.get("neighbor", 10))
-    time_max = int(data.get("time_limit", 0)) 
-    
+    decompType = int(data.get("decompType", 1))
+    mut = data.get("mut")
+    cross = data.get("cross")
+    op1 = data.get("op1")
+    out_dir = data.get("outDir")
     mut = data.get("mut")
     cross = data.get("cross")
     op1 = data.get("op1")
 
-    out_dir = data.get("outDir")  # opcional
-
-    hv_every = data.get("hv_every")
+  
+    hv_every = data.get("save_interval") # En tu JS usas este campo para hv_every
     try:
-        hv_every = int(hv_every) if hv_every is not None else None
+        hv_every = int(hv_every) if hv_every is not None else 0
     except ValueError:
-        hv_every = None
+        hv_every = 0
+
+    full_path = os.path.join(DIR_INSTANCES, instancia)
+    
+    # MOEA/D siempre guarda según 'save' parameter. Si es 0, suele guardar primera y última o cada X.
+    # Para controlarlo mejor, le pasamos 0 al ejecutable y filtramos nosotros, 
+    # O le pasamos 1 si queremos todo. Para evitar I/O excesivo, pasamos hv_every si es > 0, sino 0.
+    save_flag = hv_every if hv_every > 0 else 0
 
     full_path = os.path.join(DIR_INSTANCES, instancia)
     print(f"Ejecutando MOEAD con instancia {instancia}")
@@ -504,17 +513,15 @@ def run():
     "-neval", str(neval),
     "-pop", str(pop),
     "-neighbor", str(neighbor),
+    "-decomp", str(decompType),
+    "-save", str(save_flag),
     ]
 
-    if mut is not None:
-        cmd += ["-mut", str(mut)]
-    if cross is not None:
-        cmd += ["-cross", str(cross)]
-    if op1 is not None:
-        cmd += ["-op1", str(op1)]
-    
-    if out_dir is not None:
-        cmd += ["-outDir", out_dir]
+    if mut: cmd += ["-mut", str(mut)]
+    if cross: cmd += ["-cross", str(cross)]
+    if op1: cmd += ["-op1", str(op1)]
+    if out_dir: cmd += ["-outDir", out_dir]
+
 
     print("[/run] Ejecutando:", " ".join(cmd), " (cwd=", DIR_MOEAD_CORE, ")", flush=True)
 
@@ -529,19 +536,15 @@ def run():
     t1 = time.perf_counter()
     elapsed_moead = t1 - t0
     print(f"[/run] MOEAD tardó {elapsed_moead:.3f} s", flush=True)
-
-    print("[/run] MOEAD returncode:", result.returncode, flush=True)
     if result.stdout:
         print("[/run] MOEAD stdout:\n", result.stdout, flush=True)
     if result.stderr:
         print("[/run] MOEAD stderr:\n", result.stderr, flush=True)
 
+    print("[/run] MOEAD returncode:", result.returncode, flush=True)
+
     if result.returncode != 0:
-        # Si quieres, puedes retornar error al front en vez de seguir
-        return jsonify({
-            "error": "MOEAD falló al ejecutarse",
-            "stderr": result.stderr
-        }), 500
+        return jsonify({"error": "MOEAD falló", "stderr": result.stderr}), 500
 
     base_name = parse_instance_name(instancia)
     instance_raw_dir = os.path.join(DIR_RAW_MOEAD, base_name)
@@ -563,9 +566,9 @@ def run():
 
     # cargar instancia para cobertura
     nodes, coords_by_id, demanda, preinst_coords, radio = cargar_instancia_coords_y_demanda(os.path.join(DIR_INSTANCES, instancia))
-
     optimos = load_optimos()
     opt_info = optimos.get(base_name)
+    
     hv_opt = None
     if opt_info:
         ref_point = opt_info["ref"]
@@ -575,13 +578,11 @@ def run():
         ref_point = calcular_referencia_global(raw_files)
 
     resumen_path = os.path.join(fp_folder, f"{base_name}_HV_summary.txt")
-
     aed_files = []
-
     hv_results = []
     last_hv = 0.0    
     n_generations = len(raw_files)
-
+    gen_numbers = []
 
     with open(resumen_path, "w") as resumen_file:
         if hv_opt is not None:
@@ -590,19 +591,21 @@ def run():
             resumen_file.write(f"{ref_point[0]} {ref_point[1]}\n")
         for i, file in enumerate(raw_files):
             actual_gen = gen_number_from_path(file)
-            # --- ¿Primera / última gen? ---
-            is_first = (i == 0)
-            is_last = (i == n_generations - 1)
+            gen_numbers.append(actual_gen)
+            
+            is_start_end = (i == 0) or (i == n_generations - 1)
 
-            # --- ¿Estamos en modo historial (HV cada X gens)? ---
-            modo_historial = (hv_every is not None and hv_every > 0)
+            should_process = False
+            if hv_every <= 0:
+                should_process = is_start_end
+            else:
+                should_process = is_start_end or (actual_gen % hv_every == 0)
 
-            # Si NO estamos en historial y NO es primera ni última,
-            # no vale la pena parsear ni calcular nada
-            if (not modo_historial) and (not is_first) and (not is_last):
-                # Solo copiamos el HV anterior en el vector
+            if not should_process:
+                # Solo copiamos el valor anterior y seguimos
                 hv_results.append(last_hv)
                 continue
+
             entries_raw = []
             with open(file) as f:
                 for ln in f:
@@ -632,51 +635,23 @@ def run():
                 _, prob_cov, porc, _, _ = cobertura_por_ids(coords_inst, demanda, preinst_coords, radio)
                 entries_all.append((x, y, ids, is_par, porc))
             t2 = time.perf_counter()
-            if hv_every is not None and hv_every > 0:
-                guardar_aeds = True
-            else:
-                guardar_aeds = (i == 0 or i == n_generations - 1)
-
-            if guardar_aeds:
-                aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{actual_gen}.dat")
-                coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
-                aed_files.append(aeds_file)
-            else:
-                # igual necesitamos las coords Pareto si toca calcular HV
-                coords_for_hv = [(x, y) for (x, y, ids, is_par, _) in entries_all if is_par]
-
-            recompute = False
-            if hv_every is not None and hv_every > 0:
-                # modo "cada X gens": X, 2X, 3X, ... y SIEMPRE la última
-                if (i % hv_every == 0) or (i == n_generations - 1):
-                    recompute = True
-            else:
-                # modo por defecto: solo primera (i=0) y última
-                if (i == 0) or (i == n_generations - 1):
-                    recompute = True
-
-            if recompute:
-                # Solo aquí generamos el archivo de frente en frentes_pareto/
-                fp_file = os.path.join(fp_folder, f"{base_name}_GEN{actual_gen}.dat")
-                save_front_to_file(coords_for_hv, fp_file)
-                t3 = time.perf_counter()
-                hv = calculate_hv(fp_file, ref_point, gen_number=actual_gen) or 0.0
-                t4 = time.perf_counter()
-                print(f"[GEN {actual_gen}] ND={t1-t0:.4f}s  cobertura={t2-t1:.4f}s  write_fp={t3-t2:.4f}s  hv={t4-t3:.4f}s")
-
-                last_hv = hv
-            else:
-                # Reutilizamos el último HV calculado, pero NO escribimos un GEN*.dat
-                hv = last_hv
+            
+            aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{actual_gen}.dat")
+            coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
+            aed_files.append(aeds_file)
+            
+            # Solo aquí generamos el archivo de frente en frentes_pareto/
+            fp_file = os.path.join(fp_folder, f"{base_name}_GEN{actual_gen}.dat")
+            save_front_to_file(coords_for_hv, fp_file)
+            t3 = time.perf_counter()
+            hv = calculate_hv(fp_file, ref_point, gen_number=actual_gen) or 0.0
+            t4 = time.perf_counter()
+            print(f"[GEN {actual_gen}] ND={t1-t0:.4f}s  cobertura={t2-t1:.4f}s  write_fp={t3-t2:.4f}s  hv={t4-t3:.4f}s")
+            last_hv = hv
 
             hv_results.append(hv)
-            if hv_every is not None and hv_every > 0:
-                # Modo historial: guardo TODAS las gens (como antes)
-                resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
-            else:
-                # Modo normal: SOLO las gens donde recalculé HV
-                if recompute:
-                    resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
+            resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
+        
         resumen_file.write("#\n")
 
     """ print("Archivos AEDs que voy a devolver al front:")
@@ -693,10 +668,54 @@ def run():
         # GAP en %: cuánto más rápido es MOEA/D respecto a AMPL
         # (igual que el HV: ((AMPL - MOEAD)/AMPL)*100 )
         time_gap = (time_ampl - time_moead) / time_ampl * 100.0
+    
+    hv_final = float(hv_results[-1]) if hv_results else 0.0
+    hv_gap = None
+    if isinstance(hv_opt, (int, float)) and hv_opt and hv_opt != 0:
+        hv_gap = (hv_opt - hv_final) / hv_opt * 100.0
+
+    run_ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    run_id = f"{base_name}_seed{semilla}_{int(time.time())}"
+
+    record = {
+        "run_id": run_id,
+        "timestamp": run_ts,
+        "instance": base_name,
+        "instance_file": instancia,
+        "seed": semilla,
+
+        # parámetros relevantes (los que tú recibes en /run)
+        "alg": alg,
+        "type": tipo,
+        "variant": variante,
+        "neval": neval,
+        "pop": pop,
+        "neighbor": neighbor,
+        "mut": mut,
+        "cross": cross,
+        "op1": op1,
+        "hv_every": hv_every,
+
+        # HV / referencia
+        "hv_final": hv_final,
+        "hv_opt": hv_opt,
+        "hv_gap_pct": hv_gap,
+        "ref_point": [float(ref_point[0]), float(ref_point[1])],
+
+        # tiempos
+        "time_moead_s": float(elapsed_moead),
+        "time_ampl_s": float(time_ampl) if time_ampl is not None else None,
+        "time_gap_pct": float(time_gap) if time_gap is not None else None,
+    }
+
+    # log global + log por instancia
+    append_jsonl(os.path.join(DIR_RUN_STATS, "runs_all.jsonl"), record)
+    append_jsonl(os.path.join(DIR_RUN_STATS, f"{base_name}.jsonl"), record)
 
     return jsonify({
         "files": files_relativos, 
-        "hv": hv_results, 
+        "hv": hv_results,
+        "gen_numbers": gen_numbers,
         "hv_opt": hv_opt, 
         "ref_point": {
             "x": float(ref_point[0]), 
@@ -709,120 +728,138 @@ def run():
 
 # ------------------- /load -------------------
 @app.route("/load", methods=["POST"])
+# ------------------- /load -------------------
+@app.route("/load", methods=["POST"])
 def load():
     data = request.json
     instancia = data["instancia"]
     recalcular = data.get("recalcular", False)
     is_strict_mode = data.get("strict", False)
 
-    hv_every = data.get("hv_every")
+    # Detectar si se pide un filtrado específico (hv_every)
+    hv_every = data.get("save_interval")
+    if hv_every is None: 
+         hv_every = data.get("hv_every")
     try:
-        hv_every = int(hv_every) if hv_every is not None else None
+        hv_every = int(hv_every) if hv_every is not None else 0
     except ValueError:
-        hv_every = None
-    if hv_every is not None:
-        recalcular = True
+        hv_every = 0
 
+    if hv_every > 0:
+        recalcular = True
 
     base_name = parse_instance_name(instancia)
     fp_folder = os.path.join(DIR_FRENTES_PARETO, base_name)
     aeds_folder = os.path.join(DIR_AEDS_PROCESADOS, base_name)
     resumen_path = os.path.join(fp_folder, f"{base_name}_HV_summary.txt")
 
-    optimos = load_optimos()
-    opt_info = optimos.get(base_name)
-    hv_opt = opt_info["hv_opt"] if opt_info else None
-    
+    # Buscar archivos ya procesados (Caché)
     aed_files = sorted(
         glob.glob(os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN*.dat")), 
         key=gen_number_from_path
     )
 
+    # ==========================================
+    # CASO 1: CARGA RÁPIDA (Archivos ya existen)
+    # ==========================================
     if not recalcular and os.path.exists(resumen_path) and aed_files:
-        hv_results = []
+        print(f"[/load] Cargando desde caché existente para {instancia}")
+        
+        # 1. Obtener números de generación de los archivos que REALMENTE tenemos
+        gen_numbers = [gen_number_from_path(f) for f in aed_files]
+        
+        # 2. Leer resumen de HV y mapearlo
+        hv_map = {} # Diccionario {gen: hv}
         ref_point = None
         hv_opt = None
 
-        with open(resumen_path) as f:
-            lines = [line.strip() for line in f if line.strip() and not line.startswith("#")]
-
+        with open(resumen_path, "r") as f:
+            lines = [l.strip() for l in f if l.strip() and not l.startswith("#")]
+        
         if lines:
             header = lines[0].split()
-            # primera y segunda columna: refX refY
-            ref_x, ref_y = map(float, header[:2])
-            ref_point = (ref_x, ref_y)
+            ref_point = (float(header[0]), float(header[1]))
+            if len(header) >= 3: 
+                hv_opt = float(header[2])
 
-            # si guardaste HV óptimo de AMPL en la 3ª col:
-            if len(header) >= 3:
-                try:
-                    hv_opt = float(header[2])
-                except ValueError:
-                    hv_opt = None
+            # Leer el resto de líneas: GEN100 1234.56
+            for line in lines[1:]:
+                parts = line.split()
+                if len(parts) >= 2:
+                    g_str = parts[0].replace("GEN", "")
+                    try:
+                        g_int = int(g_str)
+                        val = float(parts[1])
+                        hv_map[g_int] = val
+                    except ValueError:
+                        pass
+        
+        # 3. Construir lista de HV alineada con los archivos encontrados
+        hv_results = []
+        last_known_hv = 0.0
+        for g in gen_numbers:
+            if g in hv_map:
+                last_known_hv = hv_map[g]
+            hv_results.append(last_known_hv)
 
-            # resto de líneas: GENk hv_k
-            if len(lines) > 1:
-                hv_results = [float(line.split()[1]) for line in lines[1:]]
-
-        files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files]
-        print(f"[/load] Éxito: Cargando cache para {instancia}")
-
-        base_name = parse_instance_name(instancia)
+        # 4. Obtener tiempos
         time_moead = get_moead_time(base_name)
         time_ampl  = get_ampl_time(base_name)
         time_gap = None
         if time_moead is not None and time_ampl is not None and time_ampl > 0:
             time_gap = (time_ampl - time_moead) / time_ampl * 100.0
 
+        files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files]
+
         return jsonify({
             "files": files_relativos,
             "hv": hv_results,
+            "gen_numbers": gen_numbers, # <--- AQUI YA ESTÁ DEFINIDO
             "hvAmpl": hv_opt,
-            "refPointGlobal": (
-                {"x": ref_point[0], "y": ref_point[1]}
-                if ref_point is not None else None
-            ),
+            "refPointGlobal": {"x": ref_point[0], "y": ref_point[1]} if ref_point else None,
             "timeAmpl": time_ampl,
             "timeMoead": time_moead,
             "timeGap": time_gap
         })
 
+    # Si estamos en modo estricto (ej: pestaña 'Comparar') y no hay caché, no hacemos nada.
     if is_strict_mode and not aed_files:
-        print(f"[/load] Modo Estricto: No se encontraron datos cacheados para {instancia}. No se recalculará.")
         return jsonify({"files": [], "hv": []})
 
-
-    # Si llegamos aquí, DEFINITIVAMENTE tenemos que procesar los archivos crudos.
-    if recalcular:
-        print(f"[/load] Forzando recálculo para {instancia} como fue solicitado.")
-    else:
-        print(f"[/load] Aviso: No se encontraron datos cacheados para {instancia}. Se procesarán los resultados crudos.")
-
+    # ==========================================
+    # CASO 2: NO HAY CACHÉ -> PROCESAR RAW
+    # ==========================================
+    # Si llegamos aquí es porque no hay archivos procesados (o se pidió recalcular).
+    # Buscamos los archivos crudos (POF_...) que generó el algoritmo C++.
+    
     instance_raw_dir = os.path.join(DIR_RAW_MOEAD, base_name)
-
-    patron_pof = os.path.join(instance_raw_dir, f"POF_{base_name}_GEN_*.dat")
-    raw_files = sorted(
-        glob.glob(patron_pof), 
-        key=gen_number_from_path
-    )
+    patron_pof = os.path.join(instance_raw_dir, f"POF_{base_name}_GEN_*.dat") # Acepta cualquier SEED si no es estricto
+    # Ojo: si hay múltiples seeds, esto podría mezclar archivos. 
+    # Idealmente raw_files debería filtrar por la ejecución más reciente, pero para simplificar:
+    raw_files = sorted(glob.glob(patron_pof), key=gen_number_from_path)
+    
+    # Si no hay archivos crudos, entonces no se ha ejecutado nada. Retornar vacío.
     if not raw_files:
-        print(f"[/load] Error: No hay archivos crudos en {instance_raw_dir} para recalcular.")
+        print(f"[/load] No hay resultados previos para {instancia}")
         return jsonify({"files": [], "hv": []})
 
-    if os.path.exists(fp_folder): 
-        print("Carpeta a eliminar frente de pareto ",fp_folder)
-        shutil.rmtree(fp_folder)
-    if os.path.exists(aeds_folder):
-        print("Carpeta a eliminar aeds ",aeds_folder)
-        shutil.rmtree(aeds_folder)
+    print(f"[/load] Procesando resultados crudos para {instancia}...")
 
+    # Limpiar carpetas de caché para regenerar limpio
+    if os.path.exists(fp_folder): shutil.rmtree(fp_folder)
+    if os.path.exists(aeds_folder): shutil.rmtree(aeds_folder)
     os.makedirs(fp_folder, exist_ok=True)
     os.makedirs(aeds_folder, exist_ok=True)
 
+    # Cargar datos de la instancia (para calcular cobertura)
     nodes, coords_by_id, demanda, preinst_coords, radio = cargar_instancia_coords_y_demanda(os.path.join(DIR_INSTANCES, instancia))
+    
+    # Referencia y óptimos
+    optimos = load_optimos()
+    opt_info = optimos.get(base_name)
     if opt_info:
         ref_point = opt_info["ref"]
         hv_opt = opt_info["hv_opt"]
-        print(f"[/load] Usando referencia de optimos.txt para {base_name}: {ref_point}, HV*={hv_opt}", flush=True)
     else:
         ref_point = calcular_referencia_global(raw_files)
 
@@ -830,110 +867,83 @@ def load():
     aed_files_recalculados = []
     last_hv = 0.0
     n_generations = len(raw_files)
+    gen_numbers = []
 
-
+    # Escribir nuevo resumen
     with open(resumen_path, "w") as resumen_file:
-        if hv_opt is not None:
-            resumen_file.write(f"{ref_point[0]} {ref_point[1]} {hv_opt}\n")
-        else:
-            resumen_file.write(f"{ref_point[0]} {ref_point[1]}\n")
+        line_opt = f"{ref_point[0]} {ref_point[1]}"
+        if hv_opt is not None: line_opt += f" {hv_opt}"
+        resumen_file.write(line_opt + "\n")
 
         for i, file in enumerate(raw_files):
             actual_gen = gen_number_from_path(file)
+            gen_numbers.append(actual_gen)
+            
+            # Lógica de filtrado (si se pidió hv_every, sino guardar inicio/fin)
+            is_start_end = (i == 0) or (i == n_generations - 1)
+            should_process = False
+            if hv_every <= 0:
+                should_process = is_start_end
+            else:
+                should_process = is_start_end or (actual_gen % hv_every == 0)
 
-            # --- ¿Primera / última gen? ---
-            is_first = (i == 0)
-            is_last = (i == n_generations - 1)
-
-            # --- ¿Estamos en modo historial (HV cada X gens)? ---
-            modo_historial = (hv_every is not None and hv_every > 0)
-
-            # Si NO estamos en historial y NO es primera ni última,
-            # no vale la pena parsear ni calcular nada
-            if (not modo_historial) and (not is_first) and (not is_last):
-                # Solo copiamos el HV anterior en el vector
+            if not should_process:
                 hv_results.append(last_hv)
                 continue
 
+            # Parsear archivo crudo
             entries_raw = []
             with open(file) as f:
                 for ln in f:
                     parsed = parse_line_with_ids(ln)
-                    if parsed is not None:
-                        x, y, ids, _, _ = parsed
-                        entries_raw.append((x, y, ids))
+                    if parsed: entries_raw.append((parsed[0], parsed[1], parsed[2]))
 
             if not entries_raw:
                 hv_results.append(last_hv)
-                if hv_every is not None and hv_every > 0:
-                    resumen_file.write(f"GEN{actual_gen} {last_hv:.4f}\n")
+                if should_process: resumen_file.write(f"GEN{actual_gen} {last_hv:.4f}\n")
                 continue
 
+            # Separar Pareto / Dominados
             nd_idx = get_non_dominated_idx([(x, y) for (x, y, _) in entries_raw])
             nd_set = set(nd_idx)
             nd_entries  = [(x, y, ids, True)  for k, (x, y, ids) in enumerate(entries_raw) if k in nd_set]
             dom_entries = [(x, y, ids, False) for k, (x, y, ids) in enumerate(entries_raw) if k not in nd_set]
 
+            # Calcular cobertura para visualización
             entries_all = []
             for (x, y, ids, is_par) in (nd_entries + dom_entries):
                 coords_inst = [coords_by_id[k] for k in ids if k in coords_by_id]
-                _, prob_cov, porc, _, _ = cobertura_por_ids(coords_inst, demanda, preinst_coords, radio)
+                _, _, porc, _, _ = cobertura_por_ids(coords_inst, demanda, preinst_coords, radio)
                 entries_all.append((x, y, ids, is_par, porc))
 
-            # --- decidir si guardamos archivo de ubicaciones ---
-            if hv_every is not None and hv_every > 0:
-                guardar_aeds = True
-            else:
-                guardar_aeds = (i == 0 or i == n_generations - 1)
-
-            if guardar_aeds:
-                aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{actual_gen}.dat")
-                coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
-                aed_files_recalculados.append(aeds_file)
-            else:
-                coords_for_hv = [(x, y) for (x, y, ids, is_par, _) in entries_all if is_par]
-
-
-            recompute = False
-            if hv_every is not None and hv_every > 0:
-                if (i % hv_every == 0) or (i == n_generations - 1):
-                    recompute = True
-            else:
-                if (i == 0) or (i == n_generations - 1):
-                    recompute = True
-
-            if recompute:
-                fp_file = os.path.join(fp_folder, f"{base_name}_GEN{actual_gen}.dat")
-                save_front_to_file(coords_for_hv, fp_file)
-                hv = calculate_hv(fp_file, ref_point, gen_number=actual_gen) or 0.0
-                last_hv = hv
-            else:
-                hv = last_hv
+            # Guardar archivo formateado
+            aeds_file = os.path.join(aeds_folder, f"{base_name}_Ubicaciones_GEN{actual_gen}.dat")
+            coords_for_hv = save_aeds_with_flags_and_coverage(entries_all, aeds_file)
+            aed_files_recalculados.append(aeds_file)
+            
+            # Calcular HV
+            fp_file = os.path.join(fp_folder, f"{base_name}_GEN{actual_gen}.dat")
+            save_front_to_file(coords_for_hv, fp_file)
+            hv = calculate_hv(fp_file, ref_point, gen_number=actual_gen) or 0.0
+            last_hv = hv
 
             hv_results.append(hv)
-            if hv_every is not None and hv_every > 0:
-                resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
-            else:
-                if recompute:
-                    resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
+            resumen_file.write(f"GEN{actual_gen} {hv:.4f}\n")
+           
         resumen_file.write("#\n")
 
+    # Retorno final tras procesar
     files_relativos = [os.path.relpath(f, PROYECTO_ROOT) for f in aed_files_recalculados]
-
     time_moead = get_moead_time(base_name)
     time_ampl  = get_ampl_time(base_name)
-    time_gap = None
-    if time_moead is not None and time_ampl is not None and time_ampl > 0:
-        time_gap = (time_ampl - time_moead) / time_ampl * 100.0
+    time_gap = ((time_ampl - time_moead)/time_ampl * 100) if (time_ampl and time_ampl > 0) else None
 
     return jsonify({
         "files": files_relativos, 
-        "hv": hv_results, 
+        "hv": hv_results,
+        "gen_numbers": gen_numbers, # <--- AQUI YA ESTÁ DEFINIDO
         "hv_opt": hv_opt, 
-        "ref_point": {
-            "x": float(ref_point[0]), 
-            "y": float(ref_point[1])
-        },
+        "ref_point": {"x": ref_point[0], "y": ref_point[1]},
         "timeAmpl": time_ampl,
         "timeMoead": time_moead,
         "timeGap": time_gap
@@ -1413,6 +1423,52 @@ def load_ampl_front():
 
     content = "".join(new_lines)
     return content, 200, {'Content-Type': 'text/plain; charset=utf-8'}
+
+@app.route("/list_run_stats", methods=["GET"])
+def list_run_stats():
+    inst = (request.args.get("inst") or "").replace(".dat", "").strip()
+    path = os.path.join(DIR_RUN_STATS, f"{inst}.jsonl") if inst else os.path.join(DIR_RUN_STATS, "runs_all.jsonl")
+    if not os.path.exists(path):
+        return jsonify([])
+
+    rows = []
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            if not line.strip():
+                continue
+            r = json.loads(line)
+
+            # SOLO lo que quieres ver en la tabla
+            rows.append({
+                "run_id": r.get("run_id"),
+                "ts": r.get("ts"),
+                "instance": r.get("instance"),
+                "hv_final": r.get("hv_final"),
+            })
+
+    rows.reverse()  # últimos primero
+    return jsonify(rows[:200])
+
+@app.route("/run_stats_detail", methods=["GET"])
+def run_stats_detail():
+    run_id = (request.args.get("run_id") or "").strip()
+    if not run_id:
+        return jsonify({"error": "run_id requerido"}), 400
+
+    path = os.path.join(DIR_RUN_STATS, "runs_all.jsonl")
+    if not os.path.exists(path):
+        return jsonify({"error": "sin historial"}), 404
+
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            if not line.strip():
+                continue
+            r = json.loads(line)
+            if r.get("run_id") == run_id:
+                return jsonify(r)
+
+    return jsonify({"error": "run_id no encontrado"}), 404
+
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

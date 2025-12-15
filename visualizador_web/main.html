@@ -645,8 +645,8 @@
             <div class="compact-field">
               <label class="compact-label">Población</label>
               <select id="pop" class="compact-select">
-                <option value="100">100</option>
-                <option value="200" selected>200</option>
+                <option value="100" selected>100</option>
+                <option value="200">200</option>
                 <option value="300">300</option>
                 <option value="500">500</option>
                 <option value="1000">1000</option>
@@ -663,6 +663,45 @@
               </select>
             </div>
           </div>
+
+          <div class="compact-row-triple">
+            <div class="compact-field">
+              <label class="compact-label">Seed</label>
+              <input id="seed" type="number" class="compact-input" />
+            </div>
+
+            <div class="compact-field">
+              <label class="compact-label">Decomp</label>
+              <select id="decomp" class="compact-select">
+                <option value="1" selected>TCH</option>
+                <option value="2">Mod</option>
+                <option value="3">PBI</option>
+              </select>
+            </div>
+
+            <div class="compact-field">
+              <label class="compact-label">Mut</label>
+              <input id="mut" type="number" step="0.01" min="0" max="1" value="0.3" class="compact-input" />
+            </div>
+          </div>
+
+          <div class="compact-row-triple">
+            <div class="compact-field">
+              <label class="compact-label">Cross</label>
+              <input id="cross" type="number" step="0.01" min="0" max="1" value="1.0" class="compact-input" />
+            </div>
+
+            <div class="compact-field">
+              <label class="compact-label">Op1</label>
+              <input id="op1" type="number" step="0.01" min="0" max="1" value="0.2" class="compact-input" />
+            </div>
+
+            <div class="compact-field">
+              <label class="compact-label">Nueva seed</label>
+              <button id="btn-new-seed" class="btn-small">🔁</button>
+            </div>
+          </div>
+
 
           <div class="btn-group-horizontal">
             <button class="btn primary" id="btn-ejecutar">Ejecutar Algoritmo</button>
@@ -704,12 +743,6 @@
 
         <div class="panel-section">
           <div class="panel-section-title">📈 HIPERVOLUMEN</div>
-
-          <label class="checkbox-label">
-            <input type="checkbox" id="recalcular-hv" />
-            Recalcular HV
-          </label>
-
           <div class="compact-row-split">
             <label class="compact-label">HV cada</label>
             <input id="hv-every" type="number" min="1" step="1" value="10" class="compact-input-small" />
@@ -869,6 +902,21 @@
           </div>
         </div>
 
+        <div class="card">
+          <div class="card-title">Historial de corridas (HV)</div>
+
+          <table style="width:100%; font-size:14px;">
+            <thead>
+              <tr>
+                <th style="text-align:left;">Fecha</th>
+                <th style="text-align:left;">HV</th>
+              </tr>
+            </thead>
+            <tbody id="runs-tbody"></tbody>
+          </table>
+
+          <div id="run-detail" style="margin-top:12px; display:none; font-size:14px;"></div>
+        </div>
 
 
         <div class="split-view">
@@ -1069,7 +1117,6 @@
           return panel;
         }
 
-
         // ===== Tabs =====
         const tabVisBtn = $('#btn-tab-visualizador');
         const tabBldBtn = $('#btn-tab-builder');
@@ -1103,6 +1150,19 @@
         const statusEl = $('#status');
         const fixScaleCheckbox = $('#fix-scale');
         const showRefCheckbox = $('#show-ref-point');
+        const seedInput = document.getElementById('seed');
+        const decompInput = document.getElementById('decomp');
+        const mutInput = document.getElementById('mut');
+        const crossInput = document.getElementById('cross');
+        const op1Input = document.getElementById('op1');
+        const btnNewSeed = document.getElementById('btn-new-seed');
+
+        function setNewSeed() {
+          seedInput.value = Math.floor(Math.random() * 1_000_000_000) + 1;
+        }
+        btnNewSeed.addEventListener('click', setNewSeed);
+        window.addEventListener('DOMContentLoaded', () => { setNewSeed(); });
+
 
         const plotDiv = $('#plot');
         const sliderContainer = $('#slider-container');
@@ -1139,53 +1199,15 @@
         const btnHvHistory = document.getElementById('btn-hv-history');
 
         btnHvHistory.addEventListener('click', async () => {
-          if (!selInst.value) {
-            alert('Primero selecciona una instancia');
-            return;
-          }
+          if (!selInst.value) return alert("Primero selecciona una instancia");
 
-          statusEl.textContent = 'Recalculando HV (todas las generaciones)…';
-
-          const payload = {
-            instancia: selInst.value,
-            recalcular: true,
-            strict: false,
-            hv_every: 1      // 👈 todas las generaciones
-          };
-
-          try {
-            const res = await fetch('/load', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) {
-              statusEl.textContent = 'Error al recalcular HV completo';
-              return;
-            }
-
-            const data = await res.json();
-            if (!data.files || !data.files.length) {
-              statusEl.textContent = '⚠️ No se encontraron generaciones.';
-              return;
-            }
-
-            hvOptGlobal = (typeof data.hv_opt === 'number') ? data.hv_opt : null;
-
-            // Historial completo
-            await loadGenerations(data.files, data.hv || [], 'full');
-            statusEl.textContent = `HV completo cargado (${frames.length} generaciones)`;
-            updateHvSummary();
-          } catch (err) {
-            console.error(err);
-            statusEl.textContent = 'Error al recalcular HV completo';
-          }
+          statusEl.textContent = `Generando historial completo (HV en todas las gens)…`;
+          await runNowWithHV(1);
         });
 
 
         // ===== Data holders =====
-        let frames = []; let hvValues = []; let hvOptGlobal = null; let refPointGlobal = null;
+        let frames = []; let hvValues = []; let hvOptGlobal = null; let refPointGlobal = null; let globalGenNumbers = []
         let globalXMin = Infinity, globalXMax = -Infinity, globalYMin = Infinity, globalYMax = -Infinity;
         let globalCovMin = Infinity, globalCovMax = -Infinity;
         let timeAmplGlobal = null;
@@ -1307,39 +1329,107 @@
 
         // ===== Visualizador: Correr / Cargar =====
         async function runNow() {
-          const payload = { instancia: selInst.value, neval: Number(inputNeval.value || 10000), pop: Number(inputPop.value || 500), neighbor: Number(inputNeighbor.value || 100) };
-          statusEl.textContent = 'Ejecutando…';
-          const res = await fetch('/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+          await runNowWithHV(0);
+        }
+
+        async function runNowWithHV(hvEvery) {
+          if (!selInst.value) return alert("Primero selecciona una instancia");
+          // Seed: si no hay seed en pantalla, generamos uno
+          if (seedInput && !seedInput.value) refreshSeed();
+          const semilla = seedInput ? parseInt(seedInput.value, 10) : newSeed();
+
+          const payload = {
+            instancia: selInst.value,
+            semilla: parseInt(seedInput.value, 10),
+            tipo: "cam",
+            variante: "location",
+            algoritmo: "MOEAD",
+
+            neval: Number(inputNeval.value || 10000),
+            pop: Number(inputPop.value || 500),
+            neighbor: Number(inputNeighbor.value || 100),
+
+            decomp: parseInt(decompInput.value, 10),
+            mut: parseFloat(mutInput.value),
+            cross: parseFloat(crossInput.value),
+            op1: parseFloat(op1Input.value),
+
+            save_interval: hvEvery
+          };
+
+          const res = await fetch('/run', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
           if (!res.ok) { statusEl.textContent = 'Error en ejecución'; return; }
+
           const data = await res.json();
-          if (!data.files || !data.files.length) { statusEl.textContent = '⚠️ No se generaron archivos.'; return; }
-
-          hvOptGlobal = (typeof data.hv_opt === 'number') ? data.hv_opt : null;
-
-          if (data.ref_point && typeof data.ref_point.x === "number" && typeof data.ref_point.y === "number") {
-            refPointGlobal = { x: data.ref_point.x, y: data.ref_point.y };
-          } else {
-            refPointGlobal = null;
+          if (!data.files || !data.files.length) {
+            statusEl.textContent = '⚠️ No se generaron archivos.';
+            return;
           }
+
+          // (opcional) refrescar globals igual que runNow()
+          hvOptGlobal = (typeof data.hv_opt === 'number') ? data.hv_opt : null;
+          refPointGlobal = (data.ref_point && typeof data.ref_point.x === "number" && typeof data.ref_point.y === "number")
+            ? { x: data.ref_point.x, y: data.ref_point.y }
+            : null;
 
           timeAmplGlobal = (typeof data.timeAmpl === "number") ? data.timeAmpl : null;
           timeMoeadGlobal = (typeof data.timeMoead === "number") ? data.timeMoead : null;
+          timeGapGlobal = (timeAmplGlobal != null && timeMoeadGlobal != null && timeAmplGlobal > 0)
+            ? ((timeMoeadGlobal - timeAmplGlobal) / timeAmplGlobal) * 100
+            : null;
 
-          // si no te llega timeGap, lo puedes calcular acá:
-          if (timeAmplGlobal != null && timeMoeadGlobal != null && timeAmplGlobal > 0) {
-            timeGapGlobal = ((timeMoeadGlobal - timeAmplGlobal) / timeAmplGlobal) * 100;
-          } else {
-            timeGapGlobal = null;
-          }
-
-
-          await loadGenerations(data.files, data.hv || [], 'simple');
+          // 👇 MUY IMPORTANTE: para historial completo usa hvMode='full'
+          const hvMode = (hvEvery === 1) ? 'full' : 'simple';
+          await loadGenerations(data.files, data.hv || [], hvMode, data.gen_numbers);
+          setNewSeed();
           statusEl.textContent = `Listo: ${frames.length} generaciones`;
+          await refreshRunHistory();
         }
+
+
+        async function refreshRunHistory() {
+          const inst = (selInst.value || '').replace('.dat', '');
+          const r = await fetch('/list_run_stats?inst=' + encodeURIComponent(inst));
+          const rows = await r.json();
+
+          const tbody = document.getElementById('runs-tbody');
+          const detail = document.getElementById('run-detail');
+          tbody.innerHTML = '';
+          detail.style.display = 'none';
+          detail.innerHTML = '';
+
+          rows.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.style.cursor = 'pointer';
+            tr.innerHTML = `<td>${row.ts || ''}</td><td>${(row.hv_final ?? '—')}</td>`;
+            tr.addEventListener('click', async () => {
+              const rd = await fetch('/run_stats_detail?run_id=' + encodeURIComponent(row.run_id));
+              const full = await rd.json();
+
+              detail.style.display = 'block';
+              detail.innerHTML = `
+        <div style="font-weight:700; margin-bottom:6px;">Parámetros usados</div>
+        <div><b>seed</b>: ${full.seed}</div>
+        <div><b>neval</b>: ${full.neval} | <b>pop</b>: ${full.pop} | <b>neighbor</b>: ${full.neighbor}</div>
+        <div><b>mut</b>: ${full.mut} | <b>cross</b>: ${full.cross} | <b>op1</b>: ${full.op1}</div>
+        <div><b>type</b>: ${full.type} | <b>variant</b>: ${full.variant} | <b>alg</b>: ${full.alg}</div>
+        <div style="margin-top:6px;"><b>Tiempo MOEA/D</b>: ${full.time_moead_s}s</div>
+      `;
+            });
+            tbody.appendChild(tr);
+          });
+        }
+
+        selInst.addEventListener('change', refreshRunHistory);
 
         async function loadSaved() {
           statusEl.textContent = 'Cargando generaciones…';
-          const payload = { instancia: selInst.value, recalcular: $('#recalcular-hv').checked };
+          const payload = { instancia: selInst.value };
           const res = await fetch('/load', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
           const data = await res.json();
           if (!data.files || !data.files.length) { statusEl.textContent = '⚠️ No se encontraron generaciones.'; return; }
@@ -1363,7 +1453,7 @@
           }
 
 
-          await loadGenerations(data.files, data.hv || []);
+          await loadGenerations(data.files, data.hv || [], 'simple', data.gen_numbers);
           statusEl.textContent = `Listo: ${frames.length} generaciones`;
         }
 
@@ -1420,9 +1510,18 @@
         }
 
 
-        async function loadGenerations(files, hvs, hvMode = 'simple') {
+        // Modificamos la firma para aceptar genNums
+        async function loadGenerations(files, hvs, hvMode = 'simple', genNums = []) {
           frames = [];
           hvValues = hvs;
+
+          // Guardamos los números reales. Si vienen vacíos, creamos un índice simple 1..N
+          if (genNums && genNums.length === files.length) {
+            globalGenNumbers = genNums;
+          } else {
+            globalGenNumbers = files.map((_, i) => i + 1);
+          }
+
           globalXMin = Infinity; globalXMax = -Infinity;
           globalYMin = Infinity; globalYMax = -Infinity;
           globalCovMin = Infinity; globalCovMax = -Infinity;
@@ -1430,72 +1529,73 @@
           for (const file of files) {
             const res = await fetch('/get/' + file);
             const text = await res.text();
+            // ... (El código de parseo dentro del bucle sigue igual) ...
             const puntos = text.trim().split('\n')
               .map(l => l.trim())
               .filter(l => l && !l.startsWith('#'))
               .map(line => {
+                // ... TU LÓGICA DE PARSEO EXISTENTE ...
+                // (Copia tu lógica de parseo aquí o mantén la que tienes)
+                // Solo incluyo el esqueleto para no hacer la respuesta gigante
                 let coverage = null;
                 let left = line;
                 if (line.includes('|')) {
                   const parts = line.split('|');
                   left = parts[0].trim();
                   const covStr = parts[1].trim().split(/\s+/)[0];
-                  const covVal = parseFloat(covStr);
-                  if (!Number.isNaN(covVal)) coverage = covVal;
+                  coverage = parseFloat(covStr);
                 }
                 const toks = left.split(/\s+/);
                 const f1 = parseFloat(toks[0]);
                 const f2 = parseFloat(toks[1]);
                 let startIdx = 2;
                 let isPareto;
-
                 if (Number.isNaN(parseFloat(toks[2]))) {
                   if (toks[2] === 'P') { isPareto = true; startIdx = 3; }
                   else if (toks[2] === 'D') { isPareto = false; startIdx = 3; }
                   else if (toks[2] === '-' && line.includes('IDs instalados:')) {
                     const right = line.split('IDs instalados:')[1] || '';
-                    const ids = right.trim().split(/\s+/)
-                      .map(Number).filter(n => !Number.isNaN(n));
+                    const ids = right.trim().split(/\s+/).map(Number).filter(n => !Number.isNaN(n));
                     updateRanges(f1, f2);
                     return { x: f1, y: f2, ids, isPareto, coverage };
                   }
                 }
-
-                const ids = toks.slice(startIdx)
-                  .map(n => parseInt(n, 10))
-                  .filter(n => !Number.isNaN(n));
-
+                const ids = toks.slice(startIdx).map(n => parseInt(n, 10)).filter(n => !Number.isNaN(n));
                 updateRanges(f1, f2);
-
                 if (typeof coverage === 'number' && !Number.isNaN(coverage)) {
                   if (coverage < globalCovMin) globalCovMin = coverage;
                   if (coverage > globalCovMax) globalCovMax = coverage;
                 }
-
                 return { x: f1, y: f2, ids, isPareto, coverage };
               });
             frames.push(puntos);
           }
 
+          // --- CONFIGURACIÓN DEL SLIDER ---
           showGeneration(0);
           sliderContainer.style.display = 'block';
+
+          // El slider se mueve por ÍNDICE (0, 1, 2...)
           slider.max = frames.length - 1;
           slider.value = 0;
-          genNum.innerText = 0;
 
-          // ==== GRÁFICO HV SEGÚN MODO ====
+          // Pero la etiqueta muestra el NÚMERO REAL
+          genNum.innerText = globalGenNumbers[0];
+
+          // ==== GRÁFICO HV ====
           let hvX = [];
           let hvY = [];
 
           if (hvValues && hvValues.length) {
             if (hvMode === 'full') {
-              // Historial completo: todos los puntos
-              hvX = hvValues.map((_, i) => i);
+              // Usamos los números reales para el eje X
+              hvX = globalGenNumbers;
               hvY = hvValues;
             } else {
-              // Modo simple: solo primera y última generación
+              // Modo simple: solo primera y última
               const lastIdx = hvValues.length - 1;
-              hvX = [0, lastIdx];
+              // Eje X: Generación real inicial y final
+              hvX = [globalGenNumbers[0], globalGenNumbers[globalGenNumbers.length - 1]];
               hvY = [hvValues[0], hvValues[lastIdx]];
             }
           }
@@ -1517,25 +1617,35 @@
 
           updateHvSummary();
 
+          // Click en gráfico HV
+          document.getElementById('hv-plot').removeAllListeners?.('plotly_click'); // Evitar duplicados
           document.getElementById('hv-plot').on('plotly_click', d => {
-            const gen = d.points[0].x;
-            slider.value = gen - 1;
-            genNum.innerText = gen;
-            showGeneration(gen - 1);
+            const clickedGen = d.points[0].x;
+
+            // Buscar en qué índice del array 'globalGenNumbers' está la generación clickeada
+            const indexFound = globalGenNumbers.indexOf(clickedGen);
+
+            if (indexFound !== -1) {
+              slider.value = indexFound;
+              genNum.innerText = clickedGen;
+              showGeneration(indexFound);
+            }
           });
 
-          // ==== Historial de frentes (esto lo dejas tal cual) ====
+          // Gráfico Historial (Frentes superpuestos)
           const traces = frames.map((pts, idx) => {
             const hasFlag = pts.every(p => typeof p.isPareto === 'boolean');
             const all = hasFlag ? pts : findParetoFront(pts);
             const pareto = all.filter(p => p.isPareto);
             const color = getMultiColor(idx / Math.max(1, (frames.length - 1)));
+
+            // Usamos el número real en la leyenda
             return {
               x: pareto.map(p => p.x),
               y: pareto.map(p => p.y),
               mode: 'markers',
               marker: { size: 6, color },
-              name: `Gen ${idx + 1}`,
+              name: `Gen ${globalGenNumbers[idx]}`, // <--- Nombre real
               showlegend: false
             };
           });
@@ -1553,6 +1663,8 @@
             if (f2 > globalYMax) globalYMax = f2;
           }
         }
+
+
         function showGeneration(index) {
           const points = frames[index]; if (!points || !Array.isArray(points)) return;
           const hasFlag = points.every(p => typeof p.isPareto === 'boolean');
@@ -1560,8 +1672,10 @@
           const paretoPoints = allPoints.filter(p => p.isPareto);
           const dominatedPoints = allPoints.filter(p => !p.isPareto);
 
+          const realGen = globalGenNumbers[index];
+
           const layout = {
-            title: `Frente de Pareto - Gen ${index + 1}`,
+            title: `Frente de Pareto - Gen ${realGen}`,
             xaxis: {
               title: "f1 (Minimizar Cobertura)",
               rangemode: "normal",
@@ -1833,60 +1947,25 @@
           }
         });
 
-        slider.addEventListener('input', () => { const i = parseInt(slider.value, 10); genNum.innerText = i; showGeneration(i); });
+        slider.addEventListener('input', () => {
+          const i = parseInt(slider.value, 10);
+          // Muestra el número real (ej: 1000) en el texto
+          genNum.innerText = globalGenNumbers[i];
+          // Muestra el gráfico correspondiente al índice i
+          showGeneration(i);
+        });
         $('#btn-ejecutar').addEventListener('click', runNow);
         $('#load-btn').addEventListener('click', loadSaved);
         $('#load-ampl-btn').addEventListener('click', loadAmplFront);
 
         btnHvEvery.addEventListener('click', async () => {
           const val = parseInt(inputHvEvery.value, 10);
-          if (!Number.isInteger(val) || val <= 0) {
-            alert('X debe ser un entero positivo');
-            return;
-          }
+          if (!Number.isInteger(val) || val <= 0) return alert("X debe ser entero positivo");
+          if (!selInst.value) return alert("Primero selecciona una instancia");
 
-          if (!selInst.value) {
-            alert('Primero selecciona una instancia');
-            return;
-          }
-
-          statusEl.textContent = `Recalculando HV cada ${val} gens…`;
-
-          const payload = {
-            instancia: selInst.value,
-            recalcular: true,   // forzamos recálculo
-            strict: false,
-            hv_every: val       // 👈 clave: le pasamos X al backend
-          };
-
-          try {
-            const res = await fetch('/load', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) {
-              statusEl.textContent = 'Error al recalcular HV';
-              return;
-            }
-
-            const data = await res.json();
-            if (!data.files || !data.files.length) {
-              statusEl.textContent = '⚠️ No se encontraron generaciones.';
-              return;
-            }
-
-            hvOptGlobal = (typeof data.hv_opt === 'number') ? data.hv_opt : null;
-
-            await loadGenerations(data.files, data.hv || []);
-            statusEl.textContent = `HV recalculado cada ${val} gens (total ${frames.length} gens)`;
-          } catch (err) {
-            console.error(err);
-            statusEl.textContent = 'Error al recalcular HV';
-          }
+          statusEl.textContent = `Generando y calculando HV cada ${val} gens…`;
+          await runNowWithHV(val);
         });
-
 
         fixScaleCheckbox.addEventListener('change', () => showGeneration(parseInt(slider.value || '0', 10)));
         showRefCheckbox.addEventListener('change', () =>

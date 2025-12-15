@@ -62,17 +62,10 @@ public:
 
 	void CruzamientoUniformeModificado(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child);
 
-	void MutacionModificada(vector<double> &x_var, double rate);
-
 	void CruzamientoUniformeModificado_sin_reubicacion(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, ProblemInstance *problemInstance);
 	void MutacionModificada_sin_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
-	void MutacionBitFlip(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
-	void MutacionPorcentual(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
 	bool EsBuenCandidato(int idx_candidato, ProblemInstance *instance);
 	void MutacionIntercambioHeuristico(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *instance);
-	void MutacionBitFlip_v2(vector<double> &x_var, double mutation_rate, double prob_bit_flip, ProblemInstance *problemInstance);
-	void MutacionAdaptativaFases(vector<double> &x_var, double mutation_rate, double progress, ProblemInstance *problemInstance);
-	void MutacionRefuerzoZonasDebiles(vector<double> &x_var, double mutation_rate, double prob_bit_flip, ProblemInstance *problemInstance);
 
 	// 2. Cruzamiento (State of the Art para Binario con Presupuesto)
     void CruzamientoInteligente(const vector<double> &p1, const vector<double> &p2, vector<double> &child, ProblemInstance *instance);
@@ -83,6 +76,38 @@ public:
 
     // B. Intercambio Heurístico (Greedy Swap) -> Para salir de óptimos locales
     void MutacionIntercambioHeuristico(vector<double> &x_var, double mutation_rate, ProblemInstance *instance);
+
+	
+	// 1. Bit Flip Normal: cada bit tiene Prob (1 / N_movibles) de cambiar           utiliza es BuenCandidato
+	void MutacionBitFlip_1_N(vector<double> &x_var, double mutation_rate, ProblemInstance *instance);
+
+	// 2. Bit Flip Poblacional: cada bit tiene Prob (1 / M_poblacion) de cambiar     utiliza es BuenCandidato
+	void MutacionBitFlip_1_M(vector<double> &x_var, double mutation_rate, int populationSize, ProblemInstance *instance);
+
+	// 3. Bit Flip Fijo: cada bit tiene Prob fija de cambiar (mas alta que la 1 y 2) utiliza es BuenCandidato
+	void MutacionBitFlip_Fijo(vector<double> &x_var, double mutation_rate, double fixed_prob, ProblemInstance *instance);
+
+	// 4. Swap Probabilistica: cada bit que este activo tiene prob fija de mudarse a otra posicion (solo se muda si mejora)   utiliza es BuenCandidato
+	void MutacionSwapProbabilistico(vector<double> &x_var, double mutation_rate, double swap_prob, ProblemInstance *instance);
+
+	// 5. Mutacion Combinada (Elegir entre BitFlip y Swap segun probabilidad)
+	void Mutacion_Swap_1_N(vector<double> &x_var, double mutation_rate, double ratio_swap, ProblemInstance *instance);
+	void Mutacion_Swap_1_M(vector<double> &x_var, double mutation_rate, double ratio_swap, ProblemInstance *instance);
+	void Mutacion_Swap_Fijo(vector<double> &x_var, double mutation_rate, double ratio_swap, ProblemInstance *instance);
+
+
+	// 6. Mutacion Con Delete y Swap, pero variando el porcentaje
+	void MutacionModificada_Porcentual(vector<double> &x_var, double mutation_rate, double prob_op1_delete, double percentage, ProblemInstance *instance);
+
+	// 4. Mutación Delete (Elimina un % de equipos al azar)
+    // delete_ratio: Porcentaje de equipos actuales a eliminar (ej: 0.1 para borrar el 10%)
+    void MutacionDeletePorcentual(vector<double> &x_var, double mutation_rate, double delete_ratio, ProblemInstance *instance);
+
+
+	void CruzamientoUniformeInteligente(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
+
+	void RepararPresupuesto(vector<double> &x_var, ProblemInstance *instance);
+	
 
 
 	void CruzamientoUniformeModificado_con_reubicacion(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, ProblemInstance *problemInstance);

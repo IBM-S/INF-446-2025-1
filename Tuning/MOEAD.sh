@@ -7,7 +7,7 @@ dirhv="../material/hv-1.3-src"
 dirOutput="../datos/res/raw_moead"
 
 # Máximo de evaluaciones totales
-evaluaciones=10000
+evaluaciones=100000
 
 # Inicialización de variables
 pop=0
@@ -60,9 +60,9 @@ while [ $# -gt 0 ]; do
 done
 
 # Calcular mi, número de objetivos y parámetros
-gen=$(awk "BEGIN {printf \"%d\",(${ngen}*${pop})}")
+# gen=$(awk "BEGIN {printf \"%d\",(${ngen}*${pop})}")
 no=2 # número de objetivos
-params="-neval ${gen} -pop ${pop} -neighbor ${neighbor} -mut ${mut} -cross ${cross} -op1 ${op1}"
+params="-neval ${evaluaciones} -pop ${pop} -neighbor ${neighbor} -mut ${mut} -cross ${cross} -op1 ${op1}"
 echo "Parámetros: ${params}"
 
 screen="salida_consola.txt"
@@ -130,6 +130,7 @@ echo "./${dirhv}/hv -r \"${pr1} ${pr2}\" of.out > ${screen2}"
 hv=$(tail -1 ${screen2})
 gap=$(awk "BEGIN {printf \"%.2f\",100.00*(${optimo}-${hv})/${optimo}}")
 runlength=$(echo ${gap} | sed 's/,/./')
+# Para el caso mas grande, probarlo solo, solo minimizar el HV.
 
 solved="SAT"
 runtime=0

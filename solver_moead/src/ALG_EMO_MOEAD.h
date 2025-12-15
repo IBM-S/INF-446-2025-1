@@ -26,9 +26,10 @@ public:
 	void UpdateNadirPoint(vector <double> &obj_vect);
 	void UpdateProblem_original(CIndividualBase &child, unsigned sp_id);
 	void UpdateProblem_modificado(CIndividualBase &child, unsigned sp_id);
-
+	void UpdateProblem_modificado_v2(CIndividualBase &child, unsigned sp_id);
 
 	void FindNadirPoint();
+	void FindNadirPoint_v2();
 	void NormalizeIndividual(CIndividualBase &ind);
 	void NormalizeWeight();
 

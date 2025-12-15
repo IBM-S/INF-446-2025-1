@@ -239,3 +239,105 @@ bool CIndividualBase::operator==(const CIndividualBase &ind2)
 	else
 		return false;
 }
+
+
+void CIndividualBase::GenerateGreedyFeasibleSolution(int num_AEDs, double randomness_factor){
+
+ 	// 1. Limpiar genotipo
+    std::fill(x_var.begin(), x_var.end(), 0.0);
+
+    const auto &nodos = problemInstance->getNodes();
+    int n = x_var.size();
+    
+    // 2. Estado de cobertura actual (inicia con lo que cubren las cámaras fijas)
+    // Usamos un vector auxiliar para saber qué nodos de demanda ya están salvados
+    std::vector<bool> is_covered(n, false);
+    int instalados = 0;
+
+    // A. Pre-instalar infraestructura fija (Flag 1) y marcar su cobertura
+    for (int i = 0; i < n; ++i) {
+        if (nodos[i]->getFlag() == 1) {
+            x_var[i] = 1.0;
+            instalados++; // Generalmente no cuentan para el presupuesto P, pero depende de tu lógica
+            
+            // Marcar vecinos como cubiertos
+            const std::vector<int>& vecinos = problemInstance->getNodosCubiertosPor(i);
+            for (int v : vecinos) is_covered[v] = true;
+        } else {
+            // Si es demanda y ya está cubierto por base (cámaras), marcarlo
+            if (problemInstance->isPreCubierto(i)) is_covered[i] = true;
+        }
+    }
+
+    // B. Bucle Greedy: Instalar hasta llegar al objetivo
+    // Ajustamos el objetivo restando los fijos si tu num_AEDs incluye fijos.
+    // Asumiremos que num_AEDs es el TOTAL de equipos en el mapa.
+    
+    while (instalados < num_AEDs)
+    {
+        // Lista de candidatos potenciales (ID, Ganancia Marginal)
+        std::vector<std::pair<double, int>> candidatos;
+
+        // Recorremos todos los nodos candidatos (Flag 0 y que estén vacíos)
+        for (int i = 0; i < n; ++i) 
+        {
+            if (x_var[i] == 0.0 && nodos[i]->getFlag() == 0) 
+            {
+                double ganancia = 0.0;
+                const std::vector<int>& vecinos = problemInstance->getNodosCubiertosPor(i);
+                
+                // Calculamos cuánto aporta este candidato
+                for (int v : vecinos) {
+                    // Si es un nodo de demanda y NO está cubierto aun
+                    if (!is_covered[v] && nodos[v]->getFlag() == 0) {
+                        ganancia += nodos[v]->getProbOhca();
+                    }
+                }
+
+                // Solo lo consideramos si aporta algo positivo
+                if (ganancia > 0) {
+                    candidatos.push_back({ganancia, i});
+                }
+            }
+        }
+
+        if (candidatos.empty()) {
+            // Ya no hay nada útil que cubrir, rellenar con aleatorios para cumplir presupuesto
+            std::vector<int> vacios;
+            for(int i=0; i<n; ++i) if(x_var[i]==0 && nodos[i]->getFlag()==0) vacios.push_back(i);
+            std::random_shuffle(vacios.begin(), vacios.end());
+            
+            for(int k=0; k < (int)vacios.size() && instalados < num_AEDs; ++k) {
+                x_var[vacios[k]] = 1.0;
+                instalados++;
+            }
+            break; 
+        }
+
+        // C. Selección (Greedy vs Aleatorio)
+        int elegido_idx = -1;
+
+        // Ordenamos de MAYOR ganancia a MENOR
+        std::sort(candidatos.rbegin(), candidatos.rend());
+
+        // randomness_factor: 
+        // 0.0 = Greedy Puro (siempre el mejor)
+        // 1.0 = Totalmente Aleatorio dentro de los candidatos útiles
+        
+        // Estrategia: Torneo o Selección de los "Top N"
+        // Aquí usaremos selección dentro del Top %
+        int top_k = std::max(1, (int)(candidatos.size() * randomness_factor));
+        int r = rand() % top_k; // Elegir uno al azar entre los mejores
+        
+        elegido_idx = candidatos[r].second;
+
+        // D. Instalar y Actualizar Cobertura
+        x_var[elegido_idx] = 1.0;
+        instalados++;
+
+        const std::vector<int>& nuevos_cubiertos = problemInstance->getNodosCubiertosPor(elegido_idx);
+        for (int v : nuevos_cubiertos) {
+            is_covered[v] = true;
+        }
+    }
+}
