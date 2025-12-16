@@ -1,0 +1,6 @@
+Final best parameter configuration: cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+==================================================================
+Active parameters: cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+==================================================================
+Training quality of this final best found parameter configuration: 0.0, based on 12 runs with cutoff 1000000000.0
+Test quality of this final best found parameter configuration: 1000000000000000000, based on 0 independent runs with cutoff 1000000000.0

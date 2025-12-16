@@ -544,17 +544,20 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 																			child.x_var, this->problemInstance);
 				} else {
 					// Variante LOCATION (Fixed)
+					//printf(">>> Usando Cruzamiento Uniforme Modificado_sin_reubicacion\n");
 					UtilityToolBox.CruzamientoUniformeModificado_sin_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
 																			m_PopulationSOP[p2].m_BestIndividual.x_var,
 																			child.x_var, this->problemInstance);
 				}
 			} else if (m_CrossoverType == 2) {
 				// Variante: MODIFICADO
+				//printf(">>> Usando Cruzamiento Uniforme Inteligente\n");
 				UtilityToolBox.CruzamientoUniformeInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														 	 m_PopulationSOP[p2].m_BestIndividual.x_var,
 														 	 child.x_var, this->problemInstance);
 			} else if (m_CrossoverType == 3) {
 				// Variante: CLÁSICO
+				//printf(">>> Usando Cruzamiento Uniforme Semi Inteligente\n");
 				UtilityToolBox.CruzamientoUniformeSemiInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
 														  child.x_var, this->problemInstance);
@@ -571,51 +574,39 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		{
 			case 1:
 				UtilityToolBox.MutacionBitFlip_1_N(child.x_var, m_MutationRate, this->problemInstance);
-				printf("case 1");
 				break;
 			case 2:
 				UtilityToolBox.MutacionBitFlip_1_M(child.x_var, m_MutationRate, s_PopulationSize, this->problemInstance);
-				printf("case 2");
 				break;
 			case 3:
 				UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
-				printf("case 3");
 				break;
 			case 4:
 				UtilityToolBox.MutacionSwapProbabilistico(child.x_var, m_MutationRate, m_MutationPercentage, this->problemInstance);
-				printf("case 4");
 				break;
 			case 5:
 				UtilityToolBox.Mutacion_Swap_Porcentual_1_N(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutationPercentage, this->problemInstance);
-				printf("case 5");
 				break;
 			case 6:
 				UtilityToolBox.Mutacion_Swap_Porcentual_1_M(child.x_var, m_MutationRate, m_Op1MutationProb, s_PopulationSize, m_MutationPercentage, this->problemInstance);
-				printf("case 6");
 				break;
 			case 7:
 				UtilityToolBox.Mutacion_Swap_Porcentual_Fijo(child.x_var, m_MutationRate, m_Op1MutationProb, m_BitFlipProb, m_MutationPercentage, this->problemInstance);
-				printf("case 7");
 				break;
 			case 8:
 				UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
-				printf("case 8");
 				break;
 			case 9:
 				UtilityToolBox.MutacionSwapPorcentual(child.x_var, m_MutationRate, m_MutationPercentage, this->problemInstance);
-				printf("case 9");
 				break;
 			case 10:
 				UtilityToolBox.MutacionDeletePorcentual(child.x_var, m_MutationRate, m_MutationPercentage, this->problemInstance);
-				printf("case 10");
 				break;
 			case 11:
 				UtilityToolBox.MutacionHibrida(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutationPercentage, this->problemInstance);
-				printf("case 11");
 				break;
 			 default:
                 UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
-				printf("default");
                 break;
 			}
 
