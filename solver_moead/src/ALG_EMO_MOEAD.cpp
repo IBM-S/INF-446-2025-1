@@ -13,6 +13,11 @@ CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
     s_NeighborhoodSize = 0;
 	m_MaxTimeSeconds = 0; // Sin límite por defecto
 	m_SaveInterval = 0;
+
+	m_MutationType = 6;      // Híbrida por defecto
+    m_CrossoverType = 2;     // Inteligente por defecto
+    m_MutationPercentage = 0.05; 
+    m_BitFlipProb = 0.01;
 }
 
 CALG_EMO_MOEAD::~CALG_EMO_MOEAD(void)
@@ -30,6 +35,16 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 
 	printf("Instance:  %s  RUN:  %d  GEN = 0 (Inicio)\n", strTestInstance, run_id);
 	this->SavePopulation(0);
+
+	printf("\nNadir Point Inicial\n"); // Son los peores valores de objetivos
+	printf("%f", v_NadirPoint[0]);
+	printf("\n");
+	printf("%f", v_NadirPoint[1]);
+	printf("\nIdeal Point Inicial\n");  // Son los mejores valores de objetivos
+	printf("%f", v_IdealPoint[0]);
+	printf("\n");
+	printf("%f\n", v_IdealPoint[1]);
+
 
 	int gen = 1;
 
@@ -62,11 +77,11 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 	this->SavePopulation(gen);
 	this->SaveFinalPopulation();
 
-	printf("\nNadir Point\n"); // Son los peores valores de objetivos
+	printf("\nNadir Point Final\n"); // Son los peores valores de objetivos
 	printf("%f", v_NadirPoint[0]);
 	printf("\n");
 	printf("%f", v_NadirPoint[1]);
-	printf("\nIdeal Point\n");  // Son los mejores valores de objetivos
+	printf("\nIdeal Point Final\n");  // Son los mejores valores de objetivos
 	printf("%f", v_IdealPoint[0]);
 	printf("\n");
 	printf("%f\n", v_IdealPoint[1]);
@@ -208,28 +223,8 @@ void CALG_EMO_MOEAD::InitializePopulation()
 
 		num_AEDs = rand() % (presupuesto + 1);
 
-		double factor_greedy;
+  		SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
         
-        if (i < s_PopulationSize * 0.1) {
-            factor_greedy = 0.0; // Casi puro greedy (elegir entre el top 1%)
-        } 
-        else if (i < s_PopulationSize * 0.9) { 
-            // El 20% de la población será "Bastante buena" (Greedy fuerte)
-            factor_greedy = 0.2; // Top 10%
-        } else {
-            // El 50% restante será aleatorio o semi-aleatorio para mantener diversidad
-            factor_greedy = 1.0; 
-        }
-
-        // Llamamos a la nueva función o a la antigua según el caso
-        if (factor_greedy <= 1) {
-            // Usar la función aleatoria original para máxima dispersión
-            SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
-        } else {
-            // Usar la nueva función Greedy
-            SP.m_BestIndividual.GenerateGreedyFeasibleSolution(num_AEDs, factor_greedy);
-        }
-
 
 		//SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
 		// Sin contar el presupuesto
@@ -265,7 +260,7 @@ void CALG_EMO_MOEAD::InitializePopulation()
 
 	readf.close();
 
-	this->FindNadirPoint_v2();
+	this->FindNadirPoint();
 
 	// if(s_PBI_type==3) 	NormalizeWeight();
 	
@@ -276,47 +271,6 @@ void CALG_EMO_MOEAD::InitializePopulation()
 }
 
 void CALG_EMO_MOEAD::FindNadirPoint()
-{
-
-	v_NadirPoint = vector<double>(NumberOfObjectives, -1.0e30);
-
-	for (int j = 0; j < NumberOfObjectives; j++)
-	{
-		//*
-		vector<double> weight_tch = vector<double>(NumberOfObjectives, 10e-6);
-		weight_tch[j] = 1;
-
-		double asf_min = 1.0e+30;
-		int asf_id = 0;
-		for (int s = 0; s < s_PopulationSize; s++)
-		{
-			double tch_max = -1.0e+30;
-			for (int k = 0; k < NumberOfObjectives; k++)
-			{
-				double temp = m_PopulationSOP[s].m_BestIndividual.f_obj[k] / weight_tch[k];
-				if (temp > tch_max)
-				{
-					tch_max = temp;
-				}
-			}
-			if (tch_max < asf_min)
-			{
-				asf_min = tch_max;
-				asf_id = s;
-			}
-		}
-		v_NadirPoint[j] = m_PopulationSOP[asf_id].m_BestIndividual.f_obj[j];
-	}
-
-	/*
-	for(int s=0; s<s_PopulationSize; s++)
-	{
-		this->NormalizeIndividual(m_PopulationSOP[s].m_BestIndividual);
-	}
-	*/
-}
-
-void CALG_EMO_MOEAD::FindNadirPoint_v2()
 {
 	// 1. Inicializamos el Nadir con un valor muy pequeño
 	v_NadirPoint = vector<double>(NumberOfObjectives, -1.0e+30);
@@ -615,10 +569,12 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 
 		child.problemInstance = this->problemInstance;
 
-		int opcion = 8;
+		int opcion = 4;
 
 		//double progress = (double)s_Fevals_Count / (double)NumberOfFuncEvals;
 		//if (progress > 1.0) progress = 1.0;
+
+		int percentage = 0.1;
 
 		if (opcion == 11) {
 			UtilityToolBox.MutacionBitFlip_1_N(child.x_var, m_MutationRate, this->problemInstance);
@@ -629,15 +585,15 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		} else if (opcion == 2){ 
 			UtilityToolBox.MutacionSwapProbabilistico(child.x_var, m_MutationRate, 0.05, this->problemInstance);
 		} else if (opcion == 31){ 
-			UtilityToolBox.Mutacion_Swap_1_N(child.x_var, m_MutationRate, 0.5, this->problemInstance);
+			UtilityToolBox.Mutacion_Swap_Porcentual_1_N(child.x_var, m_MutationRate, 0.5, percentage, this->problemInstance);
 		} else if (opcion == 32){ 
-			UtilityToolBox.Mutacion_Swap_1_M(child.x_var, m_MutationRate, 0.5, this->problemInstance);
+			UtilityToolBox.Mutacion_Swap_Porcentual_1_M(child.x_var, m_MutationRate, 0.5, s_PopulationSize, percentage, this->problemInstance);
 		} else if (opcion == 33){ 
-			UtilityToolBox.Mutacion_Swap_Fijo(child.x_var, m_MutationRate, 0.5, this->problemInstance);
+			UtilityToolBox.Mutacion_Swap_Porcentual_Fijo(child.x_var, m_MutationRate, 0.5, 0.01, percentage, this->problemInstance);
 		} else if (opcion == 4){ 
 			UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, m_MutationRate, 0.5, this->problemInstance);
 		} else if (opcion == 5){ 
-			UtilityToolBox.MutacionModificada_Porcentual(child.x_var, m_MutationRate, 0.3, 0.2, this->problemInstance);
+			UtilityToolBox.MutacionSwapPorcentual(child.x_var, m_MutationRate, percentage, this->problemInstance);
 		} else {
 			UtilityToolBox.MutacionDeletePorcentual(child.x_var, m_MutationRate, 0.1, this->problemInstance);
 		}
@@ -740,7 +696,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		// child.Show(0); getchar();
 
 		UpdateReference(child.f_obj);
-		//UpdateNadirPoint(child.f_obj);
+		UpdateNadirPoint(child.f_obj);
 
 		UpdateProblem_modificado(child, id_c);
 
@@ -748,7 +704,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 			break;
 	}
 
-	this->FindNadirPoint_v2();
+	this->FindNadirPoint();
 
 	// if(s_PBI_type==3)  this->NormalizeWeight();
 }

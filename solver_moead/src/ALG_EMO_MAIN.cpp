@@ -93,8 +93,13 @@ void PrintUsage() {
     std::cout << "\n--- Parámetros Evolutivos ---" << std::endl;
     std::cout << "  -mut <double>     : Tasa de Mutación Global [0.0 - 1.0] (Defecto: 0.05)" << std::endl;
     std::cout << "  -cross <double>   : Tasa de Cruzamiento [0.0 - 1.0] (Defecto: 1.0)" << std::endl;
-    std::cout << "  -op1 <double>     : Probabilidad del Operador 1 de Mutación [0.0 - 1.0] (Defecto: 0.5)" << std::endl;
-    std::cout << "                      (Si op1=1.0 solo se usa Delete, si op1=0.0 solo Swap)" << std::endl;
+    
+    std::cout << "\n--- Operadores Avanzados ---" << std::endl;
+    std::cout << "  -mutType <int>    : 1:BitFlip, 2:Intelligent, 3:Pct, 6:Hybrid (Def: 6)" << std::endl;
+    std::cout << "  -crossType <int>  : 1:Uniforme, 2:Inteligente (Def: 2)" << std::endl;
+    std::cout << "  -op1 <double>     : Prob. Op1 en Híbrido (Def: 0.2)" << std::endl;
+    std::cout << "  -mutPct <double>  : % Intensidad (Para MutType 3) (Def: 0.05)" << std::endl;
+    std::cout << "  -bitprob <double> : Prob. BitFlip individual (Def: 0.01)" << std::endl;
     
     std::cout << "\n--- Salida de Datos ---" << std::endl;
     std::cout << "  -outDir <string>  : Directorio específico donde guardar resultados (Opcional)" << std::endl;
@@ -133,6 +138,11 @@ int main(int argc, char *argv[])
     int decompType = 1;   // 1 por defecto (Tchebycheff)
     int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
+    int mutType = 5;     // Default: Híbrida
+    int crossType = 2;    // Default: Inteligente
+    double mutPct = 0.05; // Default: 5% intensidad para operadores porcentuales
+    double bitFlipProb = 0.01; // Default: 1% probabilidad para BitFlip Fijo
+
 	if (argc < 2) {
         PrintUsage();
         return 0;
@@ -167,6 +177,10 @@ int main(int argc, char *argv[])
         else if (arg == "-alg") { if (i + 1 < argc) algName = argv[++i]; }
 
         else if (arg == "-outDir") { if (i + 1 < argc) userOutputDir = argv[++i]; }
+        else if (arg == "-mutType") { if (i + 1 < argc) mutType = atoi(argv[++i]); }
+        else if (arg == "-crossType") { if (i + 1 < argc) crossType = atoi(argv[++i]); }
+        else if (arg == "-mutPct") { if (i + 1 < argc) mutPct = atof(argv[++i]); }
+        else if (arg == "-bitprob") { if (i + 1 < argc) bitFlipProb = atof(argv[++i]); }
 
     }
 
@@ -259,9 +273,11 @@ int main(int argc, char *argv[])
 
     std::cout << "\n [4] PARÁMETROS EVOLUTIVOS" << std::endl;
     std::cout << "     Mutación Global : " << mutationRate * 100.0 << "%" << std::endl;
+    std::cout << "     Mutation Type   : " << mutType << " (Pct: " << mutPct*100 << "%, Bit: " << bitFlipProb << ")" << std::endl;
     std::cout << "     Prob. Op1 (Del) : " << op1Prob * 100.0 << "%" << std::endl;
     std::cout << "     Prob. Op2 (Swap): " << (1.0 - op1Prob) * 100.0 << "%" << std::endl;
     std::cout << "     Cruzamiento     : " << crossoverRate * 100.0 << "%" << std::endl;
+    std::cout << "     Crossover Type  : " << crossType << std::endl;
     
     std::cout << "\n [5] SALIDA DE DATOS" << std::endl;
     std::cout << "     Destino       : " << rutaSalida << std::endl;
@@ -285,6 +301,10 @@ int main(int argc, char *argv[])
         MOEAD.SetMaxTime(maxTime);
         MOEAD.SetDecompositionType(decompType);
         MOEAD.SetSaveInterval(saveInterval);
+        MOEAD.SetMutationType(mutType);
+        MOEAD.SetCrossoverType(crossType);
+        MOEAD.SetMutationPercentage(mutPct);
+        MOEAD.SetBitFlipProb(bitFlipProb);
 
 		MOEAD.Execute(1); // Se ejecuta solo una vez
 	}

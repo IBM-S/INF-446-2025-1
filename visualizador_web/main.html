@@ -18,7 +18,8 @@
       --ok: #16a34a;
       --warn: #f59e0b;
       --danger: #ef4444;
-      --sidebar-width: 570px;
+      --sidebar-width: 480px;
+      /* Reducido para dar más espacio a los gráficos */
     }
 
     * {
@@ -28,53 +29,57 @@
     }
 
     body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      font-size: 20px;
+      font-size: 15px;
+      /* Tamaño más estándar para dashboards */
       line-height: 1.5;
     }
 
-    /* Layout principal */
+    /* --- LAYOUT --- */
     .main-layout {
       display: grid;
       grid-template-columns: var(--sidebar-width) 1fr;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    /* Sidebar */
+    /* --- SIDEBAR --- */
     .sidebar {
       background: var(--panel);
       border-right: 1px solid var(--border);
-      overflow-y: auto;
-      position: sticky;
-      top: 0;
+      display: flex;
+      flex-direction: column;
       height: 100vh;
+      overflow-y: auto;
     }
 
     .sidebar-header {
-      padding: 1.5rem;
-      border-bottom: 1px solid var(--border);
+      padding: 1.25rem;
       background: linear-gradient(135deg, var(--accent) 0%, #1e40af 100%);
       color: white;
     }
 
     .sidebar-header h1 {
-      font-size: 1.75rem;
+      font-size: 1.5rem;
       font-weight: 700;
-      margin-bottom: 0.25rem;
+      margin: 0;
     }
 
     .sidebar-header p {
-      font-size: 1rem;
+      font-size: 0.85rem;
       opacity: 0.9;
     }
 
     /* Tabs */
     .tabs {
       display: flex;
-      border-bottom: 1px solid var(--border);
       background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     .tab-btn {
@@ -84,169 +89,93 @@
       padding: 1rem;
       cursor: pointer;
       font-weight: 600;
-      font-size: 1rem;
       color: var(--muted);
-      border-bottom: 2px solid transparent;
+      border-bottom: 3px solid transparent;
       transition: all 0.2s;
     }
 
     .tab-btn:hover {
+      background: #f1f5f9;
       color: var(--text);
-      background: rgba(37, 99, 235, 0.05);
     }
 
     .tab-btn.active {
       color: var(--accent);
       border-bottom-color: var(--accent);
-      background: rgba(37, 99, 235, 0.05);
+      background: #f8fafc;
     }
 
-    /* Control panels */
+    /* Control Panels */
     .control-panel {
-      padding: 1.5rem;
+      padding: 1.25rem;
     }
 
     .panel-section {
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px dashed var(--border);
     }
 
-    .panel-section-title {
-      font-size: 1.1rem;
+    .panel-section:last-child {
+      border-bottom: none;
+    }
+
+    .panel-title {
+      font-size: 0.85rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
       color: var(--muted);
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
-    .field {
-      margin-bottom: 1.25rem;
-    }
-
-    .field label {
-      display: block;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 0.5rem;
-    }
-
-    /* Compact layouts para ahorrar espacio */
-    .compact-row {
-      display: flex;
-      align-items: center;
+    /* --- FORM GRIDS (Reemplaza compact-row, etc) --- */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 0.75rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
     }
 
-    .compact-row-triple {
+    .grid-3 {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-
-    .compact-row-split {
-      display: flex;
-      align-items: center;
       gap: 0.5rem;
-      margin: 0.75rem 0;
+      margin-bottom: 0.75rem;
     }
 
-    .compact-field {
-      display: flex;
-      flex-direction: column;
+    .form-group {
+      margin-bottom: 0.75rem;
     }
 
-    .compact-label {
-      font-size: 1.5rem;
+    label {
+      display: block;
+      font-size: 0.85rem;
       font-weight: 600;
       color: var(--text);
-      white-space: nowrap;
-      margin-bottom: 0.25rem;
-    }
-
-    .compact-select,
-    .compact-input {
-      flex: 1;
-      background: #fff;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 0.4rem;
-      padding: 0.5rem 0.65rem;
-      font-size: 1.5rem;
-    }
-
-    .compact-input-small {
-      width: 70px;
-      background: #fff;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 0.4rem;
-      padding: 0.5rem 0.65rem;
-      font-size: 0.95rem;
-    }
-
-    .btn-small {
-      padding: 0.5rem 0.75rem;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      color: var(--text);
-      border-radius: 0.4rem;
-      cursor: pointer;
-      font-size: 1.5rem;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .btn-small:hover {
-      background: var(--bg);
-      border-color: var(--muted);
-    }
-
-    .btn-group-horizontal {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin-top: 1rem;
-    }
-
-    .checkbox-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.3rem;
     }
 
     select,
     input[type="number"],
-    input[type="text"],
-    textarea {
+    input[type="text"] {
       width: 100%;
       background: #fff;
       color: var(--text);
       border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      padding: 0.75rem 0.875rem;
-      font-size: 1.5rem;
-      transition: all 0.2s;
+      border-radius: 0.375rem;
+      padding: 0.5rem;
+      font-size: 0.95rem;
+      transition: border 0.2s;
     }
 
     select:focus,
-    input:focus,
-    textarea:focus {
+    input:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    .input-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
     }
 
     /* Buttons */
@@ -255,21 +184,21 @@
       border: 1px solid var(--border);
       background: var(--panel);
       color: var(--text);
-      padding: 0.875rem 1.125rem;
-      border-radius: 0.5rem;
+      padding: 0.6rem;
+      border-radius: 0.375rem;
       cursor: pointer;
-      font-size: 1.4rem;
       font-weight: 600;
-      transition: all 0.2s;
+      font-size: 0.95rem;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
+      transition: all 0.2s;
     }
 
     .btn:hover {
-      background: var(--bg);
-      border-color: var(--muted);
+      background: #f1f5f9;
+      border-color: #cbd5e1;
     }
 
     .btn.primary {
@@ -281,14 +210,12 @@
     .btn.primary:hover {
       background: var(--accent-hover);
       border-color: var(--accent-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
 
-    .btn-group {
-      display: grid;
-      gap: 0.5rem;
-      margin-top: 1rem;
+    .btn-sm {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.85rem;
+      width: auto;
     }
 
     /* Checkboxes */
@@ -302,88 +229,80 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 1.5rem;
-      color: var(--text);
+      font-size: 0.9rem;
       cursor: pointer;
     }
 
-    .checkbox-label input[type="checkbox"] {
+    input[type="checkbox"] {
       width: auto;
       cursor: pointer;
     }
 
-    /* Status badge */
+    /* Status Badge */
     .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.625rem 0.875rem;
-      border-radius: 0.5rem;
-      font-size: 1rem;
+      display: block;
+      text-align: center;
+      padding: 0.5rem;
+      border-radius: 0.375rem;
       font-weight: 600;
-      background: var(--bg);
+      font-size: 0.9rem;
+      background: #f1f5f9;
       border: 1px solid var(--border);
+      color: var(--muted);
     }
 
-    .status-badge.loading {
-      background: rgba(245, 158, 11, 0.1);
-      border-color: var(--warn);
-      color: var(--warn);
-    }
-
-    .status-badge.success {
-      background: rgba(22, 163, 74, 0.1);
-      border-color: var(--ok);
-      color: var(--ok);
-    }
-
-    .status-badge.error {
-      background: rgba(239, 68, 68, 0.1);
-      border-color: var(--danger);
-      color: var(--danger);
-    }
-
-    /* Content area */
+    /* --- CONTENT AREA --- */
     .content-area {
       overflow-y: auto;
-      height: 100vh;
+      padding: 0;
+      background: var(--bg);
     }
 
     .section {
       display: none;
-      padding: 2rem;
+      padding: 1.5rem;
+      max-width: 1800px;
+      margin: 0 auto;
     }
 
     .section.active {
       display: block;
+      animation: fadeIn 0.3s ease-in-out;
     }
 
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
     }
 
     .card-title {
-      font-size: 1.5rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 1rem;
+      margin: 0;
     }
 
-    /* Stats grid */
-    .stats-grid {
+    /* Stats Grid */
+    .stats-container {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 1rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
 
-    .stat-card {
-      background: var(--bg);
+    .stat-box {
+      background: #f8fafc;
       border: 1px solid var(--border);
       border-radius: 0.5rem;
       padding: 1rem;
@@ -391,580 +310,461 @@
     }
 
     .stat-label {
-      font-size: 1rem;
+      font-size: 0.75rem;
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
     }
 
-    .stat-value {
-      font-size: 2rem;
+    .stat-val {
+      font-size: 1.5rem;
       font-weight: 700;
       color: var(--text);
     }
 
-    /* Plots */
-    .plot-container {
-      background: #fff;
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
       border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      padding: 1rem;
-      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
     }
 
-    #plot {
-      height: 600px;
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 0.6rem 0.8rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table th {
+      background: #f1f5f9;
+      font-weight: 600;
+      color: var(--muted);
+      position: sticky;
+      top: 0;
+    }
+
+    .data-table tr:hover {
+      background: #f8fafc;
+    }
+
+    .btn-link {
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 0.85rem;
+    }
+
+    /* Plots Layout */
+    .split-view {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .plot-box {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      min-height: 450px;
+    }
+
+    #plot,
+    #map-plot {
+      height: 500px;
     }
 
     #hv-plot,
     #history-plot {
-      height: 450px;
+      height: 350px;
     }
 
-    #map-plot {
-      height: 600px;
-    }
-
-    /* Grid para HV y History lado a lado */
-    .charts-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    /* Slider */
-    .slider-container {
-      margin-top: 1rem;
-      padding: 1rem;
-      background: var(--bg);
-      border-radius: 0.5rem;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      height: 6px;
-      border-radius: 3px;
-      background: var(--border);
-      outline: none;
-    }
-
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--accent);
-      cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    input[type="range"]::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--accent);
-      cursor: pointer;
-      border: none;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .gen-label {
-      text-align: center;
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: var(--text);
-      margin-top: 0.5rem;
-    }
-
-    /* Split view */
-    .split-view {
-      display: grid;
-      grid-template-columns: 60% 40%;
-      gap: 1.5rem;
-    }
-
-    /* Map view */
-    .map-view {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      padding: 1rem;
-    }
-
-    .map-tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .map-tab-btn {
-      padding: 0.5rem 1rem;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      border-radius: 0.5rem;
-      cursor: pointer;
-      font-size: 0.875rem;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .map-tab-btn.active {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
-
+    /* Map Specific */
     #map-image {
       width: 100%;
-      border-radius: 0.5rem;
+      border-radius: 0.375rem;
       border: 1px solid var(--border);
     }
 
     #map-stats {
-      margin-top: 1rem;
-      padding: 1rem;
-      background: var(--bg);
-      border-radius: 0.5rem;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9rem;
-      white-space: pre-wrap;
-    }
-
-    /* Builder specific */
-    #builder-canvas {
-      width: 100%;
-      max-width: 100%;
-      border: 2px dashed var(--border);
-      border-radius: 0.75rem;
-      background: #fff;
-      cursor: crosshair;
-    }
-
-    #points-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.875rem;
-      margin-top: 1rem;
-    }
-
-    #points-table th,
-    #points-table td {
-      border: 1px solid var(--border);
+      margin-top: 0.75rem;
       padding: 0.75rem;
-      text-align: center;
+      background: #f8fafc;
+      border-radius: 0.375rem;
+      font-family: monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      border: 1px solid var(--border);
     }
 
-    #points-table th {
-      background: var(--bg);
-      font-weight: 600;
+    /* Slider */
+    .slider-box {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: #f8fafc;
+      border-radius: 0.375rem;
     }
 
-    /* Responsive */
-    @media (max-width: 1400px) {
+    input[type="range"] {
+      width: 100%;
+      cursor: pointer;
+    }
+
+    /* Utilities */
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 1200px) {
       .main-layout {
         grid-template-columns: 1fr;
       }
 
       .sidebar {
-        position: relative;
         height: auto;
-        border-right: none;
         border-bottom: 1px solid var(--border);
+        border-right: none;
+        position: relative;
       }
 
-      .split-view {
+      .split-view,
+      .stats-container {
         grid-template-columns: 1fr;
       }
-
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .charts-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Loading spinner */
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid var(--border);
-      border-top-color: currentColor;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
     }
   </style>
 </head>
 
 <body>
   <div class="main-layout">
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR DE CONTROLES -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <h1>MOEA/D</h1>
-        <p>Multi-Objective Evolutionary Algorithm</p>
+        <p>Optimizador Multiobjetivo</p>
       </div>
 
-      <!-- Tabs -->
       <div class="tabs">
-        <button id="btn-tab-visualizador" class="tab-btn active">Visualizar</button>
-        <button id="btn-tab-builder" class="tab-btn">Crear</button>
-        <button id="btn-tab-all" class="tab-btn">Comparar</button>
+        <button id="btn-tab-visualizador" class="tab-btn active" onclick="showTab('visualizador')">Visualizar</button>
+        <button id="btn-tab-builder" class="tab-btn" onclick="showTab('builder')">Crear</button>
+        <button id="btn-tab-all" class="tab-btn" onclick="showTab('all')">Comparar</button>
       </div>
 
-      <!-- VISUALIZADOR CONTROLS -->
+      <!-- PANEL: VISUALIZADOR -->
       <div id="controls-visualizador" class="control-panel">
+
+        <!-- 1. Selección de Instancia -->
         <div class="panel-section">
-          <div class="panel-section-title">📊 CONFIGURACIÓN</div>
-
-          <div class="compact-row">
-            <label class="compact-label">Instancia</label>
-            <select id="instancia" class="compact-select"></select>
+          <div class="panel-title">📂 Selección</div>
+          <div class="form-group">
+            <label>Instancia</label>
+            <select id="instancia"></select>
           </div>
+        </div>
 
-          <div class="compact-row-triple">
-            <div class="compact-field">
-              <label class="compact-label">N° Eval</label>
-              <input id="neval" type="number" value="10000" min="100" step="1000" class="compact-input" />
-            </div>
-            <div class="compact-field">
-              <label class="compact-label">Población</label>
-              <select id="pop" class="compact-select">
+        <!-- 2. Parámetros del Algoritmo -->
+        <div class="panel-section">
+          <div class="panel-title">⚙️ Parámetros</div>
+
+          <div class="grid-3">
+            <div><label>N° Eval</label><input id="neval" type="number" value="10000" step="1000"></div>
+            <div><label>Población</label>
+              <select id="pop">
                 <option value="100" selected>100</option>
                 <option value="200">200</option>
                 <option value="300">300</option>
                 <option value="500">500</option>
-                <option value="1000">1000</option>
               </select>
             </div>
-            <div class="compact-field">
-              <label class="compact-label">Vecindario</label>
-              <select id="neighbor" class="compact-select">
+            <div><label>Vecindario</label>
+              <select id="neighbor">
                 <option value="10">10</option>
                 <option value="20" selected>20</option>
                 <option value="30">30</option>
                 <option value="50">50</option>
-                <option value="100">100</option>
               </select>
             </div>
           </div>
 
-          <div class="compact-row-triple">
-            <div class="compact-field">
-              <label class="compact-label">Seed</label>
-              <input id="seed" type="number" class="compact-input" />
-            </div>
-
-            <div class="compact-field">
-              <label class="compact-label">Decomp</label>
-              <select id="decomp" class="compact-select">
-                <option value="1" selected>TCH</option>
+          <div class="grid-3">
+            <div><label>Semilla</label><input id="seed" type="number"></div>
+            <div><label>Decomp</label>
+              <select id="decomp">
+                <option value="1">TCH</option>
                 <option value="2">Mod</option>
                 <option value="3">PBI</option>
               </select>
             </div>
-
-            <div class="compact-field">
-              <label class="compact-label">Mut</label>
-              <input id="mut" type="number" step="0.01" min="0" max="1" value="0.3" class="compact-input" />
-            </div>
+            <div style="display:flex; align-items:flex-end;"><button id="btn-new-seed" class="btn btn-sm">🎲
+                Random</button></div>
           </div>
 
-          <div class="compact-row-triple">
-            <div class="compact-field">
-              <label class="compact-label">Cross</label>
-              <input id="cross" type="number" step="0.01" min="0" max="1" value="1.0" class="compact-input" />
-            </div>
-
-            <div class="compact-field">
-              <label class="compact-label">Op1</label>
-              <input id="op1" type="number" step="0.01" min="0" max="1" value="0.2" class="compact-input" />
-            </div>
-
-            <div class="compact-field">
-              <label class="compact-label">Nueva seed</label>
-              <button id="btn-new-seed" class="btn-small">🔁</button>
-            </div>
+          <div class="grid-3">
+            <div><label>Mutación</label><input id="mut" type="number" step="0.1" value="0.3"></div>
+            <div><label>Cruce</label><input id="cross" type="number" step="0.1" value="1.0"></div>
+            <div><label>Op1</label><input id="op1" type="number" step="0.1" value="0.2"></div>
           </div>
 
-
-          <div class="btn-group-horizontal">
-            <button class="btn primary" id="btn-ejecutar">Ejecutar Algoritmo</button>
-            <button class="btn" id="load-btn">Cargar Resultados</button>
+          <div class="grid-2">
+            <button class="btn primary" id="btn-ejecutar">▶ Ejecutar</button>
+            <button class="btn" id="load-btn">📂 Cargar</button>
           </div>
         </div>
 
+        <!-- 3. Comparación AMPL -->
         <div class="panel-section">
-          <div class="panel-section-title">🔍 COMPARAR AMPL</div>
-
-          <div class="compact-row">
-            <label class="compact-label">Frente AMPL</label>
-            <select id="ampl-instancia" class="compact-select">
-              <option value="">(Sin comparar)</option>
-            </select>
+          <div class="panel-title">⚖️ Comparar con AMPL</div>
+          <div class="form-group">
+            <label>Frente Óptimo (AMPL)</label>
+            <div style="display:flex; gap:0.5rem;">
+              <select id="ampl-instancia">
+                <option value="">(Sin comparar)</option>
+              </select>
+              <button class="btn btn-sm" id="load-ampl-btn" style="width:auto;">Cargar</button>
+            </div>
+            <div id="ampl-status" style="font-size:0.8rem; color:var(--muted); margin-top:0.3rem;"></div>
           </div>
-
-          <button class="btn" id="load-ampl-btn">Cargar frente AMPL</button>
-          <div id="ampl-status" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--muted);"></div>
         </div>
 
+        <!-- 4. Visualización -->
         <div class="panel-section">
-          <div class="panel-section-title">🎨 VISUALIZACIÓN</div>
-          <div class="checkbox-grid">
-            <label class="checkbox-label">
-              <input type="checkbox" id="fix-scale" checked />
-              Usar misma escala
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="toggle-prob" checked />
-              Prob. en mapa
-            </label>
+          <div class="panel-title">👁️ Visualización</div>
+          <div class="grid-2">
+            <label class="checkbox-label"><input type="checkbox" id="fix-scale" checked> Misma escala</label>
+            <label class="checkbox-label"><input type="checkbox" id="toggle-prob" checked> Prob. Mapa</label>
+            <label class="checkbox-label"><input type="checkbox" id="show-ref-point"> Ref. Point</label>
           </div>
-          <label class="checkbox-label">
-            <input type="checkbox" id="show-ref-point" />
-            Mostrar punto de referencia
-          </label>
         </div>
 
+        <!-- 5. Análisis Histórico -->
         <div class="panel-section">
-          <div class="panel-section-title">📈 HIPERVOLUMEN</div>
-          <div class="compact-row-split">
-            <label class="compact-label">HV cada</label>
-            <input id="hv-every" type="number" min="1" step="1" value="10" class="compact-input-small" />
-            <span class="compact-label">gens</span>
-            <button class="btn-small" id="btn-hv-every">Aplicar</button>
+          <div class="panel-title">📈 Análisis Histórico</div>
+          <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+            <label style="margin:0;">HV cada:</label>
+            <input id="hv-every" type="number" value="10" style="width:60px; padding:0.3rem;">
+            <span style="font-size:0.85rem;">gens</span>
+            <button class="btn btn-sm" id="btn-hv-every" style="flex:1;">Aplicar</button>
           </div>
-
-          <button class="btn" id="btn-hv-history">Ver historial HV completo</button>
+          <button class="btn" id="btn-hv-history">Ver Historial HV Completo</button>
         </div>
 
-        <div class="panel-section">
-          <div class="panel-section-title">ℹ️ ESTADO</div>
-          <div id="status" class="status-badge">Listo</div>
-        </div>
+        <div id="status" class="status-badge">Sistema Listo</div>
       </div>
 
-      <!-- BUILDER CONTROLS -->
-      <div id="controls-builder" class="control-panel" style="display: none;">
+      <!-- PANEL: BUILDER (Oculto por defecto) -->
+      <div id="controls-builder" class="control-panel hidden">
         <div class="panel-section">
-          <div class="panel-section-title">🎯 Nueva Instancia</div>
-
-          <div class="field">
-            <label for="ib-name">Nombre</label>
-            <input type="text" id="ib-name" placeholder="Ej: Escuela_A.dat" />
+          <div class="panel-title">Nueva Instancia</div>
+          <div class="form-group">
+            <label>Nombre (.dat)</label>
+            <input type="text" id="ib-name" placeholder="Ej: Escuela_A.dat">
           </div>
 
-          <div class="field">
-            <label for="ib-mode">Modo</label>
-            <select id="ib-mode">
-              <option value="0">Marcar demanda (OHCA)</option>
-              <option value="1">Marcar AED preinstalado</option>
-            </select>
-          </div>
-
-          <div class="input-group">
-            <div class="field">
-              <label for="ib-prob">Probabilidad</label>
-              <input type="number" id="ib-prob" step="0.01" min="0.1" max="1.0" value="1.0" />
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Modo</label>
+              <select id="ib-mode">
+                <option value="0">Demanda (OHCA)</option>
+                <option value="1">Preinstalado</option>
+              </select>
             </div>
-            <div class="field">
-              <label for="ib-grid">Cuadrícula (px)</label>
-              <input type="number" id="ib-grid" step="5" min="10" value="50" />
-            </div>
+            <div><label>Grid</label><input type="number" id="ib-grid" value="50"></div>
           </div>
 
-          <label class="checkbox-label">
-            <input type="checkbox" id="ib-grid-on" />
-            Mostrar cuadrícula
+          <label class="checkbox-label" style="margin-bottom:1rem;">
+            <input type="checkbox" id="ib-grid-on"> Mostrar cuadrícula
           </label>
-        </div>
 
-        <div class="panel-section">
-          <div class="panel-section-title">🖼️ Imagen de fondo</div>
-          <input type="file" id="ib-file" accept="image/*" style="font-size: 0.875rem;" />
-          <button class="btn" id="ib-upload" style="margin-top: 0.5rem;">
-            Subir imagen
-          </button>
-        </div>
-
-        <div class="panel-section">
-          <div class="panel-section-title">⚙️ Parámetros</div>
-
-          <div class="input-group">
-            <div class="field">
-              <label for="ib-P">Presupuesto (P)</label>
-              <input id="ib-P" type="number" value="100000" />
-            </div>
-            <div class="field">
-              <label for="ib-R">Radio (R)</label>
-              <input id="ib-R" type="number" value="800" />
-            </div>
-          </div>
-
-          <div class="input-group">
-            <div class="field">
-              <label for="ib-c1">Costo inst. (c1)</label>
-              <input id="ib-c1" type="number" step="0.01" value="1.0" />
-            </div>
-            <div class="field">
-              <label for="ib-c2">Costo reub. (c2)</label>
-              <input id="ib-c2" type="number" step="0.01" value="1.0" />
-            </div>
+          <div class="form-group">
+            <label>Imagen de fondo</label>
+            <input type="file" id="ib-file" accept="image/*">
+            <button class="btn btn-sm" id="ib-upload" style="margin-top:0.5rem;">Subir</button>
           </div>
         </div>
 
-        <div class="btn-group">
-          <button class="btn" id="ib-undo">↶ Deshacer</button>
-          <button class="btn" id="ib-clear">🗑️ Limpiar</button>
-          <button class="btn primary" id="ib-save">💾 Guardar Instancia</button>
+        <div class="panel-section">
+          <div class="panel-title">Parámetros Instancia</div>
+          <div class="grid-2">
+            <div><label>Presupuesto (P)</label><input id="ib-P" type="number" value="100000"></div>
+            <div><label>Radio (R)</label><input id="ib-R" type="number" value="800"></div>
+            <div><label>Costo Inst.</label><input id="ib-c1" type="number" value="1.0"></div>
+            <div><label>Costo Reub.</label><input id="ib-c2" type="number" value="1.0"></div>
+          </div>
         </div>
+
+        <div class="grid-2">
+          <button class="btn" id="ib-undo">Deshacer</button>
+          <button class="btn" id="ib-clear">Limpiar</button>
+        </div>
+        <button class="btn primary" id="ib-save" style="margin-top:0.5rem;">💾 Guardar Instancia</button>
       </div>
 
-      <!-- ALL CONTROLS -->
-      <div id="controls-all" class="control-panel" style="display: none;">
+      <!-- PANEL: ALL (Oculto) -->
+      <div id="controls-all" class="control-panel hidden">
         <div class="panel-section">
-          <div class="panel-section-title">🔍 Opciones</div>
-          <div class="checkbox-group">
-            <label class="checkbox-label">
-              <input type="checkbox" id="toggle-prob-all" checked />
-              Probabilidad en mapa
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="fix-scale-all" checked />
-              Misma escala
-            </label>
-          </div>
+          <div class="panel-title">Opciones Globales</div>
+          <label class="checkbox-label"><input type="checkbox" id="toggle-prob-all" checked> Probabilidad en
+            mapa</label>
+          <label class="checkbox-label"><input type="checkbox" id="fix-scale-all" checked> Escala unificada</label>
         </div>
-        <div class="panel-section">
-          <div id="status-all" class="status-badge">Sin cargar</div>
-        </div>
+        <div id="status-all" class="status-badge">Sin cargar</div>
       </div>
     </aside>
 
-    <!-- CONTENT AREA -->
+    <!-- ÁREA DE CONTENIDO -->
     <main class="content-area">
-      <!-- SECCIÓN VISUALIZADOR -->
+
+      <!-- VISTA: VISUALIZADOR -->
       <section id="tab-visualizador" class="section active">
+
         <div class="card">
           <div class="card-title">Estadísticas de Hipervolumen</div>
-          <div class="stats-grid">
-            <div class="stat-card">
+          <div class="stats-container">
+            <div class="stat-box">
               <div class="stat-label">HV AMPL (Óptimo)</div>
-              <div class="stat-value" id="hv-ampl-opt">—</div>
+              <div class="stat-val" id="hv-ampl-opt">-</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-box">
               <div class="stat-label">HV MOEA/D</div>
-              <div class="stat-value" id="hv-moead">—</div>
+              <div class="stat-val" id="hv-moead">-</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-box">
               <div class="stat-label">Gap (%)</div>
-              <div class="stat-value" id="hv-gap">—</div>
+              <div class="stat-val" id="hv-gap">-</div>
             </div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-title">Estadísticas de tiempo</div>
-          <div class="stats-grid">
-            <div class="stat-card">
+          <div class="stats-container">
+            <div class="stat-box">
               <div class="stat-label">Tiempo promedio AMPL</div>
-              <div class="stat-value">
+              <div class="stat-val">
                 <span id="time-ampl-span">-</span> s
               </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-box">
               <div class="stat-label">Tiempo MOEA/D (aproximado)</div>
-              <div class="stat-value">
+              <div class="stat-val">
                 <span id="time-moead-span">-</span> s
               </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-box">
               <div class="stat-label">Gap de tiempo</div>
-              <div class="stat-value">
+              <div class="stat-val">
                 <span id="time-gap-span">-</span> %
               </div>
             </div>
           </div>
         </div>
 
+        <!-- Tabla de Historial (Mejorada) -->
         <div class="card">
-          <div class="card-title">Historial de corridas (HV)</div>
+          <div class="card-header">
+            <h3 class="card-title">Historial de Ejecuciones</h3>
+            <span id="history-count" style="font-size:0.85rem; color:var(--muted);">0 registros</span>
+          </div>
 
-          <table style="width:100%; font-size:14px;">
-            <thead>
-              <tr>
-                <th style="text-align:left;">Fecha</th>
-                <th style="text-align:left;">HV</th>
-              </tr>
-            </thead>
-            <tbody id="runs-tbody"></tbody>
-          </table>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="text-align:left;">Fecha</th>
+                  <th>HV</th>
+                  <th>N°Eval</th>
+                  <th>Pop</th>
+                  <th>Vecino</th>
+                  <th>Mut</th>
+                  <th>Cross</th>
+                  <th>Op1</th>
+                  <th>Tiempo(s)</th>
+                </tr>
+              </thead>
+              <tbody id="runs-tbody">
+                <!-- Se llenará con JS -->
+              </tbody>
+            </table>
+          </div>
 
-          <div id="run-detail" style="margin-top:12px; display:none; font-size:14px;"></div>
+          <div style="text-align:center; margin-top:0.5rem;">
+            <button id="btn-history-load-more" class="btn-link" style="display:none;">Ver todo el historial</button>
+          </div>
         </div>
 
-
+        <!-- Gráficos Principales -->
         <div class="split-view">
-          <div>
-            <div class="card">
-              <div class="card-title">Frente de Pareto</div>
-              <div class="plot-container">
-                <div id="plot"></div>
-              </div>
-              <div id="slider-container" class="slider-container" style="display:none;">
-                <input type="range" id="slider" min="0" max="0" value="0" />
-                <div class="gen-label">Generación: <span id="gen-num">1</span></div>
+          <!-- Gráfico de Pareto -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Frente de Pareto</h3>
+            </div>
+            <div id="plot" class="plot-box"></div>
+
+            <div class="slider-box">
+              <input type="range" id="slider" min="0" max="0" value="0">
+              <div style="text-align:center; margin-top:0.5rem; font-weight:600;">
+                Generación: <span id="gen-num" style="color:var(--accent);">0</span>
               </div>
             </div>
           </div>
 
-          <div class="map-view">
-            <div class="map-tabs">
-              <button id="btn-toggle-map" class="map-tab-btn active hidden">
-                Ver mapa interactivo
-              </button>
+          <!-- Mapa Interactivo -->
+          <div class="card" style="display:flex; flex-direction:column;">
+            <div class="card-header">
+              <h3 class="card-title">Mapa de Solución</h3>
+              <div class="map-tabs">
+                <button id="btn-toggle-map" class="btn btn-sm hidden">Ver Interactivo</button>
+              </div>
             </div>
 
-            <div id="map-image-container" class="hidden">
-              <img id="map-image" src="" alt="Mapa AEDs">
+            <div style="flex:1; display:flex; flex-direction:column;">
+              <div id="map-image-container" class="hidden" style="text-align:center;">
+                <img id="map-image" src="" alt="Mapa de Solución">
+              </div>
+              <div id="map-plot-container" class="hidden" style="flex:1;">
+                <div id="map-plot" class="plot-box"></div>
+              </div>
+              <pre id="map-stats" class="hidden"></pre>
             </div>
-
-            <div id="map-plot-container" class="hidden">
-              <div id="map-plot"></div>
-            </div>
-
-            <pre id="map-stats"></pre>
           </div>
         </div>
 
-        <div class="charts-grid">
+        <!-- Gráficos Secundarios -->
+        <div class="split-view">
           <div class="card">
-            <div class="card-title">Evolución del Hipervolumen</div>
-            <div class="plot-container">
-              <div id="hv-plot"></div>
+            <div class="card-header">
+              <h3 class="card-title">Evolución del Hipervolumen</h3>
             </div>
+            <div id="hv-plot"></div>
           </div>
-
           <div class="card">
-            <div class="card-title">Historial de Frentes</div>
-            <div class="plot-container">
-              <div id="history-plot"></div>
+            <div class="card-header">
+              <h3 class="card-title">Trayectoria de Frentes</h3>
             </div>
+            <div id="history-plot"></div>
           </div>
         </div>
       </section>
@@ -1044,1507 +844,1284 @@
         </div>
       </section>
 
-      <!-- SECCIÓN: Todas las instancias -->
+      <!-- VISTA: COMPARAR TODOS -->
       <section id="tab-all" class="section">
-        <div class="wrap">
-          <div class="card">
-            <div class="row">
-              <label class="hint"><input type="checkbox" id="toggle-prob-all" checked /> Probabilidad en mapa</label>
-              <label class="hint"><input type="checkbox" id="fix-scale-all" checked /> Misma escala</label>
-              <span id="status-all" class="hint">Sin cargar</span>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Comparación masiva (MOEA/D vs AMPL)</h3>
+          </div>
+
+          <div class="grid-2" style="gap:1rem;">
+            <div>
+              <label class="label">Algoritmo</label>
+              <select id="compare-alg" class="input">
+                <option value="MOEAD">MOEAD</option>
+                <option value="MOEAD-DE">MOEAD-DE</option>
+              </select>
+            </div>
+            <div>
+              <label class="label">Variante</label>
+              <select id="compare-variant" class="input">
+                <option value="location">Location</option>
+                <option value="relocation">Relocation</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="label">N° Eval (neval)</label>
+              <input id="compare-neval" class="input" type="number" value="20000" />
+            </div>
+            <div>
+              <label class="label">Población (pop)</label>
+              <input id="compare-pop" class="input" type="number" value="100" />
+            </div>
+
+            <div>
+              <label class="label">Vecindario (neighbor)</label>
+              <input id="compare-neighbor" class="input" type="number" value="20" />
+            </div>
+            <div>
+              <label class="label">DecompType</label>
+              <input id="compare-decomp" class="input" type="number" value="1" />
+            </div>
+
+            <div>
+              <label class="label">Mutación (mut)</label>
+              <input id="compare-mut" class="input" type="number" step="0.01" value="0.1" />
+            </div>
+            <div>
+              <label class="label">Cruzamiento (cross)</label>
+              <input id="compare-cross" class="input" type="number" step="0.01" value="0.9" />
+            </div>
+
+            <div>
+              <label class="label">probOp1 (op1)</label>
+              <input id="compare-op1" class="input" type="number" step="0.01" value="0.5" />
+            </div>
+            <div>
+              <label class="label">Seed (vacío = random)</label>
+              <input id="compare-seed" class="input" type="number" placeholder="(opcional)" />
             </div>
           </div>
-          <div id="all-grid" class="all-grid"></div>
+
+          <div class="compare-toolbar">
+            <button id="btn-compare-run" class="btn btn-primary">
+              Ejecutar comparación (All.inst)
+            </button>
+
+            <button id="btn-compare-load" class="btn btn-secondary">
+              Cargar generación (última comparación)
+            </button>
+          </div>
+
+
+          <div id="compare-errors" style="margin-top:0.75rem; color:var(--danger); font-size:0.9rem;"></div>
         </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Resultados</h3>
+            <span style="font-size:0.85rem; color:var(--muted);">(clic en una fila para graficar frentes)</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="text-align:left;">Instancia</th>
+                  <th>HV AMPL</th>
+                  <th>HV MOEA/D</th>
+                  <th>Gap HV (%)</th>
+                  <th>t AMPL (s)</th>
+                  <th>t MOEA/D (s)</th>
+                  <th>Gap t (%)</th>
+                  <th>Archivos</th>
+                </tr>
+              </thead>
+              <tbody id="compare-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Frentes (GEN0 vs Último vs AMPL)</h3>
+          </div>
+          <div id="compare-plot" style="height:420px;"></div>
+        </div>
+
+        <!-- Debajo dejamos la vista antigua (historial de HV guardado) -->
+        <div id="all-grid"
+          style="display:grid; grid-template-columns:repeat(auto-fit, minmax(400px, 1fr)); gap:1.5rem;"></div>
       </section>
 
+    </main>
+  </div>
 
+  <script>
+    /**
+     * ============================================================================
+     * MOEA/D VISUALIZER - APP MODULE
+     * ============================================================================
+     */
+    const APP = {
+      // Estado Global de la Aplicación
+      state: {
+        frames: [],           // Datos de cada generación
+        genNumbers: [],       // Números reales de generación (0, 10, 20...)
+        hvValues: [],         // Historial de Hipervolumen
+        runHistory: [],       // Tabla de historial de ejecuciones
+        amplPoints: null,     // Puntos del frente AMPL (si se cargan)
+        refPoint: null,       // Punto de referencia
+        hvOpt: null,          // HV Óptimo
+        limits: { xMin: Infinity, xMax: -Infinity, yMin: Infinity, yMax: -Infinity }, // Límites globales para escala fija
+        currentMapData: null, // Datos para el mapa interactivo
+        lastInst: null        // Última instancia seleccionada
+      },
 
-      <script>
+      // Referencias al DOM (Cache)
+      dom: {},
 
-        // ===== Helpers =====
-        const $ = (s, r = document) => r.querySelector(s);
-        const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-        const PLOTLY_CFG = { responsive: true, displayModeBar: false };
+      /**
+       * Inicialización
+       */
+      init() {
+        // Cachear elementos por ID
+        document.querySelectorAll('[id]').forEach(el => this.dom[el.id] = el);
 
-        let currentMapJsonData = null;
+        // Configurar Event Listeners
+        this.setupEvents();
 
+        // Cargar datos iniciales
+        this.api.listInstances();
+        this.api.listAmpl();
+        this.ui.setRandomSeed();
+      },
 
-        // === Tooltips compactos + panel de detalle ===
-        function compressRanges(ids, maxTokens = 10) {
-          if (!Array.isArray(ids) || !ids.length) return [];
-          const arr = [...new Set(ids)].sort((a, b) => a - b);
-          const out = [];
-          let s = arr[0], p = arr[0];
-          const push = (a, b) => out.push(a === b ? `${a}` : `${a}–${b}`);
-          for (let i = 1; i < arr.length; i++) {
-            const v = arr[i];
-            if (v === p + 1) { p = v; continue; }
-            push(s, p); s = p = v;
-          }
-          push(s, p);
-          if (out.length > maxTokens) {
-            const head = out.slice(0, maxTokens).join(', ');
-            return [head + ` … (+${out.length - maxTokens} más)`];
-          }
-          return out;
-        }
+      /**
+       * Configuración de Eventos
+       */
+      setupEvents() {
+        const d = this.dom;
 
-        // texto de hover resumido: coord + conteo + ids comprimidos
-        function mkHoverTextPt(p, maxTokens = 8) {
-          const ids = p.ids || [];
-          const ranges = compressRanges(ids, maxTokens).join(', ');
-          return `(${Number(p.x).toFixed(2)}, ${Number(p.y).toFixed(2)})<br>` +
-            `IDs (${ids.length}): ${ranges}`;
-        }
+        // Botones Principales
+        d['btn-ejecutar'].onclick = () => this.logic.runAlgorithm(0);
+        d['load-btn'].onclick = () => this.logic.loadSaved();
+        d['btn-hv-every'].onclick = () => this.logic.runAlgorithm(parseInt(d['hv-every'].value) || 10);
+        d['btn-hv-history'].onclick = () => this.logic.runAlgorithm(1); // 1 = todas las gens
+        d['btn-new-seed'].onclick = () => this.ui.setRandomSeed();
 
-        // crea (si no existe) un panel debajo del gráfico para ver/copy el detalle
-        function ensureDetailPanelAfter(plotElOrId, suffix = 'main') {
-          const plotEl = typeof plotElOrId === 'string' ? document.getElementById(plotElOrId) : plotElOrId;
-          let panel = document.getElementById('ids-panel-' + suffix);
-          if (!panel) {
-            panel = document.createElement('div');
-            panel.id = 'ids-panel-' + suffix;
-            panel.style.marginTop = '8px';
-            panel.style.padding = '8px';
-            panel.style.border = '1px solid #e3e3e3';
-            panel.style.borderRadius = '8px';
-            panel.style.maxHeight = '140px';
-            panel.style.overflow = 'auto';
-            panel.style.fontSize = '12px';
-            plotEl.parentNode.insertBefore(panel, plotEl.nextSibling);
-          }
-          return panel;
-        }
+        // Comparación
+        d['load-ampl-btn'].onclick = () => this.logic.loadAmpl();
+        // Comparación masiva (All.inst)
+        if (d['btn-compare-all-run']) d['btn-compare-all-run'].onclick = () => this.logic.compareAll();
 
-        // ===== Tabs =====
-        const tabVisBtn = $('#btn-tab-visualizador');
-        const tabBldBtn = $('#btn-tab-builder');
-        const tabAllBtn = $('#btn-tab-all');
-        const tabVis = $('#tab-visualizador');
-        const tabBld = $('#tab-builder');
-        const tabAll = $('#tab-all');
-        function showTab(which) {
-          const vis = which === 'visualizador';
-          const bld = which === 'builder';
-          const all = which === 'all';
+        // Inputs
+        d['instancia'].onchange = () => this.logic.refreshHistory();
 
-          tabVis.classList.toggle('active', vis); tabVisBtn.classList.toggle('active', vis);
-          tabBld.classList.toggle('active', bld); tabBldBtn.classList.toggle('active', bld);
-          tabAll.classList.toggle('active', all); tabAllBtn.classList.toggle('active', all);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          if (all) buildAllDashboard();
-        }
-        tabVisBtn.addEventListener('click', () => showTab('visualizador'));
-        tabBldBtn.addEventListener('click', () => showTab('builder'));
-        tabAllBtn.addEventListener('click', () => showTab('all'));
+        // Slider y Visualización
+        d['slider'].oninput = (e) => this.ui.renderGeneration(parseInt(e.target.value));
 
-        // ===== Visualizador Elements =====
-        const toggleProb = $('#toggle-prob');
-        let lastIds = null;
-        let lastInstancia = null;
-        const selInst = $('#instancia');
-        const inputNeval = $('#neval');
-        const inputPop = $('#pop');
-        const inputNeighbor = $('#neighbor');
-        const statusEl = $('#status');
-        const fixScaleCheckbox = $('#fix-scale');
-        const showRefCheckbox = $('#show-ref-point');
-        const seedInput = document.getElementById('seed');
-        const decompInput = document.getElementById('decomp');
-        const mutInput = document.getElementById('mut');
-        const crossInput = document.getElementById('cross');
-        const op1Input = document.getElementById('op1');
-        const btnNewSeed = document.getElementById('btn-new-seed');
+        d['fix-scale'].onchange = () => this.ui.renderGeneration(parseInt(d['slider'].value));
+        d['show-ref-point'].onchange = () => this.ui.renderGeneration(parseInt(d['slider'].value));
 
-        function setNewSeed() {
-          seedInput.value = Math.floor(Math.random() * 1_000_000_000) + 1;
-        }
-        btnNewSeed.addEventListener('click', setNewSeed);
-        window.addEventListener('DOMContentLoaded', () => { setNewSeed(); });
+        // Historial
+        d['btn-history-load-more'].onclick = () => this.ui.renderHistoryTable('all');
 
+        // Mapa
+        d['btn-toggle-map'].onclick = () => this.ui.toggleMapMode();
+        d['toggle-prob'].onchange = () => this.logic.refreshMapIfActive();
 
-        const plotDiv = $('#plot');
-        const sliderContainer = $('#slider-container');
-        const slider = $('#slider');
-        const genNum = $('#gen-num');
+        // En tu initDOM o similar:
+        APP.dom['btn-compare-run'] = document.getElementById('btn-compare-run');
+        APP.dom['btn-compare-load'] = document.getElementById('btn-compare-load');
 
-        const selAmplInst = $('#ampl-instancia');
-        const amplStatusEl = $('#ampl-status');
-
-        const inputHvEvery = $('#hv-every');      // NUEVO
-        const btnHvEvery = $('#btn-hv-every');    // NUEVO
-
-
-        // ==== Pestaña TODO ====
-        const framesAll = {};    // inst -> [ [points], ... ]
-        let lastIdsAll = null, lastInstAll = null;
-        let prefetchDone = false;
-
-        const selProbAll = $('#toggle-prob-all');
-        const statusAll = $('#status-all');
-        const gridAll = $('#all-grid');
-
-        const allCache = {};           // inst -> { files, hv }
-        const framesPerInst = {};      // inst -> [ [points]... ]
-        const lastSelPerInst = {};     // inst -> ids[]
-        let allBuilt = false;
-
-        const slug = s => s.replace(/[^a-zA-Z0-9_-]/g, '_');
-
-        const fixScaleAll = document.getElementById('fix-scale-all');
-        const rangesPerInst = {};       // inst -> { x:[min,max], y:[min,max] }
-        const currentGenIndex = {};     // inst -> índice actual del slider
-
-        const btnHvHistory = document.getElementById('btn-hv-history');
-
-        btnHvHistory.addEventListener('click', async () => {
-          if (!selInst.value) return alert("Primero selecciona una instancia");
-
-          statusEl.textContent = `Generando historial completo (HV en todas las gens)…`;
-          await runNowWithHV(1);
+        // En tu initEvents:
+        APP.dom['btn-compare-run'].addEventListener('click', () => {
+          APP.logic.compareAll();
         });
 
+        APP.dom['btn-compare-load'].addEventListener('click', () => {
+          APP.logic.compareLoad();
+        });
 
-        // ===== Data holders =====
-        let frames = []; let hvValues = []; let hvOptGlobal = null; let refPointGlobal = null; let globalGenNumbers = []
-        let globalXMin = Infinity, globalXMax = -Infinity, globalYMin = Infinity, globalYMax = -Infinity;
-        let globalCovMin = Infinity, globalCovMax = -Infinity;
-        let timeAmplGlobal = null;
-        let timeMoeadGlobal = null;
-        let timeGapGlobal = null;
+      }
+    };
 
-        let amplPoints = null;
-        let amplPareto = [];
-        let amplDominados = [];
-
-        async function loadAmplFront() {
-          const instanciaAmpl = selAmplInst.value;
-
-          // Si el usuario elige “sin comparar”, limpiamos overlay
-          if (!instanciaAmpl) {
-            amplPoints = null;
-            amplPareto = [];
-            amplDominados = [];
-            amplStatusEl.textContent = 'Sin frente AMPL';
-            showGeneration(parseInt(slider.value || '0', 10));
-            return;
-          }
-
-          amplStatusEl.textContent = `Cargando frente AMPL (${instanciaAmpl})…`;
-
-          try {
-            const res = await fetch('/load_ampl_front', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ instancia: instanciaAmpl })
-            });
-
-            if (!res.ok) {
-              amplStatusEl.textContent = 'No se pudo cargar AMPL';
-              amplPoints = null;
-              amplPareto = [];
-              amplDominados = [];
-              showGeneration(parseInt(slider.value || '0', 10));
-              return;
-            }
-
-            const text = await res.text();
-
-            // Parseo + eliminación de duplicados
-            const rawPts = text.trim().split('\n')
-              .map(l => l.trim())
-              .filter(l => l && !l.startsWith('#'))
-              .map(l => {
-                const [a, b] = l.split(/\s+/);
-                return { x: parseFloat(a), y: parseFloat(b), ids: [] };
-              })
-              .filter(p => !Number.isNaN(p.x) && !Number.isNaN(p.y));
-
-            const uniqueMap = new Map();
-            rawPts.forEach(p => {
-              const key = `${p.x}:${p.y}`;
-              if (!uniqueMap.has(key)) uniqueMap.set(key, p);
-            });
-            const uniquePts = Array.from(uniqueMap.values());
-
-            // Calculamos dominancia con tu función
-            amplPoints = findParetoFront(uniquePts);
-            amplPareto = amplPoints.filter(p => p.isPareto);
-            amplDominados = amplPoints.filter(p => !p.isPareto);
-
-            amplStatusEl.textContent = `AMPL cargado (${amplPoints.length} pts)`;
-
-            // Redibujar la generación actual
-            showGeneration(parseInt(slider.value || '0', 10));
-
-          } catch (e) {
-            console.error(e);
-            amplStatusEl.textContent = 'Error al cargar AMPL';
-            amplPoints = null;
-            amplPareto = [];
-            amplDominados = [];
-            showGeneration(parseInt(slider.value || '0', 10));
-          }
-        }
-
-        // ===== Instancias =====
-        async function refreshInstanciaSelect() {
-          try {
-            const r = await fetch('/list_instances');
-            const j = await r.json();
-            const arr = Array.isArray(j) ? j : (j.instances || []);
-            selInst.innerHTML = arr.map(fn => `<option value="${fn}">${fn}</option>`).join('');
-          } catch (e) { console.warn('No se pudo listar instancias', e); }
-        }
-
-        // Lista las instancias de AMPL desde datos/res/raw_ampl/cam/
-        async function refreshAmplSelect() {
-          try {
-            const r = await fetch('/list_ampl_instances');
-            const j = await r.json();
-            const arr = Array.isArray(j) ? j : (j.instances || []);
-
-            // Dejo siempre la opción “sin comparar”
-            let html = `<option value="">(Sin comparar)</option>`;
-            html += arr.map(fn => `<option value="${fn}">${fn}</option>`).join('');
-            selAmplInst.innerHTML = html;
-
-            // OPCIONAL: si coincide nombre con la instancia actual, seleccionarla
-            const baseInst = (selInst.value || '').replace('.dat', '');
-            const matchOpt = arr.find(a => a === baseInst || a === selInst.value);
-            if (matchOpt) selAmplInst.value = matchOpt;
-
-          } catch (e) {
-            console.warn('No se pudo listar instancias AMPL', e);
-            selAmplInst.innerHTML = `<option value="">(Sin comparar)</option>`;
-          }
-        }
-
-
-        async function fetchNFromInstance(filename) { return null; }
-        function setNumVarTo(N) { }
-        async function syncVariablesFromInstance(filename) { }
-
-
-        // ===== Visualizador: Correr / Cargar =====
-        async function runNow() {
-          await runNowWithHV(0);
-        }
-
-        async function runNowWithHV(hvEvery) {
-          if (!selInst.value) return alert("Primero selecciona una instancia");
-          // Seed: si no hay seed en pantalla, generamos uno
-          if (seedInput && !seedInput.value) refreshSeed();
-          const semilla = seedInput ? parseInt(seedInput.value, 10) : newSeed();
-
-          const payload = {
-            instancia: selInst.value,
-            semilla: parseInt(seedInput.value, 10),
-            tipo: "cam",
-            variante: "location",
-            algoritmo: "MOEAD",
-
-            neval: Number(inputNeval.value || 10000),
-            pop: Number(inputPop.value || 500),
-            neighbor: Number(inputNeighbor.value || 100),
-
-            decomp: parseInt(decompInput.value, 10),
-            mut: parseFloat(mutInput.value),
-            cross: parseFloat(crossInput.value),
-            op1: parseFloat(op1Input.value),
-
-            save_interval: hvEvery
-          };
-
-          const res = await fetch('/run', {
+    /**
+     * ============================================================================
+     * API CLIENT - Comunicación con el Backend
+     * ============================================================================
+     */
+    APP.api = {
+      async post(url, data) {
+        try {
+          const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(data)
           });
+          return await res.json();
+        } catch (e) {
+          console.error("API Error:", e);
+          return { error: true, message: e.message };
+        }
+      },
 
-          if (!res.ok) { statusEl.textContent = 'Error en ejecución'; return; }
+      async get(url) {
+        try {
+          const res = await fetch(url);
+          return await res.json();
+        } catch (e) { return null; }
+      },
 
-          const data = await res.json();
-          if (!data.files || !data.files.length) {
-            statusEl.textContent = '⚠️ No se generaron archivos.';
-            return;
+      async listInstances() {
+        const data = await this.get('/list_instances');
+        if (data && data.instances) {
+          APP.dom['instancia'].innerHTML = data.instances.map(f => `<option value="${f}">${f}</option>`).join('');
+          APP.logic.refreshHistory(); // Cargar historial al iniciar
+        }
+      },
+
+      async listAmpl() {
+        const data = await this.get('/list_ampl_instances');
+        let html = '<option value="">(Sin comparar)</option>';
+        if (data) html += data.map(f => `<option value="${f}">${f}</option>`).join('');
+        APP.dom['ampl-instancia'].innerHTML = html;
+      }
+
+
+    };
+
+    // ===============================
+    // Helper: filtrar no dominados (minimización en f1 y f2)
+    // ===============================
+    function paretoNonDominated(points) {
+      const nd = [];
+      for (let i = 0; i < points.length; i++) {
+        let dominated = false;
+        for (let j = 0; j < points.length; j++) {
+          if (i === j) continue;
+          const pi = points[i];
+          const pj = points[j];
+
+          const pjBetterOrEqual = pj.x <= pi.x && pj.y <= pi.y;
+          const pjStrictBetter = pj.x < pi.x || pj.y < pi.y;
+
+          if (pjBetterOrEqual && pjStrictBetter) {
+            dominated = true;
+            break;
           }
+        }
+        if (!dominated) nd.push(points[i]);
+      }
+      return nd;
+    }
 
-          // (opcional) refrescar globals igual que runNow()
-          hvOptGlobal = (typeof data.hv_opt === 'number') ? data.hv_opt : null;
-          refPointGlobal = (data.ref_point && typeof data.ref_point.x === "number" && typeof data.ref_point.y === "number")
-            ? { x: data.ref_point.x, y: data.ref_point.y }
-            : null;
 
-          timeAmplGlobal = (typeof data.timeAmpl === "number") ? data.timeAmpl : null;
-          timeMoeadGlobal = (typeof data.timeMoead === "number") ? data.timeMoead : null;
-          timeGapGlobal = (timeAmplGlobal != null && timeMoeadGlobal != null && timeAmplGlobal > 0)
-            ? ((timeMoeadGlobal - timeAmplGlobal) / timeAmplGlobal) * 100
-            : null;
+    /**
+     * ============================================================================
+     * LÓGICA DE NEGOCIO
+     * ============================================================================
+     */
 
-          // 👇 MUY IMPORTANTE: para historial completo usa hvMode='full'
-          const hvMode = (hvEvery === 1) ? 'full' : 'simple';
-          await loadGenerations(data.files, data.hv || [], hvMode, data.gen_numbers);
-          setNewSeed();
-          statusEl.textContent = `Listo: ${frames.length} generaciones`;
-          await refreshRunHistory();
+
+
+    APP.logic = {
+      /**
+       * Ejecuta el algoritmo (Normal, Historial o Cada X)
+       */
+      async runAlgorithm(saveInterval) {
+        const d = APP.dom;
+        APP.ui.setStatus('Ejecutando...', 'loading');
+
+        const payload = {
+          instancia: d['instancia'].value,
+          semilla: parseInt(d['seed'].value),
+          tipo: "cam", variante: "location", algoritmo: "MOEAD",
+          neval: parseInt(d['neval'].value),
+          pop: parseInt(d['pop'].value),
+          neighbor: parseInt(d['neighbor'].value),
+          decompType: parseInt(d['decomp'].value),
+          mut: parseFloat(d['mut'].value),
+          cross: parseFloat(d['cross'].value),
+          op1: parseFloat(d['op1'].value),
+          save_interval: saveInterval
+        };
+
+        const res = await APP.api.post('/run', payload);
+
+        if (res.error || !res.files) {
+          APP.ui.setStatus('Error en ejecución', 'error');
+          return;
         }
 
+        // Modo 'full' si pedimos intervalos, 'simple' si es normal
+        const mode = saveInterval > 0 ? 'full' : 'simple';
+        await this.processResultData(res, mode);
 
-        async function refreshRunHistory() {
-          const inst = (selInst.value || '').replace('.dat', '');
-          const r = await fetch('/list_run_stats?inst=' + encodeURIComponent(inst));
-          const rows = await r.json();
+        APP.ui.setStatus(`Listo: ${APP.state.frames.length} gens`, 'success');
+        this.refreshHistory();
+        APP.ui.setRandomSeed();
+      },
 
-          const tbody = document.getElementById('runs-tbody');
-          const detail = document.getElementById('run-detail');
-          tbody.innerHTML = '';
-          detail.style.display = 'none';
-          detail.innerHTML = '';
+      /**
+       * Carga resultados guardados
+       */
+      async loadSaved() {
+        APP.ui.setStatus('Cargando...', 'loading');
+        const res = await APP.api.post('/load', { instancia: APP.dom['instancia'].value });
 
-          rows.forEach(row => {
-            const tr = document.createElement('tr');
-            tr.style.cursor = 'pointer';
-            tr.innerHTML = `<td>${row.ts || ''}</td><td>${(row.hv_final ?? '—')}</td>`;
-            tr.addEventListener('click', async () => {
-              const rd = await fetch('/run_stats_detail?run_id=' + encodeURIComponent(row.run_id));
-              const full = await rd.json();
-
-              detail.style.display = 'block';
-              detail.innerHTML = `
-        <div style="font-weight:700; margin-bottom:6px;">Parámetros usados</div>
-        <div><b>seed</b>: ${full.seed}</div>
-        <div><b>neval</b>: ${full.neval} | <b>pop</b>: ${full.pop} | <b>neighbor</b>: ${full.neighbor}</div>
-        <div><b>mut</b>: ${full.mut} | <b>cross</b>: ${full.cross} | <b>op1</b>: ${full.op1}</div>
-        <div><b>type</b>: ${full.type} | <b>variant</b>: ${full.variant} | <b>alg</b>: ${full.alg}</div>
-        <div style="margin-top:6px;"><b>Tiempo MOEA/D</b>: ${full.time_moead_s}s</div>
-      `;
-            });
-            tbody.appendChild(tr);
-          });
+        if (res.error || !res.files || !res.files.length) {
+          APP.ui.setStatus('No hay datos guardados', 'warn');
+          return;
         }
 
-        selInst.addEventListener('change', refreshRunHistory);
+        await this.processResultData(res, 'simple');
+        APP.ui.setStatus('Datos cargados', 'success');
+      },
 
-        async function loadSaved() {
-          statusEl.textContent = 'Cargando generaciones…';
-          const payload = { instancia: selInst.value };
-          const res = await fetch('/load', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-          const data = await res.json();
-          if (!data.files || !data.files.length) { statusEl.textContent = '⚠️ No se encontraron generaciones.'; return; }
+      /**
+       * Procesa la respuesta del servidor (archivos, HV, etc.)
+       */
+      async processResultData(data, hvMode) {
+        const st = APP.state;
 
-          hvOptGlobal = (typeof data.hv_opt === 'number') ? data.hv_opt : null;
+        // 1. Guardar Metadatos
+        st.hvValues = data.hv || [];
+        st.hvOpt = data.hv_opt;
+        st.refPoint = data.ref_point;
+        st.genNumbers = data.gen_numbers && data.gen_numbers.length ? data.gen_numbers : [];
 
-          if (data.ref_point && typeof data.ref_point.x === "number" && typeof data.ref_point.y === "number") {
-            refPointGlobal = { x: data.ref_point.x, y: data.ref_point.y };
-          } else {
-            refPointGlobal = null;
-          }
+        // 2. Tiempos
+        APP.ui.updateTimeStats(data.timeMoead, data.timeAmpl, data.timeGap);
 
-          timeAmplGlobal = (typeof data.timeAmpl === "number") ? data.timeAmpl : null;
-          timeMoeadGlobal = (typeof data.timeMoead === "number") ? data.timeMoead : null;
+        // 3. Resetear y procesar frames
+        st.frames = [];
+        st.limits = { xMin: Infinity, xMax: -Infinity, yMin: Infinity, yMax: -Infinity };
 
-          // si no te llega timeGap, lo puedes calcular acá:
-          if (timeAmplGlobal != null && timeMoeadGlobal != null && timeAmplGlobal > 0) {
-            timeGapGlobal = ((timeMoeadGlobal - timeAmplGlobal) / timeAmplGlobal) * 100;
-          } else {
-            timeGapGlobal = null;
-          }
-
-
-          await loadGenerations(data.files, data.hv || [], 'simple', data.gen_numbers);
-          statusEl.textContent = `Listo: ${frames.length} generaciones`;
+        for (const file of data.files) {
+          const rawTxt = await (await fetch('/get/' + file)).text();
+          const points = this.parsePointsFile(rawTxt);
+          st.frames.push(points);
         }
 
-        // ===== Visualizador: Plot logic =====
-        function findParetoFront(points) {
-          if (!points || !Array.isArray(points) || !points.length) return [];
-          const isDom = new Array(points.length).fill(false);
-          for (let i = 0; i < points.length; i++) for (let j = 0; j < points.length; j++) if (i !== j) {
-            if (points[j].x <= points[i].x && points[j].y <= points[i].y && (points[j].x < points[i].x || points[j].y < points[i].y)) { isDom[i] = true; break; }
-          }
-          return points.map((p, i) => ({ ...p, isPareto: !isDom[i] }));
+        // Fallback para números de generación si vinieron vacíos
+        if (st.genNumbers.length !== st.frames.length) {
+          st.genNumbers = st.frames.map((_, i) => i + 1);
         }
-        function getMultiColor(f) { const cs = ["#440154", "#3b528b", "#21918c", "#fde725", "#ff7f00"]; const s = f * (cs.length - 1); const i1 = Math.floor(s); const i2 = Math.min(i1 + 1, cs.length - 1); const t = s - i1; const c1 = cs[i1].slice(1), c2 = cs[i2].slice(1); const r1 = parseInt(c1.slice(0, 2), 16), g1 = parseInt(c1.slice(2, 4), 16), b1 = parseInt(c1.slice(4), 16); const r2 = parseInt(c2.slice(0, 2), 16), g2 = parseInt(c2.slice(2, 4), 16), b2 = parseInt(c2.slice(4), 16); const r = Math.round(r1 + t * (r2 - r1)), g = Math.round(g1 + t * (g2 - g1)), b = Math.round(b1 + t * (b2 - b1)); return `rgb(${r},${g},${b})`; }
 
-        function updateHvSummary() {
-          // hvOptGlobal: HV óptimo (AMPL) o null
-          // hvValues: arreglo de HV por generación
-          if (hvValues && hvValues.length) {
-            // Tomamos el HV de la última generación como "HV MOEA/D"
-            // (si prefieres el mejor, puedes usar Math.max(...hvValues))
-            const hvMoead = hvValues[hvValues.length - 1];
-            hvMoeadEl.textContent = hvMoead.toFixed(3);
+        // 4. Renderizar UI
+        APP.ui.initSlider(st.frames.length - 1);
+        APP.ui.renderHVPlot(hvMode);
+        APP.ui.renderHistoryPlot();
+        APP.ui.updateSummaryStats();
+        APP.ui.renderGeneration(0); // Mostrar la primera
+      },
 
-            if (typeof hvOptGlobal === "number") {
-              hvAmplOptEl.textContent = hvOptGlobal.toFixed(3);
-              const gap = ((hvOptGlobal - hvMoead) / hvOptGlobal) * 100;
-              hvGapEl.textContent = gap.toFixed(2) + "%";
-            } else {
-              hvAmplOptEl.textContent = "-";
-              hvGapEl.textContent = "-";
+      /**
+       * Parsea el contenido de un archivo .dat a objetos
+       */
+      parsePointsFile(text) {
+        return text.trim().split('\n')
+          .filter(l => l && !l.startsWith('#'))
+          .map(line => {
+            let coverage = null;
+            let cleanLine = line;
+
+            // Extraer cobertura si existe (| 98.00)
+            if (line.includes('|')) {
+              const parts = line.split('|');
+              cleanLine = parts[0].trim();
+              coverage = parseFloat(parts[1]);
             }
-          } else {
-            hvAmplOptEl.textContent = "-";
-            hvMoeadEl.textContent = "-";
-            hvGapEl.textContent = "-";
-          }
 
-          const timeAmplSpan = document.getElementById("time-ampl-span");
-          const timeMoeadSpan = document.getElementById("time-moead-span");
-          const timeGapSpan = document.getElementById("time-gap-span");
+            const toks = cleanLine.split(/\s+/);
+            const x = parseFloat(toks[0]);
+            const y = parseFloat(toks[1]);
+            let isPareto = false;
+            let startIdx = 2;
 
-          if (timeAmplSpan) {
-            timeAmplSpan.textContent =
-              typeof timeAmplGlobal === "number" ? timeAmplGlobal.toFixed(2) : "—";
-          }
-          if (timeMoeadSpan) {
-            timeMoeadSpan.textContent =
-              typeof timeMoeadGlobal === "number" ? timeMoeadGlobal.toFixed(2) : "—";
-          }
-          if (timeGapSpan) {
-            timeGapSpan.textContent =
-              typeof timeGapGlobal === "number" ? timeGapGlobal.toFixed(2) : "—";
-          }
+            // Detectar bandera P/D
+            if (isNaN(parseFloat(toks[2]))) {
+              if (toks[2] === 'P') isPareto = true;
+              else if (toks[2] === 'D') isPareto = false;
+              startIdx = 3;
+            }
+
+            // IDs
+            const ids = toks.slice(startIdx).map(n => parseInt(n)).filter(n => !isNaN(n));
+
+            // Actualizar límites globales para escala fija
+            const l = APP.state.limits;
+            if (x < l.xMin) l.xMin = x; if (x > l.xMax) l.xMax = x;
+            if (y < l.yMin) l.yMin = y; if (y > l.yMax) l.yMax = y;
+
+            return { x, y, ids, isPareto, coverage };
+          });
+      },
+
+      async refreshHistory() {
+        const inst = APP.dom['instancia'].value.replace('.dat', '');
+        if (!inst) return;
+        const history = await APP.api.get(`/list_run_stats?inst=${inst}`);
+        APP.state.runHistory = history || [];
+        APP.ui.renderHistoryTable(4); // Mostrar últimos 20 por defecto
+      },
+
+      async loadAmpl() {
+        const inst = APP.dom['ampl-instancia'].value;
+        const statusDiv = APP.dom['ampl-status'];
+
+        if (!inst) {
+          APP.state.amplPoints = null;
+          statusDiv.textContent = "";
+          APP.ui.renderGeneration(parseInt(APP.dom['slider'].value));
+          return;
         }
 
+        statusDiv.textContent = "Cargando...";
+        const txt = await (await fetch('/load_ampl_front', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ instancia: inst })
+        })).text();
 
-        // Modificamos la firma para aceptar genNums
-        async function loadGenerations(files, hvs, hvMode = 'simple', genNums = []) {
-          frames = [];
-          hvValues = hvs;
+        // Parse simple
+        APP.state.amplPoints = txt.split('\n')
+          .filter(l => l && !l.startsWith('#'))
+          .map(l => {
+            const p = l.split(/\s+/);
+            return { x: parseFloat(p[0]), y: parseFloat(p[1]) };
+          })
+          .filter(p => !isNaN(p.x));
 
-          // Guardamos los números reales. Si vienen vacíos, creamos un índice simple 1..N
-          if (genNums && genNums.length === files.length) {
-            globalGenNumbers = genNums;
-          } else {
-            globalGenNumbers = files.map((_, i) => i + 1);
-          }
+        statusDiv.textContent = `${APP.state.amplPoints.length} puntos cargados`;
+        APP.ui.renderGeneration(parseInt(APP.dom['slider'].value));
+      },
 
-          globalXMin = Infinity; globalXMax = -Infinity;
-          globalYMin = Infinity; globalYMax = -Infinity;
-          globalCovMin = Infinity; globalCovMax = -Infinity;
+      // =============================
+      // COMPARACIÓN MASIVA (All.inst)
+      // =============================
+      async compareAll() {
+        const st = APP.dom['compare-run-status'];
+        const errDiv = APP.dom['compare-errors'];
+        const tbody = APP.dom['compare-tbody'];
+        if (tbody) tbody.innerHTML = '';
+        if (errDiv) errDiv.textContent = '';
+        if (st) { st.textContent = 'Ejecutando...'; st.className = 'status-badge'; }
+        const payload = {
+          algoritmo: APP.dom['compare-alg']?.value || 'MOEAD',
+          variante: APP.dom['compare-variant']?.value || 'location',
+          neval: parseInt(APP.dom['compare-neval']?.value) || 1000,
+          pop: parseInt(APP.dom['compare-pop']?.value) || 100,
+          neighbor: parseInt(APP.dom['compare-neighbor']?.value) || 10,
+          decompType: parseInt(APP.dom['compare-decomp']?.value) || 1,
+          mut: APP.dom['compare-mut']?.value || undefined,
+          cross: APP.dom['compare-cross']?.value || undefined,
+          op1: APP.dom['compare-op1']?.value || undefined,
+          seed: APP.dom['compare-seed']?.value || undefined,
+          save_interval: 0
+        };
+        // Limpiar strings vacíos
+        ['mut', 'cross', 'op1', 'seed'].forEach(k => {
+          if (payload[k] === '' || payload[k] === undefined) delete payload[k];
+        });
+        const resp = await APP.api.post('/compare_all', payload);
+        if (!resp || resp.error) {
+          if (st) { st.textContent = 'Error'; st.className = 'status-badge error'; }
+          if (errDiv) errDiv.textContent = resp?.message || 'Error llamando /compare_all';
+          return;
+        }
+        const results = resp.results || [];
+        const errors = resp.errors || [];
+        this.renderCompareTable(results);
+        if (errors.length && errDiv) {
+          errDiv.innerHTML = '<b>Errores:</b><br>' + errors.map(e => `${e.instance || e.instance} → ${e.error}`).join('<br>');
+        }
+        if (st) { st.textContent = `Listo (${results.length})`; st.className = 'status-badge success'; }
+      },
+      renderCompareTable(results) {
+        const tbody = APP.dom['compare-tbody'];
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const fmt = (v, d = 4) => (typeof v === 'number' && isFinite(v) ? v.toFixed(d) : '—');
+        const fmt2 = (v) => (typeof v === 'number' && isFinite(v) ? v.toFixed(2) : '—');
+        results.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.style.cursor = 'pointer';
+          const filesHtml = [
+            r.ampl_front ? `<a href="/get/${r.ampl_front}" target="_blank">AMPL</a>` : '—',
+            r.moead_front_first ? `<a href="/get/${r.moead_front_first}" target="_blank">MOEAD GEN0</a>` : '—',
+            r.moead_front_last ? `<a href="/get/${r.moead_front_last}" target="_blank">MOEAD Último</a>` : '—'
+          ].join(' | ');
+          tr.innerHTML = `
+            <td style="text-align:left;">${r.instance}</td>
+            <td>${fmt(r.hv_ampl)}</td>
+            <td>${fmt(r.hv_moead)}</td>
+            <td>${fmt2(r.hv_gap_pct)}</td>
+            <td>${fmt2(r.time_ampl_s)}</td>
+            <td>${fmt2(r.time_moead_s)}</td>
+            <td>${fmt2(r.time_gap_pct)}</td>
+            <td>${filesHtml}</td>
+          `;
+          tr.onclick = () => this.plotCompareFronts(r);
+          tbody.appendChild(tr);
+        });
+      },
+      async fetchXYFile(relPath) {
+        if (!relPath) return [];
+        const txt = await (await fetch(`/get/${relPath}`)).text();
+        return txt.split('\n')
+          .map(l => l.trim())
+          .filter(l => l && !l.startsWith('#'))
+          .map(l => {
+            const p = l.split(/\s+/);
+            return { x: parseFloat(p[0]), y: parseFloat(p[1]) };
+          })
+          .filter(p => isFinite(p.x) && isFinite(p.y));
+      },
+      async plotCompareFronts(row) {
+        const plotId = 'compare-plot';
+        const [amplAll, gen0All, genLastAll] = await Promise.all([
+          row.ampl_front ? APP.logic.fetchXYFile(row.ampl_front) : Promise.resolve([]),
+          row.moead_front_first ? APP.logic.fetchXYFile(row.moead_front_first) : Promise.resolve([]),
+          row.moead_front_last ? APP.logic.fetchXYFile(row.moead_front_last) : Promise.resolve([]),
+        ]);
 
-          for (const file of files) {
-            const res = await fetch('/get/' + file);
-            const text = await res.text();
-            // ... (El código de parseo dentro del bucle sigue igual) ...
-            const puntos = text.trim().split('\n')
-              .map(l => l.trim())
-              .filter(l => l && !l.startsWith('#'))
-              .map(line => {
-                // ... TU LÓGICA DE PARSEO EXISTENTE ...
-                // (Copia tu lógica de parseo aquí o mantén la que tienes)
-                // Solo incluyo el esqueleto para no hacer la respuesta gigante
-                let coverage = null;
-                let left = line;
-                if (line.includes('|')) {
-                  const parts = line.split('|');
-                  left = parts[0].trim();
-                  const covStr = parts[1].trim().split(/\s+/)[0];
-                  coverage = parseFloat(covStr);
-                }
-                const toks = left.split(/\s+/);
-                const f1 = parseFloat(toks[0]);
-                const f2 = parseFloat(toks[1]);
-                let startIdx = 2;
-                let isPareto;
-                if (Number.isNaN(parseFloat(toks[2]))) {
-                  if (toks[2] === 'P') { isPareto = true; startIdx = 3; }
-                  else if (toks[2] === 'D') { isPareto = false; startIdx = 3; }
-                  else if (toks[2] === '-' && line.includes('IDs instalados:')) {
-                    const right = line.split('IDs instalados:')[1] || '';
-                    const ids = right.trim().split(/\s+/).map(Number).filter(n => !Number.isNaN(n));
-                    updateRanges(f1, f2);
-                    return { x: f1, y: f2, ids, isPareto, coverage };
-                  }
-                }
-                const ids = toks.slice(startIdx).map(n => parseInt(n, 10)).filter(n => !Number.isNaN(n));
-                updateRanges(f1, f2);
-                if (typeof coverage === 'number' && !Number.isNaN(coverage)) {
-                  if (coverage < globalCovMin) globalCovMin = coverage;
-                  if (coverage > globalCovMax) globalCovMax = coverage;
-                }
-                return { x: f1, y: f2, ids, isPareto, coverage };
-              });
-            frames.push(puntos);
-          }
+        // Filtrar frentes NO dominados
+        const amplPts = paretoNonDominated(amplAll);
+        const gen0Pts = paretoNonDominated(gen0All);
+        const genLastPts = paretoNonDominated(genLastAll);
 
-          // --- CONFIGURACIÓN DEL SLIDER ---
-          showGeneration(0);
-          sliderContainer.style.display = 'block';
+        const traces = [];
 
-          // El slider se mueve por ÍNDICE (0, 1, 2...)
-          slider.max = frames.length - 1;
-          slider.value = 0;
-
-          // Pero la etiqueta muestra el NÚMERO REAL
-          genNum.innerText = globalGenNumbers[0];
-
-          // ==== GRÁFICO HV ====
-          let hvX = [];
-          let hvY = [];
-
-          if (hvValues && hvValues.length) {
-            if (hvMode === 'full') {
-              // Usamos los números reales para el eje X
-              hvX = globalGenNumbers;
-              hvY = hvValues;
-            } else {
-              // Modo simple: solo primera y última
-              const lastIdx = hvValues.length - 1;
-              // Eje X: Generación real inicial y final
-              hvX = [globalGenNumbers[0], globalGenNumbers[globalGenNumbers.length - 1]];
-              hvY = [hvValues[0], hvValues[lastIdx]];
-            }
-          }
-
-          Plotly.newPlot('hv-plot', [{
-            x: hvX,
-            y: hvY,
-            mode: 'lines+markers',
-            marker: { color: 'green' },
-            line: { color: 'green' },
-            name: 'Hipervolumen'
-          }], {
-            title: 'Evolución del Hipervolumen',
-            xaxis: { title: 'Generación' },
-            yaxis: { title: 'Hipervolumen' },
-            paper_bgcolor: '#fff',
-            plot_bgcolor: '#fff'
+        if (gen0Pts.length) {
+          traces.push({
+            x: gen0Pts.map(p => p.x),
+            y: gen0Pts.map(p => p.y),
+            mode: 'markers',
+            type: 'scatter',
+            name: 'MOEA/D GEN 0',
+            marker: { size: 8, symbol: 'circle' } // color A (Plotly elige uno)
           });
-
-          updateHvSummary();
-
-          // Click en gráfico HV
-          document.getElementById('hv-plot').removeAllListeners?.('plotly_click'); // Evitar duplicados
-          document.getElementById('hv-plot').on('plotly_click', d => {
-            const clickedGen = d.points[0].x;
-
-            // Buscar en qué índice del array 'globalGenNumbers' está la generación clickeada
-            const indexFound = globalGenNumbers.indexOf(clickedGen);
-
-            if (indexFound !== -1) {
-              slider.value = indexFound;
-              genNum.innerText = clickedGen;
-              showGeneration(indexFound);
-            }
-          });
-
-          // Gráfico Historial (Frentes superpuestos)
-          const traces = frames.map((pts, idx) => {
-            const hasFlag = pts.every(p => typeof p.isPareto === 'boolean');
-            const all = hasFlag ? pts : findParetoFront(pts);
-            const pareto = all.filter(p => p.isPareto);
-            const color = getMultiColor(idx / Math.max(1, (frames.length - 1)));
-
-            // Usamos el número real en la leyenda
-            return {
-              x: pareto.map(p => p.x),
-              y: pareto.map(p => p.y),
-              mode: 'markers',
-              marker: { size: 6, color },
-              name: `Gen ${globalGenNumbers[idx]}`, // <--- Nombre real
-              showlegend: false
-            };
-          });
-
-          Plotly.newPlot('history-plot', traces, {
-            title: 'Historial de Frentes de Pareto',
-            xaxis: { title: 'f1' },
-            yaxis: { title: 'f2' }
-          });
-
-          function updateRanges(f1, f2) {
-            if (f1 < globalXMin) globalXMin = f1;
-            if (f1 > globalXMax) globalXMax = f1;
-            if (f2 < globalYMin) globalYMin = f2;
-            if (f2 > globalYMax) globalYMax = f2;
-          }
         }
 
+        if (genLastPts.length) {
+          traces.push({
+            x: genLastPts.map(p => p.x),
+            y: genLastPts.map(p => p.y),
+            mode: 'markers',
+            type: 'scatter',
+            name: 'MOEA/D GEN final',
+            marker: { size: 9, symbol: 'circle-open' } // color B
+          });
+        }
 
-        function showGeneration(index) {
-          const points = frames[index]; if (!points || !Array.isArray(points)) return;
-          const hasFlag = points.every(p => typeof p.isPareto === 'boolean');
-          const allPoints = hasFlag ? points : findParetoFront(points);
-          const paretoPoints = allPoints.filter(p => p.isPareto);
-          const dominatedPoints = allPoints.filter(p => !p.isPareto);
+        if (amplPts.length) {
+          traces.push({
+            x: amplPts.map(p => p.x),
+            y: amplPts.map(p => p.y),
+            mode: 'markers',
+            type: 'scatter',
+            name: 'AMPL',
+            marker: { size: 9, symbol: 'x' } // color C
+          });
+        }
 
-          const realGen = globalGenNumbers[index];
+        Plotly.newPlot('compare-plot', traces, {
+          title: `Comparación de frentes – ${row.instance}`,
+          xaxis: { title: 'f1' },
+          yaxis: { title: 'f2' },
+          margin: { t: 40, l: 50, r: 20, b: 40 },
+          legend: { orientation: 'h' }
+        });
+      },
 
-          const layout = {
-            title: `Frente de Pareto - Gen ${realGen}`,
-            xaxis: {
-              title: "f1 (Minimizar Cobertura)",
-              rangemode: "normal",
-              autorange: !fixScaleCheckbox.checked,
-              range: fixScaleCheckbox.checked
-                ? [globalXMin, globalXMax]
-                : undefined
-            },
-            yaxis: {
-              title: "f2 (Minimizar Costos)",
-              rangemode: "normal",
-              autorange: !fixScaleCheckbox.checked,
-              range: fixScaleCheckbox.checked
-                ? [globalYMin, globalYMax]
-                : undefined
-            },
-            legend: {
-              orientation: "h",
-              x: 0,
-              y: 1.15
-            },
-            margin: { t: 50, r: 20, l: 60, b: 60 },
-            shapes: []
-          };
 
-          // ---- Líneas del punto de referencia ----
-          if (
-            refPointGlobal &&
-            showRefCheckbox.checked &&
-            typeof refPointGlobal.x === "number" &&
-            typeof refPointGlobal.y === "number"
-          ) {
-            const rx = refPointGlobal.x;
-            const ry = refPointGlobal.y;
+      refreshMapIfActive() {
+        // Si hay un mapa activo (no estático), refrescarlo
+        if (APP.state.currentMapData) {
+          // Lógica para refrescar visualmente si cambian probabilidades
+          // Por simplicidad, requerimos volver a clicar el punto
+        }
+      }
+    };
 
-            const xMin = fixScaleCheckbox.checked ? globalXMin : globalXMin;
-            const yMin = fixScaleCheckbox.checked ? globalYMin : globalYMin;
 
-            layout.shapes.push({
-              type: "line",
-              x0: rx,
-              x1: rx,
-              y0: yMin,
-              y1: ry,
-              line: { width: 1, dash: "dot" }
-            });
+    APP.logic.compareLoad = async function () {
+      try {
+        const resp = await APP.api.get('/compare_load');
+        const rows = (resp && resp.results) ? resp.results : [];
+        APP.logic.renderCompareTable(rows);
+      } catch (err) {
+        console.error('Error al cargar comparación guardada', err);
+        alert('No se pudo cargar la comparación guardada.');
+      }
+    };
 
-            layout.shapes.push({
-              type: "line",
-              x0: xMin,
-              x1: rx,
-              y0: ry,
-              y1: ry,
-              line: { width: 1, dash: "dot" }
-            });
+    /**
+     * ============================================================================
+     * UI & RENDERIZADO
+     * ============================================================================
+     */
+    APP.ui = {
+      setRandomSeed() {
+        APP.dom['seed'].value = Math.floor(Math.random() * 1000000);
+      },
+
+      setStatus(msg, type = 'normal') {
+        const el = APP.dom['status'];
+        el.textContent = msg;
+        el.className = `status-badge ${type}`;
+      },
+
+      initSlider(max) {
+        const s = APP.dom['slider'];
+        s.max = max;
+        s.value = 0;
+      },
+
+      updateSummaryStats() {
+        const st = APP.state;
+        const lastHv = st.hvValues.length ? st.hvValues[st.hvValues.length - 1] : 0;
+
+        APP.dom['hv-moead'].textContent = lastHv.toFixed(6);
+
+        if (st.hvOpt) {
+          APP.dom['hv-ampl-opt'].textContent = st.hvOpt.toFixed(6);
+          const gap = ((st.hvOpt - lastHv) / st.hvOpt * 100).toFixed(6);
+          APP.dom['hv-gap'].textContent = `${gap}%`;
+        } else {
+          APP.dom['hv-ampl-opt'].textContent = "—";
+          APP.dom['hv-gap'].textContent = "—";
+        }
+      },
+
+      updateTimeStats(moead, ampl, gap) {
+        const val = (v) => (typeof v === 'number' ? v.toFixed(2) : '-');
+        APP.dom['time-moead-span'].textContent = val(moead);
+        APP.dom['time-ampl-span'].textContent = val(ampl);
+        APP.dom['time-gap-span'].textContent = val(gap);
+      },
+
+      /**
+       * Renderiza el gráfico de dispersión (Pareto)
+       */
+      renderGeneration(index) {
+        const st = APP.state;
+        if (!st.frames[index]) return;
+
+        const points = st.frames[index];
+        const realGen = st.genNumbers[index];
+        APP.dom['gen-num'].textContent = realGen;
+
+        // Separar series
+        const pareto = points.filter(p => p.isPareto);
+        const dom = points.filter(p => !p.isPareto);
+
+        // Tooltip Helper
+        const mkTooltip = (p) => `(${p.x.toFixed(2)}, ${p.y.toFixed(2)})<br>IDs: ${compressRanges(p.ids)}`;
+
+        const data = [
+          {
+            x: dom.map(p => p.x), y: dom.map(p => p.y),
+            text: dom.map(mkTooltip), customdata: dom.map(p => p.ids),
+            mode: 'markers', type: 'scatter', name: 'Dominados',
+            marker: { color: 'rgba(50, 100, 255, 0.6)', size: 8 },
+            hovertemplate: '%{text}<extra></extra>'
+          },
+          {
+            x: pareto.map(p => p.x), y: pareto.map(p => p.y),
+            text: pareto.map(mkTooltip), customdata: pareto.map(p => p.ids),
+            mode: 'markers', type: 'scatter', name: 'Pareto',
+            marker: { color: '#ef4444', size: 10, symbol: 'circle-open', line: { width: 2 } },
+            hovertemplate: '%{text}<extra></extra>'
           }
-          if (fixScaleCheckbox.checked) {
-            const xM = (globalXMax - globalXMin) * 0.05, yM = (globalYMax - globalYMin) * 0.05;
-            layout.xaxis.range = [globalXMin - xM, globalXMax + xM];
-            layout.yaxis.range = [globalYMin - yM, globalYMax + yM];
+        ];
+
+        // Añadir AMPL si existe
+        if (st.amplPoints) {
+          data.push({
+            x: st.amplPoints.map(p => p.x), y: st.amplPoints.map(p => p.y),
+            mode: 'markers', type: 'scatter', name: 'AMPL',
+            marker: { color: 'green', symbol: 'cross', size: 7 }
+          });
+        }
+
+        // Configuración de Layout
+        const layout = {
+          margin: { t: 30, l: 50, r: 20, b: 40 },
+          hovermode: 'closest',
+          showlegend: true,
+          xaxis: { title: 'f1 (Cobertura)' },
+          yaxis: { title: 'f2 (Costo)' }
+        };
+
+        // Escala Fija
+        if (APP.dom['fix-scale'].checked) {
+          const padX = (st.limits.xMax - st.limits.xMin) * 0.05;
+          const padY = (st.limits.yMax - st.limits.yMin) * 0.05;
+          layout.xaxis.range = [st.limits.xMin - padX, st.limits.xMax + padX];
+          layout.yaxis.range = [st.limits.yMin - padY, st.limits.yMax + padY];
+        }
+
+        // Punto de referencia
+        if (st.refPoint && APP.dom['show-ref-point'].checked) {
+          data.push({
+            x: [st.refPoint.x], y: [st.refPoint.y],
+            mode: 'markers', name: 'Ref',
+            marker: { symbol: 'x', color: 'black', size: 12 }
+          });
+        }
+
+        Plotly.react('plot', data, layout).then(gd => {
+          gd.removeAllListeners('plotly_click');
+          gd.on('plotly_click', d => this.handlePointClick(d.points[0]));
+        });
+      },
+
+      /**
+       * Maneja el clic en un punto del gráfico
+       */
+      handlePointClick(pt) {
+        const ids = pt.customdata;
+        if (!ids) return; // Es AMPL o Ref
+
+        const inst = APP.dom['instancia'].value;
+        const showProb = APP.dom['toggle-prob'].checked;
+
+        // UI Reset
+        APP.dom['map-image-container'].classList.add('hidden');
+        APP.dom['map-plot-container'].classList.add('hidden');
+        APP.dom['map-stats'].classList.remove('hidden');
+        APP.dom['map-stats'].textContent = "Generando mapa...";
+        APP.dom['btn-toggle-map'].classList.remove('hidden');
+        APP.dom['btn-toggle-map'].textContent = "Ver Interactivo";
+
+        Promise.all([
+          APP.api.post('/map', { instancia: inst, ids: ids, show_probs: showProb, x: pt.x, y: pt.y }),
+          APP.api.post('/map_json', { instancia: inst, ids: ids, show_probs: showProb, x: pt.x, y: pt.y })
+        ]).then(([resImg, resJson]) => {
+          // Mostrar Imagen Estática
+          APP.dom['map-image'].src = `data:image/png;base64,${resImg.img}`;
+          APP.dom['map-image-container'].classList.remove('hidden');
+          APP.dom['map-stats'].textContent = resJson.stats;
+
+          // Guardar datos para modo interactivo
+          APP.state.currentMapData = resJson;
+        });
+      },
+
+      toggleMapMode() {
+        const imgCont = APP.dom['map-image-container'];
+        const plotCont = APP.dom['map-plot-container'];
+        const btn = APP.dom['btn-toggle-map'];
+
+        if (imgCont.classList.contains('hidden')) {
+          // Cambiar a estático
+          plotCont.classList.add('hidden');
+          imgCont.classList.remove('hidden');
+          btn.textContent = "Ver Interactivo";
+        } else {
+          // Cambiar a interactivo
+          if (!APP.state.currentMapData) return;
+          imgCont.classList.add('hidden');
+          plotCont.classList.remove('hidden');
+          btn.textContent = "Ver Estático";
+          renderInteractiveMap('map-plot', APP.state.currentMapData);
+        }
+      },
+
+      renderHVPlot(mode) {
+        const st = APP.state;
+        let x = [], y = [];
+
+        if (mode === 'simple' && st.genNumbers.length > 2) {
+          x = [st.genNumbers[0], st.genNumbers[st.genNumbers.length - 1]];
+          y = [st.hvValues[0], st.hvValues[st.hvValues.length - 1]];
+        } else {
+          x = st.genNumbers;
+          y = st.hvValues;
+        }
+
+        Plotly.newPlot('hv-plot', [{ x, y, type: 'scatter', mode: 'lines+markers', line: { color: 'green' } }], {
+          margin: { t: 20, l: 40, r: 20, b: 30 },
+          xaxis: { title: 'Generación' },
+          yaxis: { title: 'Hipervolumen' }
+        });
+
+        // Sincronizar clic en HV con slider
+        document.getElementById('hv-plot').on('plotly_click', d => {
+          const gen = d.points[0].x;
+          const idx = st.genNumbers.indexOf(gen);
+          if (idx !== -1) {
+            APP.dom['slider'].value = idx;
+            this.renderGeneration(idx);
           }
+        });
+      },
 
-          // texto de hover resumido
-          const domText = dominatedPoints.map(p => mkHoverTextPt(p));
-          const paretoText = paretoPoints.map(p => mkHoverTextPt(p));
+      renderHistoryPlot() {
+        const st = APP.state;
+        // Solo mostramos algunos frentes para no saturar (ej: cada 10% si hay muchos)
+        const step = Math.ceil(st.frames.length / 10);
+        const traces = [];
 
-          const traces = [
-            {
-              x: dominatedPoints.map(p => p.x),
-              y: dominatedPoints.map(p => p.y),
-              customdata: dominatedPoints.map(p => p.ids),
-              text: domText,
-              mode: 'markers',
-              marker: { size: 8, color: 'blue' },
-              name: 'Dominados',
-              hovertemplate: '%{text}<extra></extra>',
-              hoverlabel: { align: 'left', namelength: 0 }
-            },
-            {
-              x: paretoPoints.map(p => p.x),
-              y: paretoPoints.map(p => p.y),
-              customdata: paretoPoints.map(p => p.ids),
-              text: paretoText,
-              mode: 'markers',
-              marker: { size: 10, color: 'red', symbol: 'circle-open' },
-              name: 'Frente Pareto',
-              hovertemplate: '%{text}<extra></extra>',
-              hoverlabel: { align: 'left', namelength: 0 }
-            }
-          ];
-
-          if (amplPoints && amplPoints.length) {
-            const amplDomText = amplDominados.map(
-              p => `AMPL<br>(${p.x.toFixed(2)}, ${p.y.toFixed(2)})`
-            );
-            const amplParText = amplPareto.map(
-              p => `AMPL Pareto<br>(${p.x.toFixed(2)}, ${p.y.toFixed(2)})`
-            );
-
-            traces.push(
-              {
-                x: amplDominados.map(p => p.x),
-                y: amplDominados.map(p => p.y),
-                mode: 'markers',
-                text: amplDomText,
-                marker: { size: 9, color: 'gray', symbol: 'square' },
-                name: 'AMPL dominados',
-                hovertemplate: '%{text}<extra></extra>',
-                hoverlabel: { align: 'left', namelength: 0 }
-              },
-              {
-                x: amplPareto.map(p => p.x),
-                y: amplPareto.map(p => p.y),
-                mode: 'markers',
-                text: amplParText,
-                marker: { size: 11, color: 'green', symbol: 'diamond-open' },
-                name: 'AMPL Pareto',
-                hovertemplate: '%{text}<extra></extra>',
-                hoverlabel: { align: 'left', namelength: 0 }
-              }
-            );
-          }
-          // ---- Punto de referencia HV ----
-          if (
-            refPointGlobal &&
-            showRefCheckbox.checked &&
-            typeof refPointGlobal.x === "number" &&
-            typeof refPointGlobal.y === "number"
-          ) {
+        st.frames.forEach((pts, i) => {
+          if (i === 0 || i === st.frames.length - 1 || i % step === 0) {
+            const pareto = pts.filter(p => p.isPareto);
+            const color = getMultiColor(i / (st.frames.length - 1 || 1));
             traces.push({
-              x: [refPointGlobal.x],
-              y: [refPointGlobal.y],
-              mode: "markers",
-              name: "Punto de referencia",
-              marker: {
-                size: 11,
-                symbol: "x-thin",
-                line: { width: 1.5 },
-              },
-              hovertemplate: `Ref: (${refPointGlobal.x.toFixed(2)}, ${refPointGlobal.y.toFixed(2)})<extra></extra>`
-            });
-          }
-
-
-          Plotly.react(plotDiv, traces, layout);
-
-          // click: mapa + panel de detalle con todos los IDs (copiable)
-          plotDiv.removeAllListeners?.('plotly_click');
-          plotDiv.on('plotly_click', async d => {
-            const point = d.points[0];
-
-            const serie = point.data?.name || point.fullData?.name || '';
-            if (serie.startsWith('AMPL')) {
-              return; // no abrimos mapa, ni usamos IDs
-            }
-
-            const idsSel = point.customdata || [];
-            const instanciaActual = selInst.value;
-
-            lastIds = idsSel;
-            lastInstancia = instanciaActual;
-
-            const payload = {
-              instancia: instanciaActual,
-              ids: idsSel,
-              show_probs: toggleProb.checked,
-              x: point.x,
-              y: point.y
-            };
-
-            // 1. Esconder todo y mostrar mensaje de carga
-            $('#map-image-container').classList.add('hidden');
-            $('#map-plot-container').classList.add('hidden');
-            $('#map-stats').textContent = 'Cargando mapas...';
-
-            // 2. Ejecutar AMBAS peticiones de mapa en paralelo
-            const peticionEstatica = fetch('/map', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-            const peticionInteractiva = fetch('/map_json', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-
-            try {
-              // 3. Esperar a que ambas terminen
-              const [resStatic, resJson] = await Promise.all([peticionEstatica, peticionInteractiva]);
-
-              if (!resStatic.ok || !resJson.ok) {
-                throw new Error('Una o ambas peticiones de mapa fallaron');
-              }
-
-              const staticData = await resStatic.json();
-              const jsonData = await resJson.json();
-
-              // 4. Guardar datos y renderizar
-              currentMapJsonData = jsonData;
-              renderInteractiveMap('map-plot', currentMapJsonData); // Renderiza el interactivo (aún oculto)
-
-              // 5. Cargar la imagen estática y las estadísticas
-              $('#map-image').src = 'data:image/png;base64,' + staticData.img;
-              $('#map-stats').textContent = jsonData.stats || staticData.stats;
-
-              // 6. Mostrar la VISTA POR DEFECTO (estática) y el botón
-              $('#map-image-container').classList.remove('hidden');
-              $('#btn-toggle-map').classList.remove('hidden');
-              $('#btn-toggle-map').textContent = 'Ver mapa interactivo';
-
-            } catch (e) {
-              console.error(e);
-              $('#map-stats').textContent = '❌ No se pudo generar el mapa.';
-            }
-          });
-
-        }
-
-
-        toggleProb.addEventListener('change', async () => {
-          // Si no hay datos de mapa cargados, no hace nada
-          if (!currentMapJsonData || !lastIds || !lastInstancia) return;
-
-          // Actualiza la variable global con el nuevo estado del checkbox
-          currentMapJsonData.meta.show_probs = toggleProb.checked;
-
-          // Vuelve a pedir los datos JSON con la nueva configuración
-          const payload = {
-            instancia: lastInstancia,
-            ids: lastIds,
-            show_probs: toggleProb.checked,
-          };
-
-          $('#map-stats').textContent = 'Refrescando mapas...';
-
-          const peticionEstatica = fetch('/map', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-
-          const peticionInteractiva = fetch('/map_json', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-
-          try {
-            const [resStatic, resJson] = await Promise.all([peticionEstatica, peticionInteractiva]);
-
-            if (!resJson.ok) throw new Error('Fallo al refrescar datos JSON del mapa');
-            const staticData = await resStatic.json();
-            const jsonData = await resJson.json(); // Actualizar datos
-
-
-            $('#map-image').src = 'data:image/png;base64,' + staticData.img;
-            currentMapJsonData = jsonData; // Actualiza la variable global con los nuevos datos
-            // Vuelve a dibujar el mapa interactivo con los datos actualizados
-            renderInteractiveMap('map-plot', currentMapJsonData);
-
-            // Actualiza también las estadísticas
-            $('#map-stats').textContent = jsonData.stats || staticData.stats;
-
-
-          } catch (e) {
-            console.error("Error al refrescar el mapa interactivo:", e);
-            $('#map-stats').textContent = '❌ Error al refrescar mapa.';
-          }
-        });
-
-        slider.addEventListener('input', () => {
-          const i = parseInt(slider.value, 10);
-          // Muestra el número real (ej: 1000) en el texto
-          genNum.innerText = globalGenNumbers[i];
-          // Muestra el gráfico correspondiente al índice i
-          showGeneration(i);
-        });
-        $('#btn-ejecutar').addEventListener('click', runNow);
-        $('#load-btn').addEventListener('click', loadSaved);
-        $('#load-ampl-btn').addEventListener('click', loadAmplFront);
-
-        btnHvEvery.addEventListener('click', async () => {
-          const val = parseInt(inputHvEvery.value, 10);
-          if (!Number.isInteger(val) || val <= 0) return alert("X debe ser entero positivo");
-          if (!selInst.value) return alert("Primero selecciona una instancia");
-
-          statusEl.textContent = `Generando y calculando HV cada ${val} gens…`;
-          await runNowWithHV(val);
-        });
-
-        fixScaleCheckbox.addEventListener('change', () => showGeneration(parseInt(slider.value || '0', 10)));
-        showRefCheckbox.addEventListener('change', () =>
-          showGeneration(parseInt(slider.value || '0', 10))
-        );
-
-
-        // ====== Builder logic ======
-        const ib = { name: $('#ib-name'), mode: $('#ib-mode'), prob: $('#ib-prob'), grid: $('#ib-grid'), gridOn: $('#ib-grid-on'), file: $('#ib-file'), uploadBtn: $('#ib-upload'), canvas: $('#builder-canvas'), ctx: null, img: new Image(), points: [], nextId: 1 };
-        ib.ctx = ib.canvas.getContext('2d');
-
-        function drawBuilder() { const ctx = ib.ctx; ctx.clearRect(0, 0, ib.canvas.width, ib.canvas.height); if (ib.img && ib.img.complete) { ctx.drawImage(ib.img, 0, 0, ib.canvas.width, ib.canvas.height); } if (ib.gridOn.checked) { const step = Math.max(10, parseInt(ib.grid.value || '50', 10)); ctx.save(); ctx.strokeStyle = '#233'; for (let x = 0; x < ib.canvas.width; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ib.canvas.height); ctx.stroke(); } for (let y = 0; y < ib.canvas.height; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ib.canvas.width, y); ctx.stroke(); } ctx.restore(); } for (const p of ib.points) { const color = p.flag === 1 ? '#e53935' : '#1e88e5'; ctx.fillStyle = color; ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.font = '14px monospace'; ctx.fillText(String(p.id), p.x + 10, p.y - 10); } }
-
-        ib.canvas.addEventListener('click', ev => { const r = ib.canvas.getBoundingClientRect(); const x = ev.clientX - r.left; const y = ev.clientY - r.top; const flag = parseInt(ib.mode.value, 10); let prob = parseFloat(ib.prob.value); if (isNaN(prob) || prob <= 0) prob = 1.0; ib.points.push({ id: ib.nextId++, x: Math.round(x), y: Math.round(y), flag, prob: +prob.toFixed(2) }); drawBuilder(); renderPointsTable(); });
-
-        function renderPointsTable() {
-          const tb = $('#points-tbody'); tb.innerHTML = ''; for (const p of ib.points) { const tr = document.createElement('tr'); tr.innerHTML = `<td>${p.id}</td><td><input type="number" value="${p.x}" style="width:110px" data-id="${p.id}" data-k="x"></td><td><input type="number" value="${p.y}" style="width:80px" data-id="${p.id}" data-k="y"></td><td><select data-id="${p.id}" data-k="flag" style="width:90px"><option value="0" ${p.flag === 0 ? 'selected' : ''}>0</option><option value="1" ${p.flag === 1 ? 'selected' : ''}>1</option></select></td><td><input type="number" step="0.01" min="0.1" max="1.0" value="${p.prob}" style="width:110px" data-id="${p.id}" data-k="prob"></td><td><button data-id="${p.id}" data-act="del">Eliminar</button></td>`; tb.appendChild(tr); }
-          tb.querySelectorAll('input,select,button').forEach(el => { if (el.tagName === 'BUTTON') { el.addEventListener('click', () => { const id = +el.getAttribute('data-id'); ib.points = ib.points.filter(p => p.id !== id); drawBuilder(); renderPointsTable(); }); } else { el.addEventListener('change', () => { const id = +el.getAttribute('data-id'); const k = el.getAttribute('data-k'); const p = ib.points.find(r => r.id === id); if (!p) return; let v = el.value; if (k === 'x' || k === 'y') v = Math.round(parseFloat(v)); if (k === 'flag') v = parseInt(v, 10); if (k === 'prob') v = Math.min(1.0, Math.max(0.1, parseFloat(v))); p[k] = v; drawBuilder(); }); } });
-        }
-
-        ib.uploadBtn.addEventListener('click', async () => { if (!ib.file.files[0]) { alert('Selecciona una imagen'); return; } const fd = new FormData(); fd.append('image', ib.file.files[0]); fd.append('name', ib.name.value.replace('.dat', '') || 'map'); const res = await fetch('/upload_map', { method: 'POST', body: fd }); if (!res.ok) { alert('No se pudo subir la imagen'); return; } const json = await res.json(); const url = json.url; ib.img = new Image(); ib.img.onload = () => drawBuilder(); ib.img.src = url; });
-        $('#ib-grid-on').addEventListener('change', drawBuilder); $('#ib-grid').addEventListener('change', drawBuilder);
-        $('#ib-undo').addEventListener('click', () => { ib.points.pop(); drawBuilder(); renderPointsTable(); });
-        $('#ib-clear').addEventListener('click', () => { ib.points = []; ib.nextId = 1; drawBuilder(); renderPointsTable(); });
-
-        $('#ib-save').addEventListener('click', async () => {
-          const name = (ib.name.value || '').trim(); if (!name) { alert('Ponle un nombre a la instancia'); return; }
-          if (ib.points.length === 0) { alert('Agrega al menos un punto'); return; }
-          const h = ib.canvas.height; const payload = { name: name.endsWith('.dat') ? name : (name + '.dat'), points: ib.points.map(p => ({ id: p.id, x: p.x, y: h - p.y, flag: p.flag, prob: p.prob })), presupuesto: Number($('#ib-P').value || 0), radio: Number($('#ib-R').value || 800), c1: Number($('#ib-c1').value || 1.0), c2: Number($('#ib-c2').value || 1.0) };
-          const res = await fetch('/save_instance', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const j = await res.json(); if (!res.ok) { alert('Error guardando: ' + (j.error || 'desconocido')); return; }
-          // Actualizar selector, seleccionar nueva y volver al visualizador
-          await refreshInstanciaSelect(); const fname = payload.name; selInst.value = fname; try { await syncVariablesFromInstance(fname); } catch (_) { }
-          statusEl.textContent = 'Instancia creada. Ahora puedes ejecutarla';
-          showTab('visualizador');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        document.getElementById('load-ampl-btn')
-          .addEventListener('click', loadAmplFront);
-
-
-        // ===== Inicio =====
-        window.addEventListener('DOMContentLoaded', async () => { await refreshInstanciaSelect(); await refreshAmplSelect(); showTab('visualizador'); statusEl.textContent = 'Listo'; drawBuilder(); });
-
-        async function buildAllDashboard() {
-          if (allBuilt) return;
-          statusAll.textContent = 'Buscando instancias...';
-          gridAll.innerHTML = ''; // Limpiamos la grilla por si acaso
-
-          // Obtenemos la lista de todas las instancias disponibles
-          const r = await fetch('/list_instances');
-          const j = await r.json();
-          const insts = Array.isArray(j) ? j : (j.instances || []);
-
-          if (insts.length === 0) {
-            statusAll.textContent = 'No se encontraron instancias.';
-            return;
-          }
-
-          // 1. DIBUJAMOS LOS "ESQUELETOS" DE LAS TARJETAS
-          // Esto es instantáneo y le muestra al usuario que algo está pasando.
-          for (const inst of insts) {
-            const id = slug(inst);
-            gridAll.insertAdjacentHTML('beforeend', `
-            <div class="all-card" id="card-${id}">
-              <h4>${inst}</h4>
-              <div id="content-${id}" style="padding: 2rem; text-align: center; color: var(--muted);">
-                Pendiente de carga...
-              </div>
-            </div>`);
-          }
-
-          // 2. PROCESAMOS CADA INSTANCIA UNA POR UNA
-          // Esto actualiza cada tarjeta a medida que sus datos están listos.
-          statusAll.textContent = `Cargando datos para ${insts.length} instancias...`;
-          let loadedCount = 0;
-
-          for (const inst of insts) {
-            const id = slug(inst);
-            const contentDiv = document.getElementById(`content-${id}`);
-            contentDiv.innerHTML = 'Procesando...'; // Actualiza el estado individual de la tarjeta
-
-            try {
-              // Llamamos a /load para esta instancia específica
-              const res = await fetch('/load', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ instancia: inst, semilla: 0, recalcular: false, strict: true })
-              });
-
-              if (!res.ok) throw new Error('La respuesta del servidor no fue OK');
-
-              const data = await res.json();
-
-              // Si el servidor devolvió datos, los renderizamos
-              if (data.files && data.files.length) {
-                // Reemplazamos el "Procesando..." con la estructura real de los gráficos
-                contentDiv.innerHTML = `
-                <div class="all-row">
-                  <div>
-                    <div id="plot-${id}" class="all-plot"></div>
-                    <div class="all-slider">
-                      <input type="range" id="slider-${id}" min="0" max="0" value="0" style="width:100%" />
-                      <p class="hint">Generación: <span id="gen-${id}">1</span></p>
-                    </div>
-                  </div>
-                  <div>
-                    <div id="hv-${id}" class="all-small"></div>
-                    <div id="hist-${id}" class="all-small" style="margin-top:1rem"></div>
-                    <img id="map-${id}" alt="Mapa" style="display:none;width:100%;border:1px solid #333;border-radius:.6rem;margin-top:1rem" />
-                    <div id="stats-${id}" style="white-space:pre-wrap;font-family:monospace;display:none;margin-top:.5rem"></div>
-                  </div>
-                </div>`;
-
-                // Ahora que la estructura HTML existe, llamamos a la función que dibuja los gráficos
-                await renderInstanceCard(inst, id, data);
-                loadedCount++;
-
-              } else {
-                // Si no hay datos, mostramos un mensaje en su tarjeta
-                contentDiv.innerHTML = 'No se encontraron resultados para esta instancia.';
-              }
-
-            } catch (error) {
-              console.error(`Error al cargar la instancia ${inst}:`, error);
-              contentDiv.innerHTML = '❌ Error al cargar los datos.';
-            }
-
-            // Actualizamos el contador global
-            statusAll.textContent = `Cargadas: ${loadedCount} de ${insts.length}`;
-          }
-
-          statusAll.textContent = `¡Carga completa! (${loadedCount} instancias con datos)`;
-          allBuilt = true;
-        }
-
-        function parsePoints(text) {
-          return text.trim().split('\n')
-            .map(l => l.trim()).filter(l => l && !l.startsWith('#'))
-            .map(line => {
-              let coverage = null; let left = line;
-              if (line.includes('|')) {
-                const parts = line.split('|');
-                left = parts[0].trim();
-                const covStr = parts[1].trim().split(/\s+/)[0];
-                const covVal = parseFloat(covStr);
-                if (!Number.isNaN(covVal)) coverage = covVal;
-              }
-              const toks = left.split(/\s+/);
-              const f1 = parseFloat(toks[0]); const f2 = parseFloat(toks[1]);
-              let startIdx = 2; let isPareto;
-              if (Number.isNaN(parseFloat(toks[2]))) {
-                if (toks[2] === 'P') { isPareto = true; startIdx = 3; }
-                else if (toks[2] === 'D') { isPareto = false; startIdx = 3; }
-              }
-              const ids = toks.slice(startIdx).map(n => parseInt(n, 10)).filter(n => !Number.isNaN(n));
-              return { x: f1, y: f2, ids, isPareto, coverage };
-            });
-        }
-
-        async function renderInstanceCard(inst, id, data) {
-          const files = data.files, hv = data.hv || [];
-          const frames = [];
-          for (const file of files) {
-            const res = await fetch('/get/' + file);
-            const text = await res.text();
-            frames.push(parsePoints(text));
-          }
-          framesPerInst[inst] = frames;
-
-          // Rango global para “Misma escala”
-          let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity;
-          for (const gen of frames) {
-            for (const p of gen) {
-              if (p.x < xMin) xMin = p.x;
-              if (p.x > xMax) xMax = p.x;
-              if (p.y < yMin) yMin = p.y;
-              if (p.y > yMax) yMax = p.y;
-            }
-          }
-          rangesPerInst[inst] = { x: [xMin, xMax], y: [yMin, yMax] };
-          currentGenIndex[inst] = 0;  // primera generación
-
-          await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-          // HV
-          Plotly.newPlot('hv-' + id,
-            [{ x: hv.map((_, i) => i), y: hv, mode: 'lines+markers', name: 'HV' }],
-            {
-              title: 'Hipervolumen', xaxis: { title: 'Generación' }, yaxis: { title: 'HV' },
-              paper_bgcolor: '#fff', plot_bgcolor: '#fff'
-            }, PLOTLY_CFG
-          ).then(gd => {
-            gd.on('plotly_click', d => {
-              const gen = d.points[0].x;
-              const slider = $('#slider-' + id), genLbl = $('#gen-' + id);
-              slider.value = gen - 1; genLbl.textContent = gen;
-              showGenInCard(inst, id, gen - 1);
-            });
-          });
-
-          // Historial
-          const traces = frames.map((pts, idx) => {
-            const hasFlag = pts.every(p => typeof p.isPareto === 'boolean');
-            const all = hasFlag ? pts : findParetoFront(pts);
-            const pareto = all.filter(p => p.isPareto);
-            const color = getMultiColor(idx / Math.max(1, (frames.length - 1)));
-            return {
-              x: pareto.map(p => p.x), y: pareto.map(p => p.y), mode: 'markers',
-              marker: { size: 6, color }, showlegend: false
-            };
-          });
-          Plotly.newPlot('hist-' + id, traces,
-            {
-              title: 'Frentes', xaxis: { title: 'f1' }, yaxis: { title: 'f2' },
-              paper_bgcolor: '#fff', plot_bgcolor: '#fff'
-            }, PLOTLY_CFG);
-
-          // Slider + primera generación
-          const slider = $('#slider-' + id), genLbl = $('#gen-' + id);
-          slider.max = frames.length - 1; slider.value = 0; genLbl.textContent = 1;
-          slider.addEventListener('input', () => {
-            const i = parseInt(slider.value, 10);
-            currentGenIndex[inst] = i;              // ← guarda la gen actual
-            genLbl.textContent = i;
-            showGenInCard(inst, id, i);
-          });
-
-
-          // Primer render
-          showGenInCard(inst, id, 0);
-          observeCardResize(id);
-        }
-
-        function showGenInCard(inst, id, index) {
-          const frames = framesPerInst[inst]; if (!frames) return;
-          const points = frames[index] || [];
-
-          const hasFlag = points.every(p => typeof p.isPareto === 'boolean');
-          const allPoints = hasFlag ? points : findParetoFront(points);
-          const pareto = allPoints.filter(p => p.isPareto);
-          const dom = allPoints.filter(p => !p.isPareto);
-
-          const layout = {
-            title: `Frente – Gen ${index}`,
-            xaxis: { title: 'f1' }, yaxis: { title: 'f2' },
-            paper_bgcolor: '#fff', plot_bgcolor: '#fff',
-            hovermode: 'closest'
-          };
-
-          const el = document.getElementById('plot-' + id);
-          const dataTraces = [
-            {
-              x: dom.map(p => p.x), y: dom.map(p => p.y),
-              customdata: dom.map(p => p.ids),
-              text: dom.map(mkHoverTextPt),
-              mode: 'markers', marker: { size: 8, color: 'blue' }, name: 'Dominados',
-              hovertemplate: '%{text}<extra></extra>',
-              hoverlabel: { align: 'left', namelength: 0 }
-            },
-            {
               x: pareto.map(p => p.x), y: pareto.map(p => p.y),
-              customdata: pareto.map(p => p.ids),
-              text: pareto.map(mkHoverTextPt),
-              mode: 'markers', marker: { size: 10, color: 'red', symbol: 'circle-open' }, name: 'Pareto',
-              hovertemplate: '%{text}<extra></extra>',
-              hoverlabel: { align: 'left', namelength: 0 }
-            }
-          ];
-
-          const plotPromise = el.data
-            ? Plotly.react(el, dataTraces, layout)
-            : Plotly.newPlot(el, dataTraces, layout, { responsive: true, displayModeBar: false });
-
-          plotPromise.then(gd => {
-            gd.removeAllListeners?.('plotly_click');
-            gd.on('plotly_click', async d => {
-              const idsSel = d.points[0].customdata || [];
-              lastSelPerInst[inst] = idsSel;
-
-              // Panel de detalle bajo la card
-              const coord = `(${(+d.points[0].x).toFixed(2)}, ${(+d.points[0].y).toFixed(2)})`;
-
-              // Mapa (como ya lo tenías)
-              const res = await fetch('/map', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ instancia: inst, ids: idsSel, show_probs: selProbAll.checked, x: d.points[0].x, y: d.points[0].y })
-              });
-              if (res.ok) {
-                const { img, stats } = await res.json();
-                const imgEl = $('#map-' + id), stEl = $('#stats-' + id);
-                imgEl.src = 'data:image/png;base64,' + img; imgEl.style.display = 'block';
-                stEl.textContent = stats; stEl.style.display = 'block';
-              }
+              mode: 'markers', marker: { size: 4, color: color },
+              name: `G${st.genNumbers[i]}`, showlegend: false
             });
-          });
+          }
+        });
+
+        Plotly.newPlot('history-plot', traces, {
+          margin: { t: 20, l: 40, r: 20, b: 30 },
+          xaxis: { title: 'f1' }, yaxis: { title: 'f2' }
+        });
+      },
+
+      renderHistoryTable(limit) {
+        const hist = APP.state.runHistory;
+        const tbody = APP.dom['runs-tbody'];
+        tbody.innerHTML = '';
+
+        const show = limit === 'all' ? hist : hist.slice(0, limit);
+        APP.dom['history-count'].textContent = `${show.length} de ${hist.length} registros`;
+
+        const btnMore = APP.dom['btn-history-load-more'];
+        btnMore.style.display = (limit !== 'all' && hist.length > limit) ? 'inline-block' : 'none';
+
+        show.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+                <td>${(r.ts || '').replace('T', ' ').split('.')[0]}</td>
+                <td style="font-weight:bold; color:var(--text)">${r.hv_final ? r.hv_final.toFixed(4) : '-'}</td>
+                <td>${r.neval || '-'}</td>
+                <td>${r.pop || '-'}</td>
+                <td>${r.neighbor || '-'}</td>
+                <td>${r.mut || '-'}</td>
+                <td>${r.cross || '-'}</td>
+                <td>${r.op1 || '-'}</td>
+                <td>${r.time_s ? r.time_s.toFixed(2) : '-'}</td>
+            `;
+          tbody.appendChild(tr);
+        });
+      }
+    };
+
+
+    function renderInteractiveMap(targetDivId, jsonData) {
+      if (!jsonData) return;
+
+      const {
+        meta,
+        demanda,
+        preinstalados_movidos_origen,
+        seleccionados_nuevos,
+        seleccionados_existentes,
+        coords_finales_aeds
+      } = jsonData;
+
+      const radio = meta && typeof meta.radio === 'number' ? meta.radio : 0;
+      const r2 = radio * radio;
+
+      // AEDs finales: preinstalados que se mantienen vs nuevos
+      const preX = (seleccionados_existentes.x || []);
+      const preY = (seleccionados_existentes.y || []);
+      const newX = (seleccionados_nuevos.x || []);
+      const newY = (seleccionados_nuevos.y || []);
+
+      // Buckets de demanda según cobertura:
+      //  - demandaNo: no cubierta
+      //  - demandaPre: cubierta por preinstalados
+      //  - demandaNew: cubierta por nuevos
+      const demandaNo = { x: [], y: [], s: [] };
+      const demandaPre = { x: [], y: [], s: [] };
+      const demandaNew = { x: [], y: [], s: [] };
+
+      for (let i = 0; i < (demanda.x || []).length; i++) {
+        const px = demanda.x[i];
+        const py = demanda.y[i];
+        // demanda.s viene con el tamaño ya escalado por prob o fijo según show_probs
+        const rawSize = demanda.s && demanda.s[i] != null ? demanda.s[i] : 20;
+        const size = Math.sqrt(rawSize);
+
+        let coveredPre = false;
+        let coveredNew = false;
+
+        // ¿Lo cubre algún preinstalado mantenido?
+        for (let j = 0; j < preX.length; j++) {
+          const dx = px - preX[j];
+          const dy = py - preY[j];
+          if (dx * dx + dy * dy <= r2) {
+            coveredPre = true;
+            break;
+          }
         }
 
-
-        function observeCardResize(id) {
-          const card = document.getElementById('card-' + id);
-          if (!window.ResizeObserver || !card) return;
-          let rafId = null;
-          const ro = new ResizeObserver(() => {
-            if (rafId) cancelAnimationFrame(rafId);
-            rafId = requestAnimationFrame(() => {
-              const p = document.getElementById('plot-' + id);
-              const hv = document.getElementById('hv-' + id);
-              const hi = document.getElementById('hist-' + id);
-              if (p) Plotly.Plots.resize(p);
-              if (hv) Plotly.Plots.resize(hv);
-              if (hi) Plotly.Plots.resize(hi);
-              rafId = null;
-            });
-          });
-          ro.observe(card);
+        // Si no está cubierto por preinstalados, probamos con los nuevos
+        if (!coveredPre) {
+          for (let j = 0; j < newX.length; j++) {
+            const dx = px - newX[j];
+            const dy = py - newY[j];
+            if (dx * dx + dy * dy <= r2) {
+              coveredNew = true;
+              break;
+            }
+          }
         }
 
+        if (coveredPre) {
+          demandaPre.x.push(px);
+          demandaPre.y.push(py);
+          demandaPre.s.push(size);
+        } else if (coveredNew) {
+          demandaNew.x.push(px);
+          demandaNew.y.push(py);
+          demandaNew.s.push(size);
+        } else {
+          demandaNo.x.push(px);
+          demandaNo.y.push(py);
+          demandaNo.s.push(size);
+        }
+      }
 
+      const traces = [];
 
-        selProbAll.addEventListener('change', async () => {
-          for (const inst of Object.keys(lastSelPerInst)) {
-            const ids = lastSelPerInst[inst];
-            const id = slug(inst);
-            const res = await fetch('/map', {
-              method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ instancia: inst, ids, show_probs: selProbAll.checked })
-            });
-            if (res.ok) {
-              const { img, stats } = await res.json();
-              const imgEl = $('#map-' + id), stEl = $('#stats-' + id);
-              if (imgEl) { imgEl.src = 'data:image/png;base64,' + img; imgEl.style.display = 'block'; }
-              if (stEl) { stEl.textContent = stats; stEl.style.display = 'block'; }
-            }
+      // 1) Demanda NO cubierta
+      if (demandaNo.x.length) {
+        traces.push({
+          x: demandaNo.x,
+          y: demandaNo.y,
+          mode: 'markers',
+          name: 'Demanda no cubierta',
+          marker: {
+            size: demandaNo.s,
+            color: 'blue',
+            opacity: 0.9,
+            line: { width: 1, color: 'black' }
           }
         });
+      }
 
-        window.addEventListener('resize', () => {
-          document.querySelectorAll('.js-plotly-plot')
-            .forEach(el => Plotly.Plots.resize(el));
-        });
-
-        fixScaleAll?.addEventListener('change', () => {
-          for (const inst of Object.keys(framesPerInst)) {
-            const id = slug(inst);
-            const i = currentGenIndex[inst] ?? 0;
-            showGenInCard(inst, id, i);
+      // 2) Demanda cubierta por preinstalados
+      if (demandaPre.x.length) {
+        traces.push({
+          x: demandaPre.x,
+          y: demandaPre.y,
+          mode: 'markers',
+          name: 'Demanda cubierta (preinstalados)',
+          marker: {
+            size: demandaPre.s,
+            color: 'orange',
+            opacity: 0.4,
+            line: { width: 1, color: 'black' }
           }
         });
+      }
 
-        function renderInteractiveMap(targetDivId, jsonData) {
-          if (!jsonData) return;
-
-          const {
-            meta,
-            demanda,
-            preinstalados_movidos_origen,
-            seleccionados_nuevos,
-            seleccionados_existentes,
-            coords_finales_aeds
-          } = jsonData;
-
-          const radio = meta && typeof meta.radio === 'number' ? meta.radio : 0;
-          const r2 = radio * radio;
-
-          // AEDs finales: preinstalados que se mantienen vs nuevos
-          const preX = (seleccionados_existentes.x || []);
-          const preY = (seleccionados_existentes.y || []);
-          const newX = (seleccionados_nuevos.x || []);
-          const newY = (seleccionados_nuevos.y || []);
-
-          // Buckets de demanda según cobertura:
-          //  - demandaNo: no cubierta
-          //  - demandaPre: cubierta por preinstalados
-          //  - demandaNew: cubierta por nuevos
-          const demandaNo = { x: [], y: [], s: [] };
-          const demandaPre = { x: [], y: [], s: [] };
-          const demandaNew = { x: [], y: [], s: [] };
-
-          for (let i = 0; i < (demanda.x || []).length; i++) {
-            const px = demanda.x[i];
-            const py = demanda.y[i];
-            // demanda.s viene con el tamaño ya escalado por prob o fijo según show_probs
-            const rawSize = demanda.s && demanda.s[i] != null ? demanda.s[i] : 20;
-            const size = Math.sqrt(rawSize);
-
-            let coveredPre = false;
-            let coveredNew = false;
-
-            // ¿Lo cubre algún preinstalado mantenido?
-            for (let j = 0; j < preX.length; j++) {
-              const dx = px - preX[j];
-              const dy = py - preY[j];
-              if (dx * dx + dy * dy <= r2) {
-                coveredPre = true;
-                break;
-              }
-            }
-
-            // Si no está cubierto por preinstalados, probamos con los nuevos
-            if (!coveredPre) {
-              for (let j = 0; j < newX.length; j++) {
-                const dx = px - newX[j];
-                const dy = py - newY[j];
-                if (dx * dx + dy * dy <= r2) {
-                  coveredNew = true;
-                  break;
-                }
-              }
-            }
-
-            if (coveredPre) {
-              demandaPre.x.push(px);
-              demandaPre.y.push(py);
-              demandaPre.s.push(size);
-            } else if (coveredNew) {
-              demandaNew.x.push(px);
-              demandaNew.y.push(py);
-              demandaNew.s.push(size);
-            } else {
-              demandaNo.x.push(px);
-              demandaNo.y.push(py);
-              demandaNo.s.push(size);
-            }
+      // 3) Demanda cubierta por nuevos equipos
+      if (demandaNew.x.length) {
+        traces.push({
+          x: demandaNew.x,
+          y: demandaNew.y,
+          mode: 'markers',
+          name: 'Demanda cubierta (nuevos AED)',
+          marker: {
+            size: demandaNew.s,
+            color: 'green',
+            opacity: 0.4,
+            line: { width: 1, color: 'black' }
           }
+        });
+      }
 
-          const traces = [];
-
-          // 1) Demanda NO cubierta
-          if (demandaNo.x.length) {
-            traces.push({
-              x: demandaNo.x,
-              y: demandaNo.y,
-              mode: 'markers',
-              name: 'Demanda no cubierta',
-              marker: {
-                size: demandaNo.s,
-                color: 'blue',
-                opacity: 0.9,
-                line: { width: 1, color: 'black' }
-              }
-            });
+      // 4) Origen de AEDs preinstalados movidos
+      if (preinstalados_movidos_origen.x && preinstalados_movidos_origen.x.length) {
+        traces.push({
+          x: preinstalados_movidos_origen.x,
+          y: preinstalados_movidos_origen.y,
+          mode: 'markers',
+          name: 'AED movido (origen)',
+          marker: {
+            size: (preinstalados_movidos_origen.s || []).map(v => Math.sqrt(v || 20)),
+            color: 'red',
+            symbol: 'circle-open',
+            opacity: 0.8,
+            line: { width: 2 }
           }
+        });
+      }
 
-          // 2) Demanda cubierta por preinstalados
-          if (demandaPre.x.length) {
-            traces.push({
-              x: demandaPre.x,
-              y: demandaPre.y,
-              mode: 'markers',
-              name: 'Demanda cubierta (preinstalados)',
-              marker: {
-                size: demandaPre.s,
-                color: 'orange',
-                opacity: 0.4,
-                line: { width: 1, color: 'black' }
-              }
-            });
+      // 5) AEDs preinstalados que se mantuvieron
+      if (preX.length) {
+        traces.push({
+          x: preX,
+          y: preY,
+          mode: 'markers',
+          name: 'Equipo preinstalado (mantenido)',
+          marker: {
+            size: 14,
+            color: 'orange',
+            symbol: 'star',
+            line: { width: 1, color: 'black' }
           }
+        });
+      }
 
-          // 3) Demanda cubierta por nuevos equipos
-          if (demandaNew.x.length) {
-            traces.push({
-              x: demandaNew.x,
-              y: demandaNew.y,
-              mode: 'markers',
-              name: 'Demanda cubierta (nuevos AED)',
-              marker: {
-                size: demandaNew.s,
-                color: 'green',
-                opacity: 0.4,
-                line: { width: 1, color: 'black' }
-              }
-            });
+      // 6) Nuevos AEDs instalados
+      if (newX.length) {
+        traces.push({
+          x: newX,
+          y: newY,
+          mode: 'markers',
+          name: 'AED instalado (nuevo)',
+          marker: {
+            size: 14,
+            color: 'green',
+            symbol: 'star',
+            line: { width: 1, color: 'black' }
           }
+        });
+      }
 
-          // 4) Origen de AEDs preinstalados movidos
-          if (preinstalados_movidos_origen.x && preinstalados_movidos_origen.x.length) {
-            traces.push({
-              x: preinstalados_movidos_origen.x,
-              y: preinstalados_movidos_origen.y,
-              mode: 'markers',
-              name: 'AED movido (origen)',
-              marker: {
-                size: (preinstalados_movidos_origen.s || []).map(v => Math.sqrt(v || 20)),
-                color: 'red',
-                symbol: 'circle-open',
-                opacity: 0.8,
-                line: { width: 2 }
-              }
-            });
-          }
+      // Círculos de cobertura
+      const shapes = [];
+      for (const [ax, ay] of (coords_finales_aeds || [])) {
+        shapes.push({
+          type: 'circle',
+          xref: 'x',
+          yref: 'y',
+          x0: ax - radio,
+          y0: ay - radio,
+          x1: ax + radio,
+          y1: ay + radio,
+          fillcolor: 'rgba(128, 128, 128, 0.15)',
+          line: { color: 'rgba(128, 128, 128, 0.3)' }
+        });
+      }
 
-          // 5) AEDs preinstalados que se mantuvieron
-          if (preX.length) {
-            traces.push({
-              x: preX,
-              y: preY,
-              mode: 'markers',
-              name: 'Equipo preinstalado (mantenido)',
-              marker: {
-                size: 14,
-                color: 'orange',
-                symbol: 'star',
-                line: { width: 1, color: 'black' }
-              }
-            });
-          }
+      const layout = {
+        title: `Mapa Interactivo: ${meta.instancia}`,
+        xaxis: { title: 'Coordenada X', scaleanchor: 'y', scaleratio: 1 },
+        yaxis: { title: 'Coordenada Y' },
+        shapes: shapes,
+        legend: { x: 1.02, y: 1 },
+        hovermode: 'closest'
+      };
 
-          // 6) Nuevos AEDs instalados
-          if (newX.length) {
-            traces.push({
-              x: newX,
-              y: newY,
-              mode: 'markers',
-              name: 'AED instalado (nuevo)',
-              marker: {
-                size: 14,
-                color: 'green',
-                symbol: 'star',
-                line: { width: 1, color: 'black' }
-              }
-            });
-          }
+      Plotly.newPlot(targetDivId, traces, layout, { responsive: true, displayModeBar: true });
+    }
 
-          // Círculos de cobertura
-          const shapes = [];
-          for (const [ax, ay] of (coords_finales_aeds || [])) {
-            shapes.push({
-              type: 'circle',
-              xref: 'x',
-              yref: 'y',
-              x0: ax - radio,
-              y0: ay - radio,
-              x1: ax + radio,
-              y1: ay + radio,
-              fillcolor: 'rgba(128, 128, 128, 0.15)',
-              line: { color: 'rgba(128, 128, 128, 0.3)' }
-            });
-          }
+    // ============================================================================
+    // HELPERS (Utilidades puras)
+    // ============================================================================
+    function compressRanges(ids) {
+      if (!ids || !ids.length) return "";
+      const arr = [...new Set(ids)].sort((a, b) => a - b);
+      const out = [];
+      let s = arr[0], p = arr[0];
+      for (let i = 1; i < arr.length; i++) {
+        if (arr[i] === p + 1) p = arr[i];
+        else { out.push(s === p ? `${s}` : `${s}-${p}`); s = p = arr[i]; }
+      }
+      out.push(s === p ? `${s}` : `${s}-${p}`);
+      if (out.length > 5) return out.slice(0, 5).join(', ') + '...';
+      return out.join(', ');
+    }
 
-          const layout = {
-            title: `Mapa Interactivo: ${meta.instancia}`,
-            xaxis: { title: 'Coordenada X', scaleanchor: 'y', scaleratio: 1 },
-            yaxis: { title: 'Coordenada Y' },
-            shapes: shapes,
-            legend: { x: 1.02, y: 1 },
-            hovermode: 'closest'
-          };
+    function getMultiColor(f) {
+      // Viridis approx
+      const cs = ["#440154", "#3b528b", "#21918c", "#fde725"];
+      const i = Math.floor(f * (cs.length - 1));
+      return cs[i] || cs[cs.length - 1];
+    }
 
-          Plotly.newPlot(targetDivId, traces, layout, { responsive: true, displayModeBar: true });
+    // ============================================================
+    // VISTA "COMPARAR" - Historial de HV y resumen por instancia
+    // ============================================================
+    async function buildAllDashboard() {
+      const grid = document.getElementById('all-grid');
+      const status = document.getElementById('status-all');
+
+      grid.innerHTML = '';
+      status.textContent = 'Cargando...';
+
+      // 1) Obtener lista de instancias desde el backend
+      const data = await APP.api.get('/list_instances');
+      if (!data || !data.instances || !data.instances.length) {
+        status.textContent = 'No hay instancias disponibles';
+        return;
+      }
+
+      const traces = [];
+
+      // 2) Contenedor del gráfico global
+      const plotCard = document.createElement('div');
+      plotCard.className = 'card';
+      const plotDiv = document.createElement('div');
+      plotDiv.id = 'all-hv-plot';
+      plotDiv.style.height = '400px';
+      plotCard.innerHTML = '<div class="card-header"><h3 class="card-title">Historial de HV por instancia</h3></div>';
+      plotCard.appendChild(plotDiv);
+      grid.appendChild(plotCard);
+
+      // 3) Para cada instancia, leer su historial y crear resumen
+      for (const instFull of data.instances) {
+        const instBase = instFull.replace('.dat', '');
+        const history = await APP.api.get(`/list_run_stats?inst=${instBase}`);
+
+        if (!history || !history.length) {
+          continue; // nada guardado para esta instancia
         }
 
+        // --- HV por run (histórico guardado) ---
+        const xRuns = history.map((_, idx) => idx + 1);
+        const yHV = history.map(r => r.hv_final || 0);
 
-        const btnToggleMap = $('#btn-toggle-map');
-        const mapImgContainer = $('#map-image-container');
-        const mapPlotContainer = $('#map-plot-container');
-
-        const hvAmplOptEl = document.getElementById('hv-ampl-opt');
-        const hvMoeadEl = document.getElementById('hv-moead');
-        const hvGapEl = document.getElementById('hv-gap');
-
-
-        btnToggleMap.addEventListener('click', () => {
-          const isStaticVisible = !mapImgContainer.classList.contains('hidden');
-
-          if (isStaticVisible) {
-            // Si el estático está visible, lo ocultamos y mostramos el interactivo
-            mapImgContainer.classList.add('hidden');
-            mapPlotContainer.classList.remove('hidden');
-            btnToggleMap.textContent = 'Ver mapa estático';
-            Plotly.Plots.resize('map-plot'); // Asegura que el plot se redimensione correctamente
-          } else {
-            // Si el interactivo está visible, lo ocultamos y mostramos el estático
-            mapPlotContainer.classList.add('hidden');
-            mapImgContainer.classList.remove('hidden');
-            btnToggleMap.textContent = 'Ver mapa interactivo';
-          }
+        traces.push({
+          x: xRuns,
+          y: yHV,
+          type: 'scatter',
+          mode: 'lines+markers',
+          name: instBase
         });
-      </script>
+
+        // --- Resumen para la tarjeta de la instancia ---
+        const bestHv = Math.max(...yHV);
+        const lastHv = yHV[yHV.length - 1];
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+      <div class="card-header">
+        <h3 class="card-title">${instBase}</h3>
+      </div>
+      <div class="stats-container">
+        <div class="stat-box">
+          <div class="stat-label">Runs</div>
+          <div class="stat-val">${history.length}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">HV mejor</div>
+          <div class="stat-val">${bestHv.toFixed(5)}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">HV último</div>
+          <div class="stat-val">${lastHv.toFixed(5)}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Tiempo medio (s)</div>
+          <div class="stat-val">${(history
+            .map(r => r.time_s || 0)
+            .reduce((a, b) => a + b, 0) / history.length
+          ).toFixed(5)
+          }</div>
+        </div>
+      </div>
+    `;
+        grid.appendChild(card);
+      }
+
+      // 4) Dibujar el gráfico global de HV final por run, por instancia
+      if (traces.length) {
+        Plotly.newPlot('all-hv-plot', traces, {
+          margin: { t: 30, l: 50, r: 20, b: 40 },
+          xaxis: { title: 'Run' },
+          yaxis: { title: 'HV final' },
+          legend: { orientation: 'h' }
+        });
+        status.textContent = 'Comparación cargada';
+      } else {
+        status.textContent = 'No hay HV almacenado todavía';
+      }
+    }
+
+
+    // ============================================================================
+    // FUNCIONES GLOBALES (Para onclicks inline que quedaron)
+    // ============================================================================
+    function showTab(id) {
+      document.querySelectorAll('.section').forEach(e => e.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
+      document.querySelectorAll('.control-panel').forEach(e => e.classList.add('hidden'));
+
+      document.getElementById(`tab-${id}`).classList.add('active');
+      document.getElementById(`btn-tab-${id}`).classList.add('active');
+      document.getElementById(`controls-${id}`).classList.remove('hidden');
+
+      if (id === 'all') buildAllDashboard(); // Mantener lógica antigua si existe
+    }
+
+    // INICIO
+    window.onload = () => APP.init();
+
+    // Mantener la lógica del Builder antigua si se usa mucho canvas directo, 
+    // o integrarla en APP.logic.builder si prefieres. Por ahora la dejamos funcional:
+    const ib = {
+      canvas: document.getElementById('builder-canvas'), points: [],
+      init() {
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        this.canvas.addEventListener('click', e => {
+          const r = this.canvas.getBoundingClientRect();
+          const mode = parseInt(document.getElementById('ib-mode').value);
+          this.points.push({ id: this.points.length + 1, x: e.clientX - r.left, y: e.clientY - r.top, flag: mode });
+          this.draw();
+          this.renderTable();
+        });
+        document.getElementById('ib-save').onclick = () => this.save();
+        document.getElementById('ib-clear').onclick = () => { this.points = []; this.draw(); this.renderTable(); };
+        document.getElementById('ib-undo').onclick = () => { this.points.pop(); this.draw(); this.renderTable(); };
+      },
+      draw() {
+        this.ctx.clearRect(0, 0, 900, 600);
+        // Dibujar imagen de fondo si existe (pendiente implementación upload)
+        this.points.forEach(p => {
+          this.ctx.fillStyle = p.flag === 1 ? 'red' : 'blue';
+          this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 6, 0, Math.PI * 2); this.ctx.fill();
+        });
+      },
+      renderTable() {
+        const tb = document.getElementById('points-tbody');
+        tb.innerHTML = this.points.map(p => `<tr><td>${p.id}</td><td>${Math.round(p.x)}</td><td>${Math.round(p.y)}</td><td>${p.flag}</td><td>1.0</td><td>-</td></tr>`).join('');
+      },
+      async save() {
+        const name = document.getElementById('ib-name').value;
+        if (!name) return alert("Falta nombre");
+        await APP.api.post('/save_instance', {
+          name: name, points: this.points,
+          presupuesto: document.getElementById('ib-P').value,
+          radio: document.getElementById('ib-R').value
+        });
+        alert("Guardado");
+        APP.api.listInstances();
+      }
+    };
+    ib.init();
+
+    // Upload Imagen Builder
+    document.getElementById('ib-upload').onclick = async () => {
+      const file = document.getElementById('ib-file').files[0];
+      if (!file) return;
+      const fd = new FormData(); fd.append('image', file);
+      const res = await fetch('/upload_map', { method: 'POST', body: fd });
+      const d = await res.json();
+      const img = new Image(); img.onload = () => {
+        ib.ctx.drawImage(img, 0, 0, 900, 600);
+        ib.draw(); // Redibujar puntos encima
+      };
+      img.src = d.url;
+    };
+
+  </script>
+
+
 </body>
 
 </html>

@@ -18,77 +18,85 @@ public:
 
 	void Execute(int run_id);
 
-	void InitializeNeighborhood();
-	void InitializePopulation();
 	void InitializeParameter();
+	void SetOutputDirectory(std::string path) {
+		this->outputDirectory = path;
+	}
 
+	// Setters para configuración del algoritmo
+	void SetPopulationSize(int p) { s_PopulationSize = p; }
+    void SetNeighborhoodSize(int n) { s_NeighborhoodSize = n; }
+	void SetMutationRate(double r)     { m_MutationRate = r; }
+    void SetCrossoverRate(double r)    { m_CrossoverRate = r; }
+    void SetOp1MutationProb(double p)  { m_Op1MutationProb = p; } // Probabilidad del Operador 1
+	void SetProblemType(std::string t) { m_ProblemType = t; }     // "cam" o "drp"
+    void SetVariant(std::string v)     {                          // "location" o "relocation"
+        if (v == "relocation") m_IsRelocation = true;
+        else m_IsRelocation = false;
+    }
+	void SetMaxTime(double t) { m_MaxTimeSeconds = t; }
+	void SetDecompositionType(int type) { s_PBI_type = type; }
+	void SetSaveInterval(int interval) { m_SaveInterval = interval; }
+
+	// Setters para operadores avanzados
+	void SetMutationType (int type) {m_MutationType = type;}
+	void SetCrossoverType(int type) {m_CrossoverType = type;}
+	void SetMutationPercentage(double perc) {m_MutationPercentage = perc;}
+	void SetBitFlipProb(double prob) { m_BitFlipProb = prob; }
+
+	int s_PopulationSize;
+	int s_NeighborhoodSize;
+	ProblemInstance *problemInstance;
+
+protected:
+	void InitializePopulation();
+	void InitializeNeighborhood();
+	void EvolvePopulation();
+
+	// Funciones internas
 	void UpdateReference(vector<double> &obj_vect);
+	void FindNadirPoint();
 	void UpdateNadirPoint(vector <double> &obj_vect);
+	void NormalizeWeight();
+	void NormalizeIndividual(CIndividualBase &ind);
+
+	// Seleccion y Reemplazo
+	void SelectMatingPool(vector<unsigned> &pool, unsigned sp_id, unsigned selected_size);
 	void UpdateProblem_original(CIndividualBase &child, unsigned sp_id);
 	void UpdateProblem_modificado(CIndividualBase &child, unsigned sp_id);
-	void UpdateProblem_modificado_v2(CIndividualBase &child, unsigned sp_id);
 
-	void FindNadirPoint();
-	void FindNadirPoint_v2();
-	void NormalizeIndividual(CIndividualBase &ind);
-	void NormalizeWeight();
-
-	void SelectMatingPool(vector<unsigned> &pool, unsigned sp_id, unsigned selected_size);
-	void EvolvePopulation();
 	bool IsTerminated();
-
 	void SaveObjSpace(char saveFilename[1024]);
 	void SaveVarSpace(char saveFilename[1024]);
 	void SavePopulation(int run_id);
 	void SaveFinalPopulation();
 
-	std::string outputDirectory;
-	void SetOutputDirectory(std::string path) {
-		this->outputDirectory = path;
-	}
-
-	void SetMutationRate(double r)     { m_MutationRate = r; }
-    void SetCrossoverRate(double r)    { m_CrossoverRate = r; }
-    void SetOp1MutationProb(double p)  { m_Op1MutationProb = p; } // Probabilidad del Operador 1
-    
-    void SetProblemType(std::string t) { m_ProblemType = t; }     // "cam" o "drp"
-    void SetVariant(std::string v)     {                          // "location" o "relocation"
-        if (v == "relocation" || v == "flexible") m_IsRelocation = true;
-        else m_IsRelocation = false;
-    }
-	void SetPopulationSize(int p) { s_PopulationSize = p; }
-    void SetNeighborhoodSize(int n) { s_NeighborhoodSize = n; }
-	void SetMaxTime(double t) { m_MaxTimeSeconds = t; }
-	void SetDecompositionType(int type) { s_PBI_type = type; }
-	void SetSaveInterval(int interval) { m_SaveInterval = interval; }
-
-
-public:
-	ProblemInstance *problemInstance;
-
+	// Variables Algoritmicas
 	vector<CSubProblemBase> m_PopulationSOP;
 	vector<double> v_IdealPoint;
 	vector<double> v_NadirPoint;
 
-	unsigned int s_PopulationSize;
-	unsigned int s_NeighborhoodSize;
-	//	unsigned int     s_ReplacementLimit;
-	//	double           s_LocalMatingRatio;
-	int s_Fevals_Count;
 
+	// Configuracion
 	int s_PBI_type;
+	int s_Fevals_Count;
+	std::string outputDirectory;
+    std::string m_ProblemType;  // Para logs o lógica específica (CAM/DRP)
+    bool m_IsRelocation;        // true = con reubicación, false = sin reubicación
 
-private:
-    // Variables privadas para configuración
+
+	// Parametros Evolutivos
     double m_MutationRate;      // Probabilidad general de mutar
     double m_CrossoverRate;     // Probabilidad general de cruzar
     double m_Op1MutationProb;   // Probabilidad de usar Mutación Tipo 1 (vs Tipo 2)
-    
-    bool m_IsRelocation;        // true = con reubicación, false = sin reubicación
-    std::string m_ProblemType;  // Para logs o lógica específica (CAM/DRP)
 
+
+	// Parametros de los operadores avanzados
+	int m_MutationType;   // ID del operador de mutación
+    int m_CrossoverType;  // ID del operador de cruzamiento
+    double m_MutationPercentage; // Para operadores porcentuales (ej. 0.1 para 10%)
+	double m_BitFlipProb; 
+	
 	double m_MaxTimeSeconds; // Tiempo máximo en segundos (0 = sin límite)
-
 	int m_SaveInterval;
-
 };

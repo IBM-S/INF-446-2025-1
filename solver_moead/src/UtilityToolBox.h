@@ -60,23 +60,17 @@ public:
 							   vector<double> &child,
 							   double rate);
 
+
+							   
+
 	void CruzamientoUniformeModificado(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child);
 
 	void CruzamientoUniformeModificado_sin_reubicacion(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, ProblemInstance *problemInstance);
 	void MutacionModificada_sin_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
 	bool EsBuenCandidato(int idx_candidato, ProblemInstance *instance);
-	void MutacionIntercambioHeuristico(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *instance);
 
 	// 2. Cruzamiento (State of the Art para Binario con Presupuesto)
     void CruzamientoInteligente(const vector<double> &p1, const vector<double> &p2, vector<double> &child, ProblemInstance *instance);
-
-    // 3. Mutaciones
-    // A. BitFlip Inteligente (Probabilidad 1/N, filtrado) -> Para ajuste fino
-    void MutacionBitFlipInteligente(vector<double> &x_var, double mutation_rate, ProblemInstance *instance);
-
-    // B. Intercambio Heurístico (Greedy Swap) -> Para salir de óptimos locales
-    void MutacionIntercambioHeuristico(vector<double> &x_var, double mutation_rate, ProblemInstance *instance);
-
 	
 	// 1. Bit Flip Normal: cada bit tiene Prob (1 / N_movibles) de cambiar           utiliza es BuenCandidato
 	void MutacionBitFlip_1_N(vector<double> &x_var, double mutation_rate, ProblemInstance *instance);
@@ -91,27 +85,29 @@ public:
 	void MutacionSwapProbabilistico(vector<double> &x_var, double mutation_rate, double swap_prob, ProblemInstance *instance);
 
 	// 5. Mutacion Combinada (Elegir entre BitFlip y Swap segun probabilidad)
-	void Mutacion_Swap_1_N(vector<double> &x_var, double mutation_rate, double ratio_swap, ProblemInstance *instance);
-	void Mutacion_Swap_1_M(vector<double> &x_var, double mutation_rate, double ratio_swap, ProblemInstance *instance);
-	void Mutacion_Swap_Fijo(vector<double> &x_var, double mutation_rate, double ratio_swap, ProblemInstance *instance);
+	void Mutacion_Swap_Porcentual_1_N(vector<double> &x_var, double mutation_rate, double ratio_swap, double percentage, ProblemInstance *instance);
+	void Mutacion_Swap_Porcentual_1_M(vector<double> &x_var, double mutation_rate, double ratio_swap, double populationSize, double percentage, ProblemInstance *instance);
+	void Mutacion_Swap_Porcentual_Fijo(vector<double> &x_var, double mutation_rate, double ratio_swap, double fixed_prob, double percentage, ProblemInstance *instance);
 
-
-	// 6. Mutacion Con Delete y Swap, pero variando el porcentaje
-	void MutacionModificada_Porcentual(vector<double> &x_var, double mutation_rate, double prob_op1_delete, double percentage, ProblemInstance *instance);
+	void MutacionSwapPorcentual(vector<double> &x_var, double mutation_rate, double swap_ratio, ProblemInstance *instance);
 
 	// 4. Mutación Delete (Elimina un % de equipos al azar)
     // delete_ratio: Porcentaje de equipos actuales a eliminar (ej: 0.1 para borrar el 10%)
     void MutacionDeletePorcentual(vector<double> &x_var, double mutation_rate, double delete_ratio, ProblemInstance *instance);
-
+	// 6. Mutacion Con Delete y Swap, pero variando el porcentaje
+	void MutacionHibrida(vector<double> &x_var, double mutation_rate, double prob_delete, double percentage, ProblemInstance *instance);
 
 	void CruzamientoUniformeInteligente(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
+	void CruzamientoUniformeSemiInteligente(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
 
 	void RepararPresupuesto(vector<double> &x_var, ProblemInstance *instance);
 	
-
-
 	void CruzamientoUniformeModificado_con_reubicacion(vector<double> &x_var1, vector<double> &x_var2, vector<double> &child, ProblemInstance *problemInstance);
 	void MutacionModificada_con_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
+
+
+
+
 
 	int GetWeightNumber(int nobj, int H);
 

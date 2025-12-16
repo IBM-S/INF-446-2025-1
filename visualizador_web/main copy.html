@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MOEA/D – Visualizador</title>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --ok: #16a34a;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --sidebar-width: 570px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 20px;
+      line-height: 1.5;
+    }
+
+    /* Layout principal */
+    .main-layout {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, var(--accent) 0%, #1e40af 100%);
+      color: white;
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .sidebar-header p {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(37, 99, 235, 0.05);
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: rgba(37, 99, 235, 0.05);
+    }
+
+    /* Control panels */
+    .control-panel {
+      padding: 1.5rem;
+    }
+
+    .panel-section {
+      margin-bottom: 2rem;
+    }
+
+    .panel-section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .field {
+      margin-bottom: 1.25rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Compact layouts para ahorrar espacio */
+    .compact-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .compact-row-triple {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .compact-row-split {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.75rem 0;
+    }
+
+    .compact-field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .compact-label {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      margin-bottom: 0.25rem;
+    }
+
+    .compact-select,
+    .compact-input {
+      flex: 1;
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 0.4rem;
+      padding: 0.5rem 0.65rem;
+      font-size: 1.5rem;
+    }
+
+    .compact-input-small {
+      width: 70px;
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 0.4rem;
+      padding: 0.5rem 0.65rem;
+      font-size: 0.95rem;
+    }
+
+    .btn-small {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 0.4rem;
+      cursor: pointer;
+      font-size: 1.5rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-small:hover {
+      background: var(--bg);
+      border-color: var(--muted);
+    }
+
+    .btn-group-horizontal {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    select,
+    input[type="number"],
+    input[type="text"],
+    textarea {
+      width: 100%;
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.75rem 0.875rem;
+      font-size: 1.5rem;
+      transition: all 0.2s;
+    }
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .input-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: 0.875rem 1.125rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 1.4rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover {
+      background: var(--bg);
+      border-color: var(--muted);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .btn.primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-group {
+      display: grid;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    /* Checkboxes */
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.5rem;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: auto;
+      cursor: pointer;
+    }
+
+    /* Status badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 0.875rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .status-badge.loading {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: var(--warn);
+      color: var(--warn);
+    }
+
+    .status-badge.success {
+      background: rgba(22, 163, 74, 0.1);
+      border-color: var(--ok);
+      color: var(--ok);
+    }
+
+    .status-badge.error {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    /* Content area */
+    .content-area {
+      overflow-y: auto;
+      height: 100vh;
+    }
+
+    .section {
+      display: none;
+      padding: 2rem;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Plots */
+    .plot-container {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    #plot {
+      height: 600px;
+    }
+
+    #hv-plot,
+    #history-plot {
+      height: 450px;
+    }
+
+    #map-plot {
+      height: 600px;
+    }
+
+    /* Grid para HV y History lado a lado */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Slider */
+    .slider-container {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--bg);
+      border-radius: 0.5rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .gen-label {
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-top: 0.5rem;
+    }
+
+    /* Split view */
+    .split-view {
+      display: grid;
+      grid-template-columns: 60% 40%;
+      gap: 1.5rem;
+    }
+
+    /* Map view */
+    .map-view {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1rem;
+    }
+
+    .map-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .map-tab-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .map-tab-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    #map-image {
+      width: 100%;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+    }
+
+    #map-stats {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--bg);
+      border-radius: 0.5rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+    }
+
+    /* Builder specific */
+    #builder-canvas {
+      width: 100%;
+      max-width: 100%;
+      border: 2px dashed var(--border);
+      border-radius: 0.75rem;
+      background: #fff;
+      cursor: crosshair;
+    }
+
+    #points-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+    }
+
+    #points-table th,
+    #points-table td {
+      border: 1px solid var(--border);
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    #points-table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 1400px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .split-view {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Loading spinner */
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>MOEA/D</h1>
+        <p>Multi-Objective Evolutionary Algorithm</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button id="btn-tab-visualizador" class="tab-btn active">Visualizar</button>
+        <button id="btn-tab-builder" class="tab-btn">Crear</button>
+        <button id="btn-tab-all" class="tab-btn">Comparar</button>
+      </div>
+
+      <!-- VISUALIZADOR CONTROLS -->
+      <div id="controls-visualizador" class="control-panel">
+        <div class="panel-section">
+          <div class="panel-section-title">📊 CONFIGURACIÓN</div>
+
+          <div class="compact-row">
+            <label class="compact-label">Instancia</label>
+            <select id="instancia" class="compact-select"></select>
+          </div>
+
+          <div class="compact-row-triple">
+            <div class="compact-field">
+              <label class="compact-label">N° Eval</label>
+              <input id="neval" type="number" value="10000" min="100" step="1000" class="compact-input" />
+            </div>
+            <div class="compact-field">
+              <label class="compact-label">Población</label>
+              <select id="pop" class="compact-select">
+                <option value="100" selected>100</option>
+                <option value="200">200</option>
+                <option value="300">300</option>
+                <option value="500">500</option>
+                <option value="1000">1000</option>
+              </select>
+            </div>
+            <div class="compact-field">
+              <label class="compact-label">Vecindario</label>
+              <select id="neighbor" class="compact-select">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="compact-row-triple">
+            <div class="compact-field">
+              <label class="compact-label">Seed</label>
+              <input id="seed" type="number" class="compact-input" />
+            </div>
+
+            <div class="compact-field">
+              <label class="compact-label">Decomp</label>
+              <select id="decomp" class="compact-select">
+                <option value="1" selected>TCH</option>
+                <option value="2">Mod</option>
+                <option value="3">PBI</option>
+              </select>
+            </div>
+
+            <div class="compact-field">
+              <label class="compact-label">Mut</label>
+              <input id="mut" type="number" step="0.01" min="0" max="1" value="0.3" class="compact-input" />
+            </div>
+          </div>
+
+          <div class="compact-row-triple">
+            <div class="compact-field">
+              <label class="compact-label">Cross</label>
+              <input id="cross" type="number" step="0.01" min="0" max="1" value="1.0" class="compact-input" />
+            </div>
+
+            <div class="compact-field">
+              <label class="compact-label">Op1</label>
+              <input id="op1" type="number" step="0.01" min="0" max="1" value="0.2" class="compact-input" />
+            </div>
+
+            <div class="compact-field">
+              <label class="compact-label">Nueva seed</label>
+              <button id="btn-new-seed" class="btn-small">🔁</button>
+            </div>
+          </div>
+
+
+          <div class="btn-group-horizontal">
+            <button class="btn primary" id="btn-ejecutar">Ejecutar Algoritmo</button>
+            <button class="btn" id="load-btn">Cargar Resultados</button>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-section-title">🔍 COMPARAR AMPL</div>
+
+          <div class="compact-row">
+            <label class="compact-label">Frente AMPL</label>
+            <select id="ampl-instancia" class="compact-select">
+              <option value="">(Sin comparar)</option>
+            </select>
+          </div>
+
+          <button class="btn" id="load-ampl-btn">Cargar frente AMPL</button>
+          <div id="ampl-status" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--muted);"></div>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-section-title">🎨 VISUALIZACIÓN</div>
+          <div class="checkbox-grid">
+            <label class="checkbox-label">
+              <input type="checkbox" id="fix-scale" checked />
+              Usar misma escala
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="toggle-prob" checked />
+              Prob. en mapa
+            </label>
+          </div>
+          <label class="checkbox-label">
+            <input type="checkbox" id="show-ref-point" />
+            Mostrar punto de referencia
+          </label>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-section-title">📈 HIPERVOLUMEN</div>
+          <div class="compact-row-split">
+            <label class="compact-label">HV cada</label>
+            <input id="hv-every" type="number" min="1" step="1" value="10" class="compact-input-small" />
+            <span class="compact-label">gens</span>
+            <button class="btn-small" id="btn-hv-every">Aplicar</button>
+          </div>
+
+          <button class="btn" id="btn-hv-history">Ver historial HV completo</button>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-section-title">ℹ️ ESTADO</div>
+          <div id="status" class="status-badge">Listo</div>
+        </div>
+      </div>
+
+      <!-- BUILDER CONTROLS -->
+      <div id="controls-builder" class="control-panel" style="display: none;">
+        <div class="panel-section">
+          <div class="panel-section-title">🎯 Nueva Instancia</div>
+
+          <div class="field">
+            <label for="ib-name">Nombre</label>
+            <input type="text" id="ib-name" placeholder="Ej: Escuela_A.dat" />
+          </div>
+
+          <div class="field">
+            <label for="ib-mode">Modo</label>
+            <select id="ib-mode">
+              <option value="0">Marcar demanda (OHCA)</option>
+              <option value="1">Marcar AED preinstalado</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <div class="field">
+              <label for="ib-prob">Probabilidad</label>
+              <input type="number" id="ib-prob" step="0.01" min="0.1" max="1.0" value="1.0" />
+            </div>
+            <div class="field">
+              <label for="ib-grid">Cuadrícula (px)</label>
+              <input type="number" id="ib-grid" step="5" min="10" value="50" />
+            </div>
+          </div>
+
+          <label class="checkbox-label">
+            <input type="checkbox" id="ib-grid-on" />
+            Mostrar cuadrícula
+          </label>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-section-title">🖼️ Imagen de fondo</div>
+          <input type="file" id="ib-file" accept="image/*" style="font-size: 0.875rem;" />
+          <button class="btn" id="ib-upload" style="margin-top: 0.5rem;">
+            Subir imagen
+          </button>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-section-title">⚙️ Parámetros</div>
+
+          <div class="input-group">
+            <div class="field">
+              <label for="ib-P">Presupuesto (P)</label>
+              <input id="ib-P" type="number" value="100000" />
+            </div>
+            <div class="field">
+              <label for="ib-R">Radio (R)</label>
+              <input id="ib-R" type="number" value="800" />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <div class="field">
+              <label for="ib-c1">Costo inst. (c1)</label>
+              <input id="ib-c1" type="number" step="0.01" value="1.0" />
+            </div>
+            <div class="field">
+              <label for="ib-c2">Costo reub. (c2)</label>
+              <input id="ib-c2" type="number" step="0.01" value="1.0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn" id="ib-undo">↶ Deshacer</button>
+          <button class="btn" id="ib-clear">🗑️ Limpiar</button>
+          <button class="btn primary" id="ib-save">💾 Guardar Instancia</button>
+        </div>
+      </div>
+
+      <!-- ALL CONTROLS -->
+      <div id="controls-all" class="control-panel" style="display: none;">
+        <div class="panel-section">
+          <div class="panel-section-title">🔍 Opciones</div>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="toggle-prob-all" checked />
+              Probabilidad en mapa
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="fix-scale-all" checked />
+              Misma escala
+            </label>
+          </div>
+        </div>
+        <div class="panel-section">
+          <div id="status-all" class="status-badge">Sin cargar</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <main class="content-area">
+      <!-- SECCIÓN VISUALIZADOR -->
+      <section id="tab-visualizador" class="section active">
+        <div class="card">
+          <div class="card-title">Estadísticas de Hipervolumen</div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">HV AMPL (Óptimo)</div>
+              <div class="stat-value" id="hv-ampl-opt">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">HV MOEA/D</div>
+              <div class="stat-value" id="hv-moead">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Gap (%)</div>
+              <div class="stat-value" id="hv-gap">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Estadísticas de tiempo</div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Tiempo promedio AMPL</div>
+              <div class="stat-value">
+                <span id="time-ampl-span">-</span> s
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Tiempo MOEA/D (aproximado)</div>
+              <div class="stat-value">
+                <span id="time-moead-span">-</span> s
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Gap de tiempo</div>
+              <div class="stat-value">
+                <span id="time-gap-span">-</span> %
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Historial de corridas (HV)</div>
+
+          <table style="width:100%; font-size:14px;">
+            <thead>
+              <tr>
+                <th style="text-align:left;">Fecha</th>
+                <th style="text-align:left;">HV</th>
+              </tr>
+            </thead>
+            <tbody id="runs-tbody"></tbody>
+          </table>
+
+          <div id="run-detail" style="margin-top:12px; display:none; font-size:14px;"></div>
+        </div>
+
+
+        <div class="split-view">
+          <div>
+            <div class="card">
+              <div class="card-title">Frente de Pareto</div>
+              <div class="plot-container">
+                <div id="plot"></div>
+              </div>
+              <div id="slider-container" class="slider-container" style="display:none;">
+                <input type="range" id="slider" min="0" max="0" value="0" />
+                <div class="gen-label">Generación: <span id="gen-num">1</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-view">
+            <div class="map-tabs">
+              <button id="btn-toggle-map" class="map-tab-btn active hidden">
+                Ver mapa interactivo
+              </button>
+            </div>
+
+            <div id="map-image-container" class="hidden">
+              <img id="map-image" src="" alt="Mapa AEDs">
+            </div>
+
+            <div id="map-plot-container" class="hidden">
+              <div id="map-plot"></div>
+            </div>
+
+            <pre id="map-stats"></pre>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="card">
+            <div class="card-title">Evolución del Hipervolumen</div>
+            <div class="plot-container">
+              <div id="hv-plot"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Historial de Frentes</div>
+            <div class="plot-container">
+              <div id="history-plot"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: CONSTRUCTOR -->
+      <section id="tab-builder" class="section">
+        <div class="wrap">
+          <div class="card" id="instance-builder">
+            <h2>Constructor de instancias</h2>
+            <div class="row">
+              <div>
+                <label>Nombre de instancia (.dat)</label>
+                <input type="text" id="ib-name" placeholder="Ej: Escuela_A.dat" style="min-width:260px" />
+              </div>
+              <div><label class="pill">Modo:
+                  <select id="ib-mode">
+                    <option value="0">Marcar demanda (OHCA)</option>
+                    <option value="1">Marcar AED preinstalado</option>
+                  </select>
+                </label></div>
+              <div><label class="pill">Prob. por defecto (0.1–1.0)
+                  <input type="number" id="ib-prob" step="0.01" min="0.1" max="1.0" value="1.0" style="width:90px" />
+                </label></div>
+              <div><label class="pill">Cuadrícula(px)
+                  <input type="number" id="ib-grid" step="5" min="10" value="50" style="width:90px" />
+                </label>
+                <label class="pill"><input type="checkbox" id="ib-grid-on" /> Mostrar cuadrícula</label>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:8px">
+              <input type="file" id="ib-file" accept="image/png,image/jpeg,image/webp" />
+              <button class="btn" id="ib-upload">Subir imagen</button>
+              <span class="hint">Sugerencia: imagen/plano para referenciar coordenadas.</span>
+            </div>
+
+            <div style="margin-top:10px"><canvas id="builder-canvas" width="900" height="600"></canvas></div>
+
+            <div class="row" style="margin-top:8px">
+              <label class="pill">Presupuesto (P)
+                <input id="ib-P" type="number" step="1" min="0" value="100000" style="width:110px" />
+              </label>
+              <label class="pill">Radio (R)
+                <input id="ib-R" type="number" step="1" min="1" value="800" style="width:110px" />
+              </label>
+              <label class="pill">Costo instalación (c1)
+                <input id="ib-c1" type="number" step="0.01" min="0" value="1.0" style="width:110px" />
+              </label>
+              <label class="pill">Costo reubicación (c2)
+                <input id="ib-c2" type="number" step="0.01" min="0" value="1.0" style="width:110px" />
+              </label>
+            </div>
+
+            <div class="row" style="margin-top:10px">
+              <button class="btn" id="ib-undo">Deshacer último punto</button>
+              <button class="btn" id="ib-clear">Limpiar todo</button>
+              <button class="btn" id="ib-save">Guardar instancia</button>
+            </div>
+
+            <details style="margin-top:12px">
+              <summary>Ver puntos</summary>
+              <table id="points-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>Flag</th>
+                    <th>Prob</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="points-tbody"></tbody>
+              </table>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: Todas las instancias -->
+      <section id="tab-all" class="section">
+        <div class="wrap">
+          <div class="card">
+            <div class="row">
+              <label class="hint"><input type="checkbox" id="toggle-prob-all" checked /> Probabilidad en mapa</label>
+              <label class="hint"><input type="checkbox" id="fix-scale-all" checked /> Misma escala</label>
+              <span id="status-all" class="hint">Sin cargar</span>
+            </div>
+          </div>
+          <div id="all-grid" class="all-grid"></div>
+        </div>
+      </section>
+
+
+
+      <script>
+
+        // ===== Helpers =====
+        const $ = (s, r = document) => r.querySelector(s);
+        const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+        const PLOTLY_CFG = { responsive: true, displayModeBar: false };
+
+        let currentMapJsonData = null;
+
+
+        // === Tooltips compactos + panel de detalle ===
+        function compressRanges(ids, maxTokens = 10) {
+          if (!Array.isArray(ids) || !ids.length) return [];
+          const arr = [...new Set(ids)].sort((a, b) => a - b);
+          const out = [];
+          let s = arr[0], p = arr[0];
+          const push = (a, b) => out.push(a === b ? `${a}` : `${a}–${b}`);
+          for (let i = 1; i < arr.length; i++) {
+            const v = arr[i];
+            if (v === p + 1) { p = v; continue; }
+            push(s, p); s = p = v;
+          }
+          push(s, p);
+          if (out.length > maxTokens) {
+            const head = out.slice(0, maxTokens).join(', ');
+            return [head + ` … (+${out.length - maxTokens} más)`];
+          }
+          return out;
+        }
+
+        // texto de hover resumido: coord + conteo + ids comprimidos
+        function mkHoverTextPt(p, maxTokens = 8) {
+          const ids = p.ids || [];
+          const ranges = compressRanges(ids, maxTokens).join(', ');
+          return `(${Number(p.x).toFixed(2)}, ${Number(p.y).toFixed(2)})<br>` +
+            `IDs (${ids.length}): ${ranges}`;
+        }
+
+        // crea (si no existe) un panel debajo del gráfico para ver/copy el detalle
+        function ensureDetailPanelAfter(plotElOrId, suffix = 'main') {
+          const plotEl = typeof plotElOrId === 'string' ? document.getElementById(plotElOrId) : plotElOrId;
+          let panel = document.getElementById('ids-panel-' + suffix);
+          if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'ids-panel-' + suffix;
+            panel.style.marginTop = '8px';
+            panel.style.padding = '8px';
+            panel.style.border = '1px solid #e3e3e3';
+            panel.style.borderRadius = '8px';
+            panel.style.maxHeight = '140px';
+            panel.style.overflow = 'auto';
+            panel.style.fontSize = '12px';
+            plotEl.parentNode.insertBefore(panel, plotEl.nextSibling);
+          }
+          return panel;
+        }
+
+        // ===== Tabs =====
+        const tabVisBtn = $('#btn-tab-visualizador');
+        const tabBldBtn = $('#btn-tab-builder');
+        const tabAllBtn = $('#btn-tab-all');
+        const tabVis = $('#tab-visualizador');
+        const tabBld = $('#tab-builder');
+        const tabAll = $('#tab-all');
+        function showTab(which) {
+          const vis = which === 'visualizador';
+          const bld = which === 'builder';
+          const all = which === 'all';
+
+          tabVis.classList.toggle('active', vis); tabVisBtn.classList.toggle('active', vis);
+          tabBld.classList.toggle('active', bld); tabBldBtn.classList.toggle('active', bld);
+          tabAll.classList.toggle('active', all); tabAllBtn.classList.toggle('active', all);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          if (all) buildAllDashboard();
+        }
+        tabVisBtn.addEventListener('click', () => showTab('visualizador'));
+        tabBldBtn.addEventListener('click', () => showTab('builder'));
+        tabAllBtn.addEventListener('click', () => showTab('all'));
+
+        // ===== Visualizador Elements =====
+        const toggleProb = $('#toggle-prob');
+        let lastIds = null;
+        let lastInstancia = null;
+        const selInst = $('#instancia');
+        const inputNeval = $('#neval');
+        const inputPop = $('#pop');
+        const inputNeighbor = $('#neighbor');
+        const statusEl = $('#status');
+        const fixScaleCheckbox = $('#fix-scale');
+        const showRefCheckbox = $('#show-ref-point');
+        const seedInput = document.getElementById('seed');
+        const decompInput = document.getElementById('decomp');
+        const mutInput = document.getElementById('mut');
+        const crossInput = document.getElementById('cross');
+        const op1Input = document.getElementById('op1');
+        const btnNewSeed = document.getElementById('btn-new-seed');
+
+        function setNewSeed() {
+          seedInput.value = Math.floor(Math.random() * 1_000_000_000) + 1;
+        }
+        btnNewSeed.addEventListener('click', setNewSeed);
+        window.addEventListener('DOMContentLoaded', () => { setNewSeed(); });
+
+
+        const plotDiv = $('#plot');
+        const sliderContainer = $('#slider-container');
+        const slider = $('#slider');
+        const genNum = $('#gen-num');
+
+        const selAmplInst = $('#ampl-instancia');
+        const amplStatusEl = $('#ampl-status');
+
+        const inputHvEvery = $('#hv-every');      // NUEVO
+        const btnHvEvery = $('#btn-hv-every');    // NUEVO
+
+
+        // ==== Pestaña TODO ====
+        const framesAll = {};    // inst -> [ [points], ... ]
+        let lastIdsAll = null, lastInstAll = null;
+        let prefetchDone = false;
+
+        const selProbAll = $('#toggle-prob-all');
+        const statusAll = $('#status-all');
+        const gridAll = $('#all-grid');
+
+        const allCache = {};           // inst -> { files, hv }
+        const framesPerInst = {};      // inst -> [ [points]... ]
+        const lastSelPerInst = {};     // inst -> ids[]
+        let allBuilt = false;
+
+        const slug = s => s.replace(/[^a-zA-Z0-9_-]/g, '_');
+
+        const fixScaleAll = document.getElementById('fix-scale-all');
+        const rangesPerInst = {};       // inst -> { x:[min,max], y:[min,max] }
+        const currentGenIndex = {};     // inst -> índice actual del slider
+
+        const btnHvHistory = document.getElementById('btn-hv-history');
+
+        btnHvHistory.addEventListener('click', async () => {
+          if (!selInst.value) return alert("Primero selecciona una instancia");
+
+          statusEl.textContent = `Generando historial completo (HV en todas las gens)…`;
+          await runNowWithHV(1);
+        });
+
+
+        // ===== Data holders =====
+        let frames = []; let hvValues = []; let hvOptGlobal = null; let refPointGlobal = null; let globalGenNumbers = []
+        let globalXMin = Infinity, globalXMax = -Infinity, globalYMin = Infinity, globalYMax = -Infinity;
+        let globalCovMin = Infinity, globalCovMax = -Infinity;
+        let timeAmplGlobal = null;
+        let timeMoeadGlobal = null;
+        let timeGapGlobal = null;
+
+        let amplPoints = null;
+        let amplPareto = [];
+        let amplDominados = [];
+
+        async function loadAmplFront() {
+          const instanciaAmpl = selAmplInst.value;
+
+          // Si el usuario elige “sin comparar”, limpiamos overlay
+          if (!instanciaAmpl) {
+            amplPoints = null;
+            amplPareto = [];
+            amplDominados = [];
+            amplStatusEl.textContent = 'Sin frente AMPL';
+            showGeneration(parseInt(slider.value || '0', 10));
+            return;
+          }
+
+          amplStatusEl.textContent = `Cargando frente AMPL (${instanciaAmpl})…`;
+
+          try {
+            const res = await fetch('/load_ampl_front', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ instancia: instanciaAmpl })
+            });
+
+            if (!res.ok) {
+              amplStatusEl.textContent = 'No se pudo cargar AMPL';
+              amplPoints = null;
+              amplPareto = [];
+              amplDominados = [];
+              showGeneration(parseInt(slider.value || '0', 10));
+              return;
+            }
+
+            const text = await res.text();
+
+            // Parseo + eliminación de duplicados
+            const rawPts = text.trim().split('\n')
+              .map(l => l.trim())
+              .filter(l => l && !l.startsWith('#'))
+              .map(l => {
+                const [a, b] = l.split(/\s+/);
+                return { x: parseFloat(a), y: parseFloat(b), ids: [] };
+              })
+              .filter(p => !Number.isNaN(p.x) && !Number.isNaN(p.y));
+
+            const uniqueMap = new Map();
+            rawPts.forEach(p => {
+              const key = `${p.x}:${p.y}`;
+              if (!uniqueMap.has(key)) uniqueMap.set(key, p);
+            });
+            const uniquePts = Array.from(uniqueMap.values());
+
+            // Calculamos dominancia con tu función
+            amplPoints = findParetoFront(uniquePts);
+            amplPareto = amplPoints.filter(p => p.isPareto);
+            amplDominados = amplPoints.filter(p => !p.isPareto);
+
+            amplStatusEl.textContent = `AMPL cargado (${amplPoints.length} pts)`;
+
+            // Redibujar la generación actual
+            showGeneration(parseInt(slider.value || '0', 10));
+
+          } catch (e) {
+            console.error(e);
+            amplStatusEl.textContent = 'Error al cargar AMPL';
+            amplPoints = null;
+            amplPareto = [];
+            amplDominados = [];
+            showGeneration(parseInt(slider.value || '0', 10));
+          }
+        }
+
+        // ===== Instancias =====
+        async function refreshInstanciaSelect() {
+          try {
+            const r = await fetch('/list_instances');
+            const j = await r.json();
+            const arr = Array.isArray(j) ? j : (j.instances || []);
+            selInst.innerHTML = arr.map(fn => `<option value="${fn}">${fn}</option>`).join('');
+          } catch (e) { console.warn('No se pudo listar instancias', e); }
+        }
+
+        // Lista las instancias de AMPL desde datos/res/raw_ampl/cam/
+        async function refreshAmplSelect() {
+          try {
+            const r = await fetch('/list_ampl_instances');
+            const j = await r.json();
+            const arr = Array.isArray(j) ? j : (j.instances || []);
+
+            // Dejo siempre la opción “sin comparar”
+            let html = `<option value="">(Sin comparar)</option>`;
+            html += arr.map(fn => `<option value="${fn}">${fn}</option>`).join('');
+            selAmplInst.innerHTML = html;
+
+            // OPCIONAL: si coincide nombre con la instancia actual, seleccionarla
+            const baseInst = (selInst.value || '').replace('.dat', '');
+            const matchOpt = arr.find(a => a === baseInst || a === selInst.value);
+            if (matchOpt) selAmplInst.value = matchOpt;
+
+          } catch (e) {
+            console.warn('No se pudo listar instancias AMPL', e);
+            selAmplInst.innerHTML = `<option value="">(Sin comparar)</option>`;
+          }
+        }
+
+
+        async function fetchNFromInstance(filename) { return null; }
+        function setNumVarTo(N) { }
+        async function syncVariablesFromInstance(filename) { }
+
+
+        // ===== Visualizador: Correr / Cargar =====
+        async function runNow() {
+          await runNowWithHV(0);
+        }
+
+        async function runNowWithHV(hvEvery) {
+          if (!selInst.value) return alert("Primero selecciona una instancia");
+          // Seed: si no hay seed en pantalla, generamos uno
+          if (seedInput && !seedInput.value) refreshSeed();
+          const semilla = seedInput ? parseInt(seedInput.value, 10) : newSeed();
+
+          const payload = {
+            instancia: selInst.value,
+            semilla: parseInt(seedInput.value, 10),
+            tipo: "cam",
+            variante: "location",
+            algoritmo: "MOEAD",
+
+            neval: Number(inputNeval.value || 10000),
+            pop: Number(inputPop.value || 500),
+            neighbor: Number(inputNeighbor.value || 100),
+
+            decomp: parseInt(decompInput.value, 10),
+            mut: parseFloat(mutInput.value),
+            cross: parseFloat(crossInput.value),
+            op1: parseFloat(op1Input.value),
+
+            save_interval: hvEvery
+          };
+
+          const res = await fetch('/run', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!res.ok) { statusEl.textContent = 'Error en ejecución'; return; }
+
+          const data = await res.json();
+          if (!data.files || !data.files.length) {
+            statusEl.textContent = '⚠️ No se generaron archivos.';
+            return;
+          }
+
+          // (opcional) refrescar globals igual que runNow()
+          hvOptGlobal = (typeof data.hv_opt === 'number') ? data.hv_opt : null;
+          refPointGlobal = (data.ref_point && typeof data.ref_point.x === "number" && typeof data.ref_point.y === "number")
+            ? { x: data.ref_point.x, y: data.ref_point.y }
+            : null;
+
+          timeAmplGlobal = (typeof data.timeAmpl === "number") ? data.timeAmpl : null;
+          timeMoeadGlobal = (typeof data.timeMoead === "number") ? data.timeMoead : null;
+          timeGapGlobal = (timeAmplGlobal != null && timeMoeadGlobal != null && timeAmplGlobal > 0)
+            ? ((timeMoeadGlobal - timeAmplGlobal) / timeAmplGlobal) * 100
+            : null;
+
+          // 👇 MUY IMPORTANTE: para historial completo usa hvMode='full'
+          const hvMode = (hvEvery === 1) ? 'full' : 'simple';
+          await loadGenerations(data.files, data.hv || [], hvMode, data.gen_numbers);
+          setNewSeed();
+          statusEl.textContent = `Listo: ${frames.length} generaciones`;
+          await refreshRunHistory();
+        }
+
+
+        async function refreshRunHistory() {
+          const inst = (selInst.value || '').replace('.dat', '');
+          const r = await fetch('/list_run_stats?inst=' + encodeURIComponent(inst));
+          const rows = await r.json();
+
+          const tbody = document.getElementById('runs-tbody');
+          const detail = document.getElementById('run-detail');
+          tbody.innerHTML = '';
+          detail.style.display = 'none';
+          detail.innerHTML = '';
+
+          rows.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.style.cursor = 'pointer';
+            tr.innerHTML = `<td>${row.ts || ''}</td><td>${(row.hv_final ?? '—')}</td>`;
+            tr.addEventListener('click', async () => {
+              const rd = await fetch('/run_stats_detail?run_id=' + encodeURIComponent(row.run_id));
+              const full = await rd.json();
+
+              detail.style.display = 'block';
+              detail.innerHTML = `
+        <div style="font-weight:700; margin-bottom:6px;">Parámetros usados</div>
+        <div><b>seed</b>: ${full.seed}</div>
+        <div><b>neval</b>: ${full.neval} | <b>pop</b>: ${full.pop} | <b>neighbor</b>: ${full.neighbor}</div>
+        <div><b>mut</b>: ${full.mut} | <b>cross</b>: ${full.cross} | <b>op1</b>: ${full.op1}</div>
+        <div><b>type</b>: ${full.type} | <b>variant</b>: ${full.variant} | <b>alg</b>: ${full.alg}</div>
+        <div style="margin-top:6px;"><b>Tiempo MOEA/D</b>: ${full.time_moead_s}s</div>
+      `;
+            });
+            tbody.appendChild(tr);
+          });
+        }
+
+        selInst.addEventListener('change', refreshRunHistory);
+
+        async function loadSaved() {
+          statusEl.textContent = 'Cargando generaciones…';
+          const payload = { instancia: selInst.value };
+          const res = await fetch('/load', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+          const data = await res.json();
+          if (!data.files || !data.files.length) { statusEl.textContent = '⚠️ No se encontraron generaciones.'; return; }
+
+          hvOptGlobal = (typeof data.hv_opt === 'number') ? data.hv_opt : null;
+
+          if (data.ref_point && typeof data.ref_point.x === "number" && typeof data.ref_point.y === "number") {
+            refPointGlobal = { x: data.ref_point.x, y: data.ref_point.y };
+          } else {
+            refPointGlobal = null;
+          }
+
+          timeAmplGlobal = (typeof data.timeAmpl === "number") ? data.timeAmpl : null;
+          timeMoeadGlobal = (typeof data.timeMoead === "number") ? data.timeMoead : null;
+
+          // si no te llega timeGap, lo puedes calcular acá:
+          if (timeAmplGlobal != null && timeMoeadGlobal != null && timeAmplGlobal > 0) {
+            timeGapGlobal = ((timeMoeadGlobal - timeAmplGlobal) / timeAmplGlobal) * 100;
+          } else {
+            timeGapGlobal = null;
+          }
+
+
+          await loadGenerations(data.files, data.hv || [], 'simple', data.gen_numbers);
+          statusEl.textContent = `Listo: ${frames.length} generaciones`;
+        }
+
+        // ===== Visualizador: Plot logic =====
+        function findParetoFront(points) {
+          if (!points || !Array.isArray(points) || !points.length) return [];
+          const isDom = new Array(points.length).fill(false);
+          for (let i = 0; i < points.length; i++) for (let j = 0; j < points.length; j++) if (i !== j) {
+            if (points[j].x <= points[i].x && points[j].y <= points[i].y && (points[j].x < points[i].x || points[j].y < points[i].y)) { isDom[i] = true; break; }
+          }
+          return points.map((p, i) => ({ ...p, isPareto: !isDom[i] }));
+        }
+        function getMultiColor(f) { const cs = ["#440154", "#3b528b", "#21918c", "#fde725", "#ff7f00"]; const s = f * (cs.length - 1); const i1 = Math.floor(s); const i2 = Math.min(i1 + 1, cs.length - 1); const t = s - i1; const c1 = cs[i1].slice(1), c2 = cs[i2].slice(1); const r1 = parseInt(c1.slice(0, 2), 16), g1 = parseInt(c1.slice(2, 4), 16), b1 = parseInt(c1.slice(4), 16); const r2 = parseInt(c2.slice(0, 2), 16), g2 = parseInt(c2.slice(2, 4), 16), b2 = parseInt(c2.slice(4), 16); const r = Math.round(r1 + t * (r2 - r1)), g = Math.round(g1 + t * (g2 - g1)), b = Math.round(b1 + t * (b2 - b1)); return `rgb(${r},${g},${b})`; }
+
+        function updateHvSummary() {
+          // hvOptGlobal: HV óptimo (AMPL) o null
+          // hvValues: arreglo de HV por generación
+          if (hvValues && hvValues.length) {
+            // Tomamos el HV de la última generación como "HV MOEA/D"
+            // (si prefieres el mejor, puedes usar Math.max(...hvValues))
+            const hvMoead = hvValues[hvValues.length - 1];
+            hvMoeadEl.textContent = hvMoead.toFixed(3);
+
+            if (typeof hvOptGlobal === "number") {
+              hvAmplOptEl.textContent = hvOptGlobal.toFixed(3);
+              const gap = ((hvOptGlobal - hvMoead) / hvOptGlobal) * 100;
+              hvGapEl.textContent = gap.toFixed(2) + "%";
+            } else {
+              hvAmplOptEl.textContent = "-";
+              hvGapEl.textContent = "-";
+            }
+          } else {
+            hvAmplOptEl.textContent = "-";
+            hvMoeadEl.textContent = "-";
+            hvGapEl.textContent = "-";
+          }
+
+          const timeAmplSpan = document.getElementById("time-ampl-span");
+          const timeMoeadSpan = document.getElementById("time-moead-span");
+          const timeGapSpan = document.getElementById("time-gap-span");
+
+          if (timeAmplSpan) {
+            timeAmplSpan.textContent =
+              typeof timeAmplGlobal === "number" ? timeAmplGlobal.toFixed(2) : "—";
+          }
+          if (timeMoeadSpan) {
+            timeMoeadSpan.textContent =
+              typeof timeMoeadGlobal === "number" ? timeMoeadGlobal.toFixed(2) : "—";
+          }
+          if (timeGapSpan) {
+            timeGapSpan.textContent =
+              typeof timeGapGlobal === "number" ? timeGapGlobal.toFixed(2) : "—";
+          }
+        }
+
+
+        // Modificamos la firma para aceptar genNums
+        async function loadGenerations(files, hvs, hvMode = 'simple', genNums = []) {
+          frames = [];
+          hvValues = hvs;
+
+          // Guardamos los números reales. Si vienen vacíos, creamos un índice simple 1..N
+          if (genNums && genNums.length === files.length) {
+            globalGenNumbers = genNums;
+          } else {
+            globalGenNumbers = files.map((_, i) => i + 1);
+          }
+
+          globalXMin = Infinity; globalXMax = -Infinity;
+          globalYMin = Infinity; globalYMax = -Infinity;
+          globalCovMin = Infinity; globalCovMax = -Infinity;
+
+          for (const file of files) {
+            const res = await fetch('/get/' + file);
+            const text = await res.text();
+            // ... (El código de parseo dentro del bucle sigue igual) ...
+            const puntos = text.trim().split('\n')
+              .map(l => l.trim())
+              .filter(l => l && !l.startsWith('#'))
+              .map(line => {
+                // ... TU LÓGICA DE PARSEO EXISTENTE ...
+                // (Copia tu lógica de parseo aquí o mantén la que tienes)
+                // Solo incluyo el esqueleto para no hacer la respuesta gigante
+                let coverage = null;
+                let left = line;
+                if (line.includes('|')) {
+                  const parts = line.split('|');
+                  left = parts[0].trim();
+                  const covStr = parts[1].trim().split(/\s+/)[0];
+                  coverage = parseFloat(covStr);
+                }
+                const toks = left.split(/\s+/);
+                const f1 = parseFloat(toks[0]);
+                const f2 = parseFloat(toks[1]);
+                let startIdx = 2;
+                let isPareto;
+                if (Number.isNaN(parseFloat(toks[2]))) {
+                  if (toks[2] === 'P') { isPareto = true; startIdx = 3; }
+                  else if (toks[2] === 'D') { isPareto = false; startIdx = 3; }
+                  else if (toks[2] === '-' && line.includes('IDs instalados:')) {
+                    const right = line.split('IDs instalados:')[1] || '';
+                    const ids = right.trim().split(/\s+/).map(Number).filter(n => !Number.isNaN(n));
+                    updateRanges(f1, f2);
+                    return { x: f1, y: f2, ids, isPareto, coverage };
+                  }
+                }
+                const ids = toks.slice(startIdx).map(n => parseInt(n, 10)).filter(n => !Number.isNaN(n));
+                updateRanges(f1, f2);
+                if (typeof coverage === 'number' && !Number.isNaN(coverage)) {
+                  if (coverage < globalCovMin) globalCovMin = coverage;
+                  if (coverage > globalCovMax) globalCovMax = coverage;
+                }
+                return { x: f1, y: f2, ids, isPareto, coverage };
+              });
+            frames.push(puntos);
+          }
+
+          // --- CONFIGURACIÓN DEL SLIDER ---
+          showGeneration(0);
+          sliderContainer.style.display = 'block';
+
+          // El slider se mueve por ÍNDICE (0, 1, 2...)
+          slider.max = frames.length - 1;
+          slider.value = 0;
+
+          // Pero la etiqueta muestra el NÚMERO REAL
+          genNum.innerText = globalGenNumbers[0];
+
+          // ==== GRÁFICO HV ====
+          let hvX = [];
+          let hvY = [];
+
+          if (hvValues && hvValues.length) {
+            if (hvMode === 'full') {
+              // Usamos los números reales para el eje X
+              hvX = globalGenNumbers;
+              hvY = hvValues;
+            } else {
+              // Modo simple: solo primera y última
+              const lastIdx = hvValues.length - 1;
+              // Eje X: Generación real inicial y final
+              hvX = [globalGenNumbers[0], globalGenNumbers[globalGenNumbers.length - 1]];
+              hvY = [hvValues[0], hvValues[lastIdx]];
+            }
+          }
+
+          Plotly.newPlot('hv-plot', [{
+            x: hvX,
+            y: hvY,
+            mode: 'lines+markers',
+            marker: { color: 'green' },
+            line: { color: 'green' },
+            name: 'Hipervolumen'
+          }], {
+            title: 'Evolución del Hipervolumen',
+            xaxis: { title: 'Generación' },
+            yaxis: { title: 'Hipervolumen' },
+            paper_bgcolor: '#fff',
+            plot_bgcolor: '#fff'
+          });
+
+          updateHvSummary();
+
+          // Click en gráfico HV
+          document.getElementById('hv-plot').removeAllListeners?.('plotly_click'); // Evitar duplicados
+          document.getElementById('hv-plot').on('plotly_click', d => {
+            const clickedGen = d.points[0].x;
+
+            // Buscar en qué índice del array 'globalGenNumbers' está la generación clickeada
+            const indexFound = globalGenNumbers.indexOf(clickedGen);
+
+            if (indexFound !== -1) {
+              slider.value = indexFound;
+              genNum.innerText = clickedGen;
+              showGeneration(indexFound);
+            }
+          });
+
+          // Gráfico Historial (Frentes superpuestos)
+          const traces = frames.map((pts, idx) => {
+            const hasFlag = pts.every(p => typeof p.isPareto === 'boolean');
+            const all = hasFlag ? pts : findParetoFront(pts);
+            const pareto = all.filter(p => p.isPareto);
+            const color = getMultiColor(idx / Math.max(1, (frames.length - 1)));
+
+            // Usamos el número real en la leyenda
+            return {
+              x: pareto.map(p => p.x),
+              y: pareto.map(p => p.y),
+              mode: 'markers',
+              marker: { size: 6, color },
+              name: `Gen ${globalGenNumbers[idx]}`, // <--- Nombre real
+              showlegend: false
+            };
+          });
+
+          Plotly.newPlot('history-plot', traces, {
+            title: 'Historial de Frentes de Pareto',
+            xaxis: { title: 'f1' },
+            yaxis: { title: 'f2' }
+          });
+
+          function updateRanges(f1, f2) {
+            if (f1 < globalXMin) globalXMin = f1;
+            if (f1 > globalXMax) globalXMax = f1;
+            if (f2 < globalYMin) globalYMin = f2;
+            if (f2 > globalYMax) globalYMax = f2;
+          }
+        }
+
+
+        function showGeneration(index) {
+          const points = frames[index]; if (!points || !Array.isArray(points)) return;
+          const hasFlag = points.every(p => typeof p.isPareto === 'boolean');
+          const allPoints = hasFlag ? points : findParetoFront(points);
+          const paretoPoints = allPoints.filter(p => p.isPareto);
+          const dominatedPoints = allPoints.filter(p => !p.isPareto);
+
+          const realGen = globalGenNumbers[index];
+
+          const layout = {
+            title: `Frente de Pareto - Gen ${realGen}`,
+            xaxis: {
+              title: "f1 (Minimizar Cobertura)",
+              rangemode: "normal",
+              autorange: !fixScaleCheckbox.checked,
+              range: fixScaleCheckbox.checked
+                ? [globalXMin, globalXMax]
+                : undefined
+            },
+            yaxis: {
+              title: "f2 (Minimizar Costos)",
+              rangemode: "normal",
+              autorange: !fixScaleCheckbox.checked,
+              range: fixScaleCheckbox.checked
+                ? [globalYMin, globalYMax]
+                : undefined
+            },
+            legend: {
+              orientation: "h",
+              x: 0,
+              y: 1.15
+            },
+            margin: { t: 50, r: 20, l: 60, b: 60 },
+            shapes: []
+          };
+
+          // ---- Líneas del punto de referencia ----
+          if (
+            refPointGlobal &&
+            showRefCheckbox.checked &&
+            typeof refPointGlobal.x === "number" &&
+            typeof refPointGlobal.y === "number"
+          ) {
+            const rx = refPointGlobal.x;
+            const ry = refPointGlobal.y;
+
+            const xMin = fixScaleCheckbox.checked ? globalXMin : globalXMin;
+            const yMin = fixScaleCheckbox.checked ? globalYMin : globalYMin;
+
+            layout.shapes.push({
+              type: "line",
+              x0: rx,
+              x1: rx,
+              y0: yMin,
+              y1: ry,
+              line: { width: 1, dash: "dot" }
+            });
+
+            layout.shapes.push({
+              type: "line",
+              x0: xMin,
+              x1: rx,
+              y0: ry,
+              y1: ry,
+              line: { width: 1, dash: "dot" }
+            });
+          }
+          if (fixScaleCheckbox.checked) {
+            const xM = (globalXMax - globalXMin) * 0.05, yM = (globalYMax - globalYMin) * 0.05;
+            layout.xaxis.range = [globalXMin - xM, globalXMax + xM];
+            layout.yaxis.range = [globalYMin - yM, globalYMax + yM];
+          }
+
+          // texto de hover resumido
+          const domText = dominatedPoints.map(p => mkHoverTextPt(p));
+          const paretoText = paretoPoints.map(p => mkHoverTextPt(p));
+
+          const traces = [
+            {
+              x: dominatedPoints.map(p => p.x),
+              y: dominatedPoints.map(p => p.y),
+              customdata: dominatedPoints.map(p => p.ids),
+              text: domText,
+              mode: 'markers',
+              marker: { size: 8, color: 'blue' },
+              name: 'Dominados',
+              hovertemplate: '%{text}<extra></extra>',
+              hoverlabel: { align: 'left', namelength: 0 }
+            },
+            {
+              x: paretoPoints.map(p => p.x),
+              y: paretoPoints.map(p => p.y),
+              customdata: paretoPoints.map(p => p.ids),
+              text: paretoText,
+              mode: 'markers',
+              marker: { size: 10, color: 'red', symbol: 'circle-open' },
+              name: 'Frente Pareto',
+              hovertemplate: '%{text}<extra></extra>',
+              hoverlabel: { align: 'left', namelength: 0 }
+            }
+          ];
+
+          if (amplPoints && amplPoints.length) {
+            const amplDomText = amplDominados.map(
+              p => `AMPL<br>(${p.x.toFixed(2)}, ${p.y.toFixed(2)})`
+            );
+            const amplParText = amplPareto.map(
+              p => `AMPL Pareto<br>(${p.x.toFixed(2)}, ${p.y.toFixed(2)})`
+            );
+
+            traces.push(
+              {
+                x: amplDominados.map(p => p.x),
+                y: amplDominados.map(p => p.y),
+                mode: 'markers',
+                text: amplDomText,
+                marker: { size: 9, color: 'gray', symbol: 'square' },
+                name: 'AMPL dominados',
+                hovertemplate: '%{text}<extra></extra>',
+                hoverlabel: { align: 'left', namelength: 0 }
+              },
+              {
+                x: amplPareto.map(p => p.x),
+                y: amplPareto.map(p => p.y),
+                mode: 'markers',
+                text: amplParText,
+                marker: { size: 11, color: 'green', symbol: 'diamond-open' },
+                name: 'AMPL Pareto',
+                hovertemplate: '%{text}<extra></extra>',
+                hoverlabel: { align: 'left', namelength: 0 }
+              }
+            );
+          }
+          // ---- Punto de referencia HV ----
+          if (
+            refPointGlobal &&
+            showRefCheckbox.checked &&
+            typeof refPointGlobal.x === "number" &&
+            typeof refPointGlobal.y === "number"
+          ) {
+            traces.push({
+              x: [refPointGlobal.x],
+              y: [refPointGlobal.y],
+              mode: "markers",
+              name: "Punto de referencia",
+              marker: {
+                size: 11,
+                symbol: "x-thin",
+                line: { width: 1.5 },
+              },
+              hovertemplate: `Ref: (${refPointGlobal.x.toFixed(2)}, ${refPointGlobal.y.toFixed(2)})<extra></extra>`
+            });
+          }
+
+
+          Plotly.react(plotDiv, traces, layout);
+
+          // click: mapa + panel de detalle con todos los IDs (copiable)
+          plotDiv.removeAllListeners?.('plotly_click');
+          plotDiv.on('plotly_click', async d => {
+            const point = d.points[0];
+
+            const serie = point.data?.name || point.fullData?.name || '';
+            if (serie.startsWith('AMPL')) {
+              return; // no abrimos mapa, ni usamos IDs
+            }
+
+            const idsSel = point.customdata || [];
+            const instanciaActual = selInst.value;
+
+            lastIds = idsSel;
+            lastInstancia = instanciaActual;
+
+            const payload = {
+              instancia: instanciaActual,
+              ids: idsSel,
+              show_probs: toggleProb.checked,
+              x: point.x,
+              y: point.y
+            };
+
+            // 1. Esconder todo y mostrar mensaje de carga
+            $('#map-image-container').classList.add('hidden');
+            $('#map-plot-container').classList.add('hidden');
+            $('#map-stats').textContent = 'Cargando mapas...';
+
+            // 2. Ejecutar AMBAS peticiones de mapa en paralelo
+            const peticionEstatica = fetch('/map', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const peticionInteractiva = fetch('/map_json', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+
+            try {
+              // 3. Esperar a que ambas terminen
+              const [resStatic, resJson] = await Promise.all([peticionEstatica, peticionInteractiva]);
+
+              if (!resStatic.ok || !resJson.ok) {
+                throw new Error('Una o ambas peticiones de mapa fallaron');
+              }
+
+              const staticData = await resStatic.json();
+              const jsonData = await resJson.json();
+
+              // 4. Guardar datos y renderizar
+              currentMapJsonData = jsonData;
+              renderInteractiveMap('map-plot', currentMapJsonData); // Renderiza el interactivo (aún oculto)
+
+              // 5. Cargar la imagen estática y las estadísticas
+              $('#map-image').src = 'data:image/png;base64,' + staticData.img;
+              $('#map-stats').textContent = jsonData.stats || staticData.stats;
+
+              // 6. Mostrar la VISTA POR DEFECTO (estática) y el botón
+              $('#map-image-container').classList.remove('hidden');
+              $('#btn-toggle-map').classList.remove('hidden');
+              $('#btn-toggle-map').textContent = 'Ver mapa interactivo';
+
+            } catch (e) {
+              console.error(e);
+              $('#map-stats').textContent = '❌ No se pudo generar el mapa.';
+            }
+          });
+
+        }
+
+
+        toggleProb.addEventListener('change', async () => {
+          // Si no hay datos de mapa cargados, no hace nada
+          if (!currentMapJsonData || !lastIds || !lastInstancia) return;
+
+          // Actualiza la variable global con el nuevo estado del checkbox
+          currentMapJsonData.meta.show_probs = toggleProb.checked;
+
+          // Vuelve a pedir los datos JSON con la nueva configuración
+          const payload = {
+            instancia: lastInstancia,
+            ids: lastIds,
+            show_probs: toggleProb.checked,
+          };
+
+          $('#map-stats').textContent = 'Refrescando mapas...';
+
+          const peticionEstatica = fetch('/map', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          const peticionInteractiva = fetch('/map_json', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          try {
+            const [resStatic, resJson] = await Promise.all([peticionEstatica, peticionInteractiva]);
+
+            if (!resJson.ok) throw new Error('Fallo al refrescar datos JSON del mapa');
+            const staticData = await resStatic.json();
+            const jsonData = await resJson.json(); // Actualizar datos
+
+
+            $('#map-image').src = 'data:image/png;base64,' + staticData.img;
+            currentMapJsonData = jsonData; // Actualiza la variable global con los nuevos datos
+            // Vuelve a dibujar el mapa interactivo con los datos actualizados
+            renderInteractiveMap('map-plot', currentMapJsonData);
+
+            // Actualiza también las estadísticas
+            $('#map-stats').textContent = jsonData.stats || staticData.stats;
+
+
+          } catch (e) {
+            console.error("Error al refrescar el mapa interactivo:", e);
+            $('#map-stats').textContent = '❌ Error al refrescar mapa.';
+          }
+        });
+
+        slider.addEventListener('input', () => {
+          const i = parseInt(slider.value, 10);
+          // Muestra el número real (ej: 1000) en el texto
+          genNum.innerText = globalGenNumbers[i];
+          // Muestra el gráfico correspondiente al índice i
+          showGeneration(i);
+        });
+        $('#btn-ejecutar').addEventListener('click', runNow);
+        $('#load-btn').addEventListener('click', loadSaved);
+        $('#load-ampl-btn').addEventListener('click', loadAmplFront);
+
+        btnHvEvery.addEventListener('click', async () => {
+          const val = parseInt(inputHvEvery.value, 10);
+          if (!Number.isInteger(val) || val <= 0) return alert("X debe ser entero positivo");
+          if (!selInst.value) return alert("Primero selecciona una instancia");
+
+          statusEl.textContent = `Generando y calculando HV cada ${val} gens…`;
+          await runNowWithHV(val);
+        });
+
+        fixScaleCheckbox.addEventListener('change', () => showGeneration(parseInt(slider.value || '0', 10)));
+        showRefCheckbox.addEventListener('change', () =>
+          showGeneration(parseInt(slider.value || '0', 10))
+        );
+
+
+        // ====== Builder logic ======
+        const ib = { name: $('#ib-name'), mode: $('#ib-mode'), prob: $('#ib-prob'), grid: $('#ib-grid'), gridOn: $('#ib-grid-on'), file: $('#ib-file'), uploadBtn: $('#ib-upload'), canvas: $('#builder-canvas'), ctx: null, img: new Image(), points: [], nextId: 1 };
+        ib.ctx = ib.canvas.getContext('2d');
+
+        function drawBuilder() { const ctx = ib.ctx; ctx.clearRect(0, 0, ib.canvas.width, ib.canvas.height); if (ib.img && ib.img.complete) { ctx.drawImage(ib.img, 0, 0, ib.canvas.width, ib.canvas.height); } if (ib.gridOn.checked) { const step = Math.max(10, parseInt(ib.grid.value || '50', 10)); ctx.save(); ctx.strokeStyle = '#233'; for (let x = 0; x < ib.canvas.width; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ib.canvas.height); ctx.stroke(); } for (let y = 0; y < ib.canvas.height; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ib.canvas.width, y); ctx.stroke(); } ctx.restore(); } for (const p of ib.points) { const color = p.flag === 1 ? '#e53935' : '#1e88e5'; ctx.fillStyle = color; ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.font = '14px monospace'; ctx.fillText(String(p.id), p.x + 10, p.y - 10); } }
+
+        ib.canvas.addEventListener('click', ev => { const r = ib.canvas.getBoundingClientRect(); const x = ev.clientX - r.left; const y = ev.clientY - r.top; const flag = parseInt(ib.mode.value, 10); let prob = parseFloat(ib.prob.value); if (isNaN(prob) || prob <= 0) prob = 1.0; ib.points.push({ id: ib.nextId++, x: Math.round(x), y: Math.round(y), flag, prob: +prob.toFixed(2) }); drawBuilder(); renderPointsTable(); });
+
+        function renderPointsTable() {
+          const tb = $('#points-tbody'); tb.innerHTML = ''; for (const p of ib.points) { const tr = document.createElement('tr'); tr.innerHTML = `<td>${p.id}</td><td><input type="number" value="${p.x}" style="width:110px" data-id="${p.id}" data-k="x"></td><td><input type="number" value="${p.y}" style="width:80px" data-id="${p.id}" data-k="y"></td><td><select data-id="${p.id}" data-k="flag" style="width:90px"><option value="0" ${p.flag === 0 ? 'selected' : ''}>0</option><option value="1" ${p.flag === 1 ? 'selected' : ''}>1</option></select></td><td><input type="number" step="0.01" min="0.1" max="1.0" value="${p.prob}" style="width:110px" data-id="${p.id}" data-k="prob"></td><td><button data-id="${p.id}" data-act="del">Eliminar</button></td>`; tb.appendChild(tr); }
+          tb.querySelectorAll('input,select,button').forEach(el => { if (el.tagName === 'BUTTON') { el.addEventListener('click', () => { const id = +el.getAttribute('data-id'); ib.points = ib.points.filter(p => p.id !== id); drawBuilder(); renderPointsTable(); }); } else { el.addEventListener('change', () => { const id = +el.getAttribute('data-id'); const k = el.getAttribute('data-k'); const p = ib.points.find(r => r.id === id); if (!p) return; let v = el.value; if (k === 'x' || k === 'y') v = Math.round(parseFloat(v)); if (k === 'flag') v = parseInt(v, 10); if (k === 'prob') v = Math.min(1.0, Math.max(0.1, parseFloat(v))); p[k] = v; drawBuilder(); }); } });
+        }
+
+        ib.uploadBtn.addEventListener('click', async () => { if (!ib.file.files[0]) { alert('Selecciona una imagen'); return; } const fd = new FormData(); fd.append('image', ib.file.files[0]); fd.append('name', ib.name.value.replace('.dat', '') || 'map'); const res = await fetch('/upload_map', { method: 'POST', body: fd }); if (!res.ok) { alert('No se pudo subir la imagen'); return; } const json = await res.json(); const url = json.url; ib.img = new Image(); ib.img.onload = () => drawBuilder(); ib.img.src = url; });
+        $('#ib-grid-on').addEventListener('change', drawBuilder); $('#ib-grid').addEventListener('change', drawBuilder);
+        $('#ib-undo').addEventListener('click', () => { ib.points.pop(); drawBuilder(); renderPointsTable(); });
+        $('#ib-clear').addEventListener('click', () => { ib.points = []; ib.nextId = 1; drawBuilder(); renderPointsTable(); });
+
+        $('#ib-save').addEventListener('click', async () => {
+          const name = (ib.name.value || '').trim(); if (!name) { alert('Ponle un nombre a la instancia'); return; }
+          if (ib.points.length === 0) { alert('Agrega al menos un punto'); return; }
+          const h = ib.canvas.height; const payload = { name: name.endsWith('.dat') ? name : (name + '.dat'), points: ib.points.map(p => ({ id: p.id, x: p.x, y: h - p.y, flag: p.flag, prob: p.prob })), presupuesto: Number($('#ib-P').value || 0), radio: Number($('#ib-R').value || 800), c1: Number($('#ib-c1').value || 1.0), c2: Number($('#ib-c2').value || 1.0) };
+          const res = await fetch('/save_instance', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const j = await res.json(); if (!res.ok) { alert('Error guardando: ' + (j.error || 'desconocido')); return; }
+          // Actualizar selector, seleccionar nueva y volver al visualizador
+          await refreshInstanciaSelect(); const fname = payload.name; selInst.value = fname; try { await syncVariablesFromInstance(fname); } catch (_) { }
+          statusEl.textContent = 'Instancia creada. Ahora puedes ejecutarla';
+          showTab('visualizador');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        document.getElementById('load-ampl-btn')
+          .addEventListener('click', loadAmplFront);
+
+
+        // ===== Inicio =====
+        window.addEventListener('DOMContentLoaded', async () => { await refreshInstanciaSelect(); await refreshAmplSelect(); showTab('visualizador'); statusEl.textContent = 'Listo'; drawBuilder(); });
+
+        async function buildAllDashboard() {
+          if (allBuilt) return;
+          statusAll.textContent = 'Buscando instancias...';
+          gridAll.innerHTML = ''; // Limpiamos la grilla por si acaso
+
+          // Obtenemos la lista de todas las instancias disponibles
+          const r = await fetch('/list_instances');
+          const j = await r.json();
+          const insts = Array.isArray(j) ? j : (j.instances || []);
+
+          if (insts.length === 0) {
+            statusAll.textContent = 'No se encontraron instancias.';
+            return;
+          }
+
+          // 1. DIBUJAMOS LOS "ESQUELETOS" DE LAS TARJETAS
+          // Esto es instantáneo y le muestra al usuario que algo está pasando.
+          for (const inst of insts) {
+            const id = slug(inst);
+            gridAll.insertAdjacentHTML('beforeend', `
+            <div class="all-card" id="card-${id}">
+              <h4>${inst}</h4>
+              <div id="content-${id}" style="padding: 2rem; text-align: center; color: var(--muted);">
+                Pendiente de carga...
+              </div>
+            </div>`);
+          }
+
+          // 2. PROCESAMOS CADA INSTANCIA UNA POR UNA
+          // Esto actualiza cada tarjeta a medida que sus datos están listos.
+          statusAll.textContent = `Cargando datos para ${insts.length} instancias...`;
+          let loadedCount = 0;
+
+          for (const inst of insts) {
+            const id = slug(inst);
+            const contentDiv = document.getElementById(`content-${id}`);
+            contentDiv.innerHTML = 'Procesando...'; // Actualiza el estado individual de la tarjeta
+
+            try {
+              // Llamamos a /load para esta instancia específica
+              const res = await fetch('/load', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ instancia: inst, semilla: 0, recalcular: false, strict: true })
+              });
+
+              if (!res.ok) throw new Error('La respuesta del servidor no fue OK');
+
+              const data = await res.json();
+
+              // Si el servidor devolvió datos, los renderizamos
+              if (data.files && data.files.length) {
+                // Reemplazamos el "Procesando..." con la estructura real de los gráficos
+                contentDiv.innerHTML = `
+                <div class="all-row">
+                  <div>
+                    <div id="plot-${id}" class="all-plot"></div>
+                    <div class="all-slider">
+                      <input type="range" id="slider-${id}" min="0" max="0" value="0" style="width:100%" />
+                      <p class="hint">Generación: <span id="gen-${id}">1</span></p>
+                    </div>
+                  </div>
+                  <div>
+                    <div id="hv-${id}" class="all-small"></div>
+                    <div id="hist-${id}" class="all-small" style="margin-top:1rem"></div>
+                    <img id="map-${id}" alt="Mapa" style="display:none;width:100%;border:1px solid #333;border-radius:.6rem;margin-top:1rem" />
+                    <div id="stats-${id}" style="white-space:pre-wrap;font-family:monospace;display:none;margin-top:.5rem"></div>
+                  </div>
+                </div>`;
+
+                // Ahora que la estructura HTML existe, llamamos a la función que dibuja los gráficos
+                await renderInstanceCard(inst, id, data);
+                loadedCount++;
+
+              } else {
+                // Si no hay datos, mostramos un mensaje en su tarjeta
+                contentDiv.innerHTML = 'No se encontraron resultados para esta instancia.';
+              }
+
+            } catch (error) {
+              console.error(`Error al cargar la instancia ${inst}:`, error);
+              contentDiv.innerHTML = '❌ Error al cargar los datos.';
+            }
+
+            // Actualizamos el contador global
+            statusAll.textContent = `Cargadas: ${loadedCount} de ${insts.length}`;
+          }
+
+          statusAll.textContent = `¡Carga completa! (${loadedCount} instancias con datos)`;
+          allBuilt = true;
+        }
+
+        function parsePoints(text) {
+          return text.trim().split('\n')
+            .map(l => l.trim()).filter(l => l && !l.startsWith('#'))
+            .map(line => {
+              let coverage = null; let left = line;
+              if (line.includes('|')) {
+                const parts = line.split('|');
+                left = parts[0].trim();
+                const covStr = parts[1].trim().split(/\s+/)[0];
+                const covVal = parseFloat(covStr);
+                if (!Number.isNaN(covVal)) coverage = covVal;
+              }
+              const toks = left.split(/\s+/);
+              const f1 = parseFloat(toks[0]); const f2 = parseFloat(toks[1]);
+              let startIdx = 2; let isPareto;
+              if (Number.isNaN(parseFloat(toks[2]))) {
+                if (toks[2] === 'P') { isPareto = true; startIdx = 3; }
+                else if (toks[2] === 'D') { isPareto = false; startIdx = 3; }
+              }
+              const ids = toks.slice(startIdx).map(n => parseInt(n, 10)).filter(n => !Number.isNaN(n));
+              return { x: f1, y: f2, ids, isPareto, coverage };
+            });
+        }
+
+        async function renderInstanceCard(inst, id, data) {
+          const files = data.files, hv = data.hv || [];
+          const frames = [];
+          for (const file of files) {
+            const res = await fetch('/get/' + file);
+            const text = await res.text();
+            frames.push(parsePoints(text));
+          }
+          framesPerInst[inst] = frames;
+
+          // Rango global para “Misma escala”
+          let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity;
+          for (const gen of frames) {
+            for (const p of gen) {
+              if (p.x < xMin) xMin = p.x;
+              if (p.x > xMax) xMax = p.x;
+              if (p.y < yMin) yMin = p.y;
+              if (p.y > yMax) yMax = p.y;
+            }
+          }
+          rangesPerInst[inst] = { x: [xMin, xMax], y: [yMin, yMax] };
+          currentGenIndex[inst] = 0;  // primera generación
+
+          await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+          // HV
+          Plotly.newPlot('hv-' + id,
+            [{ x: hv.map((_, i) => i), y: hv, mode: 'lines+markers', name: 'HV' }],
+            {
+              title: 'Hipervolumen', xaxis: { title: 'Generación' }, yaxis: { title: 'HV' },
+              paper_bgcolor: '#fff', plot_bgcolor: '#fff'
+            }, PLOTLY_CFG
+          ).then(gd => {
+            gd.on('plotly_click', d => {
+              const gen = d.points[0].x;
+              const slider = $('#slider-' + id), genLbl = $('#gen-' + id);
+              slider.value = gen - 1; genLbl.textContent = gen;
+              showGenInCard(inst, id, gen - 1);
+            });
+          });
+
+          // Historial
+          const traces = frames.map((pts, idx) => {
+            const hasFlag = pts.every(p => typeof p.isPareto === 'boolean');
+            const all = hasFlag ? pts : findParetoFront(pts);
+            const pareto = all.filter(p => p.isPareto);
+            const color = getMultiColor(idx / Math.max(1, (frames.length - 1)));
+            return {
+              x: pareto.map(p => p.x), y: pareto.map(p => p.y), mode: 'markers',
+              marker: { size: 6, color }, showlegend: false
+            };
+          });
+          Plotly.newPlot('hist-' + id, traces,
+            {
+              title: 'Frentes', xaxis: { title: 'f1' }, yaxis: { title: 'f2' },
+              paper_bgcolor: '#fff', plot_bgcolor: '#fff'
+            }, PLOTLY_CFG);
+
+          // Slider + primera generación
+          const slider = $('#slider-' + id), genLbl = $('#gen-' + id);
+          slider.max = frames.length - 1; slider.value = 0; genLbl.textContent = 1;
+          slider.addEventListener('input', () => {
+            const i = parseInt(slider.value, 10);
+            currentGenIndex[inst] = i;              // ← guarda la gen actual
+            genLbl.textContent = i;
+            showGenInCard(inst, id, i);
+          });
+
+
+          // Primer render
+          showGenInCard(inst, id, 0);
+          observeCardResize(id);
+        }
+
+        function showGenInCard(inst, id, index) {
+          const frames = framesPerInst[inst]; if (!frames) return;
+          const points = frames[index] || [];
+
+          const hasFlag = points.every(p => typeof p.isPareto === 'boolean');
+          const allPoints = hasFlag ? points : findParetoFront(points);
+          const pareto = allPoints.filter(p => p.isPareto);
+          const dom = allPoints.filter(p => !p.isPareto);
+
+          const layout = {
+            title: `Frente – Gen ${index}`,
+            xaxis: { title: 'f1' }, yaxis: { title: 'f2' },
+            paper_bgcolor: '#fff', plot_bgcolor: '#fff',
+            hovermode: 'closest'
+          };
+
+          const el = document.getElementById('plot-' + id);
+          const dataTraces = [
+            {
+              x: dom.map(p => p.x), y: dom.map(p => p.y),
+              customdata: dom.map(p => p.ids),
+              text: dom.map(mkHoverTextPt),
+              mode: 'markers', marker: { size: 8, color: 'blue' }, name: 'Dominados',
+              hovertemplate: '%{text}<extra></extra>',
+              hoverlabel: { align: 'left', namelength: 0 }
+            },
+            {
+              x: pareto.map(p => p.x), y: pareto.map(p => p.y),
+              customdata: pareto.map(p => p.ids),
+              text: pareto.map(mkHoverTextPt),
+              mode: 'markers', marker: { size: 10, color: 'red', symbol: 'circle-open' }, name: 'Pareto',
+              hovertemplate: '%{text}<extra></extra>',
+              hoverlabel: { align: 'left', namelength: 0 }
+            }
+          ];
+
+          const plotPromise = el.data
+            ? Plotly.react(el, dataTraces, layout)
+            : Plotly.newPlot(el, dataTraces, layout, { responsive: true, displayModeBar: false });
+
+          plotPromise.then(gd => {
+            gd.removeAllListeners?.('plotly_click');
+            gd.on('plotly_click', async d => {
+              const idsSel = d.points[0].customdata || [];
+              lastSelPerInst[inst] = idsSel;
+
+              // Panel de detalle bajo la card
+              const coord = `(${(+d.points[0].x).toFixed(2)}, ${(+d.points[0].y).toFixed(2)})`;
+
+              // Mapa (como ya lo tenías)
+              const res = await fetch('/map', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ instancia: inst, ids: idsSel, show_probs: selProbAll.checked, x: d.points[0].x, y: d.points[0].y })
+              });
+              if (res.ok) {
+                const { img, stats } = await res.json();
+                const imgEl = $('#map-' + id), stEl = $('#stats-' + id);
+                imgEl.src = 'data:image/png;base64,' + img; imgEl.style.display = 'block';
+                stEl.textContent = stats; stEl.style.display = 'block';
+              }
+            });
+          });
+        }
+
+
+        function observeCardResize(id) {
+          const card = document.getElementById('card-' + id);
+          if (!window.ResizeObserver || !card) return;
+          let rafId = null;
+          const ro = new ResizeObserver(() => {
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+              const p = document.getElementById('plot-' + id);
+              const hv = document.getElementById('hv-' + id);
+              const hi = document.getElementById('hist-' + id);
+              if (p) Plotly.Plots.resize(p);
+              if (hv) Plotly.Plots.resize(hv);
+              if (hi) Plotly.Plots.resize(hi);
+              rafId = null;
+            });
+          });
+          ro.observe(card);
+        }
+
+
+
+        selProbAll.addEventListener('change', async () => {
+          for (const inst of Object.keys(lastSelPerInst)) {
+            const ids = lastSelPerInst[inst];
+            const id = slug(inst);
+            const res = await fetch('/map', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ instancia: inst, ids, show_probs: selProbAll.checked })
+            });
+            if (res.ok) {
+              const { img, stats } = await res.json();
+              const imgEl = $('#map-' + id), stEl = $('#stats-' + id);
+              if (imgEl) { imgEl.src = 'data:image/png;base64,' + img; imgEl.style.display = 'block'; }
+              if (stEl) { stEl.textContent = stats; stEl.style.display = 'block'; }
+            }
+          }
+        });
+
+        window.addEventListener('resize', () => {
+          document.querySelectorAll('.js-plotly-plot')
+            .forEach(el => Plotly.Plots.resize(el));
+        });
+
+        fixScaleAll?.addEventListener('change', () => {
+          for (const inst of Object.keys(framesPerInst)) {
+            const id = slug(inst);
+            const i = currentGenIndex[inst] ?? 0;
+            showGenInCard(inst, id, i);
+          }
+        });
+
+        function renderInteractiveMap(targetDivId, jsonData) {
+          if (!jsonData) return;
+
+          const {
+            meta,
+            demanda,
+            preinstalados_movidos_origen,
+            seleccionados_nuevos,
+            seleccionados_existentes,
+            coords_finales_aeds
+          } = jsonData;
+
+          const radio = meta && typeof meta.radio === 'number' ? meta.radio : 0;
+          const r2 = radio * radio;
+
+          // AEDs finales: preinstalados que se mantienen vs nuevos
+          const preX = (seleccionados_existentes.x || []);
+          const preY = (seleccionados_existentes.y || []);
+          const newX = (seleccionados_nuevos.x || []);
+          const newY = (seleccionados_nuevos.y || []);
+
+          // Buckets de demanda según cobertura:
+          //  - demandaNo: no cubierta
+          //  - demandaPre: cubierta por preinstalados
+          //  - demandaNew: cubierta por nuevos
+          const demandaNo = { x: [], y: [], s: [] };
+          const demandaPre = { x: [], y: [], s: [] };
+          const demandaNew = { x: [], y: [], s: [] };
+
+          for (let i = 0; i < (demanda.x || []).length; i++) {
+            const px = demanda.x[i];
+            const py = demanda.y[i];
+            // demanda.s viene con el tamaño ya escalado por prob o fijo según show_probs
+            const rawSize = demanda.s && demanda.s[i] != null ? demanda.s[i] : 20;
+            const size = Math.sqrt(rawSize);
+
+            let coveredPre = false;
+            let coveredNew = false;
+
+            // ¿Lo cubre algún preinstalado mantenido?
+            for (let j = 0; j < preX.length; j++) {
+              const dx = px - preX[j];
+              const dy = py - preY[j];
+              if (dx * dx + dy * dy <= r2) {
+                coveredPre = true;
+                break;
+              }
+            }
+
+            // Si no está cubierto por preinstalados, probamos con los nuevos
+            if (!coveredPre) {
+              for (let j = 0; j < newX.length; j++) {
+                const dx = px - newX[j];
+                const dy = py - newY[j];
+                if (dx * dx + dy * dy <= r2) {
+                  coveredNew = true;
+                  break;
+                }
+              }
+            }
+
+            if (coveredPre) {
+              demandaPre.x.push(px);
+              demandaPre.y.push(py);
+              demandaPre.s.push(size);
+            } else if (coveredNew) {
+              demandaNew.x.push(px);
+              demandaNew.y.push(py);
+              demandaNew.s.push(size);
+            } else {
+              demandaNo.x.push(px);
+              demandaNo.y.push(py);
+              demandaNo.s.push(size);
+            }
+          }
+
+          const traces = [];
+
+          // 1) Demanda NO cubierta
+          if (demandaNo.x.length) {
+            traces.push({
+              x: demandaNo.x,
+              y: demandaNo.y,
+              mode: 'markers',
+              name: 'Demanda no cubierta',
+              marker: {
+                size: demandaNo.s,
+                color: 'blue',
+                opacity: 0.9,
+                line: { width: 1, color: 'black' }
+              }
+            });
+          }
+
+          // 2) Demanda cubierta por preinstalados
+          if (demandaPre.x.length) {
+            traces.push({
+              x: demandaPre.x,
+              y: demandaPre.y,
+              mode: 'markers',
+              name: 'Demanda cubierta (preinstalados)',
+              marker: {
+                size: demandaPre.s,
+                color: 'orange',
+                opacity: 0.4,
+                line: { width: 1, color: 'black' }
+              }
+            });
+          }
+
+          // 3) Demanda cubierta por nuevos equipos
+          if (demandaNew.x.length) {
+            traces.push({
+              x: demandaNew.x,
+              y: demandaNew.y,
+              mode: 'markers',
+              name: 'Demanda cubierta (nuevos AED)',
+              marker: {
+                size: demandaNew.s,
+                color: 'green',
+                opacity: 0.4,
+                line: { width: 1, color: 'black' }
+              }
+            });
+          }
+
+          // 4) Origen de AEDs preinstalados movidos
+          if (preinstalados_movidos_origen.x && preinstalados_movidos_origen.x.length) {
+            traces.push({
+              x: preinstalados_movidos_origen.x,
+              y: preinstalados_movidos_origen.y,
+              mode: 'markers',
+              name: 'AED movido (origen)',
+              marker: {
+                size: (preinstalados_movidos_origen.s || []).map(v => Math.sqrt(v || 20)),
+                color: 'red',
+                symbol: 'circle-open',
+                opacity: 0.8,
+                line: { width: 2 }
+              }
+            });
+          }
+
+          // 5) AEDs preinstalados que se mantuvieron
+          if (preX.length) {
+            traces.push({
+              x: preX,
+              y: preY,
+              mode: 'markers',
+              name: 'Equipo preinstalado (mantenido)',
+              marker: {
+                size: 14,
+                color: 'orange',
+                symbol: 'star',
+                line: { width: 1, color: 'black' }
+              }
+            });
+          }
+
+          // 6) Nuevos AEDs instalados
+          if (newX.length) {
+            traces.push({
+              x: newX,
+              y: newY,
+              mode: 'markers',
+              name: 'AED instalado (nuevo)',
+              marker: {
+                size: 14,
+                color: 'green',
+                symbol: 'star',
+                line: { width: 1, color: 'black' }
+              }
+            });
+          }
+
+          // Círculos de cobertura
+          const shapes = [];
+          for (const [ax, ay] of (coords_finales_aeds || [])) {
+            shapes.push({
+              type: 'circle',
+              xref: 'x',
+              yref: 'y',
+              x0: ax - radio,
+              y0: ay - radio,
+              x1: ax + radio,
+              y1: ay + radio,
+              fillcolor: 'rgba(128, 128, 128, 0.15)',
+              line: { color: 'rgba(128, 128, 128, 0.3)' }
+            });
+          }
+
+          const layout = {
+            title: `Mapa Interactivo: ${meta.instancia}`,
+            xaxis: { title: 'Coordenada X', scaleanchor: 'y', scaleratio: 1 },
+            yaxis: { title: 'Coordenada Y' },
+            shapes: shapes,
+            legend: { x: 1.02, y: 1 },
+            hovermode: 'closest'
+          };
+
+          Plotly.newPlot(targetDivId, traces, layout, { responsive: true, displayModeBar: true });
+        }
+
+
+        const btnToggleMap = $('#btn-toggle-map');
+        const mapImgContainer = $('#map-image-container');
+        const mapPlotContainer = $('#map-plot-container');
+
+        const hvAmplOptEl = document.getElementById('hv-ampl-opt');
+        const hvMoeadEl = document.getElementById('hv-moead');
+        const hvGapEl = document.getElementById('hv-gap');
+
+
+        btnToggleMap.addEventListener('click', () => {
+          const isStaticVisible = !mapImgContainer.classList.contains('hidden');
+
+          if (isStaticVisible) {
+            // Si el estático está visible, lo ocultamos y mostramos el interactivo
+            mapImgContainer.classList.add('hidden');
+            mapPlotContainer.classList.remove('hidden');
+            btnToggleMap.textContent = 'Ver mapa estático';
+            Plotly.Plots.resize('map-plot'); // Asegura que el plot se redimensione correctamente
+          } else {
+            // Si el interactivo está visible, lo ocultamos y mostramos el estático
+            mapPlotContainer.classList.add('hidden');
+            mapImgContainer.classList.remove('hidden');
+            btnToggleMap.textContent = 'Ver mapa interactivo';
+          }
+        });
+      </script>
+</body>
+
+</html>

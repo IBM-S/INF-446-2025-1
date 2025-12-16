@@ -221,93 +221,6 @@ void CUtilityToolBox::Maxfastsort(vector<double> &x, vector<int> &idx, int n, in
 	}
 }
 
-void CUtilityToolBox::MutacionIntercambioHeuristico(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *instance)
-{
-    if (Get_Random_Number() > mutation_rate) return;
-
-    int n = x_var.size();
-    const auto &nodos = instance->getNodes();
-
-    // 1. Identificar AEDs instalados (que no sean fijos)
-    std::vector<int> instalados_moviles;
-    std::vector<int> espacios_vacios;
-
-    for(int i=0; i<n; ++i) {
-        if (nodos[i]->getFlag() == 1) continue; // Ignorar cámaras
-        
-        if (x_var[i] == 1) instalados_moviles.push_back(i);
-        else espacios_vacios.push_back(i);
-    }
-
-    if (instalados_moviles.empty() || espacios_vacios.empty()) return;
-
-    // 2. ENCONTRAR EL "PEOR" INSTALADO (Para eliminarlo)
-    // El "peor" es el que tiene menos ganancia marginal (aporta poco o nada nuevo)
-    int peor_idx = -1;
-    double min_aporte = 1.0e30;
-
-    // Para no evaluar todos (lento), tomamos una muestra aleatoria (Torneo)
-    int sample_size = std::min((int)instalados_moviles.size(), 10); // Miramos 10 al azar
-    std::random_shuffle(instalados_moviles.begin(), instalados_moviles.end());
-
-    for(int k=0; k<sample_size; ++k) 
-    {
-        int idx = instalados_moviles[k];
-        const std::vector<int>& vecinos = instance->getNodosCubiertosPor(idx);
-        
-        double aporte_marginal = 0.0;
-        for(int v : vecinos) {
-            // Un nodo aporta valor si es demanda y NO está cubierto por las cámaras
-            // NOTA: Para ser perfecto, deberíamos ver si no está cubierto por OTROS aeds, 
-            // pero eso es costoso. Usar la base de cámaras es una buena heurística rápida.
-            if(nodos[v]->getFlag() == 0 && !instance->isPreCubierto(v)) {
-                aporte_marginal += nodos[v]->getProbOhca();
-            }
-        }
-
-        // Buscamos el que tenga MENOR aporte para eliminarlo
-        if(aporte_marginal < min_aporte) {
-            min_aporte = aporte_marginal;
-            peor_idx = idx;
-            // Si encontramos uno que aporta 0 (totalmente inútil), lo borramos de inmediato.
-            if (min_aporte <= 0.0001) break; 
-        }
-    }
-
-    // 3. ENCONTRAR EL "MEJOR" CANDIDATO (Para agregarlo)
-    int mejor_candidato = -1;
-    // Usamos la función que ya hicimos para filtrar rápidos
-    // Intentamos 10 veces encontrar algo bueno
-    int intentos = 0;
-    std::random_shuffle(espacios_vacios.begin(), espacios_vacios.end());
-
-    while(intentos < 20 && intentos < espacios_vacios.size()) 
-    {
-        int cand = espacios_vacios[intentos];
-        // Reutilizamos tu filtro inteligente
-        if (EsBuenCandidato(cand, instance)) {
-            mejor_candidato = cand;
-            break; // Encontramos uno que sirve
-        }
-        intentos++;
-    }
-
-    // 4. APLICAR EL SWAP
-    if (peor_idx != -1 && mejor_candidato != -1) {
-        x_var[peor_idx] = 0;       // Quitamos el malo
-        x_var[mejor_candidato] = 1; // Ponemos el bueno
-    }
-    // Si no encontramos mejor candidato, podríamos solo borrar el malo para ahorrar costo,
-    // o hacer un movimiento aleatorio para mantener diversidad.
-    else if (peor_idx != -1) {
-        // Opción: Movimiento aleatorio si no hallamos uno "bueno" inteligente
-        int random_pos = espacios_vacios[rand() % espacios_vacios.size()];
-        x_var[peor_idx] = 0;
-        x_var[random_pos] = 1; 
-    }
-}
-
-
 void CUtilityToolBox::MutacionModificada_sin_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance)
 {
 	// 1 Verificar probabilidad
@@ -931,125 +844,6 @@ void CUtilityToolBox::CruzamientoInteligente(const vector<double> &parent1, cons
     }
 }
 
-// =========================================================================
-// 3. MUTACIÓN BIT FLIP INTELIGENTE (Explotación / Ajuste Fino)
-// =========================================================================
-void CUtilityToolBox::MutacionBitFlipInteligente(vector<double> &x_var, double mutation_rate, ProblemInstance *instance)
-{
-    if (Get_Random_Number() > mutation_rate) return;
-
-    int n = x_var.size();
-    const auto &nodos = instance->getNodes();
-    double prob = 1.0 / (double)n; // Estándar 1/N
-
-    // A. Bit Flip con Filtro
-    for (int i = 0; i < n; ++i) {
-        if (nodos[i]->getFlag() == 1) continue;
-
-        if (Get_Random_Number() <= prob) {
-            if (x_var[i] == 1) {
-                x_var[i] = 0; // Borrar es seguro
-            } else {
-                // Agregar solo si sirve
-                if (EsBuenCandidato(i, instance)) x_var[i] = 1;
-            }
-        }
-    }
-
-    // B. Reparación de Presupuesto (Eliminar los peores)
-    int max_P = instance->getP();
-    std::vector<int> activos;
-    for(int i=0; i<n; ++i) if(x_var[i]==1 && nodos[i]->getFlag()==0) activos.push_back(i);
-
-    if ((int)activos.size() + (int)(n - instance->getCandidateLocations().size()) > max_P) { // Ajuste aprox de conteo
-        // Recalcular conteo exacto
-        int total = 0; 
-        activos.clear();
-        for(int i=0; i<n; ++i) if(x_var[i]==1) {
-            total++;
-            if(nodos[i]->getFlag()==0) activos.push_back(i);
-        }
-
-        if (total > max_P) {
-            int quitar = total - max_P;
-            std::vector<std::pair<double, int>> calidad;
-            
-            for(int idx : activos) {
-                double aporte = 0;
-                const auto& vec = instance->getNodosCubiertosPor(idx);
-                for(int v : vec) {
-                    if(!instance->isPreCubierto(v)) aporte += nodos[v]->getProbOhca();
-                }
-                calidad.push_back({aporte, idx});
-            }
-            std::sort(calidad.begin(), calidad.end()); // Menor aporte primero
-            
-            for(int k=0; k<quitar && k<(int)calidad.size(); ++k) {
-                x_var[calidad[k].second] = 0;
-            }
-        }
-    }
-}
-
-// =========================================================================
-// 4. MUTACIÓN INTERCAMBIO HEURÍSTICO (Exploración / SOTA)
-// =========================================================================
-void CUtilityToolBox::MutacionIntercambioHeuristico(vector<double> &x_var, double mutation_rate, ProblemInstance *instance)
-{
-    if (Get_Random_Number() > mutation_rate) return;
-
-    int n = x_var.size();
-    const auto &nodos = instance->getNodes();
-    std::vector<int> moviles;
-    std::vector<int> vacios;
-
-    for(int i=0; i<n; ++i) {
-        if(nodos[i]->getFlag() == 1) continue;
-        if(x_var[i] == 1) moviles.push_back(i);
-        else vacios.push_back(i);
-    }
-
-    if(moviles.empty() || vacios.empty()) return;
-
-    // A. Encontrar el PEOR instalado (Muestra aleatoria para velocidad)
-    int peor_idx = -1;
-    double min_val = 1e30;
-    std::random_shuffle(moviles.begin(), moviles.end());
-    int check_count = std::min((int)moviles.size(), 10);
-
-    for(int k=0; k<check_count; ++k) {
-        int idx = moviles[k];
-        double val = 0;
-        const auto& vec = instance->getNodosCubiertosPor(idx);
-        for(int v : vec) if(!instance->isPreCubierto(v)) val += nodos[v]->getProbOhca();
-        
-        if(val < min_val) { min_val = val; peor_idx = idx; }
-    }
-
-    // B. Encontrar el MEJOR vacío (Intentos aleatorios)
-    int mejor_idx = -1;
-    std::random_shuffle(vacios.begin(), vacios.end());
-    int attempts = 0;
-    
-    while(attempts < 20 && attempts < (int)vacios.size()) {
-        int cand = vacios[attempts];
-        if(EsBuenCandidato(cand, instance)) {
-            mejor_idx = cand;
-            break;
-        }
-        attempts++;
-    }
-
-    // C. Swap
-    if(peor_idx != -1 && mejor_idx != -1) {
-        x_var[peor_idx] = 0;
-        x_var[mejor_idx] = 1;
-    } else if (peor_idx != -1 && Get_Random_Number() < 0.5) {
-        // Si no hay bueno, a veces borramos el malo igual para ahorrar
-        x_var[peor_idx] = 0; 
-    }
-}
-
 
 
 
@@ -1254,7 +1048,7 @@ void CUtilityToolBox::MutacionSwapProbabilistico(vector<double> &x_var, double m
 }
 
 
-void CUtilityToolBox::Mutacion_Swap_1_N(vector<double> &x_var, double mutation_rate, double ratio_swap, ProblemInstance *instance)
+void CUtilityToolBox::Mutacion_Swap_Porcentual_1_N(vector<double> &x_var, double mutation_rate, double ratio_swap, double percentage, ProblemInstance *instance)
 {
     // Tiramos una moneda para decidir qué estrategia usar
     double dado = Get_Random_Number();
@@ -1263,37 +1057,37 @@ void CUtilityToolBox::Mutacion_Swap_1_N(vector<double> &x_var, double mutation_r
         MutacionBitFlip_1_N(x_var, mutation_rate, instance);
     }
     else {
-        MutacionSwapProbabilistico(x_var, mutation_rate, 0.05, instance);
+        MutacionSwapPorcentual(x_var, mutation_rate, percentage, instance);
     }
 }
 
-void CUtilityToolBox::Mutacion_Swap_1_M(vector<double> &x_var, double mutation_rate, double ratio_swap, ProblemInstance *instance)
+void CUtilityToolBox::Mutacion_Swap_Porcentual_1_M(vector<double> &x_var, double mutation_rate, double ratio_swap, double populationSize, double percentage, ProblemInstance *instance)
 {
     // Tiramos una moneda para decidir qué estrategia usar
     double dado = Get_Random_Number();
 
     if (dado <= ratio_swap)
     {
-        MutacionBitFlip_1_M(x_var, mutation_rate, 100, instance);
+        MutacionBitFlip_1_M(x_var, mutation_rate, populationSize, instance);
     }
     else
     {
-        MutacionSwapProbabilistico(x_var, mutation_rate, 0.05, instance);
+        MutacionSwapPorcentual(x_var, mutation_rate, percentage, instance);
     }
 }
 
-void CUtilityToolBox::Mutacion_Swap_Fijo(vector<double> &x_var, double mutation_rate, double ratio_swap, ProblemInstance *instance)
+void CUtilityToolBox::Mutacion_Swap_Porcentual_Fijo(vector<double> &x_var, double mutation_rate, double ratio_swap, double fixed_prob, double percentage, ProblemInstance *instance)
 {
     // Tiramos una moneda para decidir qué estrategia usar
     double dado = Get_Random_Number();
 
     if (dado <= ratio_swap)
     {
-        MutacionBitFlip_Fijo(x_var, mutation_rate, 0.001, instance);
+        MutacionBitFlip_Fijo(x_var, mutation_rate, fixed_prob, instance);
     }
     else
     {
-        MutacionSwapProbabilistico(x_var, mutation_rate, 0.05, instance);
+        MutacionSwapPorcentual(x_var, mutation_rate, percentage, instance);
     }
 }
 
@@ -1341,84 +1135,45 @@ void CUtilityToolBox::CruzamientoUniformeInteligente(const vector<double> &paren
     RepararPresupuesto(child, instance);
 }
 
-
-void CUtilityToolBox::MutacionModificada_Porcentual(vector<double> &x_var, double mutation_rate, double prob_op1_delete, double percentage, ProblemInstance *instance)
+void CUtilityToolBox::CruzamientoUniformeSemiInteligente(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance)
 {
-    // 1. Verificar probabilidad global
-    if (Get_Random_Number() > mutation_rate) return;
-
-    int n = x_var.size();
+    int n = parent1.size();
+    child.assign(n, 0.0);
     const auto &nodos = instance->getNodes();
-
-    // 2. Identificar candidatos (Solo móviles, Flag 0)
-    std::vector<int> candidatos_borrar; // Tienen 1
-    std::vector<int> candidatos_poner;  // Tienen 0
 
     for (int i = 0; i < n; ++i)
     {
-        // Ignoramos infraestructura fija
-        if (nodos[i]->getFlag() == 1) continue;
-
-        if (x_var[i] == 1) {
-            candidatos_borrar.push_back(i);
-        } else {
-            candidatos_poner.push_back(i);
+        // 1. Siempre heredar infraestructura fija (Cámaras)
+        if (nodos[i]->getFlag() == 1) {
+            child[i] = 1.0;
+            continue; 
         }
-    }
 
-    if (candidatos_borrar.empty()) return;
+        bool p1_has = (parent1[i] == 1);
+        bool p2_has = (parent2[i] == 1);
 
-    // 3. Calcular CANTIDAD a modificar (El porcentaje solicitado)
-    int total_activos = candidatos_borrar.size();
-    int cantidad_cambios = static_cast<int>(std::ceil(total_activos * percentage));
-
-    // Seguridad: Mínimo 1, Máximo todos
-    if (cantidad_cambios < 1) cantidad_cambios = 1;
-    if (cantidad_cambios > total_activos) cantidad_cambios = total_activos;
-
-    // 4. Decidir Operador: ¿Solo Borrar o Swap?
-    // prob_op1_delete es la probabilidad de SOLO BORRAR (Reducir tamaño).
-    bool es_solo_borrar = (Get_Random_Number() >= prob_op1_delete);
-
-    // 5. Ejecutar BORRADO (Común para ambos casos)
-    // Desordenamos para borrar al azar
-    std::random_shuffle(candidatos_borrar.begin(), candidatos_borrar.end());
-
-    for (int k = 0; k < cantidad_cambios; ++k) {
-        int idx = candidatos_borrar[k];
-        x_var[idx] = 0;
-    }
-
-    // 6. Ejecutar INSERCIÓN (Solo si es Swap)
-    // Aquí intentamos recuperar la misma cantidad que borramos
-    if (!es_solo_borrar)
-    {
-        if (candidatos_poner.empty()) return;
-
-        std::random_shuffle(candidatos_poner.begin(), candidatos_poner.end());
-
-        int instalados_count = 0;
-        int idx_vec = 0;
-        
-        // Intentamos poner 'cantidad_cambios' nuevos equipos
-        while (instalados_count < cantidad_cambios && idx_vec < (int)candidatos_poner.size())
+        if (p1_has && p2_has) 
         {
-            int candidato = candidatos_poner[idx_vec];
-            idx_vec++;
-
-            // FILTRO INTELIGENTE (Opcional pero recomendado):
-            // Solo gastamos el swap si el lugar aporta valor real
-            if (EsBuenCandidato(candidato, instance)) 
+            // A. Intersección: Ambos padres lo tienen -> Heredar seguro.
+            // (Asumimos que si ambos lo tienen, es un buen lugar)
+            child[i] = 1.0;
+        }
+        else if (p1_has || p2_has) 
+        {
+            // B. Unión: Solo uno lo tiene -> Probabilidad 50%
+            if (Get_Random_Number() < 0.5) 
             {
-                x_var[candidato] = 1;
-                instalados_count++;
+				// C. SIN FILTRO INTELIGENTE:
+                    child[i] = 1.0;
             }
-            
-            // Si no usamos EsBuenCandidato, simplemente sería:
-            // x_var[candidato] = 1; instalados_count++;
         }
     }
+
+    // 2. Reparación de Presupuesto (Por si la unión generó demasiados)
+    RepararPresupuesto(child, instance);
 }
+
+
 
 void CUtilityToolBox::MutacionDeletePorcentual(vector<double> &x_var, double mutation_rate, double delete_ratio, ProblemInstance *instance)
 {
@@ -1455,5 +1210,62 @@ void CUtilityToolBox::MutacionDeletePorcentual(vector<double> &x_var, double mut
     for (int k = 0; k < a_borrar; ++k) {
         int idx_victima = instalados_moviles[k];
         x_var[idx_victima] = 0;
+    }
+}
+
+void CUtilityToolBox::MutacionSwapPorcentual(vector<double> &x_var, double mutation_rate, double swap_ratio, ProblemInstance *instance)
+{
+    if (Get_Random_Number() > mutation_rate) return;
+
+    int n = x_var.size();
+    const auto &nodos = instance->getNodes();
+    
+    // 1. Identificar activos para mover y huecos para poner
+    std::vector<int> instalados;
+    std::vector<int> vacios;
+
+    for (int i = 0; i < n; ++i) {
+        if (nodos[i]->getFlag() == 1) continue;
+        if (x_var[i] == 1) instalados.push_back(i);
+        else vacios.push_back(i);
+    }
+
+    if (instalados.empty() || vacios.empty()) return;
+
+    // 2. Calcular cantidad
+    int cantidad = std::max(1, (int)(instalados.size() * swap_ratio));
+    
+    // 3. Ejecutar el movimiento (Borrar + Insertar Inteligente)
+    std::random_shuffle(instalados.begin(), instalados.end());
+    std::random_shuffle(vacios.begin(), vacios.end());
+
+    // Borrar
+    for (int k = 0; k < cantidad; ++k) x_var[instalados[k]] = 0;
+
+    // Insertar (Solo si es buen candidato)
+    int puestos = 0;
+    int idx = 0;
+    while (puestos < cantidad && idx < (int)vacios.size()) {
+        int cand = vacios[idx++];
+        if (EsBuenCandidato(cand, instance)) {
+            x_var[cand] = 1;
+            puestos++;
+        }
+    }
+}
+
+void CUtilityToolBox::MutacionHibrida(vector<double> &x_var, double mutation_rate, double prob_delete, double percentage, ProblemInstance *instance)
+{
+    double rnd = Get_Random_Number();
+
+    if (rnd <= prob_delete) 
+    {
+        // CAMINO A: SOLO BORRAR (Reducir costos / Limpiar)
+        MutacionDeletePorcentual(x_var, mutation_rate, percentage, instance);
+    } 
+    else 
+    {
+        // CAMINO B: SWAP (Optimizar cobertura manteniendo costos)
+        MutacionSwapPorcentual(x_var, mutation_rate, percentage, instance);
     }
 }
