@@ -530,166 +530,99 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		p2 = mating_pool[1];
 		mating_pool.clear();
 
-		/* std::cout << "\n=== Reproducción " << s << " ===" << std::endl;
-
-		std::cout << "Padre 1 (ID " << p1 << "): ";
-		for (double val : m_PopulationSOP[p1].m_BestIndividual.x_var)
-		{
-			std::cout << val << " ";
-		}
-		std::cout << std::endl;
-
-		std::cout << "Padre 2 (ID " << p2 << "): ";
-		for (double val : m_PopulationSOP[p2].m_BestIndividual.x_var)
-		{
-			std::cout << val << " ";
-		}
-		std::cout << std::endl; */
+		child.problemInstance = this->problemInstance;
 
 		// 1 CRUZAMIENTO
 		
-		double random_number = UtilityToolBox.Get_Random_Number();
-		if (random_number <= m_CrossoverRate) {
-			//printf("Es con cruzamiento\n");
-			if (m_IsRelocation) {
-				// Variante: RELOCATION (Flexible)
-				UtilityToolBox.CruzamientoUniformeModificado_con_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
-																		 m_PopulationSOP[p2].m_BestIndividual.x_var,
-																		 child.x_var, this->problemInstance);
+		double rand_cross = UtilityToolBox.Get_Random_Number();
+		if (rand_cross <= m_CrossoverRate) {
+			if (m_CrossoverType == 1) {
+				if (m_IsRelocation) {
+					// Variante: RELOCATION (Flexible)
+					UtilityToolBox.CruzamientoUniformeModificado_con_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
+																			m_PopulationSOP[p2].m_BestIndividual.x_var,
+																			child.x_var, this->problemInstance);
+				} else {
+					// Variante LOCATION (Fixed)
+					UtilityToolBox.CruzamientoUniformeModificado_sin_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
+																			m_PopulationSOP[p2].m_BestIndividual.x_var,
+																			child.x_var, this->problemInstance);
+				}
+			} else if (m_CrossoverType == 2) {
+				// Variante: MODIFICADO
+				UtilityToolBox.CruzamientoUniformeInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
+														 	 m_PopulationSOP[p2].m_BestIndividual.x_var,
+														 	 child.x_var, this->problemInstance);
+			} else if (m_CrossoverType == 3) {
+				// Variante: CLÁSICO
+				UtilityToolBox.CruzamientoUniformeSemiInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
+														  m_PopulationSOP[p2].m_BestIndividual.x_var,
+														  child.x_var, this->problemInstance);
+			} 
+		} else {
+			if (UtilityToolBox.Get_Random_Number() < 0.5) {
+				child.x_var = m_PopulationSOP[p1].m_BestIndividual.x_var;
 			} else {
-				// Variante LOCATION (Fixed)
-				UtilityToolBox.CruzamientoUniformeModificado_sin_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
-																		 m_PopulationSOP[p2].m_BestIndividual.x_var,
-																		 child.x_var, this->problemInstance);
+				child.x_var = m_PopulationSOP[p2].m_BestIndividual.x_var;
 			}
-		} else {
-			// Sin cruzamiento: copiar un padre
-            child.x_var = m_PopulationSOP[p1].m_BestIndividual.x_var;
 		}
 
-		child.problemInstance = this->problemInstance;
-
-		int opcion = 4;
-
-		//double progress = (double)s_Fevals_Count / (double)NumberOfFuncEvals;
-		//if (progress > 1.0) progress = 1.0;
-
-		int percentage = 0.1;
-
-		if (opcion == 11) {
-			UtilityToolBox.MutacionBitFlip_1_N(child.x_var, m_MutationRate, this->problemInstance);
-		} else if (opcion == 12){
-			UtilityToolBox.MutacionBitFlip_1_M(child.x_var, m_MutationRate, s_PopulationSize, this->problemInstance);
-		} else if (opcion == 13) { 
-			UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, 0.01, this->problemInstance);
-		} else if (opcion == 2){ 
-			UtilityToolBox.MutacionSwapProbabilistico(child.x_var, m_MutationRate, 0.05, this->problemInstance);
-		} else if (opcion == 31){ 
-			UtilityToolBox.Mutacion_Swap_Porcentual_1_N(child.x_var, m_MutationRate, 0.5, percentage, this->problemInstance);
-		} else if (opcion == 32){ 
-			UtilityToolBox.Mutacion_Swap_Porcentual_1_M(child.x_var, m_MutationRate, 0.5, s_PopulationSize, percentage, this->problemInstance);
-		} else if (opcion == 33){ 
-			UtilityToolBox.Mutacion_Swap_Porcentual_Fijo(child.x_var, m_MutationRate, 0.5, 0.01, percentage, this->problemInstance);
-		} else if (opcion == 4){ 
-			UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, m_MutationRate, 0.5, this->problemInstance);
-		} else if (opcion == 5){ 
-			UtilityToolBox.MutacionSwapPorcentual(child.x_var, m_MutationRate, percentage, this->problemInstance);
-		} else {
-			UtilityToolBox.MutacionDeletePorcentual(child.x_var, m_MutationRate, 0.1, this->problemInstance);
-		}
-
-		/* UtilityToolBox.CruzamientoUniformeModificado(m_PopulationSOP[p1].m_BestIndividual.x_var,
-													 m_PopulationSOP[p2].m_BestIndividual.x_var,
-													 child.x_var); */
-
-		//child.problemInstance = this->problemInstance;
-
-		/* std::cout << "Hijo generado antes de la mutacion:   ";
-		for (double val : child.x_var)
+		switch (m_MutationType)
 		{
-			std::cout << val << " ";
-		}
-		std::cout << std::endl; */
+			case 1:
+				UtilityToolBox.MutacionBitFlip_1_N(child.x_var, m_MutationRate, this->problemInstance);
+				printf("case 1");
+				break;
+			case 2:
+				UtilityToolBox.MutacionBitFlip_1_M(child.x_var, m_MutationRate, s_PopulationSize, this->problemInstance);
+				printf("case 2");
+				break;
+			case 3:
+				UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
+				printf("case 3");
+				break;
+			case 4:
+				UtilityToolBox.MutacionSwapProbabilistico(child.x_var, m_MutationRate, m_MutationPercentage, this->problemInstance);
+				printf("case 4");
+				break;
+			case 5:
+				UtilityToolBox.Mutacion_Swap_Porcentual_1_N(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutationPercentage, this->problemInstance);
+				printf("case 5");
+				break;
+			case 6:
+				UtilityToolBox.Mutacion_Swap_Porcentual_1_M(child.x_var, m_MutationRate, m_Op1MutationProb, s_PopulationSize, m_MutationPercentage, this->problemInstance);
+				printf("case 6");
+				break;
+			case 7:
+				UtilityToolBox.Mutacion_Swap_Porcentual_Fijo(child.x_var, m_MutationRate, m_Op1MutationProb, m_BitFlipProb, m_MutationPercentage, this->problemInstance);
+				printf("case 7");
+				break;
+			case 8:
+				UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
+				printf("case 8");
+				break;
+			case 9:
+				UtilityToolBox.MutacionSwapPorcentual(child.x_var, m_MutationRate, m_MutationPercentage, this->problemInstance);
+				printf("case 9");
+				break;
+			case 10:
+				UtilityToolBox.MutacionDeletePorcentual(child.x_var, m_MutationRate, m_MutationPercentage, this->problemInstance);
+				printf("case 10");
+				break;
+			case 11:
+				UtilityToolBox.MutacionHibrida(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutationPercentage, this->problemInstance);
+				printf("case 11");
+				break;
+			 default:
+                UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
+				printf("default");
+                break;
+			}
 
-		// UtilityToolBox.MutacionModificada(child.x_var, 1.0);
 
-		// --- 2. MUTACIÓN ---
-		/*if (m_IsRelocation) {
-			UtilityToolBox.MutacionModificada_con_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
-		} else {
-			UtilityToolBox.MutacionBitFlip(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
-		}*/
-
-		// --- 2. MUTACIÓN OPTIMIZADA ---
-		// Usamos m_MutationRate como la probabilidad de que ocurra ALGUNA mutación.
-		
-		// Decidimos qué tipo de mutación aplicar.
-		// Usamos m_Op1MutationProb para balancear entre BitFlip (suave) y Porcentual (fuerte).
-		// Si m_Op1Prob es 0.2, significa 20% Porcentual (fuerte) y 80% BitFlip (suave).
-		// Nota: Reutilizamos tu variable m_Op1MutationProb para esto.
-		/*
-		double tipo_mutacion = UtilityToolBox.Get_Random_Number();
-		double progress = (double)s_Fevals_Count / (double)NumberOfFuncEvals;
-		if (progress > 1.0) progress = 1.0;
-		//UtilityToolBox.MutacionAdaptativaFases(child.x_var, 1.0, progress, this->problemInstance);
-
-		
-		// Probabilidad pequeña (ej. 0.2) para la mutación agresiva "Porcentual"
-		if (tipo_mutacion < 0.25) 
-		{
-			// Mutación Fuerte: Mueve un porcentaje de equipos para salir de óptimos locales.
-			// El 0.5 es la probabilidad interna de "Solo Borrar vs Swap".
-			// UtilityToolBox.MutacionIntercambioHeuristico(child.x_var, m_MutationRate, 0.5, this->problemInstance);
-			//UtilityToolBox.MutacionBitFlip_v2(child.x_var, 1.0, 0.1, this->problemInstance);
-			UtilityToolBox.MutacionRefuerzoZonasDebiles(child.x_var, 1.0, 0.0, this->problemInstance);
-		} 
-		else 
-		{
-			// Mutación Suave: Bit Flip estándar (1/N) con filtro inteligente.
-			// El tercer parámetro (0.0) es dummy, ya no se usa.
-			// UtilityToolBox.MutacionBitFlip(child.x_var, 1.0, 0.0, this->problemInstance);
-			//UtilityToolBox.MutacionBitFlip_v2(child.x_var, 1.0, 0.1, this->problemInstance);
-			UtilityToolBox.MutacionAdaptativaFases(child.x_var, 1.0, progress, this->problemInstance);
-		}
-
-		/* std::cout << "Hijo generado despues de la mutacion: ";
-		for (double val : child.x_var)
-		{
-			std::cout << val << " ";
-		}
-		std::cout << std::endl; */
-
-		/*
-		if (UtilityToolBox.Get_Random_Number() <= m_CrossoverRate) {
-            UtilityToolBox.CruzamientoInteligente(
-                m_PopulationSOP[p1].m_BestIndividual.x_var,
-                m_PopulationSOP[p2].m_BestIndividual.x_var,
-                child.x_var, this->problemInstance
-            );
-        } else {
-            child.x_var = m_PopulationSOP[p1].m_BestIndividual.x_var;
-        }
-
-        child.problemInstance = this->problemInstance;
-
-        // 2. MUTACIÓN (HÍBRIDA)
-        // Usamos m_Op1MutationProb (ej. 0.2) para controlar la mezcla
-        // 20% Heurística (Fuerte) | 80% BitFlip (Suave)
-        
-        if (UtilityToolBox.Get_Random_Number() < m_Op1MutationProb) {
-            UtilityToolBox.MutacionIntercambioHeuristico(child.x_var, m_MutationRate, this->problemInstance);
-        } else {
-            UtilityToolBox.MutacionBitFlipInteligente(child.x_var, m_MutationRate, this->problemInstance);
-        } */
 
 		child.Evaluate();
 		s_Fevals_Count++;
-
-		/* std::cout << "hijo f_obj = ";
-		for (double f : child.f_obj) {
-			std::cout << f << " ";
-		}
-		std::cout << std::endl; */
 
 		// this->NormalizeIndividual(child);
 
