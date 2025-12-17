@@ -138,10 +138,10 @@ int main(int argc, char *argv[])
     int decompType = 1;   // 1 por defecto (Tchebycheff)
     int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
-    int mutType = 11;     // Default: Híbrida
+    int mutType = 7;     // Default: Híbrida
     int crossType = 2;    // Default: Inteligente
-    double mutPct = 0.05; // Default: 5% intensidad para operadores porcentuales
-    double bitFlipProb = 0.01; // Default: 1% probabilidad para BitFlip Fijo
+    double mutPct = 0.3; // Default: 5% intensidad para operadores porcentuales
+    double bitFlipProb = 0.1; // Default: 1% probabilidad para BitFlip Fijo
 
 	if (argc < 2) {
         PrintUsage();

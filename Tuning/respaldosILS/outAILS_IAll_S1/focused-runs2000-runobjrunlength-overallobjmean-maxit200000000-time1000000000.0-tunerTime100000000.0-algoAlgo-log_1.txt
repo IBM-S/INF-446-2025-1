@@ -23,194 +23,205 @@ Level
 Starting ILS for level 1, i.e. a limit of N=2000, and cutoff time=1000000000.0.
 Current CPU time = 0, this run goes until 100000000.0 
 ========================================================
-New Incumbent: 0, 100000000 [0, 0]. With state cross=1.0, mut=0.1, neighbor=20, ngen=100, op1=0.5, pop=100
+New Incumbent: 0, 100000000 [0, 0]. With state bitprob=0.01, cross=1.0, crossType=3, mut=0.1, mutPct=0.05, mutType=1, neighbor=20, op1=0.5, pop=100
  Same incumbent, new precision:
-New Incumbent: 0.1, 3.0 [1, 1000000000.0]. With state cross=1.0, mut=0.1, neighbor=20, ngen=100, op1=0.5, pop=100
+New Incumbent: 0.1, 1.0 [1, 1000000000.0]. With state bitprob=0.01, cross=1.0, crossType=3, mut=0.1, mutPct=0.05, mutType=1, neighbor=20, op1=0.5, pop=100
+        -> Worse random: bitprob=0.1 cross=0.9 crossType=1 mut=0.3 mutPct=0.4 mutType=5 neighbor=50 op1=1.0 pop=100 (2.0 [based on 1 runs with cutoff 1000000000.0])
+          -> Take improving step to random bitprob=0.01 cross=0.9 crossType=1 mut=1.0 mutPct=0.1 mutType=3 neighbor=40 op1=0.3 pop=400 (1.0 [based on 1 runs with cutoff 1000000000.0])
+
+          -> Take improving step to random bitprob=0.05 cross=0.9 crossType=3 mut=0.5 mutPct=0.2 mutType=5 neighbor=50 op1=0.9 pop=200 (1.0 [based on 1 runs with cutoff 1000000000.0])
+
 New inc: 0.0
-New Incumbent: 0.2, 0.0 [1, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-          -> Take improving step to random cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0])
+New Incumbent: 0.5, 0.0 [1, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+          -> Take improving step to random bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 1 runs with cutoff 1000000000.0])
 
-        -> Worse random: cross=1.0 mut=0.1 neighbor=20 ngen=750 op1=0.0 pop=500 (1.0 [based on 1 runs with cutoff 1000000000.0])
-        -> Worse random: cross=0.5 mut=1.0 neighbor=30 ngen=100 op1=0.5 pop=300 (2.0 [based on 1 runs with cutoff 1000000000.0])
-        -> Worse random: cross=0.9 mut=0.05 neighbor=30 ngen=200 op1=1.0 pop=500 (1.0 [based on 1 runs with cutoff 1000000000.0])
-          -> Take improving step to random cross=1.0 mut=0.5 neighbor=10 ngen=750 op1=0.2 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0])
+        -> Worse random: bitprob=0.2 cross=0.9 crossType=3 mut=0.05 mutPct=0.2 mutType=7 neighbor=30 op1=0.3 pop=100 (2.0 [based on 1 runs with cutoff 1000000000.0])
+        -> Worse random: bitprob=0.15 cross=0.6 crossType=1 mut=0.5 mutPct=0.3 mutType=10 neighbor=30 op1=0.6 pop=500 (1.0 [based on 1 runs with cutoff 1000000000.0])
+        -> Worse random: bitprob=0.1 cross=0.9 crossType=1 mut=0.5 mutPct=0.4 mutType=2 neighbor=50 op1=0.1 pop=100 (2.0 [based on 1 runs with cutoff 1000000000.0])
+          -> Take improving step to random bitprob=0.2 cross=0.8 crossType=1 mut=0.05 mutPct=0.1 mutType=11 neighbor=30 op1=0.8 pop=100 (0.0 [based on 1 runs with cutoff 1000000000.0])
 
-          -> Take improving step to random cross=0.8 mut=0.3 neighbor=50 ngen=750 op1=0.2 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0])
+          -> Take improving step to random bitprob=0.15 cross=0.6 crossType=3 mut=0.8 mutPct=0.15 mutType=10 neighbor=40 op1=0.6 pop=300 (0.0 [based on 1 runs with cutoff 1000000000.0])
 
-        -> Worse random: cross=0.7 mut=0.5 neighbor=10 ngen=100 op1=0.2 pop=500 (1.0 [based on 1 runs with cutoff 1000000000.0])
-        -> Worse random: cross=0.8 mut=0.1 neighbor=10 ngen=150 op1=0.2 pop=100 (2.0 [based on 1 runs with cutoff 1000000000.0])
-        -> Worse random: cross=1.0 mut=0.8 neighbor=20 ngen=100 op1=0.4 pop=500 (1.0 [based on 1 runs with cutoff 1000000000.0])
-        -> Worse random: cross=0.8 mut=0.5 neighbor=10 ngen=200 op1=1.0 pop=200 (1.0 [based on 1 runs with cutoff 1000000000.0])
-   BLS in iteration 1, start with cross=0.8 mut=0.3 neighbor=50 ngen=750 op1=0.2 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0])
-    Changing ["ngen: 750->500"], evaluating ...
-          -> Take improving step to neighbour cross=0.8 mut=0.3 neighbor=50 ngen=500 op1=0.2 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0]) with flip 1
+          -> Take improving step to random bitprob=0.1 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.9 pop=300 (0.0 [based on 1 runs with cutoff 1000000000.0])
+
+   BLS in iteration 1, start with bitprob=0.1 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.9 pop=300 (0.0 [based on 1 runs with cutoff 1000000000.0])
+    Changing ["op1: 0.9->0.1"], evaluating ...
+          -> Take improving step to neighbour bitprob=0.1 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 1 runs with cutoff 1000000000.0]) with flip 1
 
           
-============= Performing 1 bonus runs of state: cross=0.8 mut=0.3 neighbor=50 ngen=500 op1=0.2 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0]) ============ 
+============= Performing 1 bonus runs of state: bitprob=0.1 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 1 runs with cutoff 1000000000.0]) ============ 
 
 State wants more detail (1+1) than incumbent (1), doing incumbent first:
-cross=0.8 mut=0.3 neighbor=50 ngen=500 op1=0.2 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0])
+bitprob=0.1 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 1 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 1 runs with cutoff 1000000000.0])
  Same incumbent, new precision:
-New Incumbent: 1.3, 0.0 [2, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-          -> After 1 bonus runs: cross=0.8 mut=0.3 neighbor=50 ngen=500 op1=0.2 pop=500 (0.0 [based on 2 runs with cutoff 1000000000.0])
+New Incumbent: 1.3, 0.0 [2, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+          -> After 1 bonus runs: bitprob=0.1 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 2 runs with cutoff 1000000000.0])
 
-    Changing ["ngen: 500->25"], evaluating ...
-        -> worse: (2.0 [based on 1 runs with cutoff 1000000000.0])
-    Changing ["ngen: 500->200"], evaluating ...
-          -> Take improving step to neighbour cross=0.8 mut=0.3 neighbor=50 ngen=200 op1=0.2 pop=500 (0.0 [based on 2 runs with cutoff 1000000000.0]) with flip 2
+    Changing ["bitprob: 0.1->0.05"], evaluating ...
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 2 runs with cutoff 1000000000.0]) with flip 2
 
           
-============= Performing 2 bonus runs of state: cross=0.8 mut=0.3 neighbor=50 ngen=200 op1=0.2 pop=500 (0.0 [based on 2 runs with cutoff 1000000000.0]) ============ 
+============= Performing 1 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 2 runs with cutoff 1000000000.0]) ============ 
 
 State wants more detail (2+1) than incumbent (2), doing incumbent first:
-cross=0.8 mut=0.3 neighbor=50 ngen=200 op1=0.2 pop=500 (0.0 [based on 2 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 2 runs with cutoff 1000000000.0])
+bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 2 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 2 runs with cutoff 1000000000.0])
  Same incumbent, new precision:
-New Incumbent: 1.8000000000000005, 0.0 [3, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-State wants more detail (3+1) than incumbent (3), doing incumbent first:
-cross=0.8 mut=0.3 neighbor=50 ngen=200 op1=0.2 pop=500 (0.3333333333333333 [based on 3 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 3 runs with cutoff 1000000000.0])
- Same incumbent, new precision:
-New Incumbent: 2.0000000000000004, 0.0 [4, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-          -> After 2 bonus runs: cross=0.8 mut=0.3 neighbor=50 ngen=200 op1=0.2 pop=500 (0.25 [based on 4 runs with cutoff 1000000000.0])
+New Incumbent: 1.7000000000000004, 0.0 [3, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+          -> After 1 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 3 runs with cutoff 1000000000.0])
 
-    Changing ["cross: 0.8->0.5"], evaluating ...
-        -> worse: (1.0 [based on 1 runs with cutoff 1000000000.0])
-    Changing ["ngen: 200->1000"], evaluating ...
-          -> Take improving step to neighbour cross=0.8 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 4 runs with cutoff 1000000000.0]) with flip 3
+    Changing ["pop: 300->200"], evaluating ...
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 3 runs with cutoff 1000000000.0]) with flip 3
 
           
-============= Performing 2 bonus runs of state: cross=0.8 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 4 runs with cutoff 1000000000.0]) ============ 
+============= Performing 1 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 3 runs with cutoff 1000000000.0]) ============ 
+
+State wants more detail (3+1) than incumbent (3), doing incumbent first:
+bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 3 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 3 runs with cutoff 1000000000.0])
+ Same incumbent, new precision:
+New Incumbent: 2.2000000000000006, 0.0 [4, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+          -> After 1 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 4 runs with cutoff 1000000000.0])
+
+    Changing ["mutPct: 0.01->0.05"], evaluating ...
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 4 runs with cutoff 1000000000.0]) with flip 4
+
+          
+============= Performing 1 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 4 runs with cutoff 1000000000.0]) ============ 
 
 State wants more detail (4+1) than incumbent (4), doing incumbent first:
-cross=0.8 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 4 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 4 runs with cutoff 1000000000.0])
+bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 4 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 4 runs with cutoff 1000000000.0])
  Same incumbent, new precision:
-New Incumbent: 2.700000000000001, 0.0 [5, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-State wants more detail (5+1) than incumbent (5), doing incumbent first:
-cross=0.8 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 5 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 5 runs with cutoff 1000000000.0])
- Same incumbent, new precision:
-New Incumbent: 2.9000000000000012, 0.0 [6, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-          -> After 2 bonus runs: cross=0.8 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 6 runs with cutoff 1000000000.0])
+New Incumbent: 2.800000000000001, 0.0 [5, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+          -> After 1 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 5 runs with cutoff 1000000000.0])
 
-    Changing ["cross: 0.8->1.0"], evaluating ...
-          -> Take improving step to neighbour cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 6 runs with cutoff 1000000000.0]) with flip 4
-
-          
-============= Performing 1 bonus runs of state: cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 6 runs with cutoff 1000000000.0]) ============ 
-
-State wants more detail (6+1) than incumbent (6), doing incumbent first:
-cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 6 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 6 runs with cutoff 1000000000.0])
- Same incumbent, new precision:
-New Incumbent: 3.700000000000002, 0.0 [7, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-          -> After 1 bonus runs: cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 7 runs with cutoff 1000000000.0])
-
-    Changing ["ngen: 1000->500"], evaluating ...
+    Changing ["mutType: 7->9"], evaluating ...
         -> worse: (1.0 [based on 1 runs with cutoff 1000000000.0])
-    Changing ["op1: 0.2->0.8"], evaluating ...
-          -> Take improving step to neighbour cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.8 pop=500 (0.0 [based on 7 runs with cutoff 1000000000.0]) with flip 5
+    Changing ["mut: 0.05->0.3"], evaluating ...
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 5 runs with cutoff 1000000000.0]) with flip 5
 
           
-============= Performing 2 bonus runs of state: cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.8 pop=500 (0.0 [based on 7 runs with cutoff 1000000000.0]) ============ 
+============= Performing 2 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 5 runs with cutoff 1000000000.0]) ============ 
+
+State wants more detail (5+1) than incumbent (5), doing incumbent first:
+bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 5 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 5 runs with cutoff 1000000000.0])
+ Same incumbent, new precision:
+New Incumbent: 3.600000000000002, 0.0 [6, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+State wants more detail (6+1) than incumbent (6), doing incumbent first:
+bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 6 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 6 runs with cutoff 1000000000.0])
+ Same incumbent, new precision:
+New Incumbent: 3.800000000000002, 0.0 [7, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+          -> After 2 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 7 runs with cutoff 1000000000.0])
+
+    Changing ["mutPct: 0.05->0.2"], evaluating ...
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.2 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 7 runs with cutoff 1000000000.0]) with flip 6
+
+          
+============= Performing 1 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.2 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 7 runs with cutoff 1000000000.0]) ============ 
 
 State wants more detail (7+1) than incumbent (7), doing incumbent first:
-cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.8 pop=500 (0.0 [based on 7 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 7 runs with cutoff 1000000000.0])
+bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.2 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 7 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 7 runs with cutoff 1000000000.0])
  Same incumbent, new precision:
-New Incumbent: 4.699999999999999, 0.0 [8, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-State wants more detail (8+1) than incumbent (8), doing incumbent first:
-cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.8 pop=500 (0.0 [based on 8 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 8 runs with cutoff 1000000000.0])
- Same incumbent, new precision:
-New Incumbent: 4.899999999999999, 0.0 [9, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-          -> After 2 bonus runs: cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.8 pop=500 (0.0 [based on 9 runs with cutoff 1000000000.0])
+New Incumbent: 4.699999999999999, 0.0 [8, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+          -> After 1 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.2 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 8 runs with cutoff 1000000000.0])
 
-    Changing ["op1: 0.8->0.6"], evaluating ...
-          -> Take improving step to neighbour cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.6 pop=500 (0.0 [based on 9 runs with cutoff 1000000000.0]) with flip 6
+    Changing ["mutPct: 0.2->0.4"], evaluating ...
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.4 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 8 runs with cutoff 1000000000.0]) with flip 7
 
           
-============= Performing 1 bonus runs of state: cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.6 pop=500 (0.0 [based on 9 runs with cutoff 1000000000.0]) ============ 
+============= Performing 1 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.4 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 8 runs with cutoff 1000000000.0]) ============ 
+
+State wants more detail (8+1) than incumbent (8), doing incumbent first:
+bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.4 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 8 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 8 runs with cutoff 1000000000.0])
+ Same incumbent, new precision:
+New Incumbent: 5.699999999999996, 0.0 [9, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+          -> After 1 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.4 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 9 runs with cutoff 1000000000.0])
+
+    Changing ["mutPct: 0.4->0.3"], evaluating ...
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 9 runs with cutoff 1000000000.0]) with flip 8
+
+          
+============= Performing 1 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 9 runs with cutoff 1000000000.0]) ============ 
 
 State wants more detail (9+1) than incumbent (9), doing incumbent first:
-cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.6 pop=500 (0.0 [based on 9 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 9 runs with cutoff 1000000000.0])
+bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 9 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 9 runs with cutoff 1000000000.0])
  Same incumbent, new precision:
-New Incumbent: 5.999999999999995, 0.0 [10, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-          -> After 1 bonus runs: cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.6 pop=500 (0.0 [based on 10 runs with cutoff 1000000000.0])
+New Incumbent: 6.799999999999992, 0.0 [10, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+          -> After 1 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 10 runs with cutoff 1000000000.0])
 
-    Changing ["neighbor: 50->10"], evaluating ...
-          -> Take improving step to neighbour cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=500 (0.0 [based on 10 runs with cutoff 1000000000.0]) with flip 7
+    Changing ["bitprob: 0.05->0.1"], evaluating ...
+          -> Take improving step to neighbour bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 10 runs with cutoff 1000000000.0]) with flip 9
 
           
-============= Performing 1 bonus runs of state: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=500 (0.0 [based on 10 runs with cutoff 1000000000.0]) ============ 
+============= Performing 1 bonus runs of state: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 10 runs with cutoff 1000000000.0]) ============ 
 
 State wants more detail (10+1) than incumbent (10), doing incumbent first:
-cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=500 (0.0 [based on 10 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 10 runs with cutoff 1000000000.0])
+bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 10 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 10 runs with cutoff 1000000000.0])
  Same incumbent, new precision:
-New Incumbent: 7.19999999999999, 0.0 [11, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-          -> After 1 bonus runs: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=500 (0.0 [based on 11 runs with cutoff 1000000000.0])
+New Incumbent: 7.999999999999988, 0.0 [11, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+          -> After 1 bonus runs: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 11 runs with cutoff 1000000000.0])
 
-    Changing ["pop: 500->200"], evaluating ...
-          -> Take improving step to neighbour cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=200 (0.0 [based on 11 runs with cutoff 1000000000.0]) with flip 8
+    Changing ["pop: 200->300"], evaluating ...
+          -> Take improving step to neighbour bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 11 runs with cutoff 1000000000.0]) with flip 10
 
           
-============= Performing 1 bonus runs of state: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=200 (0.0 [based on 11 runs with cutoff 1000000000.0]) ============ 
+============= Performing 1 bonus runs of state: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 11 runs with cutoff 1000000000.0]) ============ 
 
 State wants more detail (11+1) than incumbent (11), doing incumbent first:
-cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=200 (0.0 [based on 11 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 11 runs with cutoff 1000000000.0])
+bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 11 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 11 runs with cutoff 1000000000.0])
  Same incumbent, new precision:
-New Incumbent: 8.499999999999986, 0.0 [12, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-          -> After 1 bonus runs: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0])
+New Incumbent: 9.299999999999983, 0.0 [12, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+          -> After 1 bonus runs: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 12 runs with cutoff 1000000000.0])
 
-    Changing ["op1: 0.6->0.8"], evaluating ...
-        -> worse: (0.5 [based on 2 runs with cutoff 1000000000.0])
-    Changing ["op1: 0.6->0.2"], evaluating ...
-          -> Take improving step to neighbour cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0]) with flip 9
-
-          
-============= Performing 2 bonus runs of state: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0]) ============ 
-
+    Changing ["op1: 0.1->1.0"], evaluating ...
+        -> worse: (1.6666666666666667 [based on 3 runs with cutoff 1000000000.0])
+    Changing ["bitprob: 0.1->0.2"], evaluating ...
 ParamILS has reached the specified maximum number of 100 function evaluations => stopping the search now.
-          -> After 2 bonus runs: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0])
-
+ParamILS has reached the specified maximum number of 100 function evaluations => stopping the search now.
+        -> worse: (0.0 [based on 3 runs with cutoff 1000000000.0])
 ParamILS has reached the specified maximum number of 100 function evaluations => stopping the search now.
           
-============= Performing 0 bonus runs of state: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0]) ============ 
+============= Performing 2 bonus runs of state: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 12 runs with cutoff 1000000000.0]) ============ 
 
-          -> After 0 bonus runs for LM: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0])
+ParamILS has reached the specified maximum number of 100 function evaluations => stopping the search now.
+          -> After 2 bonus runs for LM: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 12 runs with cutoff 1000000000.0])
 
-   LM for iteration 1: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0])
+   LM for iteration 1: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 12 runs with cutoff 1000000000.0])
 
 ========== DETAILED RESULTS (iteration 1): ==========
 ================================================
 
 ==================================================================
-Best parameter configuration found so far (end of iteration 1): cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
+Best parameter configuration found so far (end of iteration 1): bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
 ==================================================================
 Training quality of this incumbent parameter configuration: 0.0, based on 12 runs with cutoff 1000000000.0
 ==================================================================
 
 Comparing LM against incumbent:
-cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 12 runs with cutoff 1000000000.0])
+bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 12 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0])
 LM better, change incumbent
-New Incumbent: 9.99999999999998, 0.0 [12, 1000000000.0]. With state cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+New Incumbent: 9.99999999999998, 0.0 [12, 1000000000.0]. With state bitprob=0.1, cross=0.9, crossType=2, mut=0.3, mutPct=0.3, mutType=7, neighbor=10, op1=0.1, pop=300
 ParamILS has reached the specified maximum number of 100 function evaluations => stopping the search now.
 Final solution for depth 1 with limit N=2000, and cutoff time=1000000000.0.
-New Incumbent: 9.99999999999998, 0.0 [12, 1000000000.0]. With state cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+New Incumbent: 9.99999999999998, 0.0 [12, 1000000000.0]. With state bitprob=0.1, cross=0.9, crossType=2, mut=0.3, mutPct=0.3, mutType=7, neighbor=10, op1=0.1, pop=300
 
 ==================================================================
 ParamILS is finished.
 ==================================================================
 
-Final best parameter configuration found: cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+Final best parameter configuration found: bitprob=0.1, cross=0.9, crossType=2, mut=0.3, mutPct=0.3, mutType=7, neighbor=10, op1=0.1, pop=300
 ==================================================================
-Active parameters: cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+Active parameters: bitprob=0.1, cross=0.9, crossType=2, mut=0.3, mutPct=0.3, mutType=7, neighbor=10, op1=0.1, pop=300
 
 ==================================================================
 Training quality of this final best found parameter configuration: 0.0, based on 12 runs with cutoff 1000000000.0
@@ -223,9 +234,9 @@ Computing validation result on independent data -- 0 runs with cutoff time 10000
 Combined result: 1000000000000000000
 
 ================================================================
-Final best parameter configuration: cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+Final best parameter configuration: bitprob=0.1, cross=0.9, crossType=2, mut=0.3, mutPct=0.3, mutType=7, neighbor=10, op1=0.1, pop=300
 ==================================================================
-Active parameters: cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+Active parameters: bitprob=0.1, cross=0.9, crossType=2, mut=0.3, mutPct=0.3, mutType=7, neighbor=10, op1=0.1, pop=300
 
 ================================================================
 Training quality of this final best found parameter configuration: 0.0, based on 12 runs with cutoff 1000000000.0

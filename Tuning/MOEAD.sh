@@ -7,7 +7,7 @@ dirhv="../material/hv-1.3-src"
 dirOutput="../datos/res/raw_moead"
 
 # Máximo de evaluaciones totales
-evaluaciones=100000
+evaluaciones=200000
 
 # Inicialización de variables
 pop=0
@@ -67,7 +67,7 @@ done
 
 # Calcular mi, número de objetivos y parámetros
 no=2 # número de objetivos
-params="-neval ${evaluaciones} -pop ${pop} -neighbor ${neighbor} -mut ${mut} -cross ${cross} -op1 ${op1} -mutType ${mutType} -crossType ${crossType} -mutPct ${percentage} -bitprob ${bitflipprob}"
+params="-neval ${evaluaciones} -pop ${pop} -neighbor ${neighbor} -mut ${mut} -cross ${cross} -op1 ${op1} -mutType ${mutType} -crossType ${crossType} -mutPct ${mutPct} -bitprob ${bitprob}"
 echo "Parámetros: ${params}"
 
 screen="salida_consola.txt"

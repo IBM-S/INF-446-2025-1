@@ -1,9 +1,9 @@
 max wall time = 8640000
 /home/ignacio/TT2/Tuning/All.params
-6 parameters in total
+9 parameters in total
 0 parameters are conditional.
 0 parameter combinations are forbidden.
-num_params = 6, num_combos=49000
+num_params = 9, num_combos=12127500
 seed: 2468
 Run 2
 Level 
@@ -11,693 +11,728 @@ Level
 Starting ILS for level 1, i.e. a limit of N=2000, and cutoff time=1000000000.0.
 Current CPU time = 0, this run goes until 100000000.0 
 ========================================================
-New Incumbent: 0, 100000000 [0, 0]. With state cross=1.0, mut=0.1, neighbor=20, ngen=100, op1=0.5, pop=100
+New Incumbent: 0, 100000000 [0, 0]. With state bitprob=0.01, cross=1.0, crossType=3, mut=0.1, mutPct=0.05, mutType=1, neighbor=20, op1=0.5, pop=100
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.1 -neighbor 20 -ngen 100 -op1 0.5 -pop 100 > /tmp/tmp-2025-12-1122:19:27-0.3741941452026367
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.1 -neighbor 20 -ngen 100 -op1 0.5 -pop 100 > /tmp/tmp-2025-12-1122:19:27-0.3741941452026367
-Result: SAT, 0, 3.52, 0, 1974203791
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.01 -cross 1.0 -crossType 3 -mut 0.1 -mutPct 0.05 -mutType 1 -neighbor 20 -op1 0.5 -pop 100 > /tmp/tmp-2025-12-1621:00:12-0.2722797393798828
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.01 -cross 1.0 -crossType 3 -mut 0.1 -mutPct 0.05 -mutType 1 -neighbor 20 -op1 0.5 -pop 100 > /tmp/tmp-2025-12-1621:00:12-0.2722797393798828
+Result: SAT, 0, 1.57, 0, 76593332
  Same incumbent, new precision:
-New Incumbent: 0.1, 3.0 [1, 1000000000.0]. With state cross=1.0, mut=0.1, neighbor=20, ngen=100, op1=0.5, pop=100
-now 2025-12-11 22:19:28 -0300; start 2025-12-11 22:19:27 -0300; time-start 0.588204807; maxWall 8640000.0
+New Incumbent: 0.1, 1.0 [1, 1000000000.0]. With state bitprob=0.01, cross=1.0, crossType=3, mut=0.1, mutPct=0.05, mutType=1, neighbor=20, op1=0.5, pop=100
+now 2025-12-16 21:00:17 -0300; start 2025-12-16 21:00:12 -0300; time-start 5.561789894; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:19:28-0.18412375450134277
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:19:28-0.18412375450134277
-Result: SAT, 0, 0.21, 0, 1974203791
-New inc: 0.0
-New Incumbent: 0.2, 0.0 [1, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-          -> Take improving step to random cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0])
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 1 -mut 0.3 -mutPct 0.4 -mutType 5 -neighbor 50 -op1 1.0 -pop 100 > /tmp/tmp-2025-12-1621:00:17-0.5873925685882568
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 1 -mut 0.3 -mutPct 0.4 -mutType 5 -neighbor 50 -op1 1.0 -pop 100 > /tmp/tmp-2025-12-1621:00:17-0.5873925685882568
+Result: SAT, 0, 2.36, 0, 76593332
+        -> Worse random: bitprob=0.1 cross=0.9 crossType=1 mut=0.3 mutPct=0.4 mutType=5 neighbor=50 op1=1.0 pop=100 (2.0 [based on 1 runs with cutoff 1000000000.0])
+now 2025-12-16 21:00:24 -0300; start 2025-12-16 21:00:12 -0300; time-start 12.234905244; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.01 -cross 0.9 -crossType 1 -mut 1.0 -mutPct 0.1 -mutType 3 -neighbor 40 -op1 0.3 -pop 400 > /tmp/tmp-2025-12-1621:00:24-0.24756598472595215
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.01 -cross 0.9 -crossType 1 -mut 1.0 -mutPct 0.1 -mutType 3 -neighbor 40 -op1 0.3 -pop 400 > /tmp/tmp-2025-12-1621:00:24-0.24756598472595215
+Result: SAT, 0, 1.65, 0, 76593332
+          -> Take improving step to random bitprob=0.01 cross=0.9 crossType=1 mut=1.0 mutPct=0.1 mutType=3 neighbor=40 op1=0.3 pop=400 (1.0 [based on 1 runs with cutoff 1000000000.0])
 
-now 2025-12-11 22:19:41 -0300; start 2025-12-11 22:19:27 -0300; time-start 13.831249861; maxWall 8640000.0
+now 2025-12-16 21:00:34 -0300; start 2025-12-16 21:00:12 -0300; time-start 22.295346863; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.1 -neighbor 20 -ngen 750 -op1 0.0 -pop 500 > /tmp/tmp-2025-12-1122:19:41-0.9209470748901367
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.1 -neighbor 20 -ngen 750 -op1 0.0 -pop 500 > /tmp/tmp-2025-12-1122:19:41-0.9209470748901367
-Result: SAT, 0, 1.02, 0, 1974203791
-        -> Worse random: cross=1.0 mut=0.1 neighbor=20 ngen=750 op1=0.0 pop=500 (1.0 [based on 1 runs with cutoff 1000000000.0])
-now 2025-12-11 22:20:00 -0300; start 2025-12-11 22:19:27 -0300; time-start 32.145234436; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.5 -mut 1.0 -neighbor 30 -ngen 100 -op1 0.5 -pop 300 > /tmp/tmp-2025-12-1122:20:00-0.29645729064941406
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.5 -mut 1.0 -neighbor 30 -ngen 100 -op1 0.5 -pop 300 > /tmp/tmp-2025-12-1122:20:00-0.29645729064941406
-Result: SAT, 0, 2.29, 0, 1974203791
-        -> Worse random: cross=0.5 mut=1.0 neighbor=30 ngen=100 op1=0.5 pop=300 (2.0 [based on 1 runs with cutoff 1000000000.0])
-now 2025-12-11 22:20:02 -0300; start 2025-12-11 22:19:27 -0300; time-start 34.79226569; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.9 -mut 0.05 -neighbor 30 -ngen 200 -op1 1.0 -pop 500 > /tmp/tmp-2025-12-1122:20:02-0.5742964744567871
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.9 -mut 0.05 -neighbor 30 -ngen 200 -op1 1.0 -pop 500 > /tmp/tmp-2025-12-1122:20:02-0.5742964744567871
-Result: SAT, 0, 1.81, 0, 1974203791
-        -> Worse random: cross=0.9 mut=0.05 neighbor=30 ngen=200 op1=1.0 pop=500 (1.0 [based on 1 runs with cutoff 1000000000.0])
-now 2025-12-11 22:20:08 -0300; start 2025-12-11 22:19:27 -0300; time-start 40.378758864; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.5 -neighbor 10 -ngen 750 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:20:08-0.9406051635742188
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.5 -neighbor 10 -ngen 750 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:20:08-0.9406051635742188
-Result: SAT, 0, 0.06, 0, 1974203791
-          -> Take improving step to random cross=1.0 mut=0.5 neighbor=10 ngen=750 op1=0.2 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0])
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 3 -mut 0.5 -mutPct 0.2 -mutType 5 -neighbor 50 -op1 0.9 -pop 200 > /tmp/tmp-2025-12-1621:00:34-0.5870425701141357
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 3 -mut 0.5 -mutPct 0.2 -mutType 5 -neighbor 50 -op1 0.9 -pop 200 > /tmp/tmp-2025-12-1621:00:34-0.5870425701141357
+Result: SAT, 0, 1.01, 0, 76593332
+          -> Take improving step to random bitprob=0.05 cross=0.9 crossType=3 mut=0.5 mutPct=0.2 mutType=5 neighbor=50 op1=0.9 pop=200 (1.0 [based on 1 runs with cutoff 1000000000.0])
 
-now 2025-12-11 22:20:34 -0300; start 2025-12-11 22:19:27 -0300; time-start 66.597659203; maxWall 8640000.0
+now 2025-12-16 21:00:43 -0300; start 2025-12-16 21:00:12 -0300; time-start 31.15800112; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 750 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:20:34-0.44833850860595703
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 750 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:20:34-0.44833850860595703
-Result: SAT, 0, 0.38, 0, 1974203791
-          -> Take improving step to random cross=0.8 mut=0.3 neighbor=50 ngen=750 op1=0.2 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0])
-
-now 2025-12-11 22:21:00 -0300; start 2025-12-11 22:19:27 -0300; time-start 92.691695807; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.7 -mut 0.5 -neighbor 10 -ngen 100 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:21:00-0.45260000228881836
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.7 -mut 0.5 -neighbor 10 -ngen 100 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:21:00-0.45260000228881836
-Result: SAT, 0, 1.06, 0, 1974203791
-        -> Worse random: cross=0.7 mut=0.5 neighbor=10 ngen=100 op1=0.2 pop=500 (1.0 [based on 1 runs with cutoff 1000000000.0])
-now 2025-12-11 22:21:04 -0300; start 2025-12-11 22:19:27 -0300; time-start 96.106451756; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.1 -neighbor 10 -ngen 150 -op1 0.2 -pop 100 > /tmp/tmp-2025-12-1122:21:04-0.49092864990234375
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.1 -neighbor 10 -ngen 150 -op1 0.2 -pop 100 > /tmp/tmp-2025-12-1122:21:04-0.49092864990234375
-Result: SAT, 0, 2.47, 0, 1974203791
-        -> Worse random: cross=0.8 mut=0.1 neighbor=10 ngen=150 op1=0.2 pop=100 (2.0 [based on 1 runs with cutoff 1000000000.0])
-now 2025-12-11 22:21:05 -0300; start 2025-12-11 22:19:27 -0300; time-start 97.074016868; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.8 -neighbor 20 -ngen 100 -op1 0.4 -pop 500 > /tmp/tmp-2025-12-1122:21:05-0.65789794921875
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.8 -neighbor 20 -ngen 100 -op1 0.4 -pop 500 > /tmp/tmp-2025-12-1122:21:05-0.65789794921875
-Result: SAT, 0, 1.00, 0, 1974203791
-        -> Worse random: cross=1.0 mut=0.8 neighbor=20 ngen=100 op1=0.4 pop=500 (1.0 [based on 1 runs with cutoff 1000000000.0])
-now 2025-12-11 22:21:09 -0300; start 2025-12-11 22:19:27 -0300; time-start 101.645098484; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 200 -op1 1.0 -pop 200 > /tmp/tmp-2025-12-1122:21:09-0.8215007781982422
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 200 -op1 1.0 -pop 200 > /tmp/tmp-2025-12-1122:21:09-0.8215007781982422
-Result: SAT, 0, 1.82, 0, 1974203791
-        -> Worse random: cross=0.8 mut=0.5 neighbor=10 ngen=200 op1=1.0 pop=200 (1.0 [based on 1 runs with cutoff 1000000000.0])
-   BLS in iteration 1, start with cross=0.8 mut=0.3 neighbor=50 ngen=750 op1=0.2 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0])
-now 2025-12-11 22:21:12 -0300; start 2025-12-11 22:19:27 -0300; time-start 104.285088116; maxWall 8640000.0
-now 2025-12-11 22:21:12 -0300; start 2025-12-11 22:19:27 -0300; time-start 104.289862651; maxWall 8640000.0
-    Changing ["ngen: 750->500"], evaluating ...
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 500 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:21:12-0.7686595916748047
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 500 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:21:12-0.7686595916748047
-Result: SAT, 0, 0.62, 0, 1974203791
-          -> Take improving step to neighbour cross=0.8 mut=0.3 neighbor=50 ngen=500 op1=0.2 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0]) with flip 1
-
-          
-============= Performing 1 bonus runs of state: cross=0.8 mut=0.3 neighbor=50 ngen=500 op1=0.2 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0]) ============ 
-
-now 2025-12-11 22:21:24 -0300; start 2025-12-11 22:19:27 -0300; time-start 116.387864044; maxWall 8640000.0
-State wants more detail (1+1) than incumbent (1), doing incumbent first:
-cross=0.8 mut=0.3 neighbor=50 ngen=500 op1=0.2 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 1 runs with cutoff 1000000000.0])
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:21:24-0.6483368873596191
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:21:24-0.6483368873596191
-Result: SAT, 0, 0.29, 0, 599162946
- Same incumbent, new precision:
-New Incumbent: 1.3, 0.0 [2, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 500 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:21:40-0.610558032989502
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 500 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:21:40-0.610558032989502
-Result: SAT, 0, 0.49, 0, 599162946
-          -> After 1 bonus runs: cross=0.8 mut=0.3 neighbor=50 ngen=500 op1=0.2 pop=500 (0.0 [based on 2 runs with cutoff 1000000000.0])
-
-now 2025-12-11 22:21:52 -0300; start 2025-12-11 22:19:27 -0300; time-start 144.410379991; maxWall 8640000.0
-now 2025-12-11 22:21:52 -0300; start 2025-12-11 22:19:27 -0300; time-start 144.410889635; maxWall 8640000.0
-    Changing ["ngen: 500->25"], evaluating ...
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 25 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:21:52-0.1281275749206543
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 25 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:21:52-0.1281275749206543
-Result: SAT, 0, 2.42, 0, 1974203791
-        -> worse: (2.0 [based on 1 runs with cutoff 1000000000.0])
-now 2025-12-11 22:21:53 -0300; start 2025-12-11 22:19:27 -0300; time-start 145.302428278; maxWall 8640000.0
-    Changing ["ngen: 500->200"], evaluating ...
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 200 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:21:53-0.12475347518920898
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 200 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:21:53-0.12475347518920898
-Result: SAT, 0, 0.96, 0, 1974203791
-now 2025-12-11 22:21:58 -0300; start 2025-12-11 22:19:27 -0300; time-start 150.21166488; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 200 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:21:58-0.6266384124755859
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 200 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:21:58-0.6266384124755859
-Result: SAT, 0, 0.86, 0, 599162946
-          -> Take improving step to neighbour cross=0.8 mut=0.3 neighbor=50 ngen=200 op1=0.2 pop=500 (0.0 [based on 2 runs with cutoff 1000000000.0]) with flip 2
-
-          
-============= Performing 2 bonus runs of state: cross=0.8 mut=0.3 neighbor=50 ngen=200 op1=0.2 pop=500 (0.0 [based on 2 runs with cutoff 1000000000.0]) ============ 
-
-now 2025-12-11 22:22:03 -0300; start 2025-12-11 22:19:27 -0300; time-start 155.595085825; maxWall 8640000.0
-State wants more detail (2+1) than incumbent (2), doing incumbent first:
-cross=0.8 mut=0.3 neighbor=50 ngen=200 op1=0.2 pop=500 (0.0 [based on 2 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 2 runs with cutoff 1000000000.0])
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:22:03-0.4306809902191162
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:22:03-0.4306809902191162
-Result: SAT, 0, 0.24, 0, 76593332
- Same incumbent, new precision:
-New Incumbent: 1.8000000000000005, 0.0 [3, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 200 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:22:15-0.4420527219772339
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 200 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:22:15-0.4420527219772339
-Result: SAT, 0, 1.09, 0, 76593332
-now 2025-12-11 22:22:21 -0300; start 2025-12-11 22:19:27 -0300; time-start 173.877743351; maxWall 8640000.0
-State wants more detail (3+1) than incumbent (3), doing incumbent first:
-cross=0.8 mut=0.3 neighbor=50 ngen=200 op1=0.2 pop=500 (0.3333333333333333 [based on 3 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 3 runs with cutoff 1000000000.0])
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:22:21-0.8369691371917725
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:22:21-0.8369691371917725
-Result: SAT, 0, -0.03, 0, 521355292
- Same incumbent, new precision:
-New Incumbent: 2.0000000000000004, 0.0 [4, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 200 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:22:35-0.44956159591674805
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 200 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:22:35-0.44956159591674805
-Result: SAT, 0, 0.56, 0, 521355292
-          -> After 2 bonus runs: cross=0.8 mut=0.3 neighbor=50 ngen=200 op1=0.2 pop=500 (0.25 [based on 4 runs with cutoff 1000000000.0])
-
-now 2025-12-11 22:22:41 -0300; start 2025-12-11 22:19:27 -0300; time-start 193.940173333; maxWall 8640000.0
-now 2025-12-11 22:22:41 -0300; start 2025-12-11 22:19:27 -0300; time-start 193.940289005; maxWall 8640000.0
-    Changing ["cross: 0.8->0.5"], evaluating ...
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.5 -mut 0.3 -neighbor 50 -ngen 200 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:22:41-0.27083027362823486
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.5 -mut 0.3 -neighbor 50 -ngen 200 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:22:41-0.27083027362823486
-Result: SAT, 0, 1.46, 0, 1974203791
-        -> worse: (1.0 [based on 1 runs with cutoff 1000000000.0])
-now 2025-12-11 22:22:47 -0300; start 2025-12-11 22:19:27 -0300; time-start 199.260002023; maxWall 8640000.0
-    Changing ["ngen: 200->1000"], evaluating ...
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:22:47-0.07202625274658203
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:22:47-0.07202625274658203
-Result: SAT, 0, 0.36, 0, 1974203791
-now 2025-12-11 22:23:17 -0300; start 2025-12-11 22:19:27 -0300; time-start 229.629200049; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:23:17-0.9107019901275635
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:23:17-0.9107019901275635
-Result: SAT, 0, 0.39, 0, 599162946
-now 2025-12-11 22:23:46 -0300; start 2025-12-11 22:19:27 -0300; time-start 258.850578753; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:23:46-0.038623809814453125
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:23:46-0.038623809814453125
-Result: SAT, 0, 0.22, 0, 76593332
-now 2025-12-11 22:24:10 -0300; start 2025-12-11 22:19:27 -0300; time-start 282.7389946; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:24:10-0.9960315227508545
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:24:10-0.9960315227508545
-Result: SAT, 0, 0.25, 0, 521355292
-          -> Take improving step to neighbour cross=0.8 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 4 runs with cutoff 1000000000.0]) with flip 3
-
-          
-============= Performing 2 bonus runs of state: cross=0.8 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 4 runs with cutoff 1000000000.0]) ============ 
-
-now 2025-12-11 22:24:46 -0300; start 2025-12-11 22:19:27 -0300; time-start 318.434566556; maxWall 8640000.0
-State wants more detail (4+1) than incumbent (4), doing incumbent first:
-cross=0.8 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 4 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 4 runs with cutoff 1000000000.0])
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:24:46-0.9290127754211426
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:24:46-0.9290127754211426
-Result: SAT, 0, 0.18, 0, 2070231575
- Same incumbent, new precision:
-New Incumbent: 2.700000000000001, 0.0 [5, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:25:04-0.9915329217910767
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:25:04-0.9915329217910767
-Result: SAT, 0, 0.56, 0, 2070231575
-now 2025-12-11 22:25:31 -0300; start 2025-12-11 22:19:27 -0300; time-start 363.299455084; maxWall 8640000.0
-State wants more detail (5+1) than incumbent (5), doing incumbent first:
-cross=0.8 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 5 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 5 runs with cutoff 1000000000.0])
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:25:31-0.08571004867553711
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:25:31-0.08571004867553711
-Result: SAT, 0, 0.07, 0, 384285839
- Same incumbent, new precision:
-New Incumbent: 2.9000000000000012, 0.0 [6, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:25:46-0.5280036926269531
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 0.8 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:25:46-0.5280036926269531
-Result: SAT, 0, 0.32, 0, 384285839
-          -> After 2 bonus runs: cross=0.8 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 6 runs with cutoff 1000000000.0])
-
-now 2025-12-11 22:26:16 -0300; start 2025-12-11 22:19:27 -0300; time-start 408.890679858; maxWall 8640000.0
-now 2025-12-11 22:26:16 -0300; start 2025-12-11 22:19:27 -0300; time-start 408.891692754; maxWall 8640000.0
-    Changing ["cross: 0.8->1.0"], evaluating ...
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:26:16-0.9925575256347656
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:26:16-0.9925575256347656
-Result: SAT, 0, 0.72, 0, 1974203791
-now 2025-12-11 22:26:42 -0300; start 2025-12-11 22:19:27 -0300; time-start 434.162911911; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:26:42-0.9095439910888672
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:26:42-0.9095439910888672
-Result: SAT, 0, 0.46, 0, 599162946
-now 2025-12-11 22:27:08 -0300; start 2025-12-11 22:19:27 -0300; time-start 460.351022638; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:27:08-0.9750947952270508
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:27:08-0.9750947952270508
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:00:43-0.7492551803588867
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:00:43-0.7492551803588867
 Result: SAT, 0, 0.38, 0, 76593332
-now 2025-12-11 22:27:34 -0300; start 2025-12-11 22:19:27 -0300; time-start 486.659363973; maxWall 8640000.0
+New inc: 0.0
+New Incumbent: 0.5, 0.0 [1, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+          -> Take improving step to random bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 1 runs with cutoff 1000000000.0])
+
+now 2025-12-16 21:00:50 -0300; start 2025-12-16 21:00:12 -0300; time-start 38.316529311; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:27:34-0.37822794914245605
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:27:34-0.37822794914245605
-Result: SAT, 0, 0.14, 0, 521355292
-now 2025-12-11 22:27:59 -0300; start 2025-12-11 22:19:27 -0300; time-start 511.448956652; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.2 -cross 0.9 -crossType 3 -mut 0.05 -mutPct 0.2 -mutType 7 -neighbor 30 -op1 0.3 -pop 100 > /tmp/tmp-2025-12-1621:00:50-0.8811345100402832
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.2 -cross 0.9 -crossType 3 -mut 0.05 -mutPct 0.2 -mutType 7 -neighbor 30 -op1 0.3 -pop 100 > /tmp/tmp-2025-12-1621:00:50-0.8811345100402832
+Result: SAT, 0, 2.48, 0, 76593332
+        -> Worse random: bitprob=0.2 cross=0.9 crossType=3 mut=0.05 mutPct=0.2 mutType=7 neighbor=30 op1=0.3 pop=100 (2.0 [based on 1 runs with cutoff 1000000000.0])
+now 2025-12-16 21:00:56 -0300; start 2025-12-16 21:00:12 -0300; time-start 44.589203675; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:27:59-0.3575911521911621
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:27:59-0.3575911521911621
-Result: SAT, 0, 0.49, 0, 2070231575
-now 2025-12-11 22:28:26 -0300; start 2025-12-11 22:19:27 -0300; time-start 538.290489253; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.15 -cross 0.6 -crossType 1 -mut 0.5 -mutPct 0.3 -mutType 10 -neighbor 30 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1621:00:56-0.807816743850708
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.15 -cross 0.6 -crossType 1 -mut 0.5 -mutPct 0.3 -mutType 10 -neighbor 30 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1621:00:56-0.807816743850708
+Result: SAT, 0, 1.45, 0, 76593332
+        -> Worse random: bitprob=0.15 cross=0.6 crossType=1 mut=0.5 mutPct=0.3 mutType=10 neighbor=30 op1=0.6 pop=500 (1.0 [based on 1 runs with cutoff 1000000000.0])
+now 2025-12-16 21:01:03 -0300; start 2025-12-16 21:00:12 -0300; time-start 51.063881502; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:28:26-0.2370600700378418
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:28:26-0.2370600700378418
-Result: SAT, 0, 0.62, 0, 384285839
-          -> Take improving step to neighbour cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 6 runs with cutoff 1000000000.0]) with flip 4
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 1 -mut 0.5 -mutPct 0.4 -mutType 2 -neighbor 50 -op1 0.1 -pop 100 > /tmp/tmp-2025-12-1621:01:03-0.8245182037353516
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 1 -mut 0.5 -mutPct 0.4 -mutType 2 -neighbor 50 -op1 0.1 -pop 100 > /tmp/tmp-2025-12-1621:01:03-0.8245182037353516
+Result: SAT, 0, 2.78, 0, 76593332
+        -> Worse random: bitprob=0.1 cross=0.9 crossType=1 mut=0.5 mutPct=0.4 mutType=2 neighbor=50 op1=0.1 pop=100 (2.0 [based on 1 runs with cutoff 1000000000.0])
+now 2025-12-16 21:01:12 -0300; start 2025-12-16 21:00:12 -0300; time-start 60.238646687; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.2 -cross 0.8 -crossType 1 -mut 0.05 -mutPct 0.1 -mutType 11 -neighbor 30 -op1 0.8 -pop 100 > /tmp/tmp-2025-12-1621:01:12-0.7162339687347412
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.2 -cross 0.8 -crossType 1 -mut 0.05 -mutPct 0.1 -mutType 11 -neighbor 30 -op1 0.8 -pop 100 > /tmp/tmp-2025-12-1621:01:12-0.7162339687347412
+Result: SAT, 0, 0.92, 0, 76593332
+          -> Take improving step to random bitprob=0.2 cross=0.8 crossType=1 mut=0.05 mutPct=0.1 mutType=11 neighbor=30 op1=0.8 pop=100 (0.0 [based on 1 runs with cutoff 1000000000.0])
+
+now 2025-12-16 21:01:18 -0300; start 2025-12-16 21:00:12 -0300; time-start 66.572228756; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.15 -cross 0.6 -crossType 3 -mut 0.8 -mutPct 0.15 -mutType 10 -neighbor 40 -op1 0.6 -pop 300 > /tmp/tmp-2025-12-1621:01:18-0.9633727073669434
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.15 -cross 0.6 -crossType 3 -mut 0.8 -mutPct 0.15 -mutType 10 -neighbor 40 -op1 0.6 -pop 300 > /tmp/tmp-2025-12-1621:01:18-0.9633727073669434
+Result: SAT, 0, 0.15, 0, 76593332
+          -> Take improving step to random bitprob=0.15 cross=0.6 crossType=3 mut=0.8 mutPct=0.15 mutType=10 neighbor=40 op1=0.6 pop=300 (0.0 [based on 1 runs with cutoff 1000000000.0])
+
+now 2025-12-16 21:01:23 -0300; start 2025-12-16 21:00:12 -0300; time-start 71.164744983; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.9 -pop 300 > /tmp/tmp-2025-12-1621:01:23-0.29467153549194336
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.9 -pop 300 > /tmp/tmp-2025-12-1621:01:23-0.29467153549194336
+Result: SAT, 0, 0.49, 0, 76593332
+          -> Take improving step to random bitprob=0.1 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.9 pop=300 (0.0 [based on 1 runs with cutoff 1000000000.0])
+
+   BLS in iteration 1, start with bitprob=0.1 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.9 pop=300 (0.0 [based on 1 runs with cutoff 1000000000.0])
+now 2025-12-16 21:01:27 -0300; start 2025-12-16 21:00:12 -0300; time-start 75.740595831; maxWall 8640000.0
+now 2025-12-16 21:01:27 -0300; start 2025-12-16 21:00:12 -0300; time-start 75.740706981; maxWall 8640000.0
+    Changing ["op1: 0.9->0.1"], evaluating ...
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:01:27-0.6940637826919556
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:01:27-0.6940637826919556
+Result: SAT, 0, 0.36, 0, 76593332
+          -> Take improving step to neighbour bitprob=0.1 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 1 runs with cutoff 1000000000.0]) with flip 1
 
           
-============= Performing 1 bonus runs of state: cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 6 runs with cutoff 1000000000.0]) ============ 
+============= Performing 1 bonus runs of state: bitprob=0.1 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 1 runs with cutoff 1000000000.0]) ============ 
 
-now 2025-12-11 22:29:02 -0300; start 2025-12-11 22:19:27 -0300; time-start 575.038983924; maxWall 8640000.0
-State wants more detail (6+1) than incumbent (6), doing incumbent first:
-cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 6 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 6 runs with cutoff 1000000000.0])
+now 2025-12-16 21:01:33 -0300; start 2025-12-16 21:00:12 -0300; time-start 80.806837293; maxWall 8640000.0
+State wants more detail (1+1) than incumbent (1), doing incumbent first:
+bitprob=0.1 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 1 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 1 runs with cutoff 1000000000.0])
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:29:02-0.6344585418701172
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:29:02-0.6344585418701172
-Result: SAT, 0, 0.28, 0, 1056789135
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:01:33-0.41229248046875
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:01:33-0.41229248046875
+Result: SAT, 0, 0.01, 0, 2070231575
  Same incumbent, new precision:
-New Incumbent: 3.700000000000002, 0.0 [7, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
+New Incumbent: 1.3, 0.0 [2, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:29:22-0.5164299011230469
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:29:22-0.5164299011230469
-Result: SAT, 0, 0.36, 0, 1056789135
-          -> After 1 bonus runs: cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.2 pop=500 (0.0 [based on 7 runs with cutoff 1000000000.0])
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:03:55-0.6517014503479004
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:03:55-0.6517014503479004
+Result: SAT, 0, 0.02, 0, 2070231575
+          -> After 1 bonus runs: bitprob=0.1 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 2 runs with cutoff 1000000000.0])
 
-now 2025-12-11 22:30:03 -0300; start 2025-12-11 22:19:27 -0300; time-start 635.500491717; maxWall 8640000.0
-now 2025-12-11 22:30:03 -0300; start 2025-12-11 22:19:27 -0300; time-start 635.512269232; maxWall 8640000.0
-    Changing ["ngen: 1000->500"], evaluating ...
+now 2025-12-16 21:04:56 -0300; start 2025-12-16 21:00:12 -0300; time-start 284.108874198; maxWall 8640000.0
+now 2025-12-16 21:04:56 -0300; start 2025-12-16 21:00:12 -0300; time-start 284.108978233; maxWall 8640000.0
+    Changing ["bitprob: 0.1->0.05"], evaluating ...
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 500 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:30:03-0.08347463607788086
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 500 -op1 0.2 -pop 500 > /tmp/tmp-2025-12-1122:30:03-0.08347463607788086
-Result: SAT, 0, 1.09, 0, 1974203791
-        -> worse: (1.0 [based on 1 runs with cutoff 1000000000.0])
-now 2025-12-11 22:30:36 -0300; start 2025-12-11 22:19:27 -0300; time-start 668.214149226; maxWall 8640000.0
-    Changing ["op1: 0.2->0.8"], evaluating ...
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:30:36-0.5154056549072266
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:30:36-0.5154056549072266
-Result: SAT, 0, 0.40, 0, 1974203791
-now 2025-12-11 22:31:23 -0300; start 2025-12-11 22:19:27 -0300; time-start 715.104472962; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:31:23-0.9678916931152344
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:31:23-0.9678916931152344
-Result: SAT, 0, 0.31, 0, 599162946
-now 2025-12-11 22:32:07 -0300; start 2025-12-11 22:19:27 -0300; time-start 759.335207682; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:32:07-0.1936788558959961
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:32:07-0.1936788558959961
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:04:56-0.9679374694824219
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:04:56-0.9679374694824219
 Result: SAT, 0, 0.32, 0, 76593332
-now 2025-12-11 22:32:49 -0300; start 2025-12-11 22:19:27 -0300; time-start 801.822683417; maxWall 8640000.0
+now 2025-12-16 21:05:01 -0300; start 2025-12-16 21:00:12 -0300; time-start 288.948062511; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:32:49-0.810014009475708
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:32:49-0.810014009475708
-Result: SAT, 0, 0.30, 0, 521355292
-now 2025-12-11 22:33:19 -0300; start 2025-12-11 22:19:27 -0300; time-start 831.241905985; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:33:19-0.6531276702880859
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:33:19-0.6531276702880859
-Result: SAT, 0, 0.91, 0, 2070231575
-now 2025-12-11 22:33:42 -0300; start 2025-12-11 22:19:27 -0300; time-start 854.142250299; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:33:42-0.6788558959960938
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:33:42-0.6788558959960938
-Result: SAT, 0, 0.50, 0, 384285839
-now 2025-12-11 22:34:03 -0300; start 2025-12-11 22:19:27 -0300; time-start 875.766186572; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:34:03-0.9365386962890625
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:34:03-0.9365386962890625
-Result: SAT, 0, 0.24, 0, 1056789135
-          -> Take improving step to neighbour cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.8 pop=500 (0.0 [based on 7 runs with cutoff 1000000000.0]) with flip 5
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:05:01-0.6704168319702148
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:05:01-0.6704168319702148
+Result: SAT, 0, 0.03, 0, 2070231575
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 2 runs with cutoff 1000000000.0]) with flip 2
 
           
-============= Performing 2 bonus runs of state: cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.8 pop=500 (0.0 [based on 7 runs with cutoff 1000000000.0]) ============ 
+============= Performing 1 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 2 runs with cutoff 1000000000.0]) ============ 
 
-now 2025-12-11 22:34:24 -0300; start 2025-12-11 22:19:27 -0300; time-start 896.972323183; maxWall 8640000.0
+now 2025-12-16 21:06:02 -0300; start 2025-12-16 21:00:12 -0300; time-start 350.333946963; maxWall 8640000.0
+State wants more detail (2+1) than incumbent (2), doing incumbent first:
+bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 2 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 2 runs with cutoff 1000000000.0])
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:06:02-0.6371109485626221
+Executing cmd: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:06:02-0.6371109485626221
+Result: SAT, 0, 0.15, 0, 678174566
+ Same incumbent, new precision:
+New Incumbent: 1.7000000000000004, 0.0 [3, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:06:38-0.7675342559814453
+Executing cmd: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:06:38-0.7675342559814453
+Result: SAT, 0, 0.83, 0, 678174566
+          -> After 1 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 3 runs with cutoff 1000000000.0])
+
+now 2025-12-16 21:07:10 -0300; start 2025-12-16 21:00:12 -0300; time-start 418.754078232; maxWall 8640000.0
+now 2025-12-16 21:07:10 -0300; start 2025-12-16 21:00:12 -0300; time-start 418.754557224; maxWall 8640000.0
+    Changing ["pop: 300->200"], evaluating ...
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:07:10-0.40103602409362793
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:07:10-0.40103602409362793
+Result: SAT, 0, 0.43, 0, 76593332
+now 2025-12-16 21:07:16 -0300; start 2025-12-16 21:00:12 -0300; time-start 424.580652837; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:07:16-0.33419084548950195
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:07:16-0.33419084548950195
+Result: SAT, 0, 0.11, 0, 2070231575
+now 2025-12-16 21:08:10 -0300; start 2025-12-16 21:00:12 -0300; time-start 478.413428884; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:08:10-0.45723581314086914
+Executing cmd: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:08:10-0.45723581314086914
+Result: SAT, 0, 0.65, 0, 678174566
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 3 runs with cutoff 1000000000.0]) with flip 3
+
+          
+============= Performing 1 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 3 runs with cutoff 1000000000.0]) ============ 
+
+now 2025-12-16 21:08:39 -0300; start 2025-12-16 21:00:12 -0300; time-start 507.223032645; maxWall 8640000.0
+State wants more detail (3+1) than incumbent (3), doing incumbent first:
+bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 3 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 3 runs with cutoff 1000000000.0])
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:08:39-0.46540236473083496
+Executing cmd: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:08:39-0.46540236473083496
+Result: SAT, 0, 0.27, 0, 1180947612
+ Same incumbent, new precision:
+New Incumbent: 2.2000000000000006, 0.0 [4, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:09:04-0.4381599426269531
+Executing cmd: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.01 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:09:04-0.4381599426269531
+Result: SAT, 0, 0.69, 0, 1180947612
+          -> After 1 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.01 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 4 runs with cutoff 1000000000.0])
+
+now 2025-12-16 21:09:20 -0300; start 2025-12-16 21:00:12 -0300; time-start 548.768099661; maxWall 8640000.0
+now 2025-12-16 21:09:20 -0300; start 2025-12-16 21:00:12 -0300; time-start 548.768306539; maxWall 8640000.0
+    Changing ["mutPct: 0.01->0.05"], evaluating ...
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:09:20-0.7984360456466675
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:09:20-0.7984360456466675
+Result: SAT, 0, 0.52, 0, 76593332
+now 2025-12-16 21:09:25 -0300; start 2025-12-16 21:00:12 -0300; time-start 553.412277609; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:09:25-0.3531777858734131
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:09:25-0.3531777858734131
+Result: SAT, 0, 0.18, 0, 2070231575
+now 2025-12-16 21:10:18 -0300; start 2025-12-16 21:00:12 -0300; time-start 606.599012725; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:10:18-0.9090909957885742
+Executing cmd: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:10:18-0.9090909957885742
+Result: SAT, 0, 0.45, 0, 678174566
+now 2025-12-16 21:10:46 -0300; start 2025-12-16 21:00:12 -0300; time-start 634.309259089; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:10:46-0.5537402629852295
+Executing cmd: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:10:46-0.5537402629852295
+Result: SAT, 0, 0.67, 0, 1180947612
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 4 runs with cutoff 1000000000.0]) with flip 4
+
+          
+============= Performing 1 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 4 runs with cutoff 1000000000.0]) ============ 
+
+now 2025-12-16 21:11:03 -0300; start 2025-12-16 21:00:12 -0300; time-start 651.388755213; maxWall 8640000.0
+State wants more detail (4+1) than incumbent (4), doing incumbent first:
+bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 4 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 4 runs with cutoff 1000000000.0])
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:11:03-0.781898021697998
+Executing cmd: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:11:03-0.781898021697998
+Result: SAT, 0, 0.31, 0, 1841889657
+ Same incumbent, new precision:
+New Incumbent: 2.800000000000001, 0.0 [5, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:12:11-0.694711446762085
+Executing cmd: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:12:11-0.694711446762085
+Result: SAT, 0, 0.35, 0, 1841889657
+          -> After 1 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.05 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 5 runs with cutoff 1000000000.0])
+
+now 2025-12-16 21:13:04 -0300; start 2025-12-16 21:00:12 -0300; time-start 772.679651969; maxWall 8640000.0
+now 2025-12-16 21:13:04 -0300; start 2025-12-16 21:00:12 -0300; time-start 772.680420635; maxWall 8640000.0
+    Changing ["mutType: 7->9"], evaluating ...
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.05 -mutType 9 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:13:04-0.8828132152557373
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.05 -mutPct 0.05 -mutType 9 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:13:04-0.8828132152557373
+Result: SAT, 0, 1.12, 0, 76593332
+        -> worse: (1.0 [based on 1 runs with cutoff 1000000000.0])
+now 2025-12-16 21:13:10 -0300; start 2025-12-16 21:00:12 -0300; time-start 778.749891519; maxWall 8640000.0
+    Changing ["mut: 0.05->0.3"], evaluating ...
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:13:10-0.9822491407394409
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:13:10-0.9822491407394409
+Result: SAT, 0, 0.20, 0, 76593332
+now 2025-12-16 21:13:18 -0300; start 2025-12-16 21:00:12 -0300; time-start 785.889002368; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:13:18-0.8580913543701172
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:13:18-0.8580913543701172
+Result: SAT, 0, 0.01, 0, 2070231575
+now 2025-12-16 21:14:53 -0300; start 2025-12-16 21:00:12 -0300; time-start 881.21998614; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:14:53-0.9869263172149658
+Executing cmd: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:14:53-0.9869263172149658
+Result: SAT, 0, 0.19, 0, 678174566
+now 2025-12-16 21:15:51 -0300; start 2025-12-16 21:00:12 -0300; time-start 938.942135524; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:15:51-0.6153125762939453
+Executing cmd: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:15:51-0.6153125762939453
+Result: SAT, 0, 0.24, 0, 1180947612
+now 2025-12-16 21:16:30 -0300; start 2025-12-16 21:00:12 -0300; time-start 977.948459531; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:16:30-0.10709381103515625
+Executing cmd: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:16:30-0.10709381103515625
+Result: SAT, 0, 0.16, 0, 1841889657
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 5 runs with cutoff 1000000000.0]) with flip 5
+
+          
+============= Performing 2 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 5 runs with cutoff 1000000000.0]) ============ 
+
+now 2025-12-16 21:17:55 -0300; start 2025-12-16 21:00:12 -0300; time-start 1062.855148616; maxWall 8640000.0
+State wants more detail (5+1) than incumbent (5), doing incumbent first:
+bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 5 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 5 runs with cutoff 1000000000.0])
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:17:55-0.11006546020507812
+Executing cmd: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:17:55-0.11006546020507812
+Result: SAT, 0, 0.20, 0, 1561765848
+ Same incumbent, new precision:
+New Incumbent: 3.600000000000002, 0.0 [6, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:18:48-0.2818288803100586
+Executing cmd: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:18:48-0.2818288803100586
+Result: SAT, 0, 0.04, 0, 1561765848
+now 2025-12-16 21:19:20 -0300; start 2025-12-16 21:00:12 -0300; time-start 1148.722983037; maxWall 8640000.0
+State wants more detail (6+1) than incumbent (6), doing incumbent first:
+bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 6 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 6 runs with cutoff 1000000000.0])
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:19:20-0.5327728986740112
+Executing cmd: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:19:20-0.5327728986740112
+Result: SAT, 0, -0.01, 0, 221160744
+ Same incumbent, new precision:
+New Incumbent: 3.800000000000002, 0.0 [7, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:19:59-0.9512630701065063
+Executing cmd: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.05 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:19:59-0.9512630701065063
+Result: SAT, 0, 0.02, 0, 221160744
+          -> After 2 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.05 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 7 runs with cutoff 1000000000.0])
+
+now 2025-12-16 21:20:29 -0300; start 2025-12-16 21:00:12 -0300; time-start 1217.433871695; maxWall 8640000.0
+now 2025-12-16 21:20:29 -0300; start 2025-12-16 21:00:12 -0300; time-start 1217.43636787; maxWall 8640000.0
+    Changing ["mutPct: 0.05->0.2"], evaluating ...
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:20:29-0.807457447052002
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:20:29-0.807457447052002
+Result: SAT, 0, 0.14, 0, 76593332
+now 2025-12-16 21:20:36 -0300; start 2025-12-16 21:00:12 -0300; time-start 1224.565004997; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:20:36-0.26534032821655273
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:20:36-0.26534032821655273
+Result: SAT, 0, 0.01, 0, 2070231575
+now 2025-12-16 21:22:24 -0300; start 2025-12-16 21:00:12 -0300; time-start 1332.26562539; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:22:24-0.9999058246612549
+Executing cmd: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:22:24-0.9999058246612549
+Result: SAT, 0, 0.15, 0, 678174566
+now 2025-12-16 21:23:03 -0300; start 2025-12-16 21:00:12 -0300; time-start 1371.345720132; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:23:03-0.7687208652496338
+Executing cmd: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:23:03-0.7687208652496338
+Result: SAT, 0, 0.28, 0, 1180947612
+now 2025-12-16 21:23:29 -0300; start 2025-12-16 21:00:12 -0300; time-start 1397.250610615; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:23:29-0.8190369606018066
+Executing cmd: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:23:29-0.8190369606018066
+Result: SAT, 0, 0.39, 0, 1841889657
+now 2025-12-16 21:24:37 -0300; start 2025-12-16 21:00:12 -0300; time-start 1464.893472387; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:24:37-0.5657997131347656
+Executing cmd: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:24:37-0.5657997131347656
+Result: SAT, 0, 0.02, 0, 1561765848
+now 2025-12-16 21:25:19 -0300; start 2025-12-16 21:00:12 -0300; time-start 1507.374148387; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:25:19-0.3201172351837158
+Executing cmd: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:25:19-0.3201172351837158
+Result: SAT, 0, -0.02, 0, 221160744
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.2 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 7 runs with cutoff 1000000000.0]) with flip 6
+
+          
+============= Performing 1 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.2 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 7 runs with cutoff 1000000000.0]) ============ 
+
+now 2025-12-16 21:25:54 -0300; start 2025-12-16 21:00:12 -0300; time-start 1542.14722582; maxWall 8640000.0
 State wants more detail (7+1) than incumbent (7), doing incumbent first:
-cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.8 pop=500 (0.0 [based on 7 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 7 runs with cutoff 1000000000.0])
+bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.2 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 7 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 7 runs with cutoff 1000000000.0])
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 183695387 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:34:24-0.9741283655166626
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 183695387 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:34:24-0.9741283655166626
-Result: SAT, 0, 0.07, 0, 183695387
+  Trial 1 for calling: bash MOEAD.sh cam_12319_COYOACAN.dat "" 1000000000.0000001 2147483647 1755569554 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:25:54-0.5204739570617676
+Executing cmd: bash MOEAD.sh cam_12319_COYOACAN.dat "" 1000000000.0000001 2147483647 1755569554 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:25:54-0.5204739570617676
+Result: SAT, 0, 0.32, 0, 1755569554
  Same incumbent, new precision:
-New Incumbent: 4.699999999999999, 0.0 [8, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
+New Incumbent: 4.699999999999999, 0.0 [8, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 183695387 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:34:36-0.9364244937896729
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 183695387 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:34:36-0.9364244937896729
-Result: SAT, 0, 0.31, 0, 183695387
-now 2025-12-11 22:34:59 -0300; start 2025-12-11 22:19:27 -0300; time-start 931.081503835; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_12319_COYOACAN.dat "" 1000000000.0000001 2147483647 1755569554 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:26:26-0.2080550193786621
+Executing cmd: bash MOEAD.sh cam_12319_COYOACAN.dat "" 1000000000.0000001 2147483647 1755569554 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.2 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:26:26-0.2080550193786621
+Result: SAT, 0, 0.07, 0, 1755569554
+          -> After 1 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.2 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 8 runs with cutoff 1000000000.0])
+
+now 2025-12-16 21:26:55 -0300; start 2025-12-16 21:00:12 -0300; time-start 1603.349852641; maxWall 8640000.0
+now 2025-12-16 21:26:55 -0300; start 2025-12-16 21:00:12 -0300; time-start 1603.350507153; maxWall 8640000.0
+    Changing ["mutPct: 0.2->0.4"], evaluating ...
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:26:55-0.47141170501708984
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:26:55-0.47141170501708984
+Result: SAT, 0, 0.19, 0, 76593332
+now 2025-12-16 21:27:02 -0300; start 2025-12-16 21:00:12 -0300; time-start 1610.061362698; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:27:02-0.7248039245605469
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:27:02-0.7248039245605469
+Result: SAT, 0, 0.01, 0, 2070231575
+now 2025-12-16 21:29:36 -0300; start 2025-12-16 21:00:12 -0300; time-start 1764.182988375; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:29:36-0.9086441993713379
+Executing cmd: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:29:36-0.9086441993713379
+Result: SAT, 0, 0.15, 0, 678174566
+now 2025-12-16 21:30:22 -0300; start 2025-12-16 21:00:12 -0300; time-start 1810.441528986; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:30:22-0.0675973892211914
+Executing cmd: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:30:22-0.0675973892211914
+Result: SAT, 0, 0.23, 0, 1180947612
+now 2025-12-16 21:30:51 -0300; start 2025-12-16 21:00:12 -0300; time-start 1839.390925406; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:30:51-0.1612715721130371
+Executing cmd: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:30:51-0.1612715721130371
+Result: SAT, 0, 0.20, 0, 1841889657
+now 2025-12-16 21:32:03 -0300; start 2025-12-16 21:00:12 -0300; time-start 1911.231982127; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:32:03-0.6751658916473389
+Executing cmd: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:32:03-0.6751658916473389
+Result: SAT, 0, 0.00, 0, 1561765848
+now 2025-12-16 21:32:43 -0300; start 2025-12-16 21:00:12 -0300; time-start 1951.421617561; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:32:43-0.5622849464416504
+Executing cmd: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:32:43-0.5622849464416504
+Result: SAT, 0, -0.01, 0, 221160744
+now 2025-12-16 21:33:20 -0300; start 2025-12-16 21:00:12 -0300; time-start 1988.668099542; maxWall 8640000.0
+getAlgoResultsForInstsAndParams.
+  Trial 1 for calling: bash MOEAD.sh cam_12319_COYOACAN.dat "" 1000000000.0000001 2147483647 1755569554 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:33:20-0.6215437650680542
+Executing cmd: bash MOEAD.sh cam_12319_COYOACAN.dat "" 1000000000.0000001 2147483647 1755569554 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:33:20-0.6215437650680542
+Result: SAT, 0, 0.09, 0, 1755569554
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.4 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 8 runs with cutoff 1000000000.0]) with flip 7
+
+          
+============= Performing 1 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.4 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 8 runs with cutoff 1000000000.0]) ============ 
+
+now 2025-12-16 21:33:53 -0300; start 2025-12-16 21:00:12 -0300; time-start 2020.90198063; maxWall 8640000.0
 State wants more detail (8+1) than incumbent (8), doing incumbent first:
-cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.8 pop=500 (0.0 [based on 8 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 8 runs with cutoff 1000000000.0])
+bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.4 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 8 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 8 runs with cutoff 1000000000.0])
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 678174566 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:34:59-0.39365386962890625
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 678174566 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:34:59-0.39365386962890625
-Result: SAT, 0, 0.16, 0, 678174566
+  Trial 1 for calling: bash MOEAD.sh cam_7256_TLAHUAC.dat "" 1000000000.0000001 2147483647 707988899 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:33:53-0.4729890823364258
+Executing cmd: bash MOEAD.sh cam_7256_TLAHUAC.dat "" 1000000000.0000001 2147483647 707988899 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:33:53-0.4729890823364258
+Result: SAT, 0, 0.78, 0, 707988899
  Same incumbent, new precision:
-New Incumbent: 4.899999999999999, 0.0 [9, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
+New Incumbent: 5.699999999999996, 0.0 [9, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 678174566 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:35:10-0.3553462028503418
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 678174566 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.8 -pop 500 > /tmp/tmp-2025-12-1122:35:10-0.3553462028503418
-Result: SAT, 0, 0.18, 0, 678174566
-          -> After 2 bonus runs: cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.8 pop=500 (0.0 [based on 9 runs with cutoff 1000000000.0])
+  Trial 1 for calling: bash MOEAD.sh cam_7256_TLAHUAC.dat "" 1000000000.0000001 2147483647 707988899 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:34:11-0.815821647644043
+Executing cmd: bash MOEAD.sh cam_7256_TLAHUAC.dat "" 1000000000.0000001 2147483647 707988899 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.4 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:34:11-0.815821647644043
+Result: SAT, 0, 0.17, 0, 707988899
+          -> After 1 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.4 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 9 runs with cutoff 1000000000.0])
 
-now 2025-12-11 22:35:31 -0300; start 2025-12-11 22:19:27 -0300; time-start 963.76707644; maxWall 8640000.0
-now 2025-12-11 22:35:31 -0300; start 2025-12-11 22:19:27 -0300; time-start 963.76909831; maxWall 8640000.0
-    Changing ["op1: 0.8->0.6"], evaluating ...
+now 2025-12-16 21:34:28 -0300; start 2025-12-16 21:00:12 -0300; time-start 2056.345107844; maxWall 8640000.0
+now 2025-12-16 21:34:28 -0300; start 2025-12-16 21:00:12 -0300; time-start 2056.345334257; maxWall 8640000.0
+    Changing ["mutPct: 0.4->0.3"], evaluating ...
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:35:31-0.4212944507598877
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:35:31-0.4212944507598877
-Result: SAT, 0, 0.87, 0, 1974203791
-now 2025-12-11 22:35:52 -0300; start 2025-12-11 22:19:27 -0300; time-start 984.612336776; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:34:28-0.0935826301574707
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:34:28-0.0935826301574707
+Result: SAT, 0, 0.28, 0, 76593332
+now 2025-12-16 21:34:35 -0300; start 2025-12-16 21:00:12 -0300; time-start 2063.520975463; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:35:52-0.23161673545837402
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:35:52-0.23161673545837402
-Result: SAT, 0, 0.52, 0, 599162946
-now 2025-12-11 22:36:13 -0300; start 2025-12-11 22:19:27 -0300; time-start 1006.047743812; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:34:35-0.3221440315246582
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:34:35-0.3221440315246582
+Result: SAT, 0, 0.01, 0, 2070231575
+now 2025-12-16 21:36:36 -0300; start 2025-12-16 21:00:12 -0300; time-start 2184.549332199; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:36:13-0.7706875801086426
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:36:13-0.7706875801086426
-Result: SAT, 0, 0.22, 0, 76593332
-now 2025-12-11 22:36:35 -0300; start 2025-12-11 22:19:27 -0300; time-start 1027.330128054; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:36:36-0.8007326126098633
+Executing cmd: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:36:36-0.8007326126098633
+Result: SAT, 0, 0.15, 0, 678174566
+now 2025-12-16 21:37:16 -0300; start 2025-12-16 21:00:12 -0300; time-start 2224.296662275; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:36:35-0.2905130386352539
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:36:35-0.2905130386352539
-Result: SAT, 0, 0.28, 0, 521355292
-now 2025-12-11 22:36:56 -0300; start 2025-12-11 22:19:27 -0300; time-start 1048.643429606; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:37:16-0.29193925857543945
+Executing cmd: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:37:16-0.29193925857543945
+Result: SAT, 0, 0.25, 0, 1180947612
+now 2025-12-16 21:37:44 -0300; start 2025-12-16 21:00:12 -0300; time-start 2252.072451048; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:36:56-0.9004795551300049
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:36:56-0.9004795551300049
-Result: SAT, 0, 0.50, 0, 2070231575
-now 2025-12-11 22:37:18 -0300; start 2025-12-11 22:19:27 -0300; time-start 1070.76816616; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:37:44-0.40017032623291016
+Executing cmd: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:37:44-0.40017032623291016
+Result: SAT, 0, 0.09, 0, 1841889657
+now 2025-12-16 21:38:52 -0300; start 2025-12-16 21:00:12 -0300; time-start 2320.266457295; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:37:18-0.048444271087646484
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:37:18-0.048444271087646484
-Result: SAT, 0, 0.48, 0, 384285839
-now 2025-12-11 22:37:40 -0300; start 2025-12-11 22:19:27 -0300; time-start 1092.158281484; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:38:52-0.8464577198028564
+Executing cmd: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:38:52-0.8464577198028564
+Result: SAT, 0, -0.00, 0, 1561765848
+now 2025-12-16 21:39:31 -0300; start 2025-12-16 21:00:12 -0300; time-start 2359.069156396; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:37:40-0.4660053253173828
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:37:40-0.4660053253173828
-Result: SAT, 0, 0.69, 0, 1056789135
-now 2025-12-11 22:38:01 -0300; start 2025-12-11 22:19:27 -0300; time-start 1113.894980218; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:39:31-0.0364680290222168
+Executing cmd: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:39:31-0.0364680290222168
+Result: SAT, 0, -0.01, 0, 221160744
+now 2025-12-16 21:40:11 -0300; start 2025-12-16 21:00:12 -0300; time-start 2398.946825111; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 183695387 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:38:01-0.6308443546295166
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 183695387 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:38:01-0.6308443546295166
-Result: SAT, 0, 0.34, 0, 183695387
-now 2025-12-11 22:38:23 -0300; start 2025-12-11 22:19:27 -0300; time-start 1135.299998521; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_12319_COYOACAN.dat "" 1000000000.0000001 2147483647 1755569554 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:40:11-0.846776008605957
+Executing cmd: bash MOEAD.sh cam_12319_COYOACAN.dat "" 1000000000.0000001 2147483647 1755569554 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:40:11-0.846776008605957
+Result: SAT, 0, 0.25, 0, 1755569554
+now 2025-12-16 21:40:46 -0300; start 2025-12-16 21:00:12 -0300; time-start 2434.404107907; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 678174566 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:38:23-0.23923349380493164
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 678174566 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:38:23-0.23923349380493164
-Result: SAT, 0, 0.51, 0, 678174566
-          -> Take improving step to neighbour cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.6 pop=500 (0.0 [based on 9 runs with cutoff 1000000000.0]) with flip 6
+  Trial 1 for calling: bash MOEAD.sh cam_7256_TLAHUAC.dat "" 1000000000.0000001 2147483647 707988899 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:40:46-0.25268054008483887
+Executing cmd: bash MOEAD.sh cam_7256_TLAHUAC.dat "" 1000000000.0000001 2147483647 707988899 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:40:46-0.25268054008483887
+Result: SAT, 0, 0.55, 0, 707988899
+          -> Take improving step to neighbour bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 9 runs with cutoff 1000000000.0]) with flip 8
 
           
-============= Performing 1 bonus runs of state: cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.6 pop=500 (0.0 [based on 9 runs with cutoff 1000000000.0]) ============ 
+============= Performing 1 bonus runs of state: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 9 runs with cutoff 1000000000.0]) ============ 
 
-now 2025-12-11 22:38:43 -0300; start 2025-12-11 22:19:27 -0300; time-start 1155.902031741; maxWall 8640000.0
+now 2025-12-16 21:41:02 -0300; start 2025-12-16 21:00:12 -0300; time-start 2450.19602007; maxWall 8640000.0
 State wants more detail (9+1) than incumbent (9), doing incumbent first:
-cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.6 pop=500 (0.0 [based on 9 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 9 runs with cutoff 1000000000.0])
+bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 9 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 9 runs with cutoff 1000000000.0])
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1860859348 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:38:43-0.515913724899292
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1860859348 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:38:43-0.515913724899292
-Result: SAT, 0, 0.18, 0, 1860859348
+  Trial 1 for calling: bash MOEAD.sh cam_14468_VENUSTIANO_CARRANZA.dat "" 1000000000.0000001 2147483647 365703634 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:41:02-0.5086946487426758
+Executing cmd: bash MOEAD.sh cam_14468_VENUSTIANO_CARRANZA.dat "" 1000000000.0000001 2147483647 365703634 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:41:02-0.5086946487426758
+Result: SAT, 0, 0.17, 0, 365703634
  Same incumbent, new precision:
-New Incumbent: 5.999999999999995, 0.0 [10, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
+New Incumbent: 6.799999999999992, 0.0 [10, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1860859348 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:38:55-0.5805339813232422
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1860859348 -cross 1.0 -mut 0.3 -neighbor 50 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:38:55-0.5805339813232422
-Result: SAT, 0, 0.31, 0, 1860859348
-          -> After 1 bonus runs: cross=1.0 mut=0.3 neighbor=50 ngen=1000 op1=0.6 pop=500 (0.0 [based on 10 runs with cutoff 1000000000.0])
+  Trial 1 for calling: bash MOEAD.sh cam_14468_VENUSTIANO_CARRANZA.dat "" 1000000000.0000001 2147483647 365703634 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:41:46-0.385467529296875
+Executing cmd: bash MOEAD.sh cam_14468_VENUSTIANO_CARRANZA.dat "" 1000000000.0000001 2147483647 365703634 -bitprob 0.05 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:41:46-0.385467529296875
+Result: SAT, 0, -0.07, 0, 365703634
+          -> After 1 bonus runs: bitprob=0.05 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 10 runs with cutoff 1000000000.0])
 
-now 2025-12-11 22:39:22 -0300; start 2025-12-11 22:19:27 -0300; time-start 1194.876761623; maxWall 8640000.0
-now 2025-12-11 22:39:22 -0300; start 2025-12-11 22:19:27 -0300; time-start 1194.880044456; maxWall 8640000.0
-    Changing ["neighbor: 50->10"], evaluating ...
+now 2025-12-16 21:42:32 -0300; start 2025-12-16 21:00:12 -0300; time-start 2540.026105345; maxWall 8640000.0
+now 2025-12-16 21:42:32 -0300; start 2025-12-16 21:00:12 -0300; time-start 2540.026663357; maxWall 8640000.0
+    Changing ["bitprob: 0.05->0.1"], evaluating ...
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:39:22-0.0424497127532959
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:39:22-0.0424497127532959
-Result: SAT, 0, 0.04, 0, 1974203791
-now 2025-12-11 22:39:45 -0300; start 2025-12-11 22:19:27 -0300; time-start 1217.774984834; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:42:32-0.8555164337158203
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:42:32-0.8555164337158203
+Result: SAT, 0, 0.23, 0, 76593332
+now 2025-12-16 21:42:39 -0300; start 2025-12-16 21:00:12 -0300; time-start 2546.942045703; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:39:45-0.8443343639373779
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:39:45-0.8443343639373779
-Result: SAT, 0, 0.06, 0, 599162946
-now 2025-12-11 22:40:07 -0300; start 2025-12-11 22:19:27 -0300; time-start 1239.074078997; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:42:39-0.44202709197998047
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:42:39-0.44202709197998047
+Result: SAT, 0, 0.01, 0, 2070231575
+now 2025-12-16 21:44:32 -0300; start 2025-12-16 21:00:12 -0300; time-start 2660.0381736; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:40:07-0.70245361328125
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:40:07-0.70245361328125
-Result: SAT, 0, -0.02, 0, 76593332
-now 2025-12-11 22:40:31 -0300; start 2025-12-11 22:19:27 -0300; time-start 1263.596300593; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:44:32-0.8301682472229004
+Executing cmd: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:44:32-0.8301682472229004
+Result: SAT, 0, 0.21, 0, 678174566
+now 2025-12-16 21:45:10 -0300; start 2025-12-16 21:00:12 -0300; time-start 2698.253928285; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:40:31-0.3850862979888916
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:40:31-0.3850862979888916
-Result: SAT, 0, 0.04, 0, 521355292
-now 2025-12-11 22:40:59 -0300; start 2025-12-11 22:19:27 -0300; time-start 1291.942887448; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:45:10-0.269040584564209
+Executing cmd: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:45:10-0.269040584564209
+Result: SAT, 0, 0.12, 0, 1180947612
+now 2025-12-16 21:45:37 -0300; start 2025-12-16 21:00:12 -0300; time-start 2724.955409051; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:40:59-0.36172914505004883
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:40:59-0.36172914505004883
-Result: SAT, 0, 0.08, 0, 2070231575
-now 2025-12-11 22:41:36 -0300; start 2025-12-11 22:19:27 -0300; time-start 1328.338209209; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:45:37-0.6278295516967773
+Executing cmd: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:45:37-0.6278295516967773
+Result: SAT, 0, 0.13, 0, 1841889657
+now 2025-12-16 21:46:39 -0300; start 2025-12-16 21:00:12 -0300; time-start 2787.58590677; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:41:36-0.2395157814025879
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:41:36-0.2395157814025879
-Result: SAT, 0, -0.07, 0, 384285839
-now 2025-12-11 22:42:02 -0300; start 2025-12-11 22:19:27 -0300; time-start 1354.391237085; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:46:39-0.14234590530395508
+Executing cmd: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:46:39-0.14234590530395508
+Result: SAT, 0, 0.00, 0, 1561765848
+now 2025-12-16 21:47:17 -0300; start 2025-12-16 21:00:12 -0300; time-start 2825.465428974; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:42:02-0.9442191123962402
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:42:02-0.9442191123962402
-Result: SAT, 0, 0.08, 0, 1056789135
-now 2025-12-11 22:42:30 -0300; start 2025-12-11 22:19:27 -0300; time-start 1383.056378793; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:47:17-0.02441716194152832
+Executing cmd: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:47:17-0.02441716194152832
+Result: SAT, 0, -0.01, 0, 221160744
+now 2025-12-16 21:47:53 -0300; start 2025-12-16 21:00:12 -0300; time-start 2861.017566954; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 183695387 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:42:30-0.5095125436782837
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 183695387 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:42:30-0.5095125436782837
-Result: SAT, 0, 0.00, 0, 183695387
-now 2025-12-11 22:42:56 -0300; start 2025-12-11 22:19:27 -0300; time-start 1408.653502123; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_12319_COYOACAN.dat "" 1000000000.0000001 2147483647 1755569554 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:47:53-0.7023606300354004
+Executing cmd: bash MOEAD.sh cam_12319_COYOACAN.dat "" 1000000000.0000001 2147483647 1755569554 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:47:53-0.7023606300354004
+Result: SAT, 0, 0.05, 0, 1755569554
+now 2025-12-16 21:48:20 -0300; start 2025-12-16 21:00:12 -0300; time-start 2887.87734004; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 678174566 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:42:56-0.26543331146240234
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 678174566 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:42:56-0.26543331146240234
-Result: SAT, 0, -0.05, 0, 678174566
-now 2025-12-11 22:43:35 -0300; start 2025-12-11 22:19:27 -0300; time-start 1447.612360829; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_7256_TLAHUAC.dat "" 1000000000.0000001 2147483647 707988899 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:48:20-0.48027992248535156
+Executing cmd: bash MOEAD.sh cam_7256_TLAHUAC.dat "" 1000000000.0000001 2147483647 707988899 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:48:20-0.48027992248535156
+Result: SAT, 0, 0.19, 0, 707988899
+now 2025-12-16 21:48:34 -0300; start 2025-12-16 21:00:12 -0300; time-start 2902.652319145; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1860859348 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:43:35-0.6719808578491211
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1860859348 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:43:35-0.6719808578491211
-Result: SAT, 0, 0.11, 0, 1860859348
-          -> Take improving step to neighbour cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=500 (0.0 [based on 10 runs with cutoff 1000000000.0]) with flip 7
+  Trial 1 for calling: bash MOEAD.sh cam_14468_VENUSTIANO_CARRANZA.dat "" 1000000000.0000001 2147483647 365703634 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:48:34-0.426474928855896
+Executing cmd: bash MOEAD.sh cam_14468_VENUSTIANO_CARRANZA.dat "" 1000000000.0000001 2147483647 365703634 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:48:34-0.426474928855896
+Result: SAT, 0, 0.02, 0, 365703634
+          -> Take improving step to neighbour bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 10 runs with cutoff 1000000000.0]) with flip 9
 
           
-============= Performing 1 bonus runs of state: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=500 (0.0 [based on 10 runs with cutoff 1000000000.0]) ============ 
+============= Performing 1 bonus runs of state: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 10 runs with cutoff 1000000000.0]) ============ 
 
-now 2025-12-11 22:44:02 -0300; start 2025-12-11 22:19:27 -0300; time-start 1474.234281928; maxWall 8640000.0
+now 2025-12-16 21:49:20 -0300; start 2025-12-16 21:00:12 -0300; time-start 2948.22525677; maxWall 8640000.0
 State wants more detail (10+1) than incumbent (10), doing incumbent first:
-cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=500 (0.0 [based on 10 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 10 runs with cutoff 1000000000.0])
+bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 10 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 10 runs with cutoff 1000000000.0])
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1180947612 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:44:02-0.1591949462890625
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1180947612 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:44:02-0.1591949462890625
-Result: SAT, 0, 0.57, 0, 1180947612
+  Trial 1 for calling: bash MOEAD.sh cam_11410_TLALPAN.dat "" 1000000000.0000001 2147483647 1490140505 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:49:20-0.028058290481567383
+Executing cmd: bash MOEAD.sh cam_11410_TLALPAN.dat "" 1000000000.0000001 2147483647 1490140505 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:49:20-0.028058290481567383
+Result: SAT, 0, 0.80, 0, 1490140505
  Same incumbent, new precision:
-New Incumbent: 7.19999999999999, 0.0 [11, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
+New Incumbent: 7.999999999999988, 0.0 [11, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1180947612 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:44:16-0.009384632110595703
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1180947612 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 500 > /tmp/tmp-2025-12-1122:44:16-0.009384632110595703
-Result: SAT, 0, 0.16, 0, 1180947612
-          -> After 1 bonus runs: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=500 (0.0 [based on 11 runs with cutoff 1000000000.0])
+  Trial 1 for calling: bash MOEAD.sh cam_11410_TLALPAN.dat "" 1000000000.0000001 2147483647 1490140505 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:49:45-0.979140043258667
+Executing cmd: bash MOEAD.sh cam_11410_TLALPAN.dat "" 1000000000.0000001 2147483647 1490140505 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 200 > /tmp/tmp-2025-12-1621:49:45-0.979140043258667
+Result: SAT, 0, 0.63, 0, 1490140505
+          -> After 1 bonus runs: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=200 (0.0 [based on 11 runs with cutoff 1000000000.0])
 
-now 2025-12-11 22:44:39 -0300; start 2025-12-11 22:19:27 -0300; time-start 1511.765482096; maxWall 8640000.0
-now 2025-12-11 22:44:39 -0300; start 2025-12-11 22:19:27 -0300; time-start 1511.766162837; maxWall 8640000.0
-    Changing ["pop: 500->200"], evaluating ...
+now 2025-12-16 21:50:10 -0300; start 2025-12-16 21:00:12 -0300; time-start 2998.012894732; maxWall 8640000.0
+now 2025-12-16 21:50:10 -0300; start 2025-12-16 21:00:12 -0300; time-start 2998.013506368; maxWall 8640000.0
+    Changing ["pop: 200->300"], evaluating ...
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:44:39-0.2492537498474121
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:44:39-0.2492537498474121
-Result: SAT, 0, 0.88, 0, 1974203791
-now 2025-12-11 22:44:48 -0300; start 2025-12-11 22:19:27 -0300; time-start 1520.682616365; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:50:10-0.017613887786865234
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:50:10-0.017613887786865234
+Result: SAT, 0, 0.25, 0, 76593332
+now 2025-12-16 21:50:17 -0300; start 2025-12-16 21:00:12 -0300; time-start 3005.502291347; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:44:48-0.4463517665863037
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:44:48-0.4463517665863037
-Result: SAT, 0, 0.54, 0, 599162946
-now 2025-12-11 22:44:58 -0300; start 2025-12-11 22:19:27 -0300; time-start 1530.469202468; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:50:17-0.22397398948669434
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:50:17-0.22397398948669434
+Result: SAT, 0, 0.01, 0, 2070231575
+now 2025-12-16 21:52:48 -0300; start 2025-12-16 21:00:12 -0300; time-start 3156.336101236; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:44:58-0.3955869674682617
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:44:58-0.3955869674682617
-Result: SAT, 0, 0.64, 0, 76593332
-now 2025-12-11 22:45:07 -0300; start 2025-12-11 22:19:27 -0300; time-start 1540.056534564; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:52:48-0.016475439071655273
+Executing cmd: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:52:48-0.016475439071655273
+Result: SAT, 0, 0.15, 0, 678174566
+now 2025-12-16 21:53:42 -0300; start 2025-12-16 21:00:12 -0300; time-start 3210.008680251; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:45:07-0.03467118740081787
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:45:07-0.03467118740081787
-Result: SAT, 0, 0.43, 0, 521355292
-now 2025-12-11 22:45:17 -0300; start 2025-12-11 22:19:27 -0300; time-start 1549.463115037; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:53:42-0.4416327476501465
+Executing cmd: bash MOEAD.sh cam_9673_AZCAPOTZALCO.dat "" 1000000000.0000001 2147483647 1180947612 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:53:42-0.4416327476501465
+Result: SAT, 0, 0.13, 0, 1180947612
+now 2025-12-16 21:54:08 -0300; start 2025-12-16 21:00:12 -0300; time-start 3236.30208171; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:45:17-0.03569602966308594
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:45:17-0.03569602966308594
-Result: SAT, 0, 0.72, 0, 2070231575
-now 2025-12-11 22:45:27 -0300; start 2025-12-11 22:19:27 -0300; time-start 1559.656910876; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:54:08-0.27097105979919434
+Executing cmd: bash MOEAD.sh cam_24363_GUSTAVO_A._MADERO.dat "" 1000000000.0000001 2147483647 1841889657 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:54:08-0.27097105979919434
+Result: SAT, 0, 0.01, 0, 1841889657
+now 2025-12-16 21:55:18 -0300; start 2025-12-16 21:00:12 -0300; time-start 3306.713788972; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:45:27-0.38683342933654785
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:45:27-0.38683342933654785
-Result: SAT, 0, 0.56, 0, 384285839
-now 2025-12-11 22:45:36 -0300; start 2025-12-11 22:19:27 -0300; time-start 1568.735283252; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:55:18-0.744530200958252
+Executing cmd: bash MOEAD.sh cam_13802_MIGUEL_HIDALGO.dat "" 1000000000.0000001 2147483647 1561765848 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:55:18-0.744530200958252
+Result: SAT, 0, 0.01, 0, 1561765848
+now 2025-12-16 21:56:03 -0300; start 2025-12-16 21:00:12 -0300; time-start 3351.030214908; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:45:36-0.6084506511688232
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:45:36-0.6084506511688232
-Result: SAT, 0, 0.42, 0, 1056789135
-now 2025-12-11 22:45:46 -0300; start 2025-12-11 22:19:27 -0300; time-start 1578.57470972; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:56:03-0.06575727462768555
+Executing cmd: bash MOEAD.sh cam_11096_IZTACALCO.dat "" 1000000000.0000001 2147483647 221160744 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:56:03-0.06575727462768555
+Result: SAT, 0, -0.01, 0, 221160744
+now 2025-12-16 21:56:44 -0300; start 2025-12-16 21:00:12 -0300; time-start 3391.88217799; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 183695387 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:45:46-0.5005521774291992
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 183695387 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:45:46-0.5005521774291992
-Result: SAT, 0, 0.22, 0, 183695387
-now 2025-12-11 22:45:55 -0300; start 2025-12-11 22:19:27 -0300; time-start 1587.592852162; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_12319_COYOACAN.dat "" 1000000000.0000001 2147483647 1755569554 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:56:44-0.1687183380126953
+Executing cmd: bash MOEAD.sh cam_12319_COYOACAN.dat "" 1000000000.0000001 2147483647 1755569554 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:56:44-0.1687183380126953
+Result: SAT, 0, 0.15, 0, 1755569554
+now 2025-12-16 21:57:14 -0300; start 2025-12-16 21:00:12 -0300; time-start 3422.209354062; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 678174566 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:45:55-0.194502592086792
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 678174566 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:45:55-0.194502592086792
-Result: SAT, 0, 0.41, 0, 678174566
-now 2025-12-11 22:46:04 -0300; start 2025-12-11 22:19:27 -0300; time-start 1596.918846103; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_7256_TLAHUAC.dat "" 1000000000.0000001 2147483647 707988899 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:57:14-0.5659136772155762
+Executing cmd: bash MOEAD.sh cam_7256_TLAHUAC.dat "" 1000000000.0000001 2147483647 707988899 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:57:14-0.5659136772155762
+Result: SAT, 0, 0.26, 0, 707988899
+now 2025-12-16 21:57:29 -0300; start 2025-12-16 21:00:12 -0300; time-start 3437.775109866; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1860859348 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:46:04-0.7833442687988281
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1860859348 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:46:04-0.7833442687988281
-Result: SAT, 0, 0.89, 0, 1860859348
-now 2025-12-11 22:46:13 -0300; start 2025-12-11 22:19:27 -0300; time-start 1605.754034294; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_14468_VENUSTIANO_CARRANZA.dat "" 1000000000.0000001 2147483647 365703634 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:57:29-0.2625734806060791
+Executing cmd: bash MOEAD.sh cam_14468_VENUSTIANO_CARRANZA.dat "" 1000000000.0000001 2147483647 365703634 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:57:29-0.2625734806060791
+Result: SAT, 0, -0.07, 0, 365703634
+now 2025-12-16 21:58:21 -0300; start 2025-12-16 21:00:12 -0300; time-start 3489.502716778; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1180947612 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:46:13-0.25182294845581055
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1180947612 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:46:13-0.25182294845581055
-Result: SAT, 0, 0.78, 0, 1180947612
-          -> Take improving step to neighbour cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=200 (0.0 [based on 11 runs with cutoff 1000000000.0]) with flip 8
+  Trial 1 for calling: bash MOEAD.sh cam_11410_TLALPAN.dat "" 1000000000.0000001 2147483647 1490140505 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:58:21-0.6229007244110107
+Executing cmd: bash MOEAD.sh cam_11410_TLALPAN.dat "" 1000000000.0000001 2147483647 1490140505 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:58:21-0.6229007244110107
+Result: SAT, 0, 0.66, 0, 1490140505
+          -> Take improving step to neighbour bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 11 runs with cutoff 1000000000.0]) with flip 10
 
           
-============= Performing 1 bonus runs of state: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=200 (0.0 [based on 11 runs with cutoff 1000000000.0]) ============ 
+============= Performing 1 bonus runs of state: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 11 runs with cutoff 1000000000.0]) ============ 
 
-now 2025-12-11 22:46:22 -0300; start 2025-12-11 22:19:27 -0300; time-start 1614.221265316; maxWall 8640000.0
+now 2025-12-16 21:58:51 -0300; start 2025-12-16 21:00:12 -0300; time-start 3519.057057282; maxWall 8640000.0
 State wants more detail (11+1) than incumbent (11), doing incumbent first:
-cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=200 (0.0 [based on 11 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 11 runs with cutoff 1000000000.0])
+bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 11 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 11 runs with cutoff 1000000000.0])
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1005265002 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:46:22-0.008420944213867188
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1005265002 -cross 0.8 -mut 0.5 -neighbor 10 -ngen 500 -op1 0.5 -pop 500 > /tmp/tmp-2025-12-1122:46:22-0.008420944213867188
-Result: SAT, 0, 0.11, 0, 1005265002
+  Trial 1 for calling: bash MOEAD.sh cam_7408_XOCHIMILCO.dat "" 1000000000.0000001 2147483647 315275348 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:58:51-0.07109689712524414
+Executing cmd: bash MOEAD.sh cam_7408_XOCHIMILCO.dat "" 1000000000.0000001 2147483647 315275348 -bitprob 0.2 -cross 1.0 -crossType 3 -mut 0.3 -mutPct 0.15 -mutType 9 -neighbor 20 -op1 0.5 -pop 200 > /tmp/tmp-2025-12-1621:58:51-0.07109689712524414
+Result: SAT, 0, 0.76, 0, 315275348
  Same incumbent, new precision:
-New Incumbent: 8.499999999999986, 0.0 [12, 1000000000.0]. With state cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
+New Incumbent: 9.299999999999983, 0.0 [12, 1000000000.0]. With state bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1005265002 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:46:34-0.36461782455444336
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1005265002 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.6 -pop 200 > /tmp/tmp-2025-12-1122:46:34-0.36461782455444336
-Result: SAT, 0, 0.73, 0, 1005265002
-          -> After 1 bonus runs: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.6 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0])
+  Trial 1 for calling: bash MOEAD.sh cam_7408_XOCHIMILCO.dat "" 1000000000.0000001 2147483647 315275348 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:59:06-0.9742326736450195
+Executing cmd: bash MOEAD.sh cam_7408_XOCHIMILCO.dat "" 1000000000.0000001 2147483647 315275348 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1621:59:06-0.9742326736450195
+Result: SAT, 0, 0.80, 0, 315275348
+          -> After 1 bonus runs: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 12 runs with cutoff 1000000000.0])
 
-now 2025-12-11 22:46:43 -0300; start 2025-12-11 22:19:27 -0300; time-start 1635.118266394; maxWall 8640000.0
-now 2025-12-11 22:46:43 -0300; start 2025-12-11 22:19:27 -0300; time-start 1635.118560842; maxWall 8640000.0
-    Changing ["op1: 0.6->0.8"], evaluating ...
+now 2025-12-16 21:59:24 -0300; start 2025-12-16 21:00:12 -0300; time-start 3552.081914348; maxWall 8640000.0
+now 2025-12-16 21:59:24 -0300; start 2025-12-16 21:00:12 -0300; time-start 3552.082778238; maxWall 8640000.0
+    Changing ["op1: 0.1->1.0"], evaluating ...
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.8 -pop 200 > /tmp/tmp-2025-12-1122:46:43-0.09402847290039062
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.8 -pop 200 > /tmp/tmp-2025-12-1122:46:43-0.09402847290039062
-Result: SAT, 0, 0.75, 0, 1974203791
-now 2025-12-11 22:46:52 -0300; start 2025-12-11 22:19:27 -0300; time-start 1644.200068884; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 1.0 -pop 300 > /tmp/tmp-2025-12-1621:59:24-0.6802530288696289
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 1.0 -pop 300 > /tmp/tmp-2025-12-1621:59:24-0.6802530288696289
+Result: SAT, 0, 0.87, 0, 76593332
+now 2025-12-16 21:59:31 -0300; start 2025-12-16 21:00:12 -0300; time-start 3559.095033614; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.8 -pop 200 > /tmp/tmp-2025-12-1122:46:52-0.7144346237182617
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.8 -pop 200 > /tmp/tmp-2025-12-1122:46:52-0.7144346237182617
-Result: SAT, 0, 1.09, 0, 599162946
-        -> worse: (0.5 [based on 2 runs with cutoff 1000000000.0])
-now 2025-12-11 22:47:00 -0300; start 2025-12-11 22:19:27 -0300; time-start 1652.621339826; maxWall 8640000.0
-    Changing ["op1: 0.6->0.2"], evaluating ...
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 1.0 -pop 300 > /tmp/tmp-2025-12-1621:59:31-0.6164355278015137
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 1.0 -pop 300 > /tmp/tmp-2025-12-1621:59:31-0.6164355278015137
+Result: SAT, 0, 0.18, 0, 2070231575
+now 2025-12-16 22:01:28 -0300; start 2025-12-16 21:00:12 -0300; time-start 3676.660589686; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:00-0.9196953773498535
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1974203791 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:00-0.9196953773498535
-Result: SAT, 0, 0.50, 0, 1974203791
-now 2025-12-11 22:47:10 -0300; start 2025-12-11 22:19:27 -0300; time-start 1662.482443367; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 1.0 -pop 300 > /tmp/tmp-2025-12-1622:01:28-0.5601729154586792
+Executing cmd: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.1 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 1.0 -pop 300 > /tmp/tmp-2025-12-1622:01:28-0.5601729154586792
+Result: SAT, 0, 5.76, 0, 678174566
+        -> worse: (1.6666666666666667 [based on 3 runs with cutoff 1000000000.0])
+now 2025-12-16 22:02:30 -0300; start 2025-12-16 21:00:12 -0300; time-start 3737.945666999; maxWall 8640000.0
+    Changing ["bitprob: 0.1->0.2"], evaluating ...
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:10-0.09901189804077148
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 599162946 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:10-0.09901189804077148
-Result: SAT, 0, 0.52, 0, 599162946
-now 2025-12-11 22:47:21 -0300; start 2025-12-11 22:19:27 -0300; time-start 1673.479465767; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.2 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1622:02:30-0.02635955810546875
+Executing cmd: bash MOEAD.sh cam_3205_LA_MAGDALENA_CONTRERAS.dat "" 1000000000.0000001 2147483647 76593332 -bitprob 0.2 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1622:02:30-0.02635955810546875
+Result: SAT, 0, 0.20, 0, 76593332
+now 2025-12-16 22:02:37 -0300; start 2025-12-16 21:00:12 -0300; time-start 3745.128817277; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:21-0.9909200668334961
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 76593332 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:21-0.9909200668334961
-Result: SAT, 0, 0.47, 0, 76593332
-now 2025-12-11 22:47:30 -0300; start 2025-12-11 22:19:27 -0300; time-start 1682.318900331; maxWall 8640000.0
+  Trial 1 for calling: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.2 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1622:02:37-0.5992112159729004
+Executing cmd: bash MOEAD.sh cam_22238_CUAUHTEMOC.dat "" 1000000000.0000001 2147483647 2070231575 -bitprob 0.2 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1622:02:37-0.5992112159729004
+Result: SAT, 0, 0.01, 0, 2070231575
+now 2025-12-16 22:05:29 -0300; start 2025-12-16 21:00:12 -0300; time-start 3917.765744376; maxWall 8640000.0
 getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:30-0.8342032432556152
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 521355292 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:30-0.8342032432556152
-Result: SAT, 0, 0.42, 0, 521355292
-now 2025-12-11 22:47:39 -0300; start 2025-12-11 22:19:27 -0300; time-start 1691.829016747; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:39-0.5737314224243164
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 2070231575 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:39-0.5737314224243164
-Result: SAT, 0, 0.52, 0, 2070231575
-now 2025-12-11 22:47:49 -0300; start 2025-12-11 22:19:27 -0300; time-start 1701.434737471; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:49-0.7272024154663086
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 384285839 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:49-0.7272024154663086
-Result: SAT, 0, 0.27, 0, 384285839
-now 2025-12-11 22:47:57 -0300; start 2025-12-11 22:19:27 -0300; time-start 1709.896943485; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:57-0.7496287822723389
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1056789135 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:47:57-0.7496287822723389
-Result: SAT, 0, 0.47, 0, 1056789135
-now 2025-12-11 22:48:06 -0300; start 2025-12-11 22:19:27 -0300; time-start 1718.138020527; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 183695387 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:48:06-0.2606658935546875
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 183695387 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:48:06-0.2606658935546875
-Result: SAT, 0, 0.30, 0, 183695387
-now 2025-12-11 22:48:16 -0300; start 2025-12-11 22:19:27 -0300; time-start 1728.933798808; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 678174566 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:48:16-0.1292266845703125
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 678174566 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:48:16-0.1292266845703125
-Result: SAT, 0, 0.51, 0, 678174566
-now 2025-12-11 22:48:26 -0300; start 2025-12-11 22:19:27 -0300; time-start 1738.422857605; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1860859348 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:48:26-0.49503564834594727
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1860859348 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:48:26-0.49503564834594727
-Result: SAT, 0, 0.33, 0, 1860859348
-now 2025-12-11 22:48:38 -0300; start 2025-12-11 22:19:27 -0300; time-start 1750.320353726; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1180947612 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:48:38-0.9496550559997559
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1180947612 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:48:38-0.9496550559997559
-Result: SAT, 0, 0.47, 0, 1180947612
-now 2025-12-11 22:48:47 -0300; start 2025-12-11 22:19:27 -0300; time-start 1759.328400986; maxWall 8640000.0
-getAlgoResultsForInstsAndParams.
-  Trial 1 for calling: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1005265002 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:48:47-0.029146671295166016
-Executing cmd: bash MOEAD.sh cam_1390_MILPA_ALTA.dat "" 1000000000.0000001 2147483647 1005265002 -cross 1.0 -mut 0.3 -neighbor 10 -ngen 1000 -op1 0.2 -pop 200 > /tmp/tmp-2025-12-1122:48:47-0.029146671295166016
-Result: SAT, 0, 0.65, 0, 1005265002
-          -> Take improving step to neighbour cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0]) with flip 9
-
-          
-============= Performing 2 bonus runs of state: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0]) ============ 
-
+  Trial 1 for calling: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.2 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1622:05:29-0.5988688468933105
+Executing cmd: bash MOEAD.sh cam_15743_ALVARO_OBREGON.dat "" 1000000000.0000001 2147483647 678174566 -bitprob 0.2 -cross 0.9 -crossType 2 -mut 0.3 -mutPct 0.3 -mutType 7 -neighbor 10 -op1 0.1 -pop 300 > /tmp/tmp-2025-12-1622:05:29-0.5988688468933105
+Result: SAT, 0, 0.14, 0, 678174566
 ParamILS has reached the specified maximum number of 100 function evaluations => stopping the search now.
-          -> After 2 bonus runs: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0])
-
+ParamILS has reached the specified maximum number of 100 function evaluations => stopping the search now.
+        -> worse: (0.0 [based on 3 runs with cutoff 1000000000.0])
 ParamILS has reached the specified maximum number of 100 function evaluations => stopping the search now.
           
-============= Performing 0 bonus runs of state: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0]) ============ 
+============= Performing 2 bonus runs of state: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 12 runs with cutoff 1000000000.0]) ============ 
 
-          -> After 0 bonus runs for LM: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0])
+ParamILS has reached the specified maximum number of 100 function evaluations => stopping the search now.
+          -> After 2 bonus runs for LM: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 12 runs with cutoff 1000000000.0])
 
-   LM for iteration 1: cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0])
+   LM for iteration 1: bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 12 runs with cutoff 1000000000.0])
 
 ========== DETAILED RESULTS (iteration 1): ==========
-[["SAT", 0.0, 0, 0.0, 1974203791], ["SAT", 0.0, 0, 0.0, 599162946], ["SAT", 0.0, 0, 0.0, 76593332], ["SAT", 0.0, 0, 0.0, 521355292], ["SAT", 0.0, 0, 0.0, 2070231575], ["SAT", 0.0, 0, 0.0, 384285839], ["SAT", 0.0, 0, 0.0, 1056789135], ["SAT", 0.0, 0, 0.0, 183695387], ["SAT", 0.0, 0, 0.0, 678174566], ["SAT", 0.0, 0, 0.0, 1860859348], ["SAT", 0.0, 0, 0.0, 1180947612], ["SAT", 0.0, 0, 0.0, 1005265002]]
-cam_1390_MILPA_ALTA.dat: 0.0		[based on 12 runs]
+[["SAT", 0.0, 0, 0.0, 76593332]]
+[["SAT", 0.0, 0, 0.0, 2070231575]]
+[["SAT", 0.0, 0, 0.0, 678174566]]
+[["SAT", 0.0, 0, 0.0, 1180947612]]
+[["SAT", 0.0, 0, 0.0, 1841889657]]
+[["SAT", 0.0, 0, 0.0, 1561765848]]
+[["SAT", 0.0, 0, 0.0, 221160744]]
+[["SAT", 0.0, 0, 0.0, 1755569554]]
+[["SAT", 0.0, 0, 0.0, 707988899]]
+[["SAT", 0.0, 0, 0.0, 365703634]]
+[["SAT", 0.0, 0, 0.0, 1490140505]]
+[["SAT", 0.0, 0, 0.0, 315275348]]
+cam_3205_LA_MAGDALENA_CONTRERAS.dat: 0		[based on 1 runs]
+cam_22238_CUAUHTEMOC.dat: 0		[based on 1 runs]
+cam_15743_ALVARO_OBREGON.dat: 0		[based on 1 runs]
+cam_9673_AZCAPOTZALCO.dat: 0		[based on 1 runs]
+cam_24363_GUSTAVO_A._MADERO.dat: 0		[based on 1 runs]
+cam_13802_MIGUEL_HIDALGO.dat: 0		[based on 1 runs]
+cam_11096_IZTACALCO.dat: 0		[based on 1 runs]
+cam_12319_COYOACAN.dat: 0		[based on 1 runs]
+cam_7256_TLAHUAC.dat: 0		[based on 1 runs]
+cam_14468_VENUSTIANO_CARRANZA.dat: 0		[based on 1 runs]
+cam_11410_TLALPAN.dat: 0		[based on 1 runs]
+cam_7408_XOCHIMILCO.dat: 0		[based on 1 runs]
 ================================================
 
 ==================================================================
-Best parameter configuration found so far (end of iteration 1): cross=0.8, mut=0.5, neighbor=10, ngen=500, op1=0.5, pop=500
+Best parameter configuration found so far (end of iteration 1): bitprob=0.2, cross=1.0, crossType=3, mut=0.3, mutPct=0.15, mutType=9, neighbor=20, op1=0.5, pop=200
 ==================================================================
 Training quality of this incumbent parameter configuration: 0.0, based on 12 runs with cutoff 1000000000.0
 ==================================================================
 
 Comparing LM against incumbent:
-cross=1.0 mut=0.3 neighbor=10 ngen=1000 op1=0.2 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0])
-cross=0.8 mut=0.5 neighbor=10 ngen=500 op1=0.5 pop=500 (0.0 [based on 12 runs with cutoff 1000000000.0])
+bitprob=0.1 cross=0.9 crossType=2 mut=0.3 mutPct=0.3 mutType=7 neighbor=10 op1=0.1 pop=300 (0.0 [based on 12 runs with cutoff 1000000000.0])
+bitprob=0.2 cross=1.0 crossType=3 mut=0.3 mutPct=0.15 mutType=9 neighbor=20 op1=0.5 pop=200 (0.0 [based on 12 runs with cutoff 1000000000.0])
 LM better, change incumbent
-New Incumbent: 9.99999999999998, 0.0 [12, 1000000000.0]. With state cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+New Incumbent: 9.99999999999998, 0.0 [12, 1000000000.0]. With state bitprob=0.1, cross=0.9, crossType=2, mut=0.3, mutPct=0.3, mutType=7, neighbor=10, op1=0.1, pop=300
 ParamILS has reached the specified maximum number of 100 function evaluations => stopping the search now.
 Final solution for depth 1 with limit N=2000, and cutoff time=1000000000.0.
-New Incumbent: 9.99999999999998, 0.0 [12, 1000000000.0]. With state cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+New Incumbent: 9.99999999999998, 0.0 [12, 1000000000.0]. With state bitprob=0.1, cross=0.9, crossType=2, mut=0.3, mutPct=0.3, mutType=7, neighbor=10, op1=0.1, pop=300
 
 ==================================================================
 ParamILS is finished.
 ==================================================================
 
-Final best parameter configuration found: cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+Final best parameter configuration found: bitprob=0.1, cross=0.9, crossType=2, mut=0.3, mutPct=0.3, mutType=7, neighbor=10, op1=0.1, pop=300
 ==================================================================
-Active parameters: cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+Active parameters: bitprob=0.1, cross=0.9, crossType=2, mut=0.3, mutPct=0.3, mutType=7, neighbor=10, op1=0.1, pop=300
 
 ==================================================================
 Training quality of this final best found parameter configuration: 0.0, based on 12 runs with cutoff 1000000000.0
@@ -710,9 +745,9 @@ Computing validation result on independent data -- 0 runs with cutoff time 10000
 Combined result: 1000000000000000000
 
 ================================================================
-Final best parameter configuration: cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+Final best parameter configuration: bitprob=0.1, cross=0.9, crossType=2, mut=0.3, mutPct=0.3, mutType=7, neighbor=10, op1=0.1, pop=300
 ==================================================================
-Active parameters: cross=1.0, mut=0.3, neighbor=10, ngen=1000, op1=0.2, pop=200
+Active parameters: bitprob=0.1, cross=0.9, crossType=2, mut=0.3, mutPct=0.3, mutType=7, neighbor=10, op1=0.1, pop=300
 
 ================================================================
 Training quality of this final best found parameter configuration: 0.0, based on 12 runs with cutoff 1000000000.0

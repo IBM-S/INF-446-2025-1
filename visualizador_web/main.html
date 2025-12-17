@@ -1344,26 +1344,28 @@
         const tbody = APP.dom['compare-tbody'];
         if (!tbody) return;
         tbody.innerHTML = '';
-        const fmt = (v, d = 4) => (typeof v === 'number' && isFinite(v) ? v.toFixed(d) : '—');
-        const fmt2 = (v) => (typeof v === 'number' && isFinite(v) ? v.toFixed(2) : '—');
+        const fmtHV = (v) => (typeof v === 'number' && isFinite(v) ? v.toFixed(6) : '-');
+        const fmtGap = (v) => (typeof v === 'number' && isFinite(v) ? v.toFixed(6) : '-');
+        const fmtTime = (v) => (typeof v === 'number' && isFinite(v) ? v.toFixed(2) : '-');
+
         results.forEach(r => {
           const tr = document.createElement('tr');
           tr.style.cursor = 'pointer';
           const filesHtml = [
-            r.ampl_front ? `<a href="/get/${r.ampl_front}" target="_blank">AMPL</a>` : '—',
-            r.moead_front_first ? `<a href="/get/${r.moead_front_first}" target="_blank">MOEAD GEN0</a>` : '—',
-            r.moead_front_last ? `<a href="/get/${r.moead_front_last}" target="_blank">MOEAD Último</a>` : '—'
+            r.ampl_front ? `<a href="/get/${r.ampl_front}" target="_blank">AMPL</a>` : '-',
+            r.moead_front_first ? `<a href="/get/${r.moead_front_first}" target="_blank">MOEAD GEN0</a>` : '-',
+            r.moead_front_last ? `<a href="/get/${r.moead_front_last}" target="_blank">MOEAD Último</a>` : '-'
           ].join(' | ');
           tr.innerHTML = `
-            <td style="text-align:left;">${r.instance}</td>
-            <td>${fmt(r.hv_ampl)}</td>
-            <td>${fmt(r.hv_moead)}</td>
-            <td>${fmt2(r.hv_gap_pct)}</td>
-            <td>${fmt2(r.time_ampl_s)}</td>
-            <td>${fmt2(r.time_moead_s)}</td>
-            <td>${fmt2(r.time_gap_pct)}</td>
-            <td>${filesHtml}</td>
-          `;
+          <td style="text-align:left;">${r.instance}</td>
+          <td>${fmtHV(r.hv_ampl)}</td>
+          <td>${fmtHV(r.hv_moead)}</td>
+          <td>${fmtGap(r.hv_gap_pct)}</td>
+          <td>${fmtTime(r.time_ampl_s)}</td>
+          <td>${fmtTime(r.time_moead_s)}</td>
+          <td>${fmtGap(r.time_gap_pct)}</td>
+          <td>${filesHtml}</td>
+        `;
           tr.onclick = () => this.plotCompareFronts(r);
           tbody.appendChild(tr);
         });
@@ -1492,8 +1494,8 @@
           const gap = ((st.hvOpt - lastHv) / st.hvOpt * 100).toFixed(6);
           APP.dom['hv-gap'].textContent = `${gap}%`;
         } else {
-          APP.dom['hv-ampl-opt'].textContent = "—";
-          APP.dom['hv-gap'].textContent = "—";
+          APP.dom['hv-ampl-opt'].textContent = "-";
+          APP.dom['hv-gap'].textContent = "-";
         }
       },
 

@@ -34,7 +34,7 @@ DIR_STATIC_MAPS = os.path.join(BASE_DIR, "static", "maps")
 DIR_MOEAD_CORE = os.path.join(PROYECTO_ROOT, "solver_moead")
 PATH_MOEAD_EXEC = os.path.join(DIR_MOEAD_CORE, "MOEAD")
 PATH_HV_EXEC = os.path.join(PROYECTO_ROOT, "material", "hv-1.3-src", "hv")
-OPTIMOS_PATH = os.path.join(PROYECTO_ROOT, "Tuning/optimos.txt")
+OPTIMOS_PATH = os.path.join(PROYECTO_ROOT, "visualizacion_web/optimos_web.txt")
 
 OPTIMOS_CACHE = None
 ALLOWED_IMG = {"png", "jpg", "jpeg", "webp"}
@@ -157,8 +157,8 @@ def calcular_referencia_global(files):
                         found = True
                     except: pass
     if not found: return (1.0, 1.0)
-    ref_x = max_x + abs(max_x) * 0.001
-    ref_y = max_y + abs(max_y) * 0.001
+    ref_x = max_x 
+    ref_y = max_y 
     return (ref_x if ref_x != 0 else 0.1, ref_y if ref_y != 0 else 0.1)
 
 def get_time_from_log(path, header_key, sep=",", skip_first=True):
@@ -1107,24 +1107,31 @@ def compare_all():
         hv_moead = None
         hv_gap_pct = None
 
-        files_for_ref = [f for f in [ampl_front_file, last_front_file] if f]
-        if files_for_ref:
-            ref_point = calcular_referencia_global(files_for_ref)
+        optimos = load_optimos()
+        opt_entry = optimos.get(base_name)
 
-            if last_front_file:
-                hv_moead = calculate_hv(last_front_file, ref_point)
-            if ampl_front_file:
-                hv_ampl = calculate_hv(ampl_front_file, ref_point)
+        if opt_entry is not None:
+            # Referencia tomada de optimos_web.txt
+            ref_point = opt_entry["ref"]
+        else:
+            # Fallback: referencia global a partir de los frentes
+            files_for_ref = [f for f in [ampl_front_file, last_front_file] if f]
+            ref_point = calcular_referencia_global(files_for_ref) if files_for_ref else (1.0, 1.0)
 
-            if hv_ampl not in (None, 0.0) and hv_moead is not None:
-                hv_gap_pct = 100.0 * (hv_ampl - hv_moead) / hv_ampl
+        if last_front_file:
+            hv_moead = calculate_hv(last_front_file, ref_point)
+        if ampl_front_file:
+            hv_ampl = calculate_hv(ampl_front_file, ref_point)
+
+        if hv_ampl not in (None, 0.0) and hv_moead is not None:
+            hv_gap_pct = 100.0 * (hv_ampl - hv_moead) / hv_ampl
 
         # -----------------------------
         #  Gap de tiempos
         # -----------------------------
         time_gap_pct = None
         if t_ampl_s not in (None, 0.0) and t_moead_s is not None:
-            time_gap_pct = 100.0 * (t_ampl_s - t_moead_s) / t_ampl_s
+            time_gap_pct = 100.0 * (t_moead_s - t_ampl_s) / t_ampl_s
 
         # -----------------------------
         #  Resultado final por instancia
