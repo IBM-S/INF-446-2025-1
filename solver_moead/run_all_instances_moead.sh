@@ -14,13 +14,19 @@ VARIANT="location"
 NUM_RUNS=10          
 
 # Parámetros Algoritmo
-POPULATION=400
-NEIGHBOR=80
-NEVALS=80000    # Criterio de parada por evaluaciones
+POPULATION=300
+NEIGHBOR=10
+NEVALS=150000    # Criterio de parada por evaluaciones
 MAX_TIME=3600      # Criterio de parada por tiempo (0 = desactivado)
-MUTATION=0.8
-CROSSOVER=1.0
+MUTATION=0.5
+CROSSOVER=0.7
 OP1_PROB=0.5
+SAVE=0
+MUTTYPE=11
+CROSSTYPE=3
+MUTPCT=0.2
+BITPROB=0.1
+
 
 # Lista de Instancias
 declare -a INSTANCE_ORDER=(
@@ -79,7 +85,7 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
 
     for (( run=1; run <=${NUM_RUNS}; run++)); do
         
-        currentSeed=$((100 + run))
+        currentSeed=$RANDOM
         
         echo "  > Run ${run}/${NUM_RUNS} (Seed: ${currentSeed})..."
         
@@ -113,6 +119,11 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
             -mut ${MUTATION} \
             -cross ${CROSSOVER} \
             -op1 ${OP1_PROB} \
+            -save ${SAVE} \
+            -mutType ${MUTTYPE} \
+            -crossType ${CROSSTYPE} \
+            -mutPct ${MUTPCT} \
+            -bitprob ${BITPROB} \
             -outDir "${subFolder}" \
             > "${consoleLog}" 2>&1
 
@@ -122,11 +133,21 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
         # --- CREAR PARETO_FRONT.TXT ---
         # Buscamos el archivo con el número de generación más alto (la última población)
         # sort -V ordena "naturalmente" (Gen_2 va antes que Gen_10)
-        lastGenFile=$(ls "${runDir}"/POF_*_GEN_*.dat 2>/dev/null | sort -V | tail -n 1)
+        lastGenFile="${runDir}"/last_gen_${instanceName}.dat"
+        # Copiamos ese archivo como pareto_front.txt para estandarizar con AMPL
 
         if [ -f "${lastGenFile}" ]; then
-            # Copiamos ese archivo como pareto_front.txt para estandarizar con AMPL
-            cp "${lastGenFile}" "${runDir}/pareto_front.txt"
+            # Extrae SOLO los primeros 2 números de cada línea (F1 y F2), ignorando "- IDs instalados..."
+            awk '
+            {
+            n=0
+            for(i=1;i<=NF;i++){
+                if($i ~ /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/){
+                a[++n]=$i
+                if(n==2){ print a[1], a[2]; break }
+                }
+            }
+            }' "${lastGenFile}" > "${runDir}/pareto_front.txt"
             # echo "    [Info] Generado pareto_front.txt desde $(basename "$lastGenFile")"
         else
             echo "    [Error] No se generaron archivos POF. Revisa console_output.txt"

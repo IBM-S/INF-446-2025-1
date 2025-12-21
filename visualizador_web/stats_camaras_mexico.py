@@ -76,6 +76,14 @@ mask_alto = crimes["impacto_delito"].astype(str).str.upper().str.contains("ALTO 
 crimes_alto = crimes.loc[mask_alto].copy()
 
 crimes_alto["__alc"] = normalize_alcaldia(crimes_alto[col_alc_crimes])
+
+print("\n[DEBUG] DELITOS - filas con alcaldia vacía/None (raw):")
+mask_none = crimes_alto["__alc"].isin(["NONE", "NAN"]) | crimes_alto["__alc"].isna()
+cols_show = [col_alc_crimes, "impacto_delito", "categoria_delito", "anio_hecho"]
+cols_show = [c for c in cols_show if c in crimes_alto.columns]  # por si falta alguna
+print(crimes_alto.loc[mask_none, cols_show].head(30))
+print("Total delitos alto sin alcaldia:", int(mask_none.sum()))
+
 delitos_por_alc = (crimes_alto.groupby("__alc")
                               .size()
                               .rename("#delitos_alto")
@@ -107,6 +115,22 @@ col_alc_cams = find_alcaldia_col(cams)
 if col_alc_cams:
     # Si ya viene la alcaldía en el punto, agrupar directo
     cams["__alc"] = normalize_alcaldia(cams[col_alc_cams])
+    print("\n[DEBUG] CAMS - filas con alcaldia vacía/None (raw):")
+    mask_none = cams["__alc"].isin(["NONE", "NAN"]) | cams["__alc"].isna()
+    cols_show = [col_alc_cams]
+    print(cams.loc[mask_none, cols_show].head(30))
+    print("Total cámaras sin alcaldia:", int(mask_none.sum()))
+
+    mask_none = cams[col_alc_cams].isna()
+
+    cols = [c for c in cams.columns if c != "geometry"]
+    print(cams.loc[mask_none, cols].head(20))
+
+    cams.loc[mask_none].to_file(OUT_DIR/"camaras_sin_alcaldia.geojson", driver="GeoJSON")
+    cams.loc[mask_none, cols].to_csv(OUT_DIR/"camaras_sin_alcaldia.csv", index=False)
+
+
+
     cams_por_alc = (cams.groupby("__alc")
                          .size()
                          .rename("#camaras")

@@ -22,7 +22,17 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # AWK: Limpiar números
-AWK_CLEAN='{ if ($1 ~ /^-?[0-9.]/ && $2 ~ /^-?[0-9.]/) print $1, $2 }'
+AWK_CLEAN='
+{
+  n=0
+  for(i=1;i<=NF;i++){
+    if($i ~ /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/){
+      a[++n]=$i
+      if(n==2){ print a[1], a[2]; break }
+    }
+  }
+}'
+
 
 # AWK: Calcular Máximos
 AWK_MAX='
@@ -79,11 +89,18 @@ for inst in $INSTANCIAS; do
     # MOEAD
     path_moead="${DIR_MOEAD}/${TIPO}/${inst}"
     max_mx="NaN"; max_my="NaN"
+
+    tmp_moead="${OUT_DIR}/tmp_moead_max.dat"   # <-- definirlo
+
     if [ -d "$path_moead" ]; then
-        cat "${path_moead}"/run_*/POF_*.dat 2>/dev/null | awk "$AWK_CLEAN" > "$tmp_max"
-        read max_mx max_my <<< $(awk "$AWK_MAX" "$tmp_max")
+        cat "${path_moead}"/run_*/last_gen_"${inst}".dat 2>/dev/null \
+            | awk "$AWK_CLEAN" > "$tmp_moead"
+
+        read max_mx max_my <<< $(awk "$AWK_MAX" "$tmp_moead")   # <-- usar tmp_moead
     fi
+
     echo "      -> MOEAD Max: F1=$max_mx, F2=$max_my"
+
 
     # CALCULO GLOBAL
     echo "$max_ax $max_ay" > "$tmp_max"
@@ -216,5 +233,5 @@ for inst in $INSTANCIAS; do
     echo "  -> CSV Detallado: ${csv_out}"
     echo "  -> CSV Best Fronts: ${best_csv}"
 
-    rm -f "$tmp_max" "${OUT_DIR}/tmp_run.dat"
+    rm -f "$tmp_max" "$tmp_moead" "${OUT_DIR}/tmp_run.dat"
 done
