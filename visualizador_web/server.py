@@ -34,7 +34,7 @@ DIR_STATIC_MAPS = os.path.join(BASE_DIR, "static", "maps")
 DIR_MOEAD_CORE = os.path.join(PROYECTO_ROOT, "solver_moead")
 PATH_MOEAD_EXEC = os.path.join(DIR_MOEAD_CORE, "MOEAD")
 PATH_HV_EXEC = os.path.join(PROYECTO_ROOT, "material", "hv-1.3-src", "hv")
-OPTIMOS_PATH = os.path.join(PROYECTO_ROOT, "visualizacion_web/optimos_web.txt")
+OPTIMOS_PATH = os.path.join(PROYECTO_ROOT, "visualizador_web/optimos_web.txt")
 
 OPTIMOS_CACHE = None
 ALLOWED_IMG = {"png", "jpg", "jpeg", "webp"}
@@ -650,6 +650,15 @@ def run():
     append_jsonl(os.path.join(DIR_RUN_STATS, "runs_all.jsonl"), rec)
     append_jsonl(os.path.join(DIR_RUN_STATS, f"{base}.jsonl"), rec)
 
+    print("[/run] reply:",
+        "files=", len(files) if 'files' in locals() else None,
+        "gens=", len(gens) if 'gens' in locals() else None,
+        "hvs=", len(hvs) if 'hvs' in locals() else None,
+        "hv_last=", (hvs[-1] if 'hvs' in locals() and hvs else None),
+        "hv_opt=", hv_opt,
+        "ref=", ref,
+        flush=True)
+
     return jsonify({
         "files": [os.path.relpath(f, PROYECTO_ROOT) for f in files],
         "hv": hvs, "gen_numbers": gens, "hv_opt": hv_opt,
@@ -702,8 +711,8 @@ def load():
         
         return jsonify({
             "files": [os.path.relpath(f, PROYECTO_ROOT) for f in cached_files],
-            "hv": hvs, "gen_numbers": gens, "hvAmpl": hv_opt,
-            "refPointGlobal": {"x": ref[0], "y": ref[1]} if ref else None,
+            "hv": hvs, "gen_numbers": gens, "hv_opt": hv_opt,
+            "ref_point": {"x": ref[0], "y": ref[1]} if ref else None,
             "timeAmpl": t_ampl, "timeMoead": t_moead, "timeGap": gap
         })
 
