@@ -32,20 +32,20 @@ BITPROB=0.1
 declare -a INSTANCE_ORDER=(
     "cam_1390_MILPA_ALTA.dat"
     "cam_1800_CUAJIMALPA_DE_MORELOS.dat"
-    "cam_3205_LA_MAGDALENA_CONTRERAS.dat"
-    "cam_7256_TLAHUAC.dat"
-    "cam_7408_XOCHIMILCO.dat"
-    "cam_9673_AZCAPOTZALCO.dat"
-    "cam_11096_IZTACALCO.dat"
-    "cam_11410_TLALPAN.dat"
-    "cam_11476_BENITO_JUAREZ.dat"
-    "cam_12319_COYOACAN.dat"
-    "cam_13802_MIGUEL_HIDALGO.dat"
-    "cam_14468_VENUSTIANO_CARRANZA.dat"
-    "cam_15743_ALVARO_OBREGON.dat"
-    "cam_22238_CUAUHTEMOC.dat"
-    "cam_24363_GUSTAVO_A._MADERO.dat"
-    "cam_40264_IZTAPALAPA.dat"
+    #"cam_3205_LA_MAGDALENA_CONTRERAS.dat"
+    #"cam_7256_TLAHUAC.dat"
+    #"cam_7408_XOCHIMILCO.dat"
+    #"cam_9673_AZCAPOTZALCO.dat"
+    #"cam_11096_IZTACALCO.dat"
+    #"cam_11410_TLALPAN.dat"
+    #"cam_11476_BENITO_JUAREZ.dat"
+    #"cam_12319_COYOACAN.dat"
+    #"cam_13802_MIGUEL_HIDALGO.dat"
+    #"cam_14468_VENUSTIANO_CARRANZA.dat"
+    #"cam_15743_ALVARO_OBREGON.dat"
+    #"cam_22238_CUAUHTEMOC.dat"
+    #"cam_24363_GUSTAVO_A._MADERO.dat"
+    #"cam_40264_IZTAPALAPA.dat"
 )
 
 # ================= INICIO =================cd
@@ -105,35 +105,51 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
 
         consoleLog="${runDir}/console_output.txt"
 
+        cmd=("${EXECUTABLE}" 
+            -inst "${fullInstancePath}" 
+            -seed "${currentSeed}" 
+            -type "${PROBLEM_TYPE}" 
+            -variant "${VARIANT}" 
+            -pop "${POPULATION}" 
+            -neighbor "${NEIGHBOR}" 
+            -neval "${NEVALS}" 
+            -time "${MAX_TIME}" 
+            -mut "${MUTATION}" 
+            -cross "${CROSSOVER}" 
+            -op1 "${OP1_PROB}" 
+            -save "${SAVE}" 
+            -mutType "${MUTTYPE}" 
+            -crossType "${CROSSTYPE}" 
+            -mutPct "${MUTPCT}" 
+            -bitprob "${BITPROB}" 
+            -outDir "${subFolder}"
+        )
+
+        echo -n "  "
+        printf '%q ' "${cmd[@]}"
+        echo
+
         startT=$(date +%s.%N)
+        "${cmd[@]}" > "${consoleLog}" 2>&1
 
-        ${EXECUTABLE} \
-            -inst "${fullInstancePath}" \
-            -seed ${currentSeed} \
-            -type ${PROBLEM_TYPE} \
-            -variant ${VARIANT} \
-            -pop ${POPULATION} \
-            -neighbor ${NEIGHBOR} \
-            -neval ${NEVALS} \
-            -time ${MAX_TIME} \
-            -mut ${MUTATION} \
-            -cross ${CROSSOVER} \
-            -op1 ${OP1_PROB} \
-            -save ${SAVE} \
-            -mutType ${MUTTYPE} \
-            -crossType ${CROSSTYPE} \
-            -mutPct ${MUTPCT} \
-            -bitprob ${BITPROB} \
-            -outDir "${subFolder}" \
-            > "${consoleLog}" 2>&1
+        duration=$(awk '
+        match($0, /Tiempo Total:[[:space:]]*([0-9]+(\.[0-9]+)?)/, m) { print m[1]; exit }
+        ' "${consoleLog}")
 
-        endT=$(date +%s.%N)
-        duration=$(echo "$endT - $startT" | bc)
-        
+        # Fallback: si no se encontró, usa wall time
+        if [[ -z "$duration" ]]; then
+            # (si quieres fallback, mide por fuera)
+            endT=$(date +%s.%N)
+            duration=$(awk -v s="$startT" -v e="$endT" 'BEGIN{printf "%.6f", (e-s)}')
+        fi
+
+        echo "${run},${currentSeed},${duration}" >> "${summaryLog}"
+
+
         # --- CREAR PARETO_FRONT.TXT ---
         # Buscamos el archivo con el número de generación más alto (la última población)
         # sort -V ordena "naturalmente" (Gen_2 va antes que Gen_10)
-        lastGenFile="${runDir}"/last_gen_${instanceName}.dat"
+        lastGenFile="${runDir}/last_gen_${instanceName}.dat"
         # Copiamos ese archivo como pareto_front.txt para estandarizar con AMPL
 
         if [ -f "${lastGenFile}" ]; then
@@ -152,8 +168,6 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
         else
             echo "    [Error] No se generaron archivos POF. Revisa console_output.txt"
         fi
-
-        echo "${run},${currentSeed},${duration}" >> "${summaryLog}"
 
     done
     echo "  [OK] Instancia finalizada."

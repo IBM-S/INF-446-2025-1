@@ -7,19 +7,18 @@ dirhv="../material/hv-1.3-src"
 dirOutput="../datos/res/raw_moead"
 
 # Máximo de evaluaciones totales
-evaluaciones=200000
+evaluaciones=100000
 
 # Inicialización de variables
 pop=0
-neighbor=0
+neighborPct=0
 mut=0
+mutPctDelete=0
+mutPctSwap=0
+mutType=11
 cross=0
+crossType=3
 op1=0
-descomposition=0
-mutType=1
-crossType=0
-mutPct=0
-bitprob=0
 
 instance=""
 execution_params=()
@@ -44,14 +43,14 @@ while [ $# -gt 0 ]; do
     # Verificar si el argumento actual es un flag (-pm, -pc, -p, -s, etc.)
     case "$flag" in
         -pop) pop="$2"; shift 2 ;;
-        -neighbor) neighbor="$2"; shift 2 ;;
+        -neighborPct) neighborPct="$2"; shift 2 ;;
         -mut) mut="$2"; shift 2 ;;
-        -cross) cross="$2"; shift 2 ;;
-        -op1) op1="$2"; shift 2 ;;
+        -mutPctDelete) mutPctDelete="$2"; shift 2 ;;
+        -mutPctSwap) mutPctSwap="$2"; shift 2 ;;
         -mutType) mutType="$2"; shift 2 ;;
+        -cross) cross="$2"; shift 2 ;;
         -crossType) crossType="$2"; shift 2 ;;
-        -mutPct) mutPct="$2"; shift 2 ;;
-        -bitprob) bitprob="$2"; shift 2 ;;
+        -op1) op1="$2"; shift 2 ;;
         *)
             # Si el argumento es numérico o una cadena vacía, lo añadimos a la lista de parámetros de ejecución
             if [[ "$flag" =~ ^[0-9]+(\.[0-9]+)?$ ]] || [ "$flag" = "" ]; then
@@ -67,7 +66,7 @@ done
 
 # Calcular mi, número de objetivos y parámetros
 no=2 # número de objetivos
-params="-neval ${evaluaciones} -pop ${pop} -neighbor ${neighbor} -mut ${mut} -cross ${cross} -op1 ${op1} -mutType ${mutType} -crossType ${crossType} -mutPct ${mutPct} -bitprob ${bitprob}"
+params="-neval ${evaluaciones} -pop ${pop} -neighborPct ${neighborPct} -mut ${mut} -mutPctDelete ${mutPctDelete} -mutPctSwap ${mutPctSwap} -mutType ${mutType} -cross ${cross} -crossType ${crossType} -op1 ${op1} "
 echo "Parámetros: ${params}"
 
 screen="salida_consola.txt"
@@ -124,8 +123,8 @@ echo ${pr1}
 echo ${pr2}
 factor_pr1=1
 factor_pr2=1
-pr1=$(awk "BEGIN {printf \"%.1f\",${pr1}*${factor_pr1}}" | sed 's/,/./')
-pr2=$(awk "BEGIN {printf \"%.1f\",${pr2}*${factor_pr2}}" | sed 's/,/./')
+pr1=$(awk "BEGIN {printf \"%.6f\",${pr1}*${factor_pr1}}" | sed 's/,/./')
+pr2=$(awk "BEGIN {printf \"%.6f\",${pr2}*${factor_pr2}}" | sed 's/,/./')
 echo ${pr1}
 echo ${pr2}
 
@@ -133,7 +132,7 @@ echo "./${dirhv}/hv -r \"${pr1} ${pr2}\" of.out > ${screen2}"
 ./${dirhv}/hv -r "${pr1} ${pr2}" of.out > ${screen2}
 
 hv=$(tail -1 ${screen2})
-gap=$(awk "BEGIN {printf \"%.2f\",100.00*(${optimo}-${hv})/${optimo}}")
+gap=$(awk "BEGIN {printf \"%.4f\",100.00*(${optimo}-${hv})/${optimo}}")
 runlength=$(echo ${gap} | sed 's/,/./')
 # Para el caso mas grande, probarlo solo, solo minimizar el HV.
 

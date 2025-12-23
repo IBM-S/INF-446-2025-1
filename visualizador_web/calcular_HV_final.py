@@ -238,6 +238,40 @@ def print_best_row(name, points, ref, out_dir):
         print(f"{name:<10} {'-':<15} {'-':<15} {'-':<15}")
         return 0, 0.0, 0.0
 
+def _is_missing(v):
+    return v is None or (isinstance(v, float) and np.isnan(v))
+
+def winner_min(ampl, moead, tol=1e-12):
+    """Gana el menor (tiempo). Si uno no tiene dato, gana el que sí tiene."""
+    a_miss = _is_missing(ampl)
+    m_miss = _is_missing(moead)
+
+    if a_miss and m_miss:
+        return "-"          # ninguno
+    if a_miss and not m_miss:
+        return "MOEAD"      # solo MOEAD tiene
+    if m_miss and not a_miss:
+        return "AMPL"       # solo AMPL tiene
+
+    if abs(ampl - moead) <= tol:
+        return "EMPATE"
+    return "AMPL" if ampl < moead else "MOEAD"
+
+def winner_max(ampl, moead, tol=1e-12):
+    """Gana el mayor (HV, ND). Si uno no tiene dato, gana el que sí tiene."""
+    a_miss = _is_missing(ampl)
+    m_miss = _is_missing(moead)
+
+    if a_miss and m_miss:
+        return "-"
+    if a_miss and not m_miss:
+        return "MOEAD"
+    if m_miss and not a_miss:
+        return "AMPL"
+
+    if abs(ampl - moead) <= tol:
+        return "EMPATE"
+    return "AMPL" if ampl > moead else "MOEAD"
 
 # ================= MAIN =================
 
@@ -503,7 +537,6 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
             print(f"{'WINNER':<10} {w_time:<15} {w_hv:<15} {w_thv:<15}")
             print("-" * 75)
-
 
             # --- TABLA 2: BEST FRONTS UNIFICADOS ---
             print(f"\n  [4] COMPARACIÓN DE BEST FRONTS (Frentes Unificados):")
