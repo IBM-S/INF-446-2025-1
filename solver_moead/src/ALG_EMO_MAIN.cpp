@@ -82,7 +82,8 @@ void PrintUsage() {
     std::cout << "  -alg <string>     : Algoritmo: 'MOEAD' o 'MOEAD-DE' (Defecto: MOEAD)" << std::endl;
     std::cout << "  -seed <int>       : Semilla aleatoria (Defecto: 123)" << std::endl;
     std::cout << "  -pop <int>        : Tamaño Población (Sobrescribe MOEAD.txt)" << std::endl;
-    std::cout << "  -neighbor <int>   : Tamaño Vecindario T (Sobrescribe MOEAD.txt)" << std::endl;
+    std::cout << "  -neighbor <int>   : Tamaño Vecindario Fijo (ej: 20) (Sobrescribe MOEAD.txt)" << std::endl;
+    std::cout << "  -neighborPct <dbl>: Tamaño Vecindario Porcentual (ej: 0.2 = 20%) (Prioridad sobre -neighbor)" << std::endl;
     std::cout << "  -decomp <int>     : Tipo Descomposicion (1: TCH, 2: Mod, 3: PBI) (Defecto: 1)" << std::endl;
     std::cout << "  -save <int>       : Guardar cada X gens (0 = Solo Inicio/Fin) (Defecto: 0)" << std::endl;
     
@@ -91,14 +92,16 @@ void PrintUsage() {
     std::cout << "  -time <double>    : Tiempo máx. de ejecución en segundos (0 = Sin límite) (Defecto: 0)" << std::endl;
 
     std::cout << "\n--- Parámetros Evolutivos ---" << std::endl;
-    std::cout << "  -mut <double>     : Tasa de Mutación Global [0.0 - 1.0] (Defecto: 0.05)" << std::endl;
-    std::cout << "  -cross <double>   : Tasa de Cruzamiento [0.0 - 1.0] (Defecto: 1.0)" << std::endl;
+    std::cout << "  -mut <double>     : Tasa de Mutación Global [0.0 - 1.0] (Defecto: 0.5)" << std::endl;
+    std::cout << "  -cross <double>   : Tasa de Cruzamiento [0.0 - 1.0] (Defecto: 0.7)" << std::endl;
     
     std::cout << "\n--- Operadores Avanzados ---" << std::endl;
-    std::cout << "  -mutType <int>    : 1:BitFlip, 2:Intelligent, 3:Pct, 6:Hybrid (Def: 6)" << std::endl;
-    std::cout << "  -crossType <int>  : 1:Uniforme, 2:Inteligente (Def: 2)" << std::endl;
+    std::cout << "  -mutType <int>    : 1:BitFlip (1/N), 2:BitFlip (1/M), 3:BitFlip (Fijo), 4:Intelligent, 5:Pct, 6:Hybrid (Def: 6)" << std::endl;
+    std::cout << "  -crossType <int>  : 1:Modificado Uniforme, 2:Inteligente, 3: SemiInteligente (Def: 3)" << std::endl;
     std::cout << "  -op1 <double>     : Prob. Op1 en Híbrido (Def: 0.2)" << std::endl;
-    std::cout << "  -mutPct <double>  : % Intensidad (Para MutType 3) (Def: 0.05)" << std::endl;
+    std::cout << "  -mutPct <double>  : % Intensidad (Para MutType 4, 5, 6, 7, 9, 10, 11) (Def: 0.2)" << std::endl;
+    std::cout << "  -mutPctDelete <double>: % Intensidad Delete (Para MutType 10, 11. Si no se define, usa mutPct)" << std::endl;
+    std::cout << "  -mutPctSwap <double>  : % Intensidad Swap (Para MutType 4, 5, 6 ,7, 9, 11. Si no se define, usa mutPct)" << std::endl;
     std::cout << "  -bitprob <double> : Prob. BitFlip individual (Def: 0.01)" << std::endl;
     
     std::cout << "\n--- Salida de Datos ---" << std::endl;
@@ -120,9 +123,9 @@ int main(int argc, char *argv[])
     NumberOfVariables = 324;
     
     // Parámetros Algoritmo
-    double mutationRate = 0.3;
-    double crossoverRate = 0.8;
-    double op1Prob = 0.2; // 20% delete, 80% swap (por ejemplo)
+    double mutationRate = 0.5;
+    double crossoverRate = 0.7;
+    double op1Prob = 0.5; // 20% delete, 80% swap (por ejemplo)
 
 	NumberOfObjectives = 2;
     NumberOfFuncEvals = 40000; 
@@ -138,10 +141,14 @@ int main(int argc, char *argv[])
     int decompType = 1;   // 1 por defecto (Tchebycheff)
     int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
-    int mutType = 7;     // Default: Híbrida
-    int crossType = 2;    // Default: Inteligente
-    double mutPct = 0.3; // Default: 5% intensidad para operadores porcentuales
+    int mutType = 11;     // Default: Híbrida
+    int crossType = 3;    // Default: Inteligente
+    double mutPct = 0.2; // Default: 5% intensidad para operadores porcentuales
     double bitFlipProb = 0.1; // Default: 1% probabilidad para BitFlip Fijo
+
+    double userNeighborPct = 0.0; // 0 = usar archivo, >0 usar porcentaje
+    double userMutPctDelete = 0.1; // 0 = usar default
+    double userMutPctSwap = 0.05;   // 0 = usar default
 
 	if (argc < 2) {
         PrintUsage();
@@ -163,6 +170,7 @@ int main(int argc, char *argv[])
         // Configuración Algoritmo
         else if (arg == "-pop") { if (i + 1 < argc) userPop = atoi(argv[++i]); }
         else if (arg == "-neighbor") { if (i + 1 < argc) userNeighbor = atoi(argv[++i]); }
+        else if (arg == "-neighborPct") { if (i + 1 < argc) userNeighborPct = atof(argv[++i]); }
         else if (arg == "-decomp") { if (i + 1 < argc) decompType = atoi(argv[++i]); }
         else if (arg == "-save") { if (i + 1 < argc) saveInterval = atoi(argv[++i]); }
 
@@ -181,8 +189,12 @@ int main(int argc, char *argv[])
         else if (arg == "-crossType") { if (i + 1 < argc) crossType = atoi(argv[++i]); }
         else if (arg == "-mutPct") { if (i + 1 < argc) mutPct = atof(argv[++i]); }
         else if (arg == "-bitprob") { if (i + 1 < argc) bitFlipProb = atof(argv[++i]); }
-
+        else if (arg == "-mutPctDelete") { if (i + 1 < argc) userMutPctDelete = atof(argv[++i]); }
+        else if (arg == "-mutPctSwap") { if (i + 1 < argc) userMutPctSwap = atof(argv[++i]); }
     }
+
+    if (userMutPctDelete < 0) userMutPctDelete = mutPct;
+    if (userMutPctSwap < 0)   userMutPctSwap = mutPct;
 
 
 	if (instancePath == "") {
@@ -225,7 +237,8 @@ int main(int argc, char *argv[])
 
         if (userPop > 0) MOEAD.SetPopulationSize(userPop);
         if (userNeighbor > 0) MOEAD.SetNeighborhoodSize(userNeighbor);
-
+        if (userNeighborPct > 0.0) MOEAD.SetNeighborhoodSizePct(userNeighborPct);
+        
         MOEAD.InitializeParameter(); 
         
         populationSize = MOEAD.s_PopulationSize;
@@ -263,7 +276,15 @@ int main(int argc, char *argv[])
     std::cout << "     Variante      : " << variant << (variant == "relocation" ? " (Flexible)" : " (Fija)") << std::endl;
     std::cout << "     Semilla (Seed): " << rnd_uni_seed << std::endl;
     std::cout << "     Población     : " << finalPop << (userPop > 0 ? " (Manual)" : " (Archivo)") << std::endl;
-    std::cout << "     Vecindario (T): " << finalNeighbor << (userNeighbor > 0 ? " (Manual)" : " (Archivo)") << std::endl;
+    std::cout << "     Vecindario (T): " << finalNeighbor;
+    if (userNeighborPct > 0.0) {
+        std::cout << " (Calc. " << userNeighborPct * 100.0 << "%)";
+    } else if (userNeighbor > 0) {
+        std::cout << " (Manual Fijo)";
+    } else {
+        std::cout << " (Archivo)";
+    }
+    std::cout << std::endl;
     std::cout << "     N de variables: " << NumberOfVariables << std::endl;
     std::cout << "     Decomposition : " << strDecomp << " (" << decompType << ")" << std::endl;
     
@@ -273,7 +294,11 @@ int main(int argc, char *argv[])
 
     std::cout << "\n [4] PARÁMETROS EVOLUTIVOS" << std::endl;
     std::cout << "     Mutación Global : " << mutationRate * 100.0 << "%" << std::endl;
-    std::cout << "     Mutation Type   : " << mutType << " (Pct: " << mutPct*100 << "%, Bit: " << bitFlipProb << ")" << std::endl;
+    std::cout << "     Mutation Type   : " << mutType << std::endl; 
+    std::cout << "       -> Pct Delete : " << userMutPctDelete * 100.0 << "%" << std::endl;
+    std::cout << "       -> Pct Swap   : " << userMutPctSwap * 100.0 << "%" << std::endl;
+    std::cout << "       -> Bit Prob   : " << bitFlipProb << std::endl;
+
     std::cout << "     Prob. Op1 (Del) : " << op1Prob * 100.0 << "%" << std::endl;
     std::cout << "     Prob. Op2 (Swap): " << (1.0 - op1Prob) * 100.0 << "%" << std::endl;
     std::cout << "     Cruzamiento     : " << crossoverRate * 100.0 << "%" << std::endl;
@@ -305,6 +330,10 @@ int main(int argc, char *argv[])
         MOEAD.SetCrossoverType(crossType);
         MOEAD.SetMutationPercentage(mutPct);
         MOEAD.SetBitFlipProb(bitFlipProb);
+        MOEAD.SetMutPctDelete(userMutPctDelete);
+        MOEAD.SetMutPctSwap(userMutPctSwap);
+        MOEAD.SetNeighborhoodSizePct(userNeighborPct);
+        
 
 		MOEAD.Execute(1); // Se ejecuta solo una vez
 	}

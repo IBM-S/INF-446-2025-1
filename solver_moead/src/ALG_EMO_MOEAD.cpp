@@ -1,5 +1,6 @@
 #include "ALG_EMO_MOEAD.h"
 #include <string.h>
+#include <cmath>
 
 CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 {
@@ -18,6 +19,11 @@ CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
     m_CrossoverType = 2;     // Inteligente por defecto
     m_MutationPercentage = 0.05; 
     m_BitFlipProb = 0.01;
+
+	m_MutPctDelete = 0.05; // 5% por defecto
+	m_MutPctSwap   = 0.05; // 5% por defecto
+
+	m_NeighborhoodSizePct = 0.0;
 }
 
 CALG_EMO_MOEAD::~CALG_EMO_MOEAD(void)
@@ -155,11 +161,19 @@ void CALG_EMO_MOEAD::InitializeParameter()
     } 
     // Si s_PopulationSize > 0, significa que se usó -pop, así que ignoramos filePop
 
-    // 2. Vecindario
-    if (s_NeighborhoodSize == 0) {
-        // No se pasó por consola, usamos el del archivo
-        s_NeighborhoodSize = fileNeighbor;
-    }
+	if (m_NeighborhoodSizePct > 0) {
+		if (m_NeighborhoodSizePct > 1.0) m_NeighborhoodSizePct = 1.0; // Limitar a 100%
+		// Se pasó un porcentaje, calcular tamaño del vecindario
+		s_NeighborhoodSize = (int) std::ceil(s_PopulationSize * m_NeighborhoodSizePct);
+		//printf(">>> Vecindario calculado por porcentaje (%g%%): %d\n", m_NeighborhoodSizePct * 100.0, s_NeighborhoodSize);
+	} else if (s_NeighborhoodSize > 0) {
+		// Ya fue definido en el Main
+		//printf(">>> Vecindario fijo manual: %d\n", s_NeighborhoodSize);
+	} else {
+		// Usamos el del archivo
+		s_NeighborhoodSize = fileNeighbor;
+	}
+
 
 	// Pop_Size     NeighborhoodSize
 	//readf >> s_PopulationSize;
@@ -603,9 +617,9 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 				UtilityToolBox.MutacionDeletePorcentual(child.x_var, m_MutationRate, m_MutationPercentage, this->problemInstance);
 				break;
 			case 11:
-				UtilityToolBox.MutacionHibrida(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutationPercentage, this->problemInstance);
+				UtilityToolBox.MutacionHibrida(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
 				break;
-			 default:
+			default:
                 UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
                 break;
 			}

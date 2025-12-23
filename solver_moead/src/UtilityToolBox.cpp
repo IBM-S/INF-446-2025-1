@@ -1254,18 +1254,18 @@ void CUtilityToolBox::MutacionSwapPorcentual(vector<double> &x_var, double mutat
     }
 }
 
-void CUtilityToolBox::MutacionHibrida(vector<double> &x_var, double mutation_rate, double prob_delete, double percentage, ProblemInstance *instance)
+void CUtilityToolBox::MutacionHibrida(vector<double> &x_var, double mutation_rate, double prob_delete, double mutPctDelete, double mutPctSwap, ProblemInstance *instance)
 {
     double rnd = Get_Random_Number();
 
     if (rnd <= prob_delete) 
     {
         // CAMINO A: SOLO BORRAR (Reducir costos / Limpiar)
-        MutacionDeletePorcentual(x_var, mutation_rate, percentage, instance);
+        MutacionDeletePorcentual(x_var, mutation_rate, mutPctDelete, instance);
     } 
     else 
     {
         // CAMINO B: SWAP (Optimizar cobertura manteniendo costos)
-        MutacionSwapPorcentual(x_var, mutation_rate, percentage, instance);
+        MutacionSwapPorcentual(x_var, mutation_rate, mutPctSwap, instance);
     }
 }

@@ -95,7 +95,7 @@ public:
     // delete_ratio: Porcentaje de equipos actuales a eliminar (ej: 0.1 para borrar el 10%)
     void MutacionDeletePorcentual(vector<double> &x_var, double mutation_rate, double delete_ratio, ProblemInstance *instance);
 	// 6. Mutacion Con Delete y Swap, pero variando el porcentaje
-	void MutacionHibrida(vector<double> &x_var, double mutation_rate, double prob_delete, double percentage, ProblemInstance *instance);
+	void MutacionHibrida(vector<double> &x_var, double mutation_rate, double prob_delete, double mutPctDelete, double mutPctSwap, ProblemInstance *instance);
 
 	void CruzamientoUniformeInteligente(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
 	void CruzamientoUniformeSemiInteligente(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
