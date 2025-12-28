@@ -111,9 +111,9 @@
     }
 
     .panel-section {
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px dashed var(--border);
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid #0f172a;
     }
 
     .panel-section:last-child {
@@ -551,7 +551,7 @@
         <!-- 4. Visualización -->
         <div class="panel-section">
           <div class="panel-title">👁️ Visualización</div>
-          <div class="grid-2">
+          <div class="grid-3">
             <label class="checkbox-label"><input type="checkbox" id="fix-scale" checked> Misma escala</label>
             <label class="checkbox-label"><input type="checkbox" id="toggle-prob" checked> Prob. Mapa</label>
             <label class="checkbox-label"><input type="checkbox" id="show-ref-point"> Ref. Point</label>
@@ -1077,6 +1077,26 @@
       async listInstances() {
         const data = await this.get('/list_instances');
         if (data && data.instances) {
+          const sorted = data.instances.sort((a, b) => {
+            const extractInfo = (str) => {
+              const matchDrp = str.match(/^drp_(\d+)/);
+              const matchCam = str.match(/^cam_(\d+)/);
+              if (matchDrp) return { type: 'drp', number: parseInt(matchDrp[1]) };
+              if (matchCam) return { type: 'cam', number: parseInt(matchCam[1]) };
+              return { type: 'other', number: 0 };
+            };
+            const infoA = extractInfo(a);
+            const infoB = extractInfo(b);
+
+            const priority = { 'cam': 3, 'drp': 2, 'other': 1 };
+
+            if (priority[infoA.type] !== priority[infoB.type]) {
+              return priority[infoA.type] - priority[infoB.type];
+            }
+
+            return infoA.number - infoB.number;
+          });
+
           APP.dom['instancia'].innerHTML = data.instances.map(f => `<option value="${f}">${f}</option>`).join('');
           //APP.logic.refreshHistory(); // Cargar historial al iniciar
           APP.logic.autoLoadOnInstanceChange(true);
@@ -1086,7 +1106,28 @@
       async listAmpl() {
         const data = await this.get('/list_ampl_instances');
         let html = '<option value="">(Sin comparar)</option>';
-        if (data) html += data.map(f => `<option value="${f}">${f}</option>`).join('');
+        if (data) {
+          const sorted = data.sort((a, b) => {
+            const extractInfo = (str) => {
+              const matchDrp = str.match(/^(drp)_(\d+)/);
+              const matchCam = str.match(/^(cam)_(\d+)/);
+
+              if (matchDrp) return { type: 'drp', number: parseInt(matchDrp[2]) };
+              if (matchCam) return { type: 'cam', number: parseInt(matchCam[2]) };
+              return { type: 'other', number: 0 };
+            };
+            const infoA = extractInfo(a);
+            const infoB = extractInfo(b);
+
+            const priority = { 'cam': 3, 'drp': 2, 'other': 1 };
+            if (priority[infoA.type] !== priority[infoB.type]) {
+              return priority[infoA.type] - priority[infoB.type];
+            }
+
+            return infoA.number - infoB.number;
+          });
+          html += sorted.map(f => `<option value="${f}">${f}</option>`).join('');
+        }
         APP.dom['ampl-instancia'].innerHTML = html;
         if (APP.dom['instancia'] && APP.dom['instancia'].value) {
           APP.logic.autoSelectAndLoadAmplFor(APP.dom['instancia'].value);
