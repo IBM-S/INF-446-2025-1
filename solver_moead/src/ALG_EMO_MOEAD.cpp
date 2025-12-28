@@ -236,9 +236,9 @@ void CALG_EMO_MOEAD::InitializePopulation()
 		int num_AEDs = rand() % (total_locations + 1); // genera número entre 0 y total_locations
 
 		num_AEDs = rand() % (presupuesto + 1);
+        //printf(">>> Individuo inicial generado con %d AEDs instalados (Presupuesto: %d)\n", num_AEDs, presupuesto);
 
   		SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
-        
 
 		//SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
 		// Sin contar el presupuesto

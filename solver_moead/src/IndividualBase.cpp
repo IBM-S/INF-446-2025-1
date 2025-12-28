@@ -38,23 +38,33 @@ void CIndividualBase::Randomize()
 
 void CIndividualBase::GenerateSimpleFeasibleSolution(int num_AEDs, int total_locations)
 {
-	// std::cout << "x_var.size() = " << x_var.size() << ", total_locations = " << total_locations << ", num_AEDs = " << num_AEDs << std::endl;
+	//std::cout << "\n DEBUG START " << std::endl;
+	//std::cout << "Target num_AEDs a instalar: " << num_AEDs << std::endl;
+	//std::cout << "Total locations disponibles: " << total_locations << std::endl;
+	//std::cout << "x_var.size() = " << x_var.size() << std::endl;
 
 	// Inicializa todo en 0
 	std::fill(x_var.begin(), x_var.end(), 0.0);
+	int largo_vector = x_var.size();
 
 	// 1. Crear lista de IDs
-	std::vector<int> ids(total_locations);
-	for (int i = 0; i < total_locations; ++i)
+	std::vector<int> ids(largo_vector);
+	for (int i = 0; i < largo_vector; ++i)
 	{
 		ids[i] = i;
 	}
+	// print variable ids
+	/* std::cout << "IDs disponibles: ";
+	for (int id : ids) {
+		std::cout << id << " ";
+	}
+	std::cout << std::endl; */
 
 	// 2. Marcar posiciones obligatorias (AEDs preinstalados desde la instancia)
 	const auto &nodos = problemInstance->getNodes();
 	int pre_instalados = 0;
 
-	for (int i = 0; i < total_locations; ++i)
+	for (int i = 0; i < largo_vector; ++i)
 	{
 		if (nodos[i]->getFlag() == 1)
 		{ // o el valor que indica AED preinstalado
@@ -62,6 +72,7 @@ void CIndividualBase::GenerateSimpleFeasibleSolution(int num_AEDs, int total_loc
 			pre_instalados++;
 		}
 	}
+	//std::cout << "AEDs preinstalados marcados: " << pre_instalados << std::endl;
 
 	// 3. Revolver los IDs
 	std::random_shuffle(ids.begin(), ids.end()); // usa srand() antes si quieres control
@@ -71,24 +82,36 @@ void CIndividualBase::GenerateSimpleFeasibleSolution(int num_AEDs, int total_loc
 		std::cout << id << " ";
 	}
 	std::cout << std::endl; */
+	int instalados = 0;
+	if (!(instalados < num_AEDs))
+	{
+		std::cout << "DEBUG END \n" << std::endl;
+		return; // ya se cumplieron los AEDs necesarios
+	}
 
 	// 4.  Instalar AEDs restantes (sin sobrescribir los ya fijos)
-	int instalados = 0;
-	for (int i = 0; instalados < num_AEDs && i < total_locations; ++i)
+	for (int i = 0; instalados < num_AEDs && i < largo_vector; ++i)
 	{
 		int pos = ids[i];
-		if (x_var[pos] == 0.0) // Busca un lugar libre
+		if (x_var[pos] < 0.5) // Busca un lugar libre
 		{
 			x_var[pos] = 1.0; // Instala un AED
 			instalados++;
+			//printf("  Instalado AED en posición %d (Total instalados: %d)\n", pos, instalados);
 		}
+		//printf("x_var[%d] = %f\n", pos, x_var[pos]);
+		//printf("i: %d, instalados: %d, num_AEDs: %d\n", i, instalados, num_AEDs);
 	}
 	// imprimir x_var
-	/* std::cout << "Solución generada (x_var): ";
+	/* std::cout << "\n";
+	std::cout << "Solución generada (x_var): ";
 	for (double val : x_var)
 	{
 		std::cout << val << " ";
-	} */
+	}
+	std::cout << std::endl;
+
+	std::cout << "DEBUG END \n" << std::endl; */
 }
 
 void CIndividualBase::GenerateSimpleFeasibleSolution_v2(int num_AEDs, int total_locations)
