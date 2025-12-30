@@ -1,8 +1,10 @@
 # ----------------- CONJUNTOS Y PARÁMETROS -----------------
 param N_total;
 set N := 1..N_total;
-param cantobj :=  2 ;
-param cantejc := 11 ;
+
+param cantobj;
+param cantejc;
+
 set objetivos := {1..cantobj};
 set ejecuciones := {1..cantejc};
 
@@ -61,8 +63,8 @@ subject to Restriccion_Cobertura {j in N}:
     x[j] <= sum {(i,j) in PARES_CUBRIBLES} y[i];
 
 # R3: Vínculo de cobertura (sin cambios)
-subject to cobertura_minima { (i,j) in PARES_CUBRIBLES}:
-    x[j] >= y[i];
+# subject to cobertura_minima { (i,j) in PARES_CUBRIBLES}:
+#    x[j] >= y[i];
 
 # R4: Conservación del número de AEDs. Sigue siendo importante.
 # Opcional, pero recomendable. Si la quitas, el modelo podría vender AEDs.
