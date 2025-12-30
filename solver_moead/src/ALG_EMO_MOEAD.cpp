@@ -238,7 +238,7 @@ void CALG_EMO_MOEAD::InitializePopulation()
 		num_AEDs = rand() % (presupuesto + 1);
         //printf(">>> Individuo inicial generado con %d AEDs instalados (Presupuesto: %d)\n", num_AEDs, presupuesto);
 
-  		SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
+  		SP.m_BestIndividual.GenerateSimpleFeasibleSolution_For_Relocation(num_AEDs, total_locations);
 
 		//SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
 		// Sin contar el presupuesto
@@ -572,7 +572,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 			} else if (m_CrossoverType == 3) {
 				// Variante: CLÁSICO
 				//printf(">>> Usando Cruzamiento Uniforme Semi Inteligente\n");
-				UtilityToolBox.CruzamientoUniformeSemiInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
+				UtilityToolBox.CruzamientoUniformeReloc(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
 														  child.x_var, this->problemInstance);
 			} 
@@ -617,7 +617,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 				UtilityToolBox.MutacionDeletePorcentual(child.x_var, m_MutationRate, m_MutationPercentage, this->problemInstance);
 				break;
 			case 11:
-				UtilityToolBox.MutacionHibrida(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
+				UtilityToolBox.MutacionHibridaReloc(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
 				break;
 			default:
                 UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);

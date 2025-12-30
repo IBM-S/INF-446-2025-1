@@ -47,12 +47,44 @@ void CIndividualBase::GenerateSimpleFeasibleSolution(int num_AEDs, int total_loc
 	std::fill(x_var.begin(), x_var.end(), 0.0);
 	int largo_vector = x_var.size();
 
+	const auto &nodos = problemInstance->getNodes();
+
+	std::vector<int> candidate_ids;
+	candidate_ids.reserve(largo_vector);
+
+	// 1 Recorrer nodos: Marcar los fijos y guardar los que no tienen AED preinstalado
+	for (int i = 0; i < largo_vector; ++i)
+	{
+		if (nodos[i]->getFlag() == 1)
+		{ // o el valor que indica AED preinstalado
+			x_var[i] = 1.0;
+		} else {
+			candidate_ids.push_back(i);
+		}
+	}
+
+	if (num_AEDs > candidate_ids.size()) {
+		num_AEDs = candidate_ids.size();
+	}
+		
+	// 2 Mezclar los IDs candidatos
+	std::random_shuffle(candidate_ids.begin(), candidate_ids.end()); // usa srand() antes si quieres control
+
+	// 3 Instalar AEDs restantes (sin sobrescribir los ya fijos)
+	for (int i = 0; i < num_AEDs; ++i)
+	{
+		int pos = candidate_ids[i];
+		x_var[pos] = 1.0; // Instala un AED
+		//printf("  Instalado AED en posición %d (Total instalados: %d)\n", pos, instalados);
+	}
+
+
 	// 1. Crear lista de IDs
-	std::vector<int> ids(largo_vector);
+	/*std::vector<int> ids(largo_vector);
 	for (int i = 0; i < largo_vector; ++i)
 	{
 		ids[i] = i;
-	}
+	}*/
 	// print variable ids
 	/* std::cout << "IDs disponibles: ";
 	for (int id : ids) {
@@ -61,8 +93,7 @@ void CIndividualBase::GenerateSimpleFeasibleSolution(int num_AEDs, int total_loc
 	std::cout << std::endl; */
 
 	// 2. Marcar posiciones obligatorias (AEDs preinstalados desde la instancia)
-	const auto &nodos = problemInstance->getNodes();
-	int pre_instalados = 0;
+	/* int pre_instalados = 0;
 
 	for (int i = 0; i < largo_vector; ++i)
 	{
@@ -71,17 +102,18 @@ void CIndividualBase::GenerateSimpleFeasibleSolution(int num_AEDs, int total_loc
 			x_var[i] = 1.0;
 			pre_instalados++;
 		}
-	}
+	} */
 	//std::cout << "AEDs preinstalados marcados: " << pre_instalados << std::endl;
 
 	// 3. Revolver los IDs
-	std::random_shuffle(ids.begin(), ids.end()); // usa srand() antes si quieres control
+	// std::random_shuffle(ids.begin(), ids.end()); // usa srand() antes si quieres control
 
 	/* std::cout << "IDs mezclados: ";
 	for (int id : ids) {
 		std::cout << id << " ";
 	}
 	std::cout << std::endl; */
+	/*
 	int instalados = 0;
 	if (!(instalados < num_AEDs))
 	{
@@ -112,6 +144,53 @@ void CIndividualBase::GenerateSimpleFeasibleSolution(int num_AEDs, int total_loc
 	std::cout << std::endl;
 
 	std::cout << "DEBUG END \n" << std::endl; */
+}
+
+void CIndividualBase::GenerateSimpleFeasibleSolution_For_Relocation(int budget_units, int total_locations)
+{
+    std::fill(x_var.begin(), x_var.end(), 0.0);
+
+	total_locations = x_var.size();
+
+    const auto &nodos = problemInstance->getNodes();
+
+    std::vector<int> indices_preinstalados;
+	indices_preinstalados.reserve(total_locations);
+    for (int i = 0; i < total_locations; ++i) {
+        if (nodos[i]->getFlag() == 1) indices_preinstalados.push_back(i);
+    }
+	int total_preinstalados = indices_preinstalados.size();
+
+	double porcentaje_a_mover = UtilityToolBox.Get_Random_Number();
+
+	int cantidad_a_mover = (int)(porcentaje_a_mover * total_preinstalados);
+
+    std::random_shuffle(indices_preinstalados.begin(), indices_preinstalados.end());
+
+	int cantidad_a_dejar = total_preinstalados - cantidad_a_mover;
+	for (int i = 0; i < cantidad_a_dejar; ++i) {
+		int idx = indices_preinstalados[i];
+		x_var[idx] = 1.0; // Mantener en su lugar
+	}
+
+	int aeds_en_la_mano = cantidad_a_mover + budget_units;
+
+	std::vector<int> espacios_libres;
+	espacios_libres.reserve(total_locations);
+	for (int i = 0; i < total_locations; ++i) {
+		if (nodos[i]->getFlag() == 0 and x_var[i] < 0.5) espacios_libres.push_back(i);
+	}
+
+	std::random_shuffle(espacios_libres.begin(), espacios_libres.end());
+
+	if (aeds_en_la_mano > espacios_libres.size()) {
+		aeds_en_la_mano = espacios_libres.size();
+	}
+
+	for (int i = 0; i < aeds_en_la_mano; ++i) {
+		int idx = espacios_libres[i];
+		x_var[idx] = 1.0; // Instalar en nuevo lugar
+	}
 }
 
 void CIndividualBase::GenerateSimpleFeasibleSolution_v2(int num_AEDs, int total_locations)

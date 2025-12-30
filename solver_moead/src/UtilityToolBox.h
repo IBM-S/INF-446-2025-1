@@ -106,7 +106,21 @@ public:
 	void MutacionModificada_con_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
 
 
-
+	void CruzamientoUniformeReloc(const vector<double>& p1,
+                              const vector<double>& p2,
+                              vector<double>& c,
+                              ProblemInstance* inst);
+	void MutacionDeletePorcentualReloc(vector<double>& x, double mutation_rate,
+                                  double delete_ratio, ProblemInstance* inst);
+	void MutacionSwapPorcentualReloc(vector<double>& x, double mutation_rate,
+								 double swap_ratio, ProblemInstance* inst);
+	void MutacionHibridaReloc(std::vector<double>& x,
+											double mutation_rate,
+											double prob_delete,
+											double mutPctDelete,
+											double mutPctSwap,
+											ProblemInstance* inst);
+	void RepararRelocPresupuesto(vector<double>& x_var, ProblemInstance* instance);
 
 
 	int GetWeightNumber(int nobj, int H);

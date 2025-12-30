@@ -1269,3 +1269,192 @@ void CUtilityToolBox::MutacionHibrida(vector<double> &x_var, double mutation_rat
         MutacionSwapPorcentual(x_var, mutation_rate, mutPctSwap, instance);
     }
 }
+
+
+void CUtilityToolBox::CruzamientoUniformeReloc(const vector<double>& p1,
+                              const vector<double>& p2,
+                              vector<double>& c,
+                              ProblemInstance* inst)
+{
+    int n = p1.size();
+    c.assign(n, 0.0);
+
+    for (int i=0;i<n;++i){
+        bool a = (p1[i] > 0.5);
+        bool b = (p2[i] > 0.5);
+
+        if (a && b) c[i] = 1.0;
+        else if (a || b) c[i] = (Get_Random_Number() < 0.5) ? 1.0 : 0.0;
+    }
+
+    RepararRelocPresupuesto(c, inst); // NUEVA
+}
+
+void CUtilityToolBox::MutacionDeletePorcentualReloc(vector<double>& x, double mutation_rate,
+                                  double delete_ratio, ProblemInstance* inst)
+{
+    if (Get_Random_Number() > mutation_rate) return;
+
+    int n = x.size();
+    vector<int> activos;
+    activos.reserve(n);
+
+    for(int i=0;i<n;++i)
+        if (x[i] > 0.5) activos.push_back(i);
+
+    if (activos.empty()) return;
+
+    int a_borrar = (int)std::ceil(activos.size() * delete_ratio);
+    a_borrar = std::max(1, std::min(a_borrar, (int)activos.size()));
+
+    std::random_shuffle(activos.begin(), activos.end());
+    for(int k=0;k<a_borrar;++k) x[activos[k]] = 0.0;
+
+    RepararRelocPresupuesto(x, inst);
+}
+
+void CUtilityToolBox::MutacionSwapPorcentualReloc(vector<double>& x, double mutation_rate,
+                                double swap_ratio, ProblemInstance* inst)
+{
+    if (Get_Random_Number() > mutation_rate) return;
+
+    int n = x.size();
+    vector<int> ones, zeros;
+    ones.reserve(n); zeros.reserve(n);
+
+    for(int i=0;i<n;++i){
+        if (x[i] > 0.5) ones.push_back(i);
+        else zeros.push_back(i);
+    }
+    if (ones.empty() || zeros.empty()) return;
+
+    int cant = std::max(1, (int)std::floor(ones.size()*swap_ratio));
+    cant = std::min(cant, (int)std::min(ones.size(), zeros.size()));
+
+    std::random_shuffle(ones.begin(), ones.end());
+    std::random_shuffle(zeros.begin(), zeros.end());
+
+    for(int k=0;k<cant;++k){
+        int src = ones[k];
+        int dst = zeros[k];
+
+        x[src] = 0.0;
+        x[dst] = 1.0;
+    }
+
+    RepararRelocPresupuesto(x, inst);
+}
+
+void CUtilityToolBox::MutacionHibridaReloc(std::vector<double>& x,
+                                          double mutation_rate,
+                                          double prob_delete,
+                                          double mutPctDelete,
+                                          double mutPctSwap,
+                                          ProblemInstance* inst)
+{
+    // 1) Gate global (igual que tus otras mutaciones)
+    if (Get_Random_Number() > mutation_rate) return;
+
+    // 2) Elegir camino
+    double rnd = Get_Random_Number();
+
+    if (rnd <= prob_delete)
+    {
+        // Camino A: Delete (reduce n_new, cambia r dependiendo de qué borre)
+        // Nota: aquí pasamos mutation_rate=1 porque ya aplicamos el gate arriba
+        MutacionDeletePorcentualReloc(x, 1.0, mutPctDelete, inst);
+    }
+    else
+    {
+        // Camino B: Swap (mueve masa, mantiene total, puede cambiar r)
+        MutacionSwapPorcentualReloc(x, 1.0, mutPctSwap, inst);
+    }
+
+    // 3) Por seguridad: una reparación final (aunque las hijas ya reparan)
+    RepararRelocPresupuesto(x, inst);
+}
+
+
+void CUtilityToolBox::RepararRelocPresupuesto(std::vector<double>& x,
+                                             ProblemInstance* instance)
+{
+    const auto& nodos = instance->getNodes();
+    int n = (int)x.size();
+    double B = instance->getP(); // presupuesto en unidades
+
+    // construir máscara preinstalados
+    std::vector<char> pre(n, 0);
+    int Ppre = 0;
+    for(int i=0;i<n;++i){
+        if(nodos[i]->getFlag()==1){ pre[i]=1; Ppre++; }
+    }
+
+    auto sumOnes = [&](){
+        int s=0; for(double v: x) if(v>0.5) s++; return s;
+    };
+    auto count_r = [&](){
+        int r=0; for(int i=0;i<n;++i) if(pre[i] && x[i]<0.5) r++; return r;
+    };
+    auto cost = [&](){
+        int total = sumOnes();
+        int r = count_r();
+        int n_new = total - Ppre;
+        if(n_new < 0) n_new = 0;
+        return (double)n_new + 0.2*(double)r;
+    };
+
+    // (A) No desaparecer: total >= Ppre
+    int total = sumOnes();
+    if(total < Ppre){
+        // prender pre apagados primero
+        std::vector<int> pre_off;
+        for(int i=0;i<n;++i) if(pre[i] && x[i]<0.5) pre_off.push_back(i);
+        std::random_shuffle(pre_off.begin(), pre_off.end());
+        for(int k=0; total<Ppre && k<(int)pre_off.size(); ++k){
+            x[pre_off[k]] = 1.0; total++;
+        }
+        // si aún falta (raro), prender cualquier cero
+        if(total < Ppre){
+            std::vector<int> zeros;
+            for(int i=0;i<n;++i) if(x[i]<0.5) zeros.push_back(i);
+            std::random_shuffle(zeros.begin(), zeros.end());
+            for(int k=0; total<Ppre && k<(int)zeros.size(); ++k){
+                x[zeros[k]] = 1.0; total++;
+            }
+        }
+    }
+
+    // (B) Respetar presupuesto: n_new + 0.2*r <= B
+    while(cost() > B + 1e-9)
+    {
+        // apagar NO-pre activos (baja costo 1.0)
+        std::vector<int> nonpre_on;
+        for(int i=0;i<n;++i) if(!pre[i] && x[i]>0.5) nonpre_on.push_back(i);
+
+        if(!nonpre_on.empty()){
+            int idx = nonpre_on[ std::rand() % nonpre_on.size() ];
+            x[idx] = 0.0;
+            continue;
+        }
+
+        // si no hay no-pre activos, entonces n_new=0 y solo queda bajar r
+        // bajar r = volver a prender un pre apagado, y apagar otro 1 para no crear "nuevo"
+        std::vector<int> pre_off;
+        for(int i=0;i<n;++i) if(pre[i] && x[i]<0.5) pre_off.push_back(i);
+
+        std::vector<int> ones;
+        for(int i=0;i<n;++i) if(x[i]>0.5) ones.push_back(i);
+
+        if(!pre_off.empty() && ones.size() >= 2){
+            int pre_to_on = pre_off[ std::rand() % pre_off.size() ];
+            x[pre_to_on] = 1.0;
+
+            int idx_off = ones[ std::rand() % ones.size() ];
+            if(idx_off == pre_to_on) idx_off = ones[0];
+            x[idx_off] = 0.0;
+            continue;
+        }
+
+        break;
+    }
+}
