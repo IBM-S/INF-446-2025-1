@@ -454,6 +454,25 @@
         grid-template-columns: 1fr;
       }
     }
+
+    .preview-items {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.35rem 1.25rem;
+      align-items: start;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .preview-item {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .preview-item b {
+      font-weight: 600;
+      margin-right: 0.35rem;
+    }
   </style>
 </head>
 
@@ -866,7 +885,14 @@
                 <option value="relocation">Relocation</option>
               </select>
             </div>
-
+            <div>
+              <label class="label">Tipo problema</label>
+              <select id="compare-tipo" class="input">
+                <option value="all" selected>all</option>
+                <option value="drp">drp</option>
+                <option value="cam">cam</option>
+              </select>
+            </div>
             <div>
               <label class="label">N° Eval (neval)</label>
               <input id="compare-neval" class="input" type="number" value="20000" />
@@ -903,7 +929,6 @@
               <input id="compare-seed" class="input" type="number" placeholder="(opcional)" />
             </div>
           </div>
-
           <div class="compare-toolbar">
             <button id="btn-compare-run" class="btn btn-primary">
               Ejecutar comparación (All.inst)
@@ -913,6 +938,20 @@
               Cargar generación (última comparación)
             </button>
           </div>
+
+          <div id="compare-run-status" class="small muted" style="margin-top:0.75rem; white-space: pre-wrap;"></div>
+
+          <div id="compare-preview-box" class="small muted" style="
+              margin-top: 0.75rem;
+              background-color: white;
+              padding: 0.75rem;
+              border-radius: 0.75rem;
+              max-height: 180px;
+              overflow: auto;
+              font-size: 0.85rem;
+              line-height: 1.25;
+
+            "></div>
 
 
           <div id="compare-errors" style="margin-top:0.75rem; color:var(--danger); font-size:0.9rem;"></div>
@@ -994,6 +1033,7 @@
         // Cargar datos iniciales
         this.api.listInstances();
         this.api.listAmpl();
+        this.logic.updateComparePreview();
         this.ui.setRandomSeed();
       },
 
@@ -1012,8 +1052,13 @@
 
         // Comparación
         d['load-ampl-btn'].onclick = () => this.logic.loadAmpl();
+        if (d['btn-compare-run']) { d['btn-compare-run'].onclick = () => this.logic.compareAll(); }
+        if (d['btn-compare-load']) { d['btn-compare-load'].onclick = () => this.logic.compareLoad(); }
+
+
         // Comparación masiva (All.inst)
         if (d['btn-compare-all-run']) d['btn-compare-all-run'].onclick = () => this.logic.compareAll();
+        if (d['compare-tipo']) d['compare-tipo'].onchange = () => this.logic.updateComparePreview();
 
         // Inputs
         d['instancia'].onchange = () => this.logic.refreshHistory();
@@ -1035,15 +1080,9 @@
         APP.dom['btn-compare-run'] = document.getElementById('btn-compare-run');
         APP.dom['btn-compare-load'] = document.getElementById('btn-compare-load');
 
-        // En tu initEvents:
-        APP.dom['btn-compare-run'].addEventListener('click', () => {
-          APP.logic.compareAll();
-        });
+        APP.dom['btn-compare-run'].addEventListener('click', () => APP.logic.compareAll());
 
-        APP.dom['btn-compare-load'].addEventListener('click', () => {
-          APP.logic.compareLoad();
-        });
-
+        APP.dom['btn-compare-load'].addEventListener('click', () => APP.logic.compareLoad());
       }
     };
 
@@ -1368,10 +1407,25 @@
         statusDiv.textContent = `${APP.state.amplPoints.length} puntos cargados`;
         APP.ui.renderGeneration(parseInt(APP.dom['slider'].value));
       },
-
       // =============================
       // COMPARACIÓN MASIVA (All.inst)
       // =============================
+      async updateComparePreview() {
+        const box = document.getElementById("compare-preview-box");
+        const tipo = (APP.dom['compare-tipo']?.value || 'all').toLowerCase();
+        if (!box) return;
+        try {
+          const r = await fetch(`/compare_preview?tipo=${encodeURIComponent(tipo)}`);
+          const j = await r.json();
+
+          document.getElementById("compare-run-status").textContent = `Instancias a correr (${j.count}):`;
+
+          renderComparePreview(j.instances)
+
+        } catch (e) { box.textContent = 'Error cargando vista previa.'; }
+      },
+
+
       async compareAll() {
         const st = APP.dom['compare-run-status'];
         const errDiv = APP.dom['compare-errors'];
@@ -1380,6 +1434,7 @@
         if (errDiv) errDiv.textContent = '';
         if (st) { st.textContent = 'Ejecutando...'; st.className = 'status-badge'; }
         const payload = {
+          tipo: APP.dom['compare-tipo']?.value || 'all',
           algoritmo: APP.dom['compare-alg']?.value || 'MOEAD',
           variante: APP.dom['compare-variant']?.value || 'location',
           neval: parseInt(APP.dom['compare-neval']?.value) || 1000,
@@ -1785,6 +1840,22 @@
         });
       }
     };
+
+    function renderComparePreview(instances) {
+      const box = document.getElementById("compare-preview-box");
+
+      if (!instances || instances.length === 0) {
+        box.innerHTML = `<div class="small muted">Ninguna instancia seleccionada.</div>`;
+        return;
+      }
+      const items = instances.map((name, i) => {
+        return `
+                <div class="preview-item" title="${name}"><b>${i + 1}.</b> ${name}</div>`;
+      }).join("");
+
+      box.innerHTML = `<div class="preview-items">${items}</div>`;
+    }
+
 
 
     function renderInteractiveMap(targetDivId, jsonData) {

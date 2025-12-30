@@ -23,8 +23,11 @@ DIR_DATOS = os.path.join(PROYECTO_ROOT, "datos")
 DIR_INSTANCES = os.path.join(DIR_DATOS, "inst")
 DIR_RESULTADOS = os.path.join(DIR_DATOS, "res")
 
-DIR_RAW_MOEAD = os.path.join(DIR_RESULTADOS, "raw_moead/cam") 
-DIR_RAW_AMPL = os.path.join(DIR_RESULTADOS, "raw_ampl/cam") 
+#DIR_RAW_MOEAD = os.path.join(DIR_RESULTADOS, "raw_moead/cam") 
+#DIR_RAW_AMPL = os.path.join(DIR_RESULTADOS, "raw_ampl/drp") 
+
+DIR_RAW_MOEAD_BASE = os.path.join(DIR_RESULTADOS, "raw_moead")
+DIR_RAW_AMPL_BASE = os.path.join(DIR_RESULTADOS, "raw_ampl")
 
 DIR_FRENTES_PARETO = os.path.join(DIR_RESULTADOS, "cache_procesada", "frentes_pareto")
 DIR_AEDS_PROCESADOS = os.path.join(DIR_RESULTADOS, "cache_procesada", "aeds")
@@ -44,6 +47,19 @@ app = Flask(__name__, static_folder="static", static_url_path="/static")
 # ==============================================================================
 # HELPERS GENÉRICOS
 # ==============================================================================
+
+def problem_type_from_instance(instance_name: str) -> str:
+    base = parse_instance_name(instance_name)
+    return "drp" if base.startswith("drp_") else "cam"
+
+def dir_raw_moead(tipo: str) -> str:
+    return os.path.join(DIR_RAW_MOEAD_BASE, tipo)
+
+def dir_raw_ampl(tipo: str) -> str:
+    return os.path.join(DIR_RAW_AMPL_BASE, tipo)
+
+
+
 def get_compare_dir(instance_name: str) -> str:
     """
     Devuelve la carpeta TT2/datos/res/raw_moead/cam/{instancia}/comparacion
@@ -51,7 +67,8 @@ def get_compare_dir(instance_name: str) -> str:
     instance_name puede venir con o sin .dat.
     """
     base = parse_instance_name(instance_name)
-    inst_dir = os.path.join(DIR_RAW_MOEAD, base, "comparacion")
+    tipo = problem_type_from_instance(base)
+    inst_dir = os.path.join(dir_raw_moead(tipo), base, "comparacion")
     os.makedirs(inst_dir, exist_ok=True)
     return inst_dir
 
@@ -188,7 +205,8 @@ def get_time_from_log(path, header_key, sep=",", skip_first=True):
     return sum(tiempos)/len(tiempos) if tiempos else None
 
 def get_moead_time(base_name):
-    d = os.path.join(DIR_RAW_MOEAD, base_name)
+    tipo = problem_type_from_instance(base_name)
+    d = os.path.join(dir_raw_moead(tipo), base_name)
     if not os.path.isdir(d): return None
     # Busca el primer execution log válido
     for p in glob.glob(os.path.join(d, "execution_*")):
@@ -197,7 +215,8 @@ def get_moead_time(base_name):
     return None
 
 def get_ampl_time(base_name):
-    return get_time_from_log(os.path.join(DIR_RAW_AMPL, base_name, f"execution_{base_name}_summary.log"), None)
+    tipo = problem_type_from_instance(base_name)
+    return get_time_from_log(os.path.join(dir_raw_ampl(tipo), base_name, f"execution_{base_name}_summary.log"), None)
 
 def get_first_last_front_in_dir(compare_dir: str):
     """
@@ -230,12 +249,14 @@ def get_ampl_stats_for_instance(base_name: str):
       - ampl_front_file: ruta al pareto_front.txt de AMPL o None si no se encuentra.
       - t_ampl_s       : tiempo promedio de AMPL (float) leído del summary, o None.
     """
-    inst_name = base_name.replace(".dat", "")
+    inst_name = parse_instance_name(base_name)
+    tipo = problem_type_from_instance(inst_name)
+    base_dir = os.path.join(dir_raw_ampl(tipo), inst_name)
 
     # Candidatos típicos
     candidates = [
-        os.path.join(DIR_RAW_AMPL, inst_name, "run_1", "pareto_front.txt"),
-        os.path.join(DIR_RAW_AMPL, inst_name, "pareto_front.txt"),
+        os.path.join(base_dir, "run_1", "pareto_front.txt"),
+        os.path.join(base_dir, "pareto_front.txt"),
     ]
 
     ampl_front = None
@@ -246,12 +267,12 @@ def get_ampl_stats_for_instance(base_name: str):
 
     # Fallback: buscar en subcarpetas por si cambia la estructura
     if ampl_front is None:
-        pattern = os.path.join(DIR_RAW_AMPL, inst_name, "**", "pareto_front.txt")
+        pattern = os.path.join(base_dir, "**", "pareto_front.txt")
         matches = glob.glob(pattern, recursive=True)
         if matches:
             ampl_front = matches[0]
 
-    # Tiempo AMPL (ya tienes get_ampl_time definido usando el summary)
+    # Tiempo AMPL (exexution_{inst}_summary.log)
     t_ampl = get_ampl_time(inst_name)
 
     return ampl_front, t_ampl
@@ -263,6 +284,7 @@ def read_all_inst_list():
         os.path.join(PROYECTO_ROOT, "All.inst"),
         os.path.join(BASE_DIR, "All.inst"),
     ]
+
     path = next((p for p in candidates if os.path.exists(p)), None)
 
     insts = []
@@ -284,7 +306,8 @@ def read_all_inst_list():
 
 
 def find_ampl_front_file(base_name: str):
-    base_dir = os.path.join(DIR_RAW_AMPL, base_name)
+    tipo = problem_type_from_instance(base_name)
+    base_dir = os.path.join(dir_raw_ampl(tipo), base_name)
     if not os.path.isdir(base_dir):
         return None
 
@@ -632,7 +655,9 @@ def run():
 
     # Buscar archivos generados
     base = parse_instance_name(inst)
-    raw_files = sorted(glob.glob(os.path.join(DIR_RAW_MOEAD, base, f"POF_{base}_SEED_*_GEN_*.dat")), key=gen_number_from_path)
+    tipo = d.get("tipo") or problem_type_from_instance(inst)
+    raw_dir = dir_raw_moead(tipo)
+    raw_files = sorted(glob.glob(os.path.join(raw_dir, base, f"POF_{base}_SEED_*_GEN_*.dat")), key=gen_number_from_path)
     
     # Procesar usando la función centralizada
     files, hvs, gens, hv_opt, ref = core_process_results(inst, raw_files, hv_every)
@@ -719,7 +744,9 @@ def load():
     if strict and not cached_files: return jsonify({"files": [], "hv": []})
 
     # 2. Procesar Raw (Fallback)
-    raw_files = sorted(glob.glob(os.path.join(DIR_RAW_MOEAD, base, f"POF_{base}_GEN_*.dat")), key=gen_number_from_path)
+    tipo = d.get("tipo") or problem_type_from_instance(inst)
+    dir_raw = dir_raw_moead(tipo)
+    raw_files = sorted(glob.glob(os.path.join(dir_raw, base, f"POF_{base}_GEN_*.dat")), key=gen_number_from_path)
     if not raw_files:
         print(f"[/load] No data found: {inst}")
         return jsonify({"files": [], "hv": []})
@@ -843,17 +870,15 @@ def list_instances():
 
 @app.route('/list_ampl_instances', methods=['GET'])
 def list_ampl_instances():
-    b = os.path.join(DIR_RAW_AMPL)
-    if not os.path.isdir(b):
-        return jsonify([])
-
     out = []
-    for inst in os.listdir(b):
-        base_dir = os.path.join(b, inst)
-        if not os.path.isdir(base_dir):
+    for tipo in ["cam", "drp"]:
+        b = dir_raw_ampl(tipo)
+        if not os.path.isdir(b):
             continue
-        if find_ampl_front_file(inst):
-            out.append(inst)
+        for inst in os.listdir(b):
+            base_dir = os.path.join(b, inst)
+            if os.path.isdir(base_dir) and find_ampl_front_file(inst):
+                out.append(inst)
 
     return jsonify(sorted(out))
 
@@ -950,6 +975,19 @@ def run_stats_detail():
     return jsonify({"error": "ID not found"}), 404
 
 
+@app.route("/compare_preview", methods=["GET"])
+def compare_preview():
+    """
+    Devuelve una lista de instancias disponibles en All.inst
+    junto con sus frentes AMPL y MOEAD (GEN0 y GEN final) si existen.
+    """
+    tipo = (request.args.get("tipo") or "all").lower().strip()
+    inst_list = read_all_inst_list()
+    if tipo in {"cam", "drp"}:
+        inst_list = [inst for inst in inst_list if problem_type_from_instance(inst) == tipo]
+
+    bases = [parse_instance_name(i) for i in inst_list]
+    return jsonify({"count": len(bases), "instances": bases})
 
 @app.route("/compare_all", methods=["POST"])
 def compare_all():
@@ -989,6 +1027,9 @@ def compare_all():
     base_seed = int(base_seed_raw) if base_seed_raw not in (None, "",) else None
 
     inst_list = read_all_inst_list()
+    tipo_sel = (data.get("tipo") or "all").lower().strip()
+    if tipo_sel in {"cam", "drp"}:
+        inst_list = [inst for inst in inst_list if problem_type_from_instance(inst) == tipo_sel]
     results = []
     errors  = []
 
@@ -999,10 +1040,12 @@ def compare_all():
 
     for idx, inst in enumerate(inst_list):
         base_name = parse_instance_name(inst)
+        tipo = problem_type_from_instance(inst)
         print(f"[compare_all] Instancia: {inst}")
 
         # Carpeta comparacion: TT2/datos/res/raw_moead/cam/{instancia}/comparacion
-        compare_dir = get_compare_dir(base_name)
+        compare_dir = os.path.join(dir_raw_moead(tipo), base_name, "comparacion")
+        os.makedirs(compare_dir, exist_ok=True)
 
         # Limpiar .dat viejos en comparacion/ (dejamos el JSONL de historial)
         for old in glob.glob(os.path.join(compare_dir, "*.dat")):
@@ -1017,10 +1060,6 @@ def compare_all():
         else:
             seed = random.randint(1, 10**6)
 
-        compare_dir_abs = os.path.join(DIR_RAW_MOEAD, base_name, "comparacion")
-        print("AAAAA", DIR_RAW_MOEAD, base_name, "comparacion")
-        os.makedirs(compare_dir_abs, exist_ok=True)
-
         # 2) Directorio RELATIVO que MOEAD necesita (solo carpeta, sin ruta completa)
         #    MOEAD ya sabe que cuelga de datos/res/raw_moead/cam
         out_dir_rel = "comparacion"
@@ -1028,7 +1067,7 @@ def compare_all():
         # Construir parámetros de línea de comando para MOEAD
         params = {
             "-inst": os.path.join(DIR_INSTANCES, inst),
-            "-type": "cam",
+            "-type": tipo,
             "-variant": variante,
             "-alg": algoritmo,
             "-seed": str(seed),
@@ -1180,7 +1219,7 @@ def compare_load():
     results = []
 
     # Recorre todas las instancias que tengan carpeta cam/*/comparacion
-    pattern = os.path.join(DIR_RAW_MOEAD, "*", "comparacion")
+    pattern = os.path.join(DIR_RAW_MOEAD_BASE, "*", "*", "comparacion")
     for compare_dir in glob.glob(pattern):
         inst_dir = os.path.dirname(compare_dir)
         base_name = os.path.basename(inst_dir)
