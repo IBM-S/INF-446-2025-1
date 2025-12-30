@@ -22,7 +22,18 @@ param sigma
 11   0.99999  0.00001
 ;
 
+BASE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
+AMPL_EXECUTABLE="./../../ampl/ampl.linux-intel64/ampl"
+
+MODEL_FILE="mo_location_model.mod"
+RUN_FILE="mo_drp_location.run"
+CONFIG_FILE="conf_execution.dat"
+
+PROBLEM_TYPE="cam"
+
+INSTANCES_DIR="${BASE_DIR}/datos/inst"
+RESULTS_DIR="${BASE_DIR}/datos/res/raw_ampl/${PROBLEM_TYPE}"
 
 param sigma
 :    1        2 :=
