@@ -146,13 +146,17 @@ void CIndividualBase::GenerateSimpleFeasibleSolution(int num_AEDs, int total_loc
 	std::cout << "DEBUG END \n" << std::endl; */
 }
 
-void CIndividualBase::GenerateSimpleFeasibleSolution_For_Relocation(int budget_units, int total_locations)
+void CIndividualBase::GenerateSimpleFeasibleSolution_For_Relocation(int budget_units, int presupuesto_max, int total_locations)
 {
+	// 1 Limpieza
     std::fill(x_var.begin(), x_var.end(), 0.0);
 
-	total_locations = x_var.size();
-
     const auto &nodos = problemInstance->getNodes();
+
+	double c1 = problemInstance->getC1();
+	double c2 = problemInstance->getC2();
+	double P = (double)presupuesto_max;
+	// cambiar el que recive budget_units
 
     std::vector<int> indices_preinstalados;
 	indices_preinstalados.reserve(total_locations);
@@ -161,36 +165,163 @@ void CIndividualBase::GenerateSimpleFeasibleSolution_For_Relocation(int budget_u
     }
 	int total_preinstalados = indices_preinstalados.size();
 
-	double porcentaje_a_mover = UtilityToolBox.Get_Random_Number();
+	double strategy_roll = UtilityToolBox.Get_Random_Number();
 
-	int cantidad_a_mover = (int)(porcentaje_a_mover * total_preinstalados);
+	if (strategy_roll < 0.75) {
+		// ========================================================
+        // ESTRATEGIA A MEJORADA: REUBICAR + COMPRAR CON EL VUELTO
+        // ========================================================
+		
+        // 1. Decidir cuántos mover (Igual que antes)
+		int max_moves_budget = (int)(P / c2);
+		int max_moves_real = std::min(max_moves_budget, total_preinstalados);
 
+		int cantidad_a_mover = 0;
+		if (max_moves_real > 0) {
+			cantidad_a_mover = rand() % (max_moves_real + 1);
+		}
+
+        // 2. Ejecutar la decisión de QUÉ se queda y QUÉ se mueve
+		std::random_shuffle(indices_preinstalados.begin(), indices_preinstalados.end());
+
+        // Los que se quedan quietos se marcan ya
+		int keep = total_preinstalados - cantidad_a_mover;
+		for (int i = 0; i < keep; ++i) x_var[indices_preinstalados[i]] = 1.0;
+
+        // -----------------------------------------------------------------
+        // NUEVA LÓGICA: USAR EL DINERO SOBRANTE
+        // -----------------------------------------------------------------
+        
+        // Calculamos cuánto gastamos moviendo
+        double gasto_en_moves = cantidad_a_mover * c2;
+        double dinero_sobrante = P - gasto_en_moves;
+
+        // Calculamos cuántos nuevos podemos comprar con el vuelto
+        int max_nuevos_posibles = (int)(dinero_sobrante / c1);
+        int cantidad_nuevos = 0;
+        
+        if (max_nuevos_posibles > 0) {
+            // Aleatorio para mantener diversidad (a veces compra, a veces guarda el dinero)
+            cantidad_nuevos = rand() % (max_nuevos_posibles + 1);
+        }
+
+        // 3. Bolsa Total de instalación en huecos libres
+        // = (Los que arranqué de la pared) + (Los nuevos comprados)
+		int total_a_colocar = cantidad_a_mover + cantidad_nuevos;
+
+        // 4. Instalar en lugares vacíos
+		std::vector<int> espacios_libres;
+		espacios_libres.reserve(total_locations);
+		for (int i = 0; i < total_locations; ++i) {
+            // Solo consideramos libres los que están en 0 (respetando los que dejamos fijos arriba)
+			if (x_var[i] < 0.5) espacios_libres.push_back(i);
+		}
+
+		std::random_shuffle(espacios_libres.begin(), espacios_libres.end());
+        
+        // Seguridad por si llenamos el mapa
+		int instalados_reales = std::min(total_a_colocar, (int) espacios_libres.size());
+        
+		for (int i = 0; i < instalados_reales; ++i) {
+            x_var[espacios_libres[i]] = 1.0;
+        }
+
+	} else {
+		// ========================================================
+        // ESTRATEGIA B: SOLO NUEVOS (Gastar P en comprar nuevos)
+        // ========================================================
+		GenerateSimpleFeasibleSolution(budget_units, total_locations);
+	}
+}
+
+void CIndividualBase::GenerateSimpleFeasibleSolution_Mixed_Split(int budget_units, int total_locations)
+{
+    // 1. Limpieza inicial
+    std::fill(x_var.begin(), x_var.end(), 0.0);
+    total_locations = x_var.size();
+
+    const auto &nodos = problemInstance->getNodes();
+    double c1 = problemInstance->getC1(); // Costo Nuevo (ej. 1.0)
+    double c2 = problemInstance->getC2(); // Costo Mover (ej. 0.2)
+    double P_total = (double)budget_units;
+
+    // 2. Identificar Stock Original (AEDs preinstalados)
+    std::vector<int> indices_preinstalados;
+    indices_preinstalados.reserve(total_locations);
+    for (int i = 0; i < total_locations; ++i) {
+        if (nodos[i]->getFlag() == 1) indices_preinstalados.push_back(i);
+    }
+    int total_pre = indices_preinstalados.size();
+
+    // ---------------------------------------------------------
+    // 3. EL SPLIT (La división del dinero)
+    // ---------------------------------------------------------
+    // Generamos un % aleatorio destinado a REUBICACIÓN.
+    // Ej: 0.3 significa "Gastar el 30% del dinero en mover cosas"
+    // y el resto (70%) en comprar cosas nuevas.
+    double split_pct =  0.9; 
+
+    // Calculamos los sub-presupuestos
+    double budget_for_moving = P_total * split_pct;
+    
+    // ---------------------------------------------------------
+    // 4. FASE A: REUBICACIÓN (Gastar el primer montoncito)
+    // ---------------------------------------------------------
+    
+    // ¿Cuántos alcanzamos a mover con esa parte del dinero?
+    int max_moves_affordable = (int)(budget_for_moving / c2);
+    
+    // No podemos mover más de los que existen
+    int moves_count = std::min(max_moves_affordable, total_pre);
+
+    // Ejecutar el "Despegue" de los AEDs viejos
     std::random_shuffle(indices_preinstalados.begin(), indices_preinstalados.end());
 
-	int cantidad_a_dejar = total_preinstalados - cantidad_a_mover;
-	for (int i = 0; i < cantidad_a_dejar; ++i) {
-		int idx = indices_preinstalados[i];
-		x_var[idx] = 1.0; // Mantener en su lugar
-	}
+    // Los que se quedan quietos (GRATIS)
+    int keep_count = total_pre - moves_count;
+    for(int i=0; i<keep_count; ++i) {
+        x_var[indices_preinstalados[i]] = 1.0;
+    }
 
-	int aeds_en_la_mano = cantidad_a_mover + budget_units;
+    // Calculamos cuánto gastamos realmente
+    double money_spent_moving = moves_count * c2;
 
-	std::vector<int> espacios_libres;
-	espacios_libres.reserve(total_locations);
-	for (int i = 0; i < total_locations; ++i) {
-		if (nodos[i]->getFlag() == 0 and x_var[i] < 0.5) espacios_libres.push_back(i);
-	}
+    // ---------------------------------------------------------
+    // 5. FASE B: INSTALACIÓN NUEVA (Gastar el resto del dinero)
+    // ---------------------------------------------------------
+    
+    // El dinero para nuevos es: El total - lo que ya gasté moviendo
+    double budget_remaining = P_total - money_spent_moving;
 
-	std::random_shuffle(espacios_libres.begin(), espacios_libres.end());
+    // ¿Cuántos nuevos alcanzo a comprar?
+    int new_buys_count = (int)(budget_remaining / c1);
 
-	if (aeds_en_la_mano > espacios_libres.size()) {
-		aeds_en_la_mano = espacios_libres.size();
-	}
+    // ---------------------------------------------------------
+    // 6. FASE C: COLOCACIÓN FINAL
+    // ---------------------------------------------------------
+    
+    // Tenemos en la mano: 
+    // - Los que arrancamos de la pared (moves_count)
+    // - Los nuevos que compramos (new_buys_count)
+    int total_in_hand = moves_count + new_buys_count;
 
-	for (int i = 0; i < aeds_en_la_mano; ++i) {
-		int idx = espacios_libres[i];
-		x_var[idx] = 1.0; // Instalar en nuevo lugar
-	}
+    // Buscar espacios libres
+    // (Un espacio es libre si x_var es 0, sin importar si antes tenía flag 1 o 0)
+    std::vector<int> espacios_libres;
+    espacios_libres.reserve(total_locations);
+    for(int i=0; i<total_locations; ++i) {
+        if(x_var[i] < 0.5) espacios_libres.push_back(i);
+    }
+
+    // Barajar lugares disponibles
+    std::random_shuffle(espacios_libres.begin(), espacios_libres.end());
+
+    // Seguridad por si el mapa es pequeño
+    int final_placement_count = std::min(total_in_hand, (int)espacios_libres.size());
+
+    for(int i=0; i<final_placement_count; ++i) {
+        x_var[espacios_libres[i]] = 1.0;
+    }
 }
 
 void CIndividualBase::GenerateSimpleFeasibleSolution_v2(int num_AEDs, int total_locations)

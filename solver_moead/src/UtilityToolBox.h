@@ -82,20 +82,20 @@ public:
 	void MutacionBitFlip_Fijo(vector<double> &x_var, double mutation_rate, double fixed_prob, ProblemInstance *instance);
 
 	// 4. Swap Probabilistica: cada bit que este activo tiene prob fija de mudarse a otra posicion (solo se muda si mejora)   utiliza es BuenCandidato
-	void MutacionSwapProbabilistico(vector<double> &x_var, double mutation_rate, double swap_prob, ProblemInstance *instance);
+	void MutacionSwapProbabilistico(vector<double> &x_var, double mutation_rate, double mutPctSwap, ProblemInstance *instance);
 
 	// 5. Mutacion Combinada (Elegir entre BitFlip y Swap segun probabilidad)
-	void Mutacion_Swap_Porcentual_1_N(vector<double> &x_var, double mutation_rate, double ratio_swap, double percentage, ProblemInstance *instance);
-	void Mutacion_Swap_Porcentual_1_M(vector<double> &x_var, double mutation_rate, double ratio_swap, double populationSize, double percentage, ProblemInstance *instance);
-	void Mutacion_Swap_Porcentual_Fijo(vector<double> &x_var, double mutation_rate, double ratio_swap, double fixed_prob, double percentage, ProblemInstance *instance);
+	void Mutacion_Swap_Porcentual_1_N(vector<double> &x_var, double mutation_rate, double ratio_swap, double mutPctSwap, ProblemInstance *instance);
+	void Mutacion_Swap_Porcentual_1_M(vector<double> &x_var, double mutation_rate, double ratio_swap, double populationSize, double mutPctSwap, ProblemInstance *instance);
+	void Mutacion_Swap_Porcentual_Fijo(vector<double> &x_var, double mutation_rate, double ratio_swap, double fixed_prob, double mutPctSwap, ProblemInstance *instance);
 
-	void MutacionSwapPorcentual(vector<double> &x_var, double mutation_rate, double swap_ratio, ProblemInstance *instance);
+	void MutacionSwapPorcentual(vector<double> &x_var, double mutation_rate, double mutPctSwap, ProblemInstance *instance);
 
 	// 4. Mutación Delete (Elimina un % de equipos al azar)
-    // delete_ratio: Porcentaje de equipos actuales a eliminar (ej: 0.1 para borrar el 10%)
-    void MutacionDeletePorcentual(vector<double> &x_var, double mutation_rate, double delete_ratio, ProblemInstance *instance);
+    // mutPctDelete: Porcentaje de equipos actuales a eliminar (ej: 0.1 para borrar el 10%)
+    void MutacionDeletePorcentual(vector<double> &x_var, double mutation_rate, double mutPctDelete, ProblemInstance *instance);
 	// 6. Mutacion Con Delete y Swap, pero variando el porcentaje
-	void MutacionHibrida(vector<double> &x_var, double mutation_rate, double prob_delete, double mutPctDelete, double mutPctSwap, ProblemInstance *instance);
+	void MutacionHibrida_location(vector<double> &x_var, double mutation_rate, double prob_delete, double mutPctDelete, double mutPctSwap, ProblemInstance *instance);
 
 	void CruzamientoUniformeInteligente(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
 	void CruzamientoUniformeSemiInteligente(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
@@ -120,7 +120,8 @@ public:
 											double mutPctDelete,
 											double mutPctSwap,
 											ProblemInstance* inst);
-	void RepararRelocPresupuesto(vector<double>& x_var, ProblemInstance* instance);
+	void RepararPresupuesto_Relocation(vector<double>& x_var, ProblemInstance* instance);
+	bool EsBuenCandidato_Relocation(int idx_candidato, ProblemInstance *instance);
 
 
 	int GetWeightNumber(int nobj, int H);

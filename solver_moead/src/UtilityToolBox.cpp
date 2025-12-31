@@ -983,7 +983,7 @@ void CUtilityToolBox::MutacionBitFlip_Fijo(vector<double> &x_var, double mutatio
 }
 
 
-void CUtilityToolBox::MutacionSwapProbabilistico(vector<double> &x_var, double mutation_rate, double swap_prob, ProblemInstance *instance)
+void CUtilityToolBox::MutacionSwapProbabilistico(vector<double> &x_var, double mutation_rate, double mutPctSwap, ProblemInstance *instance)
 {
     // 1. Probabilidad Global
     if (Get_Random_Number() > mutation_rate) return;
@@ -1011,7 +1011,7 @@ void CUtilityToolBox::MutacionSwapProbabilistico(vector<double> &x_var, double m
         if (x_var[i] == 1 && nodos[i]->getFlag() == 0)
         {
             // ¿Este equipo se muda?
-            if (Get_Random_Number() <= swap_prob)
+            if (Get_Random_Number() <= mutPctSwap)
             {
                 // PASO A: Apagar el equipo actual (Delete)
                 x_var[i] = 0; 
@@ -1048,7 +1048,7 @@ void CUtilityToolBox::MutacionSwapProbabilistico(vector<double> &x_var, double m
 }
 
 
-void CUtilityToolBox::Mutacion_Swap_Porcentual_1_N(vector<double> &x_var, double mutation_rate, double ratio_swap, double percentage, ProblemInstance *instance)
+void CUtilityToolBox::Mutacion_Swap_Porcentual_1_N(vector<double> &x_var, double mutation_rate, double ratio_swap, double mutPctSwap, ProblemInstance *instance)
 {
     // Tiramos una moneda para decidir qué estrategia usar
     double dado = Get_Random_Number();
@@ -1057,11 +1057,11 @@ void CUtilityToolBox::Mutacion_Swap_Porcentual_1_N(vector<double> &x_var, double
         MutacionBitFlip_1_N(x_var, mutation_rate, instance);
     }
     else {
-        MutacionSwapPorcentual(x_var, mutation_rate, percentage, instance);
+        MutacionSwapPorcentual(x_var, mutation_rate, mutPctSwap, instance);
     }
 }
 
-void CUtilityToolBox::Mutacion_Swap_Porcentual_1_M(vector<double> &x_var, double mutation_rate, double ratio_swap, double populationSize, double percentage, ProblemInstance *instance)
+void CUtilityToolBox::Mutacion_Swap_Porcentual_1_M(vector<double> &x_var, double mutation_rate, double ratio_swap, double populationSize, double mutPctSwap, ProblemInstance *instance)
 {
     // Tiramos una moneda para decidir qué estrategia usar
     double dado = Get_Random_Number();
@@ -1072,11 +1072,11 @@ void CUtilityToolBox::Mutacion_Swap_Porcentual_1_M(vector<double> &x_var, double
     }
     else
     {
-        MutacionSwapPorcentual(x_var, mutation_rate, percentage, instance);
+        MutacionSwapPorcentual(x_var, mutation_rate, mutPctSwap, instance);
     }
 }
 
-void CUtilityToolBox::Mutacion_Swap_Porcentual_Fijo(vector<double> &x_var, double mutation_rate, double ratio_swap, double fixed_prob, double percentage, ProblemInstance *instance)
+void CUtilityToolBox::Mutacion_Swap_Porcentual_Fijo(vector<double> &x_var, double mutation_rate, double ratio_swap, double fixed_prob, double mutPctSwap, ProblemInstance *instance)
 {
     // Tiramos una moneda para decidir qué estrategia usar
     double dado = Get_Random_Number();
@@ -1087,7 +1087,7 @@ void CUtilityToolBox::Mutacion_Swap_Porcentual_Fijo(vector<double> &x_var, doubl
     }
     else
     {
-        MutacionSwapPorcentual(x_var, mutation_rate, percentage, instance);
+        MutacionSwapPorcentual(x_var, mutation_rate, mutPctSwap, instance);
     }
 }
 
@@ -1175,7 +1175,7 @@ void CUtilityToolBox::CruzamientoUniformeSemiInteligente(const vector<double> &p
 
 
 
-void CUtilityToolBox::MutacionDeletePorcentual(vector<double> &x_var, double mutation_rate, double delete_ratio, ProblemInstance *instance)
+void CUtilityToolBox::MutacionDeletePorcentual(vector<double> &x_var, double mutation_rate, double mutPctDelete, ProblemInstance *instance)
 {
     // 1. Probabilidad global
     if (Get_Random_Number() > mutation_rate) return;
@@ -1198,7 +1198,7 @@ void CUtilityToolBox::MutacionDeletePorcentual(vector<double> &x_var, double mut
     // 3. Calcular cantidad a eliminar
     // Mínimo 1 si hay al menos un equipo y el ratio > 0
     int total_actual = instalados_moviles.size();
-    int a_borrar = static_cast<int>(std::ceil(total_actual * delete_ratio));
+    int a_borrar = static_cast<int>(std::ceil(total_actual * mutPctDelete));
     
     if (a_borrar < 1) a_borrar = 1;
     if (a_borrar > total_actual) a_borrar = total_actual;
@@ -1213,7 +1213,7 @@ void CUtilityToolBox::MutacionDeletePorcentual(vector<double> &x_var, double mut
     }
 }
 
-void CUtilityToolBox::MutacionSwapPorcentual(vector<double> &x_var, double mutation_rate, double swap_ratio, ProblemInstance *instance)
+void CUtilityToolBox::MutacionSwapPorcentual(vector<double> &x_var, double mutation_rate, double mutPctSwap, ProblemInstance *instance)
 {
     if (Get_Random_Number() > mutation_rate) return;
 
@@ -1233,7 +1233,7 @@ void CUtilityToolBox::MutacionSwapPorcentual(vector<double> &x_var, double mutat
     if (instalados.empty() || vacios.empty()) return;
 
     // 2. Calcular cantidad
-    int cantidad = std::max(1, (int)(instalados.size() * swap_ratio));
+    int cantidad = std::max(1, (int)(instalados.size() * mutPctSwap));
     
     // 3. Ejecutar el movimiento (Borrar + Insertar Inteligente)
     std::random_shuffle(instalados.begin(), instalados.end());
@@ -1254,7 +1254,7 @@ void CUtilityToolBox::MutacionSwapPorcentual(vector<double> &x_var, double mutat
     }
 }
 
-void CUtilityToolBox::MutacionHibrida(vector<double> &x_var, double mutation_rate, double prob_delete, double mutPctDelete, double mutPctSwap, ProblemInstance *instance)
+void CUtilityToolBox::MutacionHibrida_location(vector<double> &x_var, double mutation_rate, double prob_delete, double mutPctDelete, double mutPctSwap, ProblemInstance *instance)
 {
     double rnd = Get_Random_Number();
 
@@ -1271,23 +1271,56 @@ void CUtilityToolBox::MutacionHibrida(vector<double> &x_var, double mutation_rat
 }
 
 
+
+
+
+bool CUtilityToolBox::EsBuenCandidato_Relocation(int idx_candidato, ProblemInstance *instance)
+{
+	const auto &nodos = instance->getNodes();
+    
+    // EN RELOCACIÓN: Eliminamos el bloqueo de Flag == 1.
+    // Cualquier nodo es candidato válido para recibir un AED si cubre demanda.
+	if (nodos[idx_candidato]->getProbOhca() > 0.0) return true;
+
+    const std::vector<int>& vecinos = instance->getNodosCubiertosPor(idx_candidato);
+    
+    for (int id_vecino : vecinos) 
+    {
+        // Buscamos si cubre a alguien con demanda
+        // (Nota: Si tu instancia tiene "PreCubierto" real por cosas externas al problema, mantenlo.
+        //  Si "PreCubierto" se refería a los AEDs Flag=1, quítalo).
+        if (nodos[id_vecino]->getProbOhca() > 0.0) {
+            return true; // Si cubre al menos un nodo con demanda, sirve.
+        }
+    }
+    return false;
+}
+
+
+
+
+
 void CUtilityToolBox::CruzamientoUniformeReloc(const vector<double>& p1,
                               const vector<double>& p2,
-                              vector<double>& c,
+                              vector<double>& child,
                               ProblemInstance* inst)
 {
     int n = p1.size();
-    c.assign(n, 0.0);
+    child.assign(n, 0.0);
 
     for (int i=0;i<n;++i){
-        bool a = (p1[i] > 0.5);
-        bool b = (p2[i] > 0.5);
+        bool p1_tiene = (p1[i] > 0.5);
+        bool p2_tiene = (p2[i] > 0.5);
 
-        if (a && b) c[i] = 1.0;
-        else if (a || b) c[i] = (Get_Random_Number() < 0.5) ? 1.0 : 0.0;
-    }
+        if (p1_tiene && p2_tiene) child[i] = 1.0;
+        else if (p1_tiene || p2_tiene) {
+			if (Get_Random_Number() < 0.5) {
+				child[i] = 1.0;
+			};
+    	}
+	}
 
-    RepararRelocPresupuesto(c, inst); // NUEVA
+    RepararPresupuesto_Relocation(child, inst); // NUEVA
 }
 
 void CUtilityToolBox::MutacionDeletePorcentualReloc(vector<double>& x, double mutation_rate,
@@ -1298,51 +1331,70 @@ void CUtilityToolBox::MutacionDeletePorcentualReloc(vector<double>& x, double mu
     int n = x.size();
     vector<int> activos;
     activos.reserve(n);
-
-    for(int i=0;i<n;++i)
+    for(int i=0;i<n;++i) {
         if (x[i] > 0.5) activos.push_back(i);
+	}
 
     if (activos.empty()) return;
 
-    int a_borrar = (int)std::ceil(activos.size() * delete_ratio);
-    a_borrar = std::max(1, std::min(a_borrar, (int)activos.size()));
+	int stock_original = 0;
+	const auto&nodos = inst->getNodes();
+	for (auto* nodo : nodos) {
+		if (nodo->getFlag() == 1) stock_original;
+	}
+
+	int excedente = activos.size() - stock_original;
+
+	if (excedente <= 0) {
+		return;
+	}
+
+    int a_borrar_deseado = (int)std::ceil(activos.size() * delete_ratio);
+
+    int a_borrar_real = std::min(a_borrar_deseado, excedente);
+
+	if (a_borrar_real < 1) return;
 
     std::random_shuffle(activos.begin(), activos.end());
-    for(int k=0;k<a_borrar;++k) x[activos[k]] = 0.0;
+    for(int k=0;k<a_borrar_real;++k) x[activos[k]] = 0.0;
 
-    RepararRelocPresupuesto(x, inst);
 }
 
-void CUtilityToolBox::MutacionSwapPorcentualReloc(vector<double>& x, double mutation_rate,
+void CUtilityToolBox::MutacionSwapPorcentualReloc(vector<double>& x_var, double mutation_rate,
                                 double swap_ratio, ProblemInstance* inst)
 {
     if (Get_Random_Number() > mutation_rate) return;
 
-    int n = x.size();
-    vector<int> ones, zeros;
-    ones.reserve(n); zeros.reserve(n);
+    int n = x_var.size();
+    vector<int> activos, vacios;
+    activos.reserve(n); vacios.reserve(n);
 
     for(int i=0;i<n;++i){
-        if (x[i] > 0.5) ones.push_back(i);
-        else zeros.push_back(i);
+        if (x_var[i] > 0.5) activos.push_back(i);
+        else vacios.push_back(i);
     }
-    if (ones.empty() || zeros.empty()) return;
+    if (activos.empty() || vacios.empty()) return;
 
-    int cant = std::max(1, (int)std::floor(ones.size()*swap_ratio));
-    cant = std::min(cant, (int)std::min(ones.size(), zeros.size()));
+    int cant = std::max(1, (int)(activos.size()*swap_ratio));
 
-    std::random_shuffle(ones.begin(), ones.end());
-    std::random_shuffle(zeros.begin(), zeros.end());
+    std::random_shuffle(activos.begin(), activos.end());
+    std::random_shuffle(vacios.begin(), vacios.end());
 
-    for(int k=0;k<cant;++k){
-        int src = ones[k];
-        int dst = zeros[k];
-
-        x[src] = 0.0;
-        x[dst] = 1.0;
+	// Desactivamos activos
+    for(int k=0; k < cant && k < activos.size(); ++k){
+        x_var[activos[k]] = 0.0;
     }
 
-    RepararRelocPresupuesto(x, inst);
+	int puestos = 0;
+	int idx = 0;
+
+	while (puestos < cant && idx < vacios.size()) {
+		int cand = vacios[idx++];
+		if (EsBuenCandidato_Relocation(cand, inst)) {
+			x_var[cand] = 1.0;
+			puestos++;
+		}
+	}
 }
 
 void CUtilityToolBox::MutacionHibridaReloc(std::vector<double>& x,
@@ -1363,6 +1415,7 @@ void CUtilityToolBox::MutacionHibridaReloc(std::vector<double>& x,
         // Camino A: Delete (reduce n_new, cambia r dependiendo de qué borre)
         // Nota: aquí pasamos mutation_rate=1 porque ya aplicamos el gate arriba
         MutacionDeletePorcentualReloc(x, 1.0, mutPctDelete, inst);
+		//MutacionSwapPorcentualReloc(x, 1.0, mutPctSwap, inst);
     }
     else
     {
@@ -1371,90 +1424,49 @@ void CUtilityToolBox::MutacionHibridaReloc(std::vector<double>& x,
     }
 
     // 3) Por seguridad: una reparación final (aunque las hijas ya reparan)
-    RepararRelocPresupuesto(x, inst);
+    RepararPresupuesto_Relocation(x, inst);
 }
 
 
-void CUtilityToolBox::RepararRelocPresupuesto(std::vector<double>& x,
+void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var,
                                              ProblemInstance* instance)
 {
-    const auto& nodos = instance->getNodes();
-    int n = (int)x.size();
-    double B = instance->getP(); // presupuesto en unidades
+    int max_P = instance->getP();
+    const auto &nodos = instance->getNodes();
+    int n = x_var.size();
 
-    // construir máscara preinstalados
-    std::vector<char> pre(n, 0);
-    int Ppre = 0;
-    for(int i=0;i<n;++i){
-        if(nodos[i]->getFlag()==1){ pre[i]=1; Ppre++; }
-    }
 
-    auto sumOnes = [&](){
-        int s=0; for(double v: x) if(v>0.5) s++; return s;
-    };
-    auto count_r = [&](){
-        int r=0; for(int i=0;i<n;++i) if(pre[i] && x[i]<0.5) r++; return r;
-    };
-    auto cost = [&](){
-        int total = sumOnes();
-        int r = count_r();
-        int n_new = total - Ppre;
-        if(n_new < 0) n_new = 0;
-        return (double)n_new + 0.2*(double)r;
-    };
+	std::vector<int> indices_activos;
+	for(int i = 0; i< n; ++i) {
+		if (x_var[i] > 0.5) {
+			indices_activos.push_back(i);
+		}
+	}
+	int total_activos = indices_activos.size();
 
-    // (A) No desaparecer: total >= Ppre
-    int total = sumOnes();
-    if(total < Ppre){
-        // prender pre apagados primero
-        std::vector<int> pre_off;
-        for(int i=0;i<n;++i) if(pre[i] && x[i]<0.5) pre_off.push_back(i);
-        std::random_shuffle(pre_off.begin(), pre_off.end());
-        for(int k=0; total<Ppre && k<(int)pre_off.size(); ++k){
-            x[pre_off[k]] = 1.0; total++;
-        }
-        // si aún falta (raro), prender cualquier cero
-        if(total < Ppre){
-            std::vector<int> zeros;
-            for(int i=0;i<n;++i) if(x[i]<0.5) zeros.push_back(i);
-            std::random_shuffle(zeros.begin(), zeros.end());
-            for(int k=0; total<Ppre && k<(int)zeros.size(); ++k){
-                x[zeros[k]] = 1.0; total++;
+	if (total_activos > max_P) {
+		int a_quitar = total_activos - max_P;
+		std::vector<std::pair<double, int>> calidad;
+		calidad.reserve(total_activos);
+
+		for(int idx : indices_activos) {
+            double aporte = 0.0;
+            // Obtenemos vecinos que cubre este nodo
+            const auto& vecinos = instance->getNodosCubiertosPor(idx);
+            
+            for(int v : vecinos) {
+                // Sumamos probabilidad solo si NO está cubierto por otros FIJOS externos
+                // (En relocación asumimos que todo se puede mover, así que calculamos aporte bruto)
+                // OJO: Si usas isPreCubierto aquí, asegúrate que se refiera a cosas externas al problema.
+                aporte += nodos[v]->getProbOhca();
             }
+            calidad.push_back({aporte, idx});
         }
-    }
+		std::sort(calidad.begin(), calidad.end());
 
-    // (B) Respetar presupuesto: n_new + 0.2*r <= B
-    while(cost() > B + 1e-9)
-    {
-        // apagar NO-pre activos (baja costo 1.0)
-        std::vector<int> nonpre_on;
-        for(int i=0;i<n;++i) if(!pre[i] && x[i]>0.5) nonpre_on.push_back(i);
-
-        if(!nonpre_on.empty()){
-            int idx = nonpre_on[ std::rand() % nonpre_on.size() ];
-            x[idx] = 0.0;
-            continue;
+        // 5. Apagar los peores
+        for(int k=0; k<a_quitar && k<(int)calidad.size(); ++k) {
+            x_var[calidad[k].second] = 0.0;
         }
-
-        // si no hay no-pre activos, entonces n_new=0 y solo queda bajar r
-        // bajar r = volver a prender un pre apagado, y apagar otro 1 para no crear "nuevo"
-        std::vector<int> pre_off;
-        for(int i=0;i<n;++i) if(pre[i] && x[i]<0.5) pre_off.push_back(i);
-
-        std::vector<int> ones;
-        for(int i=0;i<n;++i) if(x[i]>0.5) ones.push_back(i);
-
-        if(!pre_off.empty() && ones.size() >= 2){
-            int pre_to_on = pre_off[ std::rand() % pre_off.size() ];
-            x[pre_to_on] = 1.0;
-
-            int idx_off = ones[ std::rand() % ones.size() ];
-            if(idx_off == pre_to_on) idx_off = ones[0];
-            x[idx_off] = 0.0;
-            continue;
-        }
-
-        break;
-    }
+	}
 }

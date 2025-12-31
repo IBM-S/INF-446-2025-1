@@ -8,15 +8,15 @@ CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 	m_MutationRate = 0.3;
     m_CrossoverRate = 1.0;
     m_Op1MutationProb = 0.2;
-    m_IsRelocation = false; // Por defecto Location (fijo)
+    m_IsRelocation = true; // Por defecto Location (fijo)
     m_ProblemType = "cam";
 	s_PopulationSize = 0;
     s_NeighborhoodSize = 0;
 	m_MaxTimeSeconds = 0; // Sin límite por defecto
 	m_SaveInterval = 0;
 
-	m_MutationType = 6;      // Híbrida por defecto
-    m_CrossoverType = 2;     // Inteligente por defecto
+	m_MutationType = 11;      // Híbrida por defecto
+    m_CrossoverType = 3;     // Inteligente por defecto
     m_MutationPercentage = 0.05; 
     m_BitFlipProb = 0.01;
 
@@ -226,23 +226,32 @@ void CALG_EMO_MOEAD::InitializePopulation()
 		SP.m_BestIndividual.problemInstance = this->problemInstance;
 
 		const auto &nodos = this->problemInstance->getNodes();
-		int aeds_preinstalados = 0;
-		for (const auto &nodo : nodos) if (nodo->getFlag() == 1) aeds_preinstalados++;
-		int total_locations = nodos.size() - aeds_preinstalados;
 
-		// Con contar presupuesto
+		int total_nodos = nodos.size();
 		int presupuesto = this->problemInstance->getP();
 
-		int num_AEDs = rand() % (total_locations + 1); // genera número entre 0 y total_locations
+		bool flag = true;
+		if (flag) {
+			// Modo Relocacion
+			int num_nuevos = rand() % (presupuesto + 1);
+			SP.m_BestIndividual.GenerateSimpleFeasibleSolution_For_Relocation(num_nuevos, presupuesto,total_nodos);
+			//SP.m_BestIndividual.GenerateSimpleFeasibleSolution_Mixed_Split(num_nuevos, total_nodos);
 
-		num_AEDs = rand() % (presupuesto + 1);
-        //printf(">>> Individuo inicial generado con %d AEDs instalados (Presupuesto: %d)\n", num_AEDs, presupuesto);
+		} else {
+			int aeds_preinstalados = 0;
+			for (const auto &nodo : nodos) if (nodo->getFlag() == 1) aeds_preinstalados++;
 
-  		SP.m_BestIndividual.GenerateSimpleFeasibleSolution_For_Relocation(num_AEDs, total_locations);
+			int huecos_disponibles = total_nodos - aeds_preinstalados;
 
-		//SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
+			int num_a_instalar = rand() % (presupuesto + 1); // genera número entre 0 y presupuesto
+			if (num_a_instalar > huecos_disponibles) num_a_instalar = huecos_disponibles;
+
+			SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_a_instalar, huecos_disponibles);
+		}
+
+
 		// Sin contar el presupuesto
-		// SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
+		// SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, huecos_disponibles);
 		SP.m_BestIndividual.Evaluate();
 		s_Fevals_Count++;
 
@@ -539,6 +548,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 	{
 		unsigned int id_c = order[s];
 
+		// 2 Seleccion de padres
 		SelectMatingPool(mating_pool, id_c, 2);
 		p1 = mating_pool[0];
 		p2 = mating_pool[1];
@@ -546,36 +556,35 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 
 		child.problemInstance = this->problemInstance;
 
-		// 1 CRUZAMIENTO
+		// 3 CRUZAMIENTO
 		
 		double rand_cross = UtilityToolBox.Get_Random_Number();
 		if (rand_cross <= m_CrossoverRate) {
-			if (m_CrossoverType == 1) {
-				if (m_IsRelocation) {
-					// Variante: RELOCATION (Flexible)
+			if (m_IsRelocation) {
+				if (m_CrossoverType == 4) {
 					UtilityToolBox.CruzamientoUniformeModificado_con_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
 																			m_PopulationSOP[p2].m_BestIndividual.x_var,
 																			child.x_var, this->problemInstance);
-				} else {
-					// Variante LOCATION (Fixed)
-					//printf(">>> Usando Cruzamiento Uniforme Modificado_sin_reubicacion\n");
-					UtilityToolBox.CruzamientoUniformeModificado_sin_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
-																			m_PopulationSOP[p2].m_BestIndividual.x_var,
-																			child.x_var, this->problemInstance);
-				}
-			} else if (m_CrossoverType == 2) {
-				// Variante: MODIFICADO
-				//printf(">>> Usando Cruzamiento Uniforme Inteligente\n");
-				UtilityToolBox.CruzamientoUniformeInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
-														 	 m_PopulationSOP[p2].m_BestIndividual.x_var,
-														 	 child.x_var, this->problemInstance);
-			} else if (m_CrossoverType == 3) {
-				// Variante: CLÁSICO
-				//printf(">>> Usando Cruzamiento Uniforme Semi Inteligente\n");
-				UtilityToolBox.CruzamientoUniformeReloc(m_PopulationSOP[p1].m_BestIndividual.x_var,
+				} else if (m_CrossoverType == 5) {
+					UtilityToolBox.CruzamientoUniformeReloc(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
 														  child.x_var, this->problemInstance);
-			} 
+				}
+			} else {
+				if (m_CrossoverType == 1) {
+					UtilityToolBox.CruzamientoUniformeModificado_sin_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
+																								m_PopulationSOP[p2].m_BestIndividual.x_var,
+																								child.x_var, this->problemInstance);
+				} else if (m_CrossoverType == 2) {
+					UtilityToolBox.CruzamientoUniformeInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
+														 	 m_PopulationSOP[p2].m_BestIndividual.x_var,
+														 	 child.x_var, this->problemInstance);
+				} else if (m_CrossoverType == 3) {
+					UtilityToolBox.CruzamientoUniformeSemiInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
+														  m_PopulationSOP[p2].m_BestIndividual.x_var,
+														  child.x_var, this->problemInstance);
+				}
+			}
 		} else {
 			if (UtilityToolBox.Get_Random_Number() < 0.5) {
 				child.x_var = m_PopulationSOP[p1].m_BestIndividual.x_var;
@@ -584,46 +593,66 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 			}
 		}
 
-		switch (m_MutationType)
-		{
-			case 1:
-				UtilityToolBox.MutacionBitFlip_1_N(child.x_var, m_MutationRate, this->problemInstance);
-				break;
-			case 2:
-				UtilityToolBox.MutacionBitFlip_1_M(child.x_var, m_MutationRate, s_PopulationSize, this->problemInstance);
-				break;
-			case 3:
-				UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
-				break;
-			case 4:
-				UtilityToolBox.MutacionSwapProbabilistico(child.x_var, m_MutationRate, m_MutationPercentage, this->problemInstance);
-				break;
-			case 5:
-				UtilityToolBox.Mutacion_Swap_Porcentual_1_N(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutationPercentage, this->problemInstance);
-				break;
-			case 6:
-				UtilityToolBox.Mutacion_Swap_Porcentual_1_M(child.x_var, m_MutationRate, m_Op1MutationProb, s_PopulationSize, m_MutationPercentage, this->problemInstance);
-				break;
-			case 7:
-				UtilityToolBox.Mutacion_Swap_Porcentual_Fijo(child.x_var, m_MutationRate, m_Op1MutationProb, m_BitFlipProb, m_MutationPercentage, this->problemInstance);
-				break;
-			case 8:
-				UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
-				break;
-			case 9:
-				UtilityToolBox.MutacionSwapPorcentual(child.x_var, m_MutationRate, m_MutationPercentage, this->problemInstance);
-				break;
-			case 10:
-				UtilityToolBox.MutacionDeletePorcentual(child.x_var, m_MutationRate, m_MutationPercentage, this->problemInstance);
-				break;
-			case 11:
-				UtilityToolBox.MutacionHibridaReloc(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
-				break;
-			default:
-                UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
-                break;
-			}
-
+		if (m_IsRelocation) {
+			switch (m_MutationType)
+			{
+				case 12:
+					UtilityToolBox.MutacionModificada_con_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
+					break;
+				case 13:
+					UtilityToolBox.MutacionSwapPorcentualReloc(child.x_var, m_MutationRate, m_MutPctSwap, this->problemInstance);
+					break;
+				case 14:
+					UtilityToolBox.MutacionDeletePorcentualReloc(child.x_var, m_MutationRate, m_MutPctDelete, this->problemInstance);
+					break;
+				case 15:
+					UtilityToolBox.MutacionHibridaReloc(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
+					break;
+				default:
+					UtilityToolBox.MutacionHibridaReloc(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
+					break;
+				}
+		} else {
+			switch (m_MutationType)
+			{
+				case 1:
+					UtilityToolBox.MutacionBitFlip_1_N(child.x_var, m_MutationRate, this->problemInstance);
+					break;
+				case 2:
+					UtilityToolBox.MutacionBitFlip_1_M(child.x_var, m_MutationRate, s_PopulationSize, this->problemInstance);
+					break;
+				case 3:
+					UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
+					break;
+				case 4:
+					UtilityToolBox.MutacionSwapProbabilistico(child.x_var, m_MutationRate, m_MutPctSwap, this->problemInstance);
+					break;
+				case 5:
+					UtilityToolBox.Mutacion_Swap_Porcentual_1_N(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctSwap, this->problemInstance);
+					break;
+				case 6:
+					UtilityToolBox.Mutacion_Swap_Porcentual_1_M(child.x_var, m_MutationRate, m_Op1MutationProb, s_PopulationSize, m_MutPctSwap, this->problemInstance);
+					break;
+				case 7:
+					UtilityToolBox.Mutacion_Swap_Porcentual_Fijo(child.x_var, m_MutationRate, m_Op1MutationProb, m_BitFlipProb, m_MutPctSwap, this->problemInstance);
+					break;
+				case 8:
+					UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
+					break;
+				case 9:
+					UtilityToolBox.MutacionSwapPorcentual(child.x_var, m_MutationRate, m_MutPctSwap, this->problemInstance);
+					break;
+				case 10:
+					UtilityToolBox.MutacionDeletePorcentual(child.x_var, m_MutationRate, m_MutPctDelete, this->problemInstance);
+					break;
+				case 11:
+					UtilityToolBox.MutacionHibrida_location(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
+					break;
+				default:
+					UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
+					break;
+				}
+		}
 
 
 		child.Evaluate();
@@ -635,7 +664,6 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 
 		UpdateReference(child.f_obj);
 		UpdateNadirPoint(child.f_obj);
-
 		UpdateProblem_modificado(child, id_c);
 
 		if (IsTerminated())

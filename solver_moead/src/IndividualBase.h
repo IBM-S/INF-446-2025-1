@@ -28,7 +28,9 @@ public:
 
 	void Randomize();
 	void GenerateSimpleFeasibleSolution(int num_AEDs, int total_locations);
-	void GenerateSimpleFeasibleSolution_For_Relocation(int num_AEDs, int total_locations);
+	void GenerateSimpleFeasibleSolution_For_Relocation(int num_AEDs, int presupuesto_max, int total_locations);
+	void GenerateSimpleFeasibleSolution_Mixed_Split(int budget_units, int total_locations);
+	
 	void GenerateSimpleFeasibleSolution_v2(int num_AEDs, int total_locations);
 	void GenerateGreedyFeasibleSolution(int num_AEDs, double randomness_factor);
 	void Evaluate();
