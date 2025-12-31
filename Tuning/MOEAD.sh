@@ -50,8 +50,8 @@ while [ $# -gt 0 ]; do
     
     # Verificar si el argumento actual es un flag (-pm, -pc, -p, -s, etc.)
     case "$flag" in
-        -type) pop="$2"; shift 2 ;;
-        -variant) pop="$2"; shift 2 ;;
+        -type) type="$2"; shift 2 ;;
+        -variant) variant="$2"; shift 2 ;;
 
         -pop) pop="$2"; shift 2 ;;
         -neighborPct) neighborPct="$2"; shift 2 ;;
