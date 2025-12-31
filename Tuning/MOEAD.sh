@@ -9,16 +9,24 @@ dirOutput="../datos/res/raw_moead"
 # Máximo de evaluaciones totales
 evaluaciones=100000
 
+type=cam
+variant=location
+
 # Inicialización de variables
 pop=0
 neighborPct=0
+
 mut=0
+cross=0
+
+mutType=0
+crossType=0
+
+op1=0
+bitprob=0
+
 mutPctDelete=0
 mutPctSwap=0
-mutType=11
-cross=0
-crossType=3
-op1=0
 
 instance=""
 execution_params=()
@@ -42,15 +50,23 @@ while [ $# -gt 0 ]; do
     
     # Verificar si el argumento actual es un flag (-pm, -pc, -p, -s, etc.)
     case "$flag" in
+        -type) pop="$2"; shift 2 ;;
+        -variant) pop="$2"; shift 2 ;;
+
         -pop) pop="$2"; shift 2 ;;
         -neighborPct) neighborPct="$2"; shift 2 ;;
+
         -mut) mut="$2"; shift 2 ;;
+        -cross) cross="$2"; shift 2 ;;
+
+        -mutType) mutType="$2"; shift 2 ;;
+        -crossType) crossType="$2"; shift 2 ;;
+
+        -op1) op1="$2"; shift 2 ;;
+        -bitprob) bitprob="$2"; shift 2 ;;
+
         -mutPctDelete) mutPctDelete="$2"; shift 2 ;;
         -mutPctSwap) mutPctSwap="$2"; shift 2 ;;
-        -mutType) mutType="$2"; shift 2 ;;
-        -cross) cross="$2"; shift 2 ;;
-        -crossType) crossType="$2"; shift 2 ;;
-        -op1) op1="$2"; shift 2 ;;
         *)
             # Si el argumento es numérico o una cadena vacía, lo añadimos a la lista de parámetros de ejecución
             if [[ "$flag" =~ ^[0-9]+(\.[0-9]+)?$ ]] || [ "$flag" = "" ]; then
@@ -66,7 +82,7 @@ done
 
 # Calcular mi, número de objetivos y parámetros
 no=2 # número de objetivos
-params="-neval ${evaluaciones} -pop ${pop} -neighborPct ${neighborPct} -mut ${mut} -mutPctDelete ${mutPctDelete} -mutPctSwap ${mutPctSwap} -mutType ${mutType} -cross ${cross} -crossType ${crossType} -op1 ${op1} "
+params="-type ${type} -variant ${variant} -neval ${evaluaciones} -pop ${pop} -neighborPct ${neighborPct} -mut ${mut} -cross ${cross} -mutType ${mutType} -crossType ${crossType} -op1 ${op1} -bitprob ${bitprob} -mutPctDelete ${mutPctDelete} -mutPctSwap ${mutPctSwap} "
 echo "Parámetros: ${params}"
 
 screen="salida_consola.txt"
@@ -82,7 +98,7 @@ cmd="./${dirSolver}/MOEAD -inst ${dirInstances}/${instance} -seed ${seed} ${para
 echo "Ejecutando: $cmd"
 ${cmd} > ${screen}
 
-archivo_generado="${dirOutput}/cam/${instanceName}/last_gen_${instanceName}".dat
+archivo_generado="${dirOutput}/${type}/${instanceName}/last_gen_${instanceName}".dat
 
 if [ ! -f "$archivo_generado" ]; then
     echo "Error: No se encontro el archivo de resultados: $archivo_generado"
