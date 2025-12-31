@@ -497,12 +497,29 @@
         <!-- 1. Selección de Instancia -->
         <div class="panel-section">
           <div class="panel-title">📂 Selección</div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Tipo</label>
+              <select id="problem-type">
+                <option value="cam" selected>CAM</option>
+                <option value="drp">DRP</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Variante</label>
+              <select id="problem-variant">
+                <option value="location" selected>Location</option>
+                <option value="relocation">Relocation</option>
+              </select>
+            </div>
+          </div>
+
           <div class="form-group">
             <label>Instancia</label>
             <select id="instancia"></select>
           </div>
         </div>
-
         <!-- 2. Parámetros del Algoritmo -->
         <div class="panel-section">
           <div class="panel-title">⚙️ Parámetros</div>
@@ -514,7 +531,15 @@
                 <option value="100" selected>100</option>
                 <option value="200">200</option>
                 <option value="300">300</option>
+                <option value="350">350</option>
+                <option value="400">400</option>
+                <option value="450">450</option>
                 <option value="500">500</option>
+                <option value="600">600</option>
+                <option value="700">700</option>
+                <option value="800">800</option>
+                <option value="900">900</option>
+                <option value="1000">1000</option>
               </select>
             </div>
             <div><label>Vecindario</label>
@@ -522,7 +547,15 @@
                 <option value="10">10</option>
                 <option value="20" selected>20</option>
                 <option value="30">30</option>
+                <option value="35">35</option>
+                <option value="40">40</option>
+                <option value="45">45</option>
                 <option value="50">50</option>
+                <option value="60">60</option>
+                <option value="70">70</option>
+                <option value="80">80</option>
+                <option value="90">90</option>
+                <option value="100">100</option>
               </select>
             </div>
           </div>
@@ -1050,6 +1083,9 @@
         d['btn-hv-history'].onclick = () => this.logic.runAlgorithm(1); // 1 = todas las gens
         d['btn-new-seed'].onclick = () => this.ui.setRandomSeed();
 
+        d['problem-type'].onchange = () => this.logic.onTypeOrVariantChange();
+        d['problem-variant'].onchange = () => this.logic.onTypeOrVariantChange();
+
         // Comparación
         d['load-ampl-btn'].onclick = () => this.logic.loadAmpl();
         if (d['btn-compare-run']) { d['btn-compare-run'].onclick = () => this.logic.compareAll(); }
@@ -1208,9 +1244,28 @@
      * ============================================================================
      */
 
-
-
     APP.logic = {
+
+      /**
+       * Maneja cambios en tipo o variante
+       */
+      onTypeOrVariantChange() {
+        // Recargar instancias disponibles para el tipo seleccionado
+        APP.api.listInstances();
+
+        // Limpiar datos actuales
+        APP.state.frames = [];
+        APP.state.hvValues = [];
+        APP.state.amplPoints = null;
+
+        // Actualizar UI
+        APP.ui.setStatus('Seleccione una instancia', 'normal');
+        APP.dom['hv-moead'].textContent = '-';
+        APP.dom['hv-ampl-opt'].textContent = '-';
+        APP.dom['hv-gap'].textContent = '-';
+      },
+
+
       /**
        * Ejecuta el algoritmo (Normal, Historial o Cada X)
        */
@@ -1221,7 +1276,9 @@
         const payload = {
           instancia: d['instancia'].value,
           semilla: parseInt(d['seed'].value),
-          tipo: "cam", variante: "location", algoritmo: "MOEAD",
+          tipo: d['problem-type'].value,
+          variante: d['problem-variant'].value,
+          algoritmo: "MOEAD",
           neval: parseInt(d['neval'].value),
           pop: parseInt(d['pop'].value),
           neighbor: parseInt(d['neighbor'].value),
@@ -1253,7 +1310,11 @@
        */
       async loadSaved() {
         APP.ui.setStatus('Cargando...', 'loading');
-        const res = await APP.api.post('/load', { instancia: APP.dom['instancia'].value });
+        const res = await APP.api.post('/load', {
+          instancia: APP.dom['instancia'].value,
+          tipo: APP.dom['problem-type'].value,
+          variante: APP.dom['problem-variant'].value
+        });
 
         if (res.error || !res.files || !res.files.length) {
           APP.ui.setStatus('No hay datos guardados', 'warn');
