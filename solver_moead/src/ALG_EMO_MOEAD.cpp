@@ -220,33 +220,45 @@ void CALG_EMO_MOEAD::InitializePopulation()
 
 	//std::cout << "    Archivo de pesos encontrado. Inicializando poblacion..." << std::endl;
 
+	const auto &nodos = this->problemInstance->getNodes();
+	int total_nodos = nodos.size();
+	int presupuesto = this->problemInstance->getP();
+
+	int aeds_preinstalados = 0;
+	if (!m_IsRelocation) {
+		for (const auto &nodo : nodos) if (nodo->getFlag() == 1) aeds_preinstalados++;
+	}
+	int huecos_disponibles = total_nodos - aeds_preinstalados;
+
 	for (i = 0; i < s_PopulationSize; i++)
 	{
 		CSubProblemBase SP;
 		SP.m_BestIndividual.problemInstance = this->problemInstance;
 
-		const auto &nodos = this->problemInstance->getNodes();
-
-		int total_nodos = nodos.size();
-		int presupuesto = this->problemInstance->getP();
-
-		bool flag = true;
-		if (flag) {
-			// Modo Relocacion
+		bool log_initialization = false;
+		if (m_IsRelocation) {
+			int m_InitializationType = 1;
 			int num_nuevos = rand() % (presupuesto + 1);
-			SP.m_BestIndividual.GenerateSimpleFeasibleSolution_For_Relocation(num_nuevos, presupuesto,total_nodos);
-			//SP.m_BestIndividual.GenerateSimpleFeasibleSolution_Mixed_Split(num_nuevos, total_nodos);
-
+			switch (m_InitializationType) {
+				case 1: 
+					SP.m_BestIndividual.GenerateSimpleFeasibleSolution_For_Relocation(num_nuevos, presupuesto,total_nodos);
+					if (log_initialization) printf("1   relocation initialization\n");
+					break;
+				case 2:
+					SP.m_BestIndividual.GenerateSimpleFeasibleSolution_Mixed_Split(num_nuevos, total_nodos);
+					if (log_initialization) printf("2    relocation initialization\n");
+					break;
+				default:
+					SP.m_BestIndividual.GenerateSimpleFeasibleSolution_For_Relocation(num_nuevos, presupuesto,total_nodos);
+					if (log_initialization) printf("default    relocation initialization\n");
+					break;
+			}
 		} else {
-			int aeds_preinstalados = 0;
-			for (const auto &nodo : nodos) if (nodo->getFlag() == 1) aeds_preinstalados++;
-
-			int huecos_disponibles = total_nodos - aeds_preinstalados;
-
 			int num_a_instalar = rand() % (presupuesto + 1); // genera número entre 0 y presupuesto
 			if (num_a_instalar > huecos_disponibles) num_a_instalar = huecos_disponibles;
-
 			SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_a_instalar, huecos_disponibles);
+			if (log_initialization) printf("default location initialization\n");
+
 		}
 
 
@@ -289,8 +301,6 @@ void CALG_EMO_MOEAD::InitializePopulation()
 	
 	//std::cout << "    Poblacion inicializada con exito (" << s_PopulationSize << " individuos)." << std::endl;
 	//std::cerr << "--------------------------------------------------------\n" << std::endl;
-
-
 }
 
 void CALG_EMO_MOEAD::FindNadirPoint()
@@ -557,32 +567,56 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		child.problemInstance = this->problemInstance;
 
 		// 3 CRUZAMIENTO
-		
+		bool log_cross = false;
 		double rand_cross = UtilityToolBox.Get_Random_Number();
 		if (rand_cross <= m_CrossoverRate) {
 			if (m_IsRelocation) {
-				if (m_CrossoverType == 4) {
-					UtilityToolBox.CruzamientoUniformeModificado_con_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
+				switch (m_CrossoverType) {
+					case 4:
+						UtilityToolBox.CruzamientoUniformeModificado_con_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
 																			m_PopulationSOP[p2].m_BestIndividual.x_var,
 																			child.x_var, this->problemInstance);
-				} else if (m_CrossoverType == 5) {
-					UtilityToolBox.CruzamientoUniformeReloc(m_PopulationSOP[p1].m_BestIndividual.x_var,
+						if (log_cross) printf("4 relocation cross\n");
+						break;
+					case 5:
+						UtilityToolBox.CruzamientoUniformeReloc(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
 														  child.x_var, this->problemInstance);
+						if (log_cross) printf("5 relocation cross\n");
+						break;
+					default:
+						UtilityToolBox.CruzamientoUniformeReloc(m_PopulationSOP[p1].m_BestIndividual.x_var,
+														  m_PopulationSOP[p2].m_BestIndividual.x_var,
+														  child.x_var, this->problemInstance);
+						if (log_cross) printf("default relocation cross\n");
+						break;
 				}
 			} else {
-				if (m_CrossoverType == 1) {
-					UtilityToolBox.CruzamientoUniformeModificado_sin_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
+				switch (m_CrossoverType) {
+					case 1:
+						UtilityToolBox.CruzamientoUniformeModificado_sin_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
 																								m_PopulationSOP[p2].m_BestIndividual.x_var,
 																								child.x_var, this->problemInstance);
-				} else if (m_CrossoverType == 2) {
-					UtilityToolBox.CruzamientoUniformeInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
-														 	 m_PopulationSOP[p2].m_BestIndividual.x_var,
-														 	 child.x_var, this->problemInstance);
-				} else if (m_CrossoverType == 3) {
-					UtilityToolBox.CruzamientoUniformeSemiInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
-														  m_PopulationSOP[p2].m_BestIndividual.x_var,
-														  child.x_var, this->problemInstance);
+						if (log_cross) printf("1 location cross\n");
+						break;
+					case 2:
+						UtilityToolBox.CruzamientoUniformeInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
+																m_PopulationSOP[p2].m_BestIndividual.x_var,
+																child.x_var, this->problemInstance);
+						if (log_cross) printf("2 location cross\n");
+						break;
+					case 3:
+						UtilityToolBox.CruzamientoUniformeSemiInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
+															m_PopulationSOP[p2].m_BestIndividual.x_var,
+															child.x_var, this->problemInstance);
+						if (log_cross) printf("3 location cross\n");
+						break;
+					default:
+						UtilityToolBox.CruzamientoUniformeSemiInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
+															m_PopulationSOP[p2].m_BestIndividual.x_var,
+															child.x_var, this->problemInstance);
+						if (log_cross) printf("default location cross\n");
+						break;
 				}
 			}
 		} else {
@@ -592,24 +626,29 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 				child.x_var = m_PopulationSOP[p2].m_BestIndividual.x_var;
 			}
 		}
-
+		bool log_mut = false;
 		if (m_IsRelocation) {
 			switch (m_MutationType)
 			{
 				case 12:
 					UtilityToolBox.MutacionModificada_con_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
+					if (log_mut) printf("12 relocation mut\n");
 					break;
 				case 13:
 					UtilityToolBox.MutacionSwapPorcentualReloc(child.x_var, m_MutationRate, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("13 relocation mut\n");
 					break;
 				case 14:
 					UtilityToolBox.MutacionDeletePorcentualReloc(child.x_var, m_MutationRate, m_MutPctDelete, this->problemInstance);
+					if (log_mut) printf("14 relocation mut\n");
 					break;
 				case 15:
 					UtilityToolBox.MutacionHibridaReloc(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("15 relocation mut\n");
 					break;
 				default:
 					UtilityToolBox.MutacionHibridaReloc(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("default relocation mut\n");
 					break;
 				}
 		} else {
@@ -617,39 +656,51 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 			{
 				case 1:
 					UtilityToolBox.MutacionBitFlip_1_N(child.x_var, m_MutationRate, this->problemInstance);
+					if (log_mut) printf("1 location mut\n");
 					break;
 				case 2:
 					UtilityToolBox.MutacionBitFlip_1_M(child.x_var, m_MutationRate, s_PopulationSize, this->problemInstance);
+					if (log_mut) printf("2 location mut\n");
 					break;
 				case 3:
 					UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
+					if (log_mut) printf("3 location mut\n");
 					break;
 				case 4:
 					UtilityToolBox.MutacionSwapProbabilistico(child.x_var, m_MutationRate, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("4 location mut\n");
 					break;
 				case 5:
 					UtilityToolBox.Mutacion_Swap_Porcentual_1_N(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("5 location mut\n");
 					break;
 				case 6:
 					UtilityToolBox.Mutacion_Swap_Porcentual_1_M(child.x_var, m_MutationRate, m_Op1MutationProb, s_PopulationSize, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("6 location mut\n");
 					break;
 				case 7:
 					UtilityToolBox.Mutacion_Swap_Porcentual_Fijo(child.x_var, m_MutationRate, m_Op1MutationProb, m_BitFlipProb, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("7 location mut\n");
 					break;
 				case 8:
 					UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
+					if (log_mut) printf("8 location mut\n");
 					break;
 				case 9:
 					UtilityToolBox.MutacionSwapPorcentual(child.x_var, m_MutationRate, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("9 location mut\n");
 					break;
 				case 10:
 					UtilityToolBox.MutacionDeletePorcentual(child.x_var, m_MutationRate, m_MutPctDelete, this->problemInstance);
+					if (log_mut) printf("10 location mut\n");
 					break;
 				case 11:
 					UtilityToolBox.MutacionHibrida_location(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("11 location mut\n");
 					break;
 				default:
 					UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
+					if (log_mut) printf("default location mut\n");
 					break;
 				}
 		}
