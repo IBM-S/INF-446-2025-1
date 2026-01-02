@@ -130,8 +130,8 @@ int main(int argc, char *argv[])
 	NumberOfObjectives = 2;
     NumberOfFuncEvals = 40000; 
 
-    std::string variant = "relocation"; // o "relocation"
-    std::string problemType = "drp";  // o "drp"
+    std::string variant = "location"; // o "relocation"
+    std::string problemType = "cam";  // o "drp"
     std::string algName = "MOEAD";
 
     double maxTime = 0; 
