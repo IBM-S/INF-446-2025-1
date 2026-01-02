@@ -33,19 +33,19 @@ param MV {objetivos} default 999999999;
 param PV {objetivos} default -1000;
 
 # ----------------- VARIABLES -----------------
-var x {i in N} binary;      #<-- Variable de decisión principal: x[i]=1 si se instala un NUEVO AED en el sitio i.
-var z {j in N} binary;      #<-- Variable de estado: z[j]=1 si el sitio de demanda j está cubierto.
+var y {i in N} binary;      #<-- Variable de decisión principal: y[i]=1 si se instala un NUEVO AED en el sitio i.
+var x {j in N} binary;      #<-- Variable de estado: x[j]=1 si el sitio de demanda j está cubierto.
 
 # ----------------- OBJETIVOS -----------------
 var F {objetivos} >= -1000000; # Vector para almacenar los valores de los objetivos.
 
 # O1: Maximizar cobertura probabilística (formulado para minimizar)
 subject to Objetivo_1:
-    F[1] = - (sum {j in N} z[j] * prob_ohca[j]);
+    F[1] = - (sum {j in N} x[j] * prob_ohca[j]);
 
 # O2: Minimizar el costo total de las nuevas instalaciones.
 subject to Objetivo_2:
-    F[2] = sum {i in N} x[i] * c1;
+    F[2] = sum {i in N} y[i] * c1;
 
 # Funciones objetivo para AMPL
 minimize FO1: F[g]; # Para encontrar los extremos de un solo objetivo (g=1 o g=2)
@@ -60,18 +60,18 @@ minimize FO2: sum {i in objetivos} betha[i] *
 
 # R1: Un nuevo AED no puede ser instalado donde ya existe uno.
 #     flag[i] es 1 si ya hay uno, 0 si no. 1-flag[i] invierte esto.
-subject to Restriccion_No_Duplicar {i in N}:
-     x[i] <= 1 - flag[i];
+ subject to Restriccion_No_Duplicar {i in N}:
+    y[i] <= 1 - flag[i];
 
 # R2: El costo total de las nuevas instalaciones no puede superar el presupuesto.
 subject to Restriccion_Presupuesto:
-    sum {i in N} x[i] * c1 <= P;
+    sum {i in N} y[i] * c1 <= P;
 
-# R3: Un sitio de demanda 'j' está cubierto (z[j]=1) si hay un AED al alcance.
-#     Un AED puede ser uno pre-existente (flag[i]=1) o uno nuevo (x[i]=1).
+# R3: Un sitio de demanda 'j' está cubierto (x[j]=1) si hay un AED al alcance.
+#     Un AED puede ser uno pre-existente (flag[i]=1) o uno nuevo (y[i]=1).
 subject to Restriccion_Cobertura {j in N}:
-    z[j] <= sum {(i,j) in PARES_CUBRIBLES} (x[i] + flag[i]);
+    x[j] <= sum {(i,j) in PARES_CUBRIBLES} (y[i] + flag[i]);
 
-# z[j] debe ser 1 si existe un i que cubre j (ya sea preinstalado o nuevo)
+# x[j] debe ser 1 si existe un i que cubre j (ya sea preinstalado o nuevo)
 subject to cobertura_LB { (i,j) in PARES_CUBRIBLES }:
-    z[j] >= x[i] + flag[i]; 
+    x[j] >= y[i] + flag[i]; 

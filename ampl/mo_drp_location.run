@@ -1,8 +1,9 @@
-#reset ;
+reset ;
 
 
-# model mo_location_model.mod;
-# data DRP_con_probs.dat;
+ model mo_location_model.mod;
+
+# data ../datos/inst/DRP.dat;
 # data casos_dats_prob/100-3.dat;
 # data ../datos/inst/100-3.dat;
 # data ../datos/inst/cam_1390_MILPA_ALTA.dat;
@@ -21,15 +22,21 @@
 # data ../datos/inst/cam_22238_CUAUHTEMOC.dat;
 # data ../datos/inst/cam_24363_GUSTAVO_A._MADERO.dat;
 # data ../datos/inst/cam_40264_IZTAPALAPA.dat;
+data ../datos/inst/drp_657_STATEN_ISLAND.dat;
+# data ../datos/inst/drp_2151_BRONX.dat;
+# data ../datos/inst/drp_2885_QUEENS.dat;
+# data ../datos/inst/drp_3442_BROOKLYN.dat;
+# data ../datos/inst/drp_4432_MANHATTAN.dat;
 
-#data conf_execution.dat;
+
+data conf_execution.dat;
 
 /* GUROBI */
 option solver gurobi;
 
 option solver_msg 0 ;
 option show_stats 1;
-option gurobi_options 'timelimit=0.5';
+option gurobi_options 'timelimit=3600';
 
 param mostrar_detalles default 1;
 param mostrar_pesos default 0;
@@ -45,7 +52,7 @@ param formato_salida default 3;
 #printf "Tiempo CPU: %d\n", Ttotal ;
 
 printf "\n==========================================================\n";
-printf "               REPORTE DE EJECUCION AMPL                  \n";
+printf "               MODO: FIXED LOCATION           \n";
 printf "==========================================================\n";
 
 printf " [1] INFORMACION DE LA INSTANCIA\n";
@@ -112,12 +119,12 @@ for {gg in objetivos} {
         printf "\n";
 
         printf "  - New AEDs installed: ";
-        let count := 0; for {i in N: x[i] == 1} { if count > 0 then printf ", "; printf "%s", i; let count := count + 1; } if count == 0 then printf "None";
+        let count := 0; for {i in N: y[i] == 1} { if count > 0 then printf ", "; printf "%s", i; let count := count + 1; } if count == 0 then printf "None";
         printf "\n\n";
     }
 
     # Limpia las variables de decision para la siguiente iteracion
-    reset data x, z, F;
+    reset data x, y, F;
 }
 
 # Paso 3: Usar la tabla SolucionExtrema para determinar los verdaderos MV y PV.
@@ -150,9 +157,7 @@ for {gg in ejecuciones} {
 
     printf "\n==> Ejecucion ponderada ::::::: %s\n", gg;
 
-    for {i in objetivos} {
-	   let betha[i] := sigma[gg,i];
-	}
+    for {i in objetivos} { let betha[i] := sigma[gg,i]; }
 
     objective FO2;
     let Ttotal := time();
@@ -171,7 +176,7 @@ for {gg in ejecuciones} {
         printf "\n";
 
         printf "  - New AEDs installed: ";
-        let count := 0; for {i in N: x[i] == 1} { if count > 0 then printf ", "; printf "%s", i; let count := count + 1; } if count == 0 then printf "None";
+        let count := 0; for {i in N: y[i] == 1} { if count > 0 then printf ", "; printf "%s", i; let count := count + 1; } if count == 0 then printf "None";
         printf "\n\n";
     }
 
@@ -181,15 +186,15 @@ for {gg in ejecuciones} {
     # (Esta seccion necesita una pequeña correccion en la normalizacion)
     # La formula original estaba invertida, esta es la correcta: (valor - peor) / (mejor - peor)
     # Como tus objetivos son de minimizacion, "mejor" es MV y "peor" es PV.
-    let FN1[gg] := (F[1] - PV[1]) / (MV[1] - PV[1]);
-    let FN2[gg] := (F[2] - PV[2]) / (MV[2] - PV[2]);
     let F1[gg] := F[1];
     let F2[gg] := F[2];
+    let FN1[gg] := (F[1] - PV[1]) / (MV[1] - PV[1]);
+    let FN2[gg] := (F[2] - PV[2]) / (MV[2] - PV[2]);
 
     let BT1[gg] := sigma[gg, 1];
     let BT2[gg] := sigma[gg, 2];
 
-    reset data x, z, F;
+    reset data x, y, F;
 }
 
 # ############################################################################################
@@ -248,7 +253,7 @@ else if formato_salida = 3 then {
     printf "\nF1(Coverage) F2(Cost)\n";
     printf "---------------------\n";
     for {gg in ejecuciones} {
-        printf "%g %g\n", F1[gg], F2[gg];
+        printf "%.16g %g\n", F1[gg], F2[gg];
     }
 }
 

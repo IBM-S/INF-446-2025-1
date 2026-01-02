@@ -1,30 +1,58 @@
-# reset;
+reset;
 
-# model mo_relocation_model_simple.mod;
-# data  DRP_con_probs.dat;
+model mo_relocation_model_simple.mod;
+# data ../datos/inst/DRP.dat;
+data ../datos/inst/drp_657_STATEN_ISLAND.dat;
+# data ../datos/inst/drp_2151_BRONX.dat;
+# data ../datos/inst/drp_2885_QUEENS.dat;
+# data ../datos/inst/drp_3442_BROOKLYN.dat;
+# data ../datos/inst/drp_4432_MANHATTAN.dat;
 
-# data ../datos/inst/drp_657_STATEN_ISLAND.dat;
-# data casos_dats_prob/150-11.dat;
-# data casos_dats_prob/alcaldia_milpa_alta.dat;
-# data casos_dats_prob/alcaldia_venustiano.dat;
+
 # ---------- Config ----------
-param mostrar_pesos default 1;
+data conf_execution.dat;
 
-# data conf_execution.dat;
-
-# Solver
+# Opciones del Solver
 option solver gurobi;
-option gurobi_options 'timelim=600';
-option show_stats 1;
 option solver_msg 0;
+option show_stats 1;
+option gurobi_options 'timelim=3600';
 
-param mostrar_detalles default 0;
+# Parametros de Salida
+param mostrar_detalles default 1;
+param mostrar_pesos default 0;
 param formato_salida default 3;
 
-param count default 0;
+param n_inicial default 0;
+let n_inicial := sum{i in N} flag[i];
 
-# ---------- Parametros para guardar resultados ----------
+printf "\n==========================================================\n";
+printf "               MODO: FLEXIBLE LOCATION                  \n";
+printf "==========================================================\n";
+
+printf " [1] INFORMACION DE LA INSTANCIA\n";
+printf "     Instancia     : %s\n", nombre_instancia;
+printf "     N (Nodos)     : %d\n", N_total;
+printf "     Presupuesto   : %g\n", P;
+printf "     Radio (R)     : %g\n", R;
+printf "     Costos (c1/c2): %g / %g\n", c1, c2;
+printf "     Pre-instalados: %g\n", n_inicial;
+
+printf "\n [2] CONFIGURACION DEL SOLVER\n";
+printf "     Solver        : Gurobi\n";
+printf "     Time Limit    : 3600 s\n";
+printf "     Ejecuciones   : %d (Puntos en la frontera)\n", cantejc;
+printf "==========================================================\n\n";
+
+param count default 0;
 param Ttotal default 0;
+param n_kept default 0;
+param n_removed default 0;
+param n_new_locs default 0;      # Total de lugares nuevos ocupados
+param n_purchased default 0;     # Cuantos se compraron
+param n_reused default 0;        # Cuantos se movieron de los removed
+param total_final default 0;
+
 
 param TCPU1 {objetivos}   default 0;
 param MVF   {objetivos}   default 0;
@@ -42,54 +70,87 @@ param BT2   {ejecuciones} default 0;
 
 param Tstartuno default 0;
 param Tstartdos default 0;
-
-# Tabla de extremos
 param SolucionExtrema {objetivos, objetivos};
 
-if mostrar_detalles = 1 then {
-    printf "\n--- MODO: FLEXIBLE LOCATION ---\n";
-    printf "Instancia: %s\n", nombre_instancia;
-    printf "Presupuesto P = %g, Radio R = %g\n\n", P, R;
-}
 
 # ############################################################################################
 # ############################# FASE 1: Busqueda del mejor y peor valor ######################
 # ############################################################################################
 
+printf " [3] CALCULANDO PUNTOS EXTREMOS (Ideal/Nadir)...\n";
 let Tstartuno := time() ;
 
+# Paso 2: Resolver para cada objetivo individualmente y llenar la tabla.
 for {gg in objetivos} {
-    if mostrar_detalles = 1 then printf "\n--- Calculando extremo para Objetivo %d ---\n", gg;
-
     let g := gg;
     objective FO1;
     let Ttotal := time();
     solve;
     let TCPU1[gg] := time() - Ttotal;
     
-    # Guarda vector F en la matriz de extremos
+    # Guarda el vector de objetivos F completo en la fila 'gg' de la tabla
     for {i in objetivos} { let SolucionExtrema[gg, i] := F[i]; }
     let f1[gg] := F[1];
     let f2[gg] := F[2];
     
+    printf "     -> Objetivo %d: F1=%.8f, F2=%.1f (%.2f s)\n", gg, F[1], F[2], TCPU1[gg];
+
     if mostrar_detalles = 1 then {
-    printf "  F[1] (Cobert.) = %g   F[2] (Costo) = %g\n", F[1], F[2];
+        printf "  Objective Values: F1(Coverage)=%.4f, F2(Cost)=%.4f\n", F[1], F[2];
 
-    printf "\n  -------- ACCIONES REALIZADAS --------\n";
-    for {i in N: flag[i]=1 and y[i]=1} { printf "    - MANTENER el AED existente en i=%d\n", i;}
-    for {i in N: flag[i]=1 and y[i]=0} { printf "    - ELIMINA/REUBICA el AED de i=%d\n", i;}
-    for {i in N: flag[i]=0 and y[i]=1} { printf "    - INSTALAR nuevo AED en i=%d\n", i;}
+        # --- CALCULOS DE INVENTARIO ---
+        let total_final := sum {i in N} y[i];
+        let n_purchased := 0;
+        if total_final > n_inicial then {
+            let n_purchased := total_final - n_inicial;
+        }
+        let n_new_locs := sum {i in N: flag[i]=0 and y[i]=1} 1;
+        let n_reused := n_new_locs - n_purchased; # Los nuevos sitios que no son compra, son reuso
 
-    printf "\n  -------- COBERTURA (x[j]=1) --------\n";
-    printf "    j cubiertos: ";
-    for {j in N: x[j]=1} { printf "%d ", j; }
-    printf "\n\n";
+        # 1. MANTENIDOS (flag=1, y=1)
+        let n_kept := sum {i in N: flag[i]=1 and y[i]=1} 1;
+        printf "  - Pre-existing AEDs kept (%d): ", n_kept;
+        let count := 0;
+        for {i in N: flag[i]=1 and y[i]=1} {
+            if count > 0 then printf ", ";
+            printf "%d", i;
+            let count := count + 1;
+        }
+        if count = 0 then printf "None";
+        printf "\n\n";
+
+        # 2. REMOVIDOS (flag=1, y=0)
+        let n_removed := sum {i in N: flag[i] = 1 and y[i] = 0} 1;
+        printf "  - AEDs Removed from old spots (%d) (Desinstalacion)\n", n_removed, n_removed, c2, (n_removed * c2);
+        let count := 0;
+        for {i in N: flag[i]=1 and y[i]=0} {
+            if count > 0 then printf ", ";
+            printf "%d", i;
+            let count := count + 1;
+        }
+        if count = 0 then printf "None";
+        printf "\n";
+
+        # 3. NUEVOS (flag=0, y=1)
+        printf "  - Installations in NEW locations (%d):\n", n_new_locs;
+        printf "      >> Sourced from Relocation: %d  (Cost: %d * %g = %g)\n", n_reused, n_reused, c2, n_reused*c2;
+        printf "      >> Sourced from Purchase:   %d  (Cost: %d * %g = %g)\n", n_purchased, n_purchased, c1, n_purchased*c1;
+        printf "      >> Total Cost Check: %g + %g = %g\n", n_reused*c2, n_purchased*c1, (n_reused*c2 + n_purchased*c1);
+        printf "      >> IDs of new locations: ";
+        let count := 0;
+        for {i in N: flag[i]=0 and y[i]=1} {
+            if count > 0 then printf ", ";
+            printf "%d", i;
+            let count := count + 1;
+        }
+        if count = 0 then printf "None";
+        printf "\n\n";
     }
     # Limpieza para proximo extremo (usando las nuevas variables)
     reset data x, y, F;
 }
-
-# Determinar MV y PV por columna a partir de SolucionExtrema
+# Paso 3: Usar la tabla SolucionExtrema para determinar los verdaderos MV y PV.
+#         Esto se hace DESPUeS de haber completado el bucle anterior.
 for {i in objetivos} {
     let MV[i] := min {gg in objetivos} SolucionExtrema[gg, i];
     let PV[i] := max {gg in objetivos} SolucionExtrema[gg, i];
@@ -97,15 +158,19 @@ for {i in objetivos} {
     let PVF[i] := PV[i];
 }
 
+printf "\n-> Rango F1: [%.10f, %.4f]\n", MV[1], PV[1];
+printf "-> Rango F2: [%.10f, %.4f]\n", MV[2], PV[2];
+
 
 # ############################################################################################
 # ############################# FASE 2: Busqueda de la frontera de Pareto ####################
 # ############################################################################################
 
+printf "\n [4] GENERANDO FRONTERA DE PARETO (Iteraciones)...\n";
 let Tstartdos := time() ;
 
 for {gg in ejecuciones} {
-    if mostrar_detalles = 1 then printf "\n==> Ejecucion ponderada %d\n", gg;
+    printf "\n==> Ejecucion ponderada ::::::: %s\n", gg;
 
     for {i in objetivos} { let betha[i] := sigma[gg,i]; }
     
@@ -122,46 +187,58 @@ for {gg in ejecuciones} {
     
     if (MV[1] - PV[1]) <> 0 then { let FN1[gg] := (F[1] - PV[1]) / (MV[1] - PV[1]); } else { let FN1[gg] := 0; }
     if (MV[2] - PV[2]) <> 0 then { let FN2[gg] := (F[2] - PV[2]) / (MV[2] - PV[2]); } else { let FN2[gg] := 0; }
-    # ------ Detalle de la solucion de compromiso ------
-    printf "  F[1] (Cobert.) = %g   F[2] (Costo) = %g\n", F[1], F[2];
     
-    # 1. AEDs PRE-EXISTENTES QUE SE MANTIENEN (flag=1 y y=1)
-    printf "  - Pre-existing AEDs kept: ";
-    let count := 0;
-    for {i in N: flag[i]=1 and y[i]=1} {
-        if count > 0 then printf ", ";
-        printf "%d", i;
-        let count := count + 1;
-    }
-    if count = 0 then printf "None";
-    printf "\n";
+    
+    if mostrar_detalles = 1 then {
+        printf "  Objective Values: F1(Coverage)=%.4f, F2(Cost)=%.4f\n", F[1], F[2];
+        
+        # --- CALCULOS DE INVENTARIO ---
+        let total_final := sum {i in N} y[i];
+        let n_purchased := 0;
+        if total_final > n_inicial then {
+            let n_purchased := total_final - n_inicial;
+        }
+        let n_new_locs := sum {i in N: flag[i]=0 and y[i]=1} 1;
+        let n_reused := n_new_locs - n_purchased; # Los nuevos sitios que no son compra, son reuso
 
-    # 2. AEDs PRE-EXISTENTES QUE SE QUITAN (flag=1 y y=0)
-    printf "  - AEDs Relocated/Removed: ";
-    let count := 0;
-    for {i in N: flag[i]=1 and y[i]=0} {
-        if count > 0 then printf ", ";
-        printf "%d", i;
-        let count := count + 1;
-    }
-    if count = 0 then printf "None";
-    printf "\n";
+        # 1. MANTENIDOS
+        let n_kept := sum {i in N: flag[i]=1 and y[i]=1} 1;
+        printf "  - Pre-existing AEDs kept (%d): ", n_kept;
+        let count := 0;
+        for {i in N: flag[i]=1 and y[i]=1} {
+            if count > 0 then printf ", ";
+            printf "%d", i;
+            let count := count + 1;
+        }
+        if count = 0 then printf "None";
+        printf "\n";
 
-    # 3. NUEVOS AEDs INSTALADOS (flag=0 y y=1)
-    printf "  - New AEDs installed: ";
-    let count := 0;
-    for {i in N: flag[i]=0 and y[i]=1} {
-        if count > 0 then printf ", ";
-        printf "%d", i;
-        let count := count + 1;
-    }
-    if count = 0 then printf "None";
-    printf "\n\n";
+        # 2. REMOVIDOS
+        let n_removed := sum {i in N: flag[i] = 1 and y[i] = 0} 1;
+        printf "  - AEDs Removed from old spots (%d) (Desinstalacion)\n", n_removed, n_removed, c2, (n_removed * c2);
+        let count := 0;
+        for {i in N: flag[i]=1 and y[i]=0} {
+            if count > 0 then printf ", ";
+            printf "%d", i;
+            let count := count + 1;
+        }
+        if count = 0 then printf "None";
+        printf "\n";
 
-    #printf "\n  -------- ACCIONES REALIZADAS --------\n";
-    #for {i in N: flag[i]=1 and y[i]=1} { printf "    - Se MANTIENE el AED existente en i=%d\n", i;}
-    #for {i in N: flag[i]=1 and y[i]=0} { printf "    - Se ELIMINA/REUBICA el AED de i=%d\n", i;}
-    #for {i in N: flag[i]=0 and y[i]=1} { printf "    - Se instala NUEVO AED en i=%d\n", i;}
+        # 3. NUEVOS
+         printf "  - Installations in NEW locations (%d):\n", n_new_locs;
+        printf "      >> Sourced from Relocation: %d  (Cost: %d * %g = %g)\n", n_reused, n_reused, c2, n_reused*c2;
+        printf "      >> Sourced from Purchase:   %d  (Cost: %d * %g = %g)\n", n_purchased, n_purchased, c1, n_purchased*c1;
+        printf "      >> IDs: ";
+        let count := 0;
+        for {i in N: flag[i]=0 and y[i]=1} {
+            if count > 0 then printf ", ";
+            printf "%d", i;
+            let count := count + 1;
+        }
+        if count = 0 then printf "None";
+        printf "\n\n";
+    }
 
     # Limpieza para la proxima corrida (usando las nuevas variables)
     reset data x, y, F;
@@ -169,16 +246,14 @@ for {gg in ejecuciones} {
 
 
 if formato_salida = 3 then {
-    # ESTA ES LA PARTE QUE LEE TU GREP EN BASH
     # Imprime solo los valores finales limpios
     printf "\nF1(Coverage) F2(Cost)\n";
     printf "---------------------\n";
     for {gg in ejecuciones} {
-        printf "%g %g\n", F1[gg], F2[gg];
+        printf "%.16f %g\n", F1[gg], F2[gg];
     }
 }
 else {
-    # Salida detallada (legacy o para debug manual)
     printf "\n\n================== RESUMEN FINAL FLEXIBLE LOCATION ==================\n";
     printf "%-10s | %-12s | %-12s\n", "Objetivo","MVF (Mejor)","PVF (Peor)";
     printf "%s\n", "-----------+--------------+--------------";
