@@ -1,7 +1,7 @@
 
 BASE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
-AMPL_EXECUTABLE="./../../ampl.linux-intel64/ampl"
+AMPL_EXECUTABLE="./../../ampl/ampl.linux-intel64/ampl"
 
 MODEL_FILE="mo_relocation_model_simple.mod"
 RUN_FILE="mo_drp_relocation_simple.run"

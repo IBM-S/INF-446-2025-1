@@ -14,18 +14,19 @@ VARIANT="location"
 NUM_RUNS=10          
 
 # Parámetros Algoritmo
-POPULATION=300
-NEIGHBOR=10
-NEVALS=150000    # Criterio de parada por evaluaciones
+POPULATION=850
+NEIGHBORPCT=0.1
+NEVALS=100000    # Criterio de parada por evaluaciones
 MAX_TIME=3600      # Criterio de parada por tiempo (0 = desactivado)
 MUTATION=0.5
-CROSSOVER=0.7
-OP1_PROB=0.5
+CROSSOVER=0.6
+OP1_PROB=0.3
 SAVE=0
-MUTTYPE=11
+MUTTYPE=7
 CROSSTYPE=3
-MUTPCT=0.2
-BITPROB=0.1
+MUTPCTDELETE=0.1
+MUTPCTSWAP=0.4
+BITPROB=0.01
 
 
 # Lista de Instancias
@@ -111,7 +112,7 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
             -type "${PROBLEM_TYPE}" 
             -variant "${VARIANT}" 
             -pop "${POPULATION}" 
-            -neighbor "${NEIGHBOR}" 
+            -neighborPct "${NEIGHBORPCT}" 
             -neval "${NEVALS}" 
             -time "${MAX_TIME}" 
             -mut "${MUTATION}" 
@@ -120,7 +121,8 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
             -save "${SAVE}" 
             -mutType "${MUTTYPE}" 
             -crossType "${CROSSTYPE}" 
-            -mutPct "${MUTPCT}" 
+            -mutPctDelete "${MUTPCTDELETE}" 
+            -mutPctSwap "${MUTPCTSWAP}" 
             -bitprob "${BITPROB}" 
             -outDir "${subFolder}"
         )
