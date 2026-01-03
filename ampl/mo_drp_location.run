@@ -1,7 +1,7 @@
-reset ;
+# reset ;
 
 
- model mo_location_model.mod;
+# model mo_location_model.mod;
 
 # data ../datos/inst/DRP.dat;
 # data casos_dats_prob/100-3.dat;
@@ -22,14 +22,14 @@ reset ;
 # data ../datos/inst/cam_22238_CUAUHTEMOC.dat;
 # data ../datos/inst/cam_24363_GUSTAVO_A._MADERO.dat;
 # data ../datos/inst/cam_40264_IZTAPALAPA.dat;
-data ../datos/inst/drp_657_STATEN_ISLAND.dat;
+# data ../datos/inst/drp_657_STATEN_ISLAND.dat;
 # data ../datos/inst/drp_2151_BRONX.dat;
 # data ../datos/inst/drp_2885_QUEENS.dat;
 # data ../datos/inst/drp_3442_BROOKLYN.dat;
 # data ../datos/inst/drp_4432_MANHATTAN.dat;
 
 
-data conf_execution.dat;
+# data conf_execution.dat;
 
 /* GUROBI */
 option solver gurobi;
@@ -51,6 +51,9 @@ param formato_salida default 3;
 #display F ;
 #printf "Tiempo CPU: %d\n", Ttotal ;
 
+param n_inicial default 0;
+let n_inicial := sum{i in N} flag[i];
+
 printf "\n==========================================================\n";
 printf "               MODO: FIXED LOCATION           \n";
 printf "==========================================================\n";
@@ -61,7 +64,7 @@ printf "     N (Nodos)     : %d\n", N_total;
 printf "     Presupuesto   : %g\n", P;
 printf "     Radio (R)     : %g\n", R;
 printf "     Costos (c1/c2): %g / %g\n", c1, c2;
-printf "     Pre-instalados: %g\n", sum{i in N} flag[i];
+printf "     Pre-instalados: %g\n", n_inicial;
 
 printf "\n [2] CONFIGURACION DEL SOLVER\n";
 printf "     Solver        : Gurobi\n";
@@ -71,6 +74,9 @@ printf "==========================================================\n\n";
 
 param count default 0;
 param Ttotal default 0 ;
+param n_pre default 0;   
+param n_new default 0;   
+
 param TCPU1{objetivos}   default 0 ;
 param MVF{objetivos}     default 0 ;
 param PVF{objetivos}     default 0 ;
@@ -102,9 +108,7 @@ for {gg in objetivos} {
     let TCPU1[gg] := time() - Ttotal;
 
     # Guarda el vector de objetivos F completo en la fila 'gg' de la tabla
-    for {i in objetivos} {
-        let SolucionExtrema[gg, i] := F[i];
-    }
+    for {i in objetivos} { let SolucionExtrema[gg, i] := F[i]; }
 
     printf "     -> Objetivo %d: F1=%.4f, F2=%.4f (%.2f s)\n", gg, F[1], F[2], TCPU1[gg];
 
@@ -114,11 +118,15 @@ for {gg in objetivos} {
     if mostrar_detalles = 1 then {
         printf "  Objective Values: F1(Coverage)=%.4f, F2(Cost)=%.4f\n", F[1], F[2];
         
-        printf "  - Pre-existing AEDs: ";
+        # --- 1. PRE-EXISTENTES ---
+        let n_pre := sum {i in N} flag[i];
+        printf "  - Pre-existing AEDs (%d): ", n_pre;
         let count := 0; for {i in N: flag[i] == 1} { if count > 0 then printf ", "; printf "%s", i; let count := count + 1; } if count == 0 then printf "None";
         printf "\n";
 
-        printf "  - New AEDs installed: ";
+        # --- 2. NUEVOS INSTALADOS ---
+        let n_new := sum {i in N} y[i]; 
+        printf "  - New AEDs installed (%d): ", n_new;
         let count := 0; for {i in N: y[i] == 1} { if count > 0 then printf ", "; printf "%s", i; let count := count + 1; } if count == 0 then printf "None";
         printf "\n\n";
     }
@@ -171,11 +179,13 @@ for {gg in ejecuciones} {
     if mostrar_detalles = 1 then {
         printf "  Objective Values: F1(Coverage)=%.4f, F2(Cost)=%.4f\n", F[1], F[2];
         
-        printf "  - Pre-existing AEDs: ";
+        let n_pre := sum {i in N} flag[i];
+        printf "  - Pre-existing AEDs (%d): ", n_pre;
         let count := 0; for {i in N: flag[i] == 1} { if count > 0 then printf ", "; printf "%s", i; let count := count + 1; } if count == 0 then printf "None";
         printf "\n";
 
-        printf "  - New AEDs installed: ";
+        let n_new := sum {i in N} y[i]; 
+        printf "  - New AEDs installed (%d): ", n_new;
         let count := 0; for {i in N: y[i] == 1} { if count > 0 then printf ", "; printf "%s", i; let count := count + 1; } if count == 0 then printf "None";
         printf "\n\n";
     }
