@@ -7,6 +7,16 @@ toma la carpeta casos_txt y por cada archivo los convierte en .dat y les agrega 
 inicio.py
 toma la carpeta casos_dats, y genera los respectivos graficos de cada uno. 
 
+
+voy a dejar los codigos importantes en TT2 los de AMPL finales de relocation y location
+mo_drp_location.run
+mo_location_model.mod
+mo_drp_relocation_simple.run
+mo_relocation_model_simple.mod
+
+run_all_instances_ampl_drp.sh
+run_all_instances_ampl.sh
+
 param sigma
 :    1        2 :=
 1    0.00001  0.99999
