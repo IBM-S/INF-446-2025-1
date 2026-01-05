@@ -499,7 +499,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             # --- TABLA 1: PROMEDIOS POR ALGORITMO + GAP ---
             print(f"\n  [3] RESUMEN PROMEDIO (Por Run):")
             print("-" * 75)
-            print(f"{'Metodo':<10} {'T. Ejec prom':<15} {'HV Promedio':<15} {'T. HV prom':<15}")
+            print(f"{'metodo':<10} {'T. Ejec prom':<15} {'HV Promedio':<15} {'T. HV prom':<15}")
             print("-" * 75)
 
             resumen = df.groupby("metodo")[["time_ejec", "hv", "time_hv"]].mean()
@@ -541,7 +541,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             # --- TABLA 2: BEST FRONTS UNIFICADOS ---
             print(f"\n  [4] COMPARACIÓN DE BEST FRONTS (Frentes Unificados):")
             print("-" * 75)
-            print(f"{'Metodo':<10} {'Puntos ND':<15} {'HV Total':<15} {'Tiempo HV':<15}")
+            print(f"{'metodo':<10} {'nd_points':<15} {'hv_total':<15} {'time_hv':<15}")
             print("-" * 75)
 
             n_a, h_a, t_a = print_best_row("AMPL", ampl_best, (ref_x, ref_y), out_dir)
@@ -605,7 +605,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             # Guardar metrics de Best Fronts
             best_csv = os.path.join(out_dir, "best_fronts_metrics.csv")
             with open(best_csv, 'w') as f:
-                f.write("Metodo,Puntos_ND,HV_Total,Tiempo_HV\n")
+                f.write("metodo,nd_points,hv_total,time_hv\n")
                 if ampl_best: f.write(f"AMPL,{n_a},{h_a},{t_a}\n")
                 if moead_best: f.write(f"MOEAD,{n_m},{h_m},{t_m}\n")
 
@@ -624,7 +624,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
                 # [3]
                 rf.write("[3] RESUMEN PROMEDIO (Por Run)\n")
-                rf.write(f"{'Metodo':<8}{'T.Ejec(s)':>12}{'HV':>16}{'T.HV(s)':>12}\n")
+                rf.write(f"{'metodo':<8}{'T.Ejec(s)':>12}{'HV':>16}{'T.HV(s)':>12}\n")
                 rf.write("-" * 48 + "\n")
                 rf.write(f"{'AMPL':<8}{fmt_float(ampl_te,12,4)}{fmt_float(ampl_hv,16,4)}{fmt_float(ampl_thv,12,6)}\n")
                 rf.write(f"{'MOEAD':<8}{fmt_float(moead_te,12,4)}{fmt_float(moead_hv,16,4)}{fmt_float(moead_thv,12,6)}\n")
@@ -636,7 +636,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
                 # [4]
                 rf.write("[4] COMPARACIÓN BEST FRONTS (Unificados)\n")
-                rf.write(f"{'Metodo':<8}{'ND':>12}{'HV':>16}{'T.HV(s)':>12}\n")
+                rf.write(f"{'metodo':<8}{'ND':>12}{'HV':>16}{'T.HV(s)':>12}\n")
                 rf.write("-" * 48 + "\n")
                 rf.write(f"{'AMPL':<8}{fmt_int(n_a,12)}{fmt_float(h_a,16,4)}{fmt_float(t_a,12,6)}\n")
                 rf.write(f"{'MOEAD':<8}{fmt_int(n_m,12)}{fmt_float(h_m,16,4)}{fmt_float(t_m,12,6)}\n")
