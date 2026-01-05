@@ -1,0 +1,12 @@
+algo = bash MOEAD.sh
+execdir = .
+deterministic = 0
+run_obj = runlength
+overall_obj = mean
+cutoff_time = max
+cutoff_length = max
+tunerTimeout = 100000000
+paramfile = All.params
+outdir = out/
+instance_file = All.inst
+test_instance_file = All.inst
