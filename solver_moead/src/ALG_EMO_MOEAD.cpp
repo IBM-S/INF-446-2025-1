@@ -237,26 +237,54 @@ void CALG_EMO_MOEAD::InitializePopulation()
 
 		bool log_initialization = false;
 		if (m_IsRelocation) {
-			int m_InitializationType = 1;
-			int num_nuevos = rand() % (presupuesto + 1);
-			switch (m_InitializationType) {
-				case 1: 
-					SP.m_BestIndividual.GenerateSimpleFeasibleSolution_For_Relocation(num_nuevos, presupuesto,total_nodos);
-					if (log_initialization) printf("1   relocation initialization\n");
+
+			int techo_logico = total_nodos;
+            int presupuesto_efectivo = (presupuesto > techo_logico) ? techo_logico : presupuesto;
+			int budget_indiv = rand() % (presupuesto_efectivo + 1);
+			//double prob_choose_move = 0.5;
+			//double split_pct = 0.5;
+			switch (this->m_InitializationTypeRelocation) {
+				case 1:
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyMove(budget_indiv);
+					if (log_initialization) printf("1    relocation initialization\n");
 					break;
 				case 2:
-					SP.m_BestIndividual.GenerateSimpleFeasibleSolution_Mixed_Split(num_nuevos, total_nodos);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyBuy(budget_indiv);
 					if (log_initialization) printf("2    relocation initialization\n");
 					break;
+				case 3:
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_Choose_Move_or_Buy(budget_indiv, this->m_ProbChooseMoveRelocation);
+					if (log_initialization) printf("3    relocation initialization\n");
+					break;
+				case 4:
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_HybridSplit(budget_indiv, this->m_SplitPctRelocation);
+					if (log_initialization) printf("4    relocation initialization\n");
+					break;
+				case 5:
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyMove_Aleatorio(budget_indiv);
+					if (log_initialization) printf("5    relocation initialization\n");
+					break;
+				case 6:
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyBuy_Aleatorio(budget_indiv);
+					if (log_initialization) printf("6    relocation initialization\n");
+					break;
+				case 7:
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_Choose_Move_or_Buy_Aleatorio(budget_indiv, this->m_ProbChooseMoveRelocation);
+					if (log_initialization) printf("7    relocation initialization\n");
+					break;
+				case 8:
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_HybridSplit_Aleatorio(budget_indiv, this->m_SplitPctRelocation);
+					if (log_initialization) printf("8    relocation initialization\n");
+					break;
 				default:
-					SP.m_BestIndividual.GenerateSimpleFeasibleSolution_For_Relocation(num_nuevos, presupuesto,total_nodos);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyMove(budget_indiv);
 					if (log_initialization) printf("default    relocation initialization\n");
 					break;
 			}
 		} else {
 			int num_a_instalar = rand() % (presupuesto + 1); // genera número entre 0 y presupuesto
 			if (num_a_instalar > huecos_disponibles) num_a_instalar = huecos_disponibles;
-			SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_a_instalar, huecos_disponibles);
+			SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_a_instalar);
 			if (log_initialization) printf("default location initialization\n");
 
 		}
@@ -584,6 +612,24 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 														  child.x_var, this->problemInstance);
 						if (log_cross) printf("5 relocation cross\n");
 						break;
+					case 6:
+						UtilityToolBox.CruzamientoUniformeSemiInteligente_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
+														  m_PopulationSOP[p2].m_BestIndividual.x_var,
+														  child.x_var, this->problemInstance);
+						if (log_cross) printf("6 relocation cross\n");
+						break;
+					case 7:
+						UtilityToolBox.CruzamientoUniformeInteligente_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
+														  m_PopulationSOP[p2].m_BestIndividual.x_var,
+														  child.x_var, this->problemInstance);
+						if (log_cross) printf("7 relocation cross\n");
+						break;
+					case 8:
+						UtilityToolBox.CruzamientoGeografico_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
+														  m_PopulationSOP[p2].m_BestIndividual.x_var,
+														  child.x_var, this->problemInstance);
+						if (log_cross) printf("8 relocation cross\n");
+						break;
 					default:
 						UtilityToolBox.CruzamientoUniformeReloc(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
@@ -645,6 +691,38 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 				case 15:
 					UtilityToolBox.MutacionHibridaReloc(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
 					if (log_mut) printf("15 relocation mut\n");
+					break;
+				case 16:{
+					double p = 1.0 / (double)child.x_var.size();
+					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, p, this->problemInstance);
+					if (log_mut) printf("16 relocation mut\n");
+					break;
+				}
+				case 17:
+					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
+					if (log_mut) printf("17 relocation mut\n");
+					break;
+				case 18:{
+					double p = 1.0 / (double)s_PopulationSize;
+					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, p, this->problemInstance);
+					if (log_mut) printf("18 relocation mut\n");
+					break;
+				}
+				case 19:
+					UtilityToolBox.MutacionSwapProbabilisticoReloc(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
+					if (log_mut) printf("19 relocation mut\n");
+					break;
+				case 20:
+					UtilityToolBox.Mutacion_Reloc_Fusion_1_N(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("20 relocation fusion 1/N\n");
+					break;
+				case 21:
+					UtilityToolBox.Mutacion_Reloc_Fusion_1_M(child.x_var, m_MutationRate, m_Op1MutationProb, s_PopulationSize, m_MutPctSwap, this->problemInstance);
+    				if (log_mut) printf("21 relocation fusion 1/M\n");
+					break;
+				case 22:
+					UtilityToolBox.Mutacion_Reloc_Fusion_Fijo(child.x_var, m_MutationRate, m_Op1MutationProb, m_BitFlipProb, m_MutPctSwap, this->problemInstance);
+    				if (log_mut) printf("22 relocation fusion Fixed\n");
 					break;
 				default:
 					UtilityToolBox.MutacionHibridaReloc(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);

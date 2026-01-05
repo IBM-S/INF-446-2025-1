@@ -122,6 +122,17 @@ public:
 											ProblemInstance* inst);
 	void RepararPresupuesto_Relocation(vector<double>& x_var, ProblemInstance* instance);
 	bool EsBuenCandidato_Relocation(int idx_candidato, ProblemInstance *instance);
+	void CruzamientoUniformeInteligente_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
+	void CruzamientoUniformeSemiInteligente_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
+	void CruzamientoGeografico_Relocation(const vector<double> &p1, const vector<double> &p2, vector<double> &child, ProblemInstance *instance);
+
+	void Mutacion_Reloc_Fusion_1_N(vector<double> &x_var, double mutation_rate, double ratio_split, double mutPctSwap, ProblemInstance *instance);
+	void Mutacion_Reloc_Fusion_1_M(vector<double> &x_var, double mutation_rate, double ratio_split, int populationSize, double mutPctSwap, ProblemInstance *instance);
+	void Mutacion_Reloc_Fusion_Fijo(vector<double> &x_var, double mutation_rate, double ratio_split, double fixed_prob, double mutPctSwap, ProblemInstance *instance);
+	void MutacionBitFlip_Relocation(vector<double> &x_var, double mutation_rate, double bit_prob, ProblemInstance *instance);
+	void MutacionSwapProbabilisticoReloc(vector<double> &x_var, double mutation_rate, double prob_swap_individual, ProblemInstance *instance);
+
+
 
 
 	int GetWeightNumber(int nobj, int H);

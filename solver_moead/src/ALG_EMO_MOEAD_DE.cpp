@@ -133,7 +133,7 @@ void CALG_EMO_MOEAD_DE::InitializePopulation()
 
 		SP.m_BestIndividual.problemInstance = this->problemInstance;
 
-		SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs, total_locations);
+		SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_AEDs);
 		SP.m_BestIndividual.Evaluate();
 		s_Fevals_Count++;
 

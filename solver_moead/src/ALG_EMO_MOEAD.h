@@ -50,6 +50,10 @@ public:
 	void SetMutPctDelete (double pct) { m_MutPctDelete = pct; }
 	void SetMutPctSwap   (double pct) { m_MutPctSwap = pct; }
 
+	void SetInitializationTypeRelocation(int type) { m_InitializationTypeRelocation = type; }
+    void SetProbChooseMoveRelocation(double prob) { m_ProbChooseMoveRelocation = prob; }
+    void SetSplitPctRelocation(double pct) { m_SplitPctRelocation = pct; }
+
 	int s_PopulationSize;
 	int s_NeighborhoodSize;
 	ProblemInstance *problemInstance;
@@ -106,6 +110,10 @@ protected:
 
 	double m_MutPctDelete;
 	double m_MutPctSwap;
+
+	int m_InitializationTypeRelocation;
+    double m_ProbChooseMoveRelocation;
+    double m_SplitPctRelocation;
 	
 	double m_MaxTimeSeconds; // Tiempo máximo en segundos (0 = sin límite)
 	int m_SaveInterval;

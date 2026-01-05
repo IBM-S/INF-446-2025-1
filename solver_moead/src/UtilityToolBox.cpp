@@ -517,12 +517,9 @@ void CUtilityToolBox::CruzamientoUniformeModificado_con_reubicacion(vector<doubl
 	int max_total = std::max(count1, count2);
 
 	int max_instalaciones = 0;
-	if (max_total > min_total)
-	{
+	if (max_total > min_total) {
 		max_instalaciones = min_total + rand() % (max_total - min_total + 1);
-	}
-	else
-	{
+	} else {
 		max_instalaciones = min_total; // ambos iguales
 	}
 
@@ -549,6 +546,7 @@ void CUtilityToolBox::CruzamientoUniformeModificado_con_reubicacion(vector<doubl
 	int total_aeds = std::count(child.begin(), child.end(), 1.0);
 	std::cout << "Total AEDs instalados en el hijo: " << total_aeds;
 	std::cout << std::endl; */
+	RepararPresupuesto_Relocation(child, problemInstance);
 }
 
 void CUtilityToolBox::SimulatedBinaryCrossover(vector<double> &x_var1, vector<double> &x_var2, vector<double> &x_var3)
@@ -1340,7 +1338,7 @@ void CUtilityToolBox::MutacionDeletePorcentualReloc(vector<double>& x, double mu
 	int stock_original = 0;
 	const auto&nodos = inst->getNodes();
 	for (auto* nodo : nodos) {
-		if (nodo->getFlag() == 1) stock_original;
+		if (nodo->getFlag() == 1) stock_original++;
 	}
 
 	int excedente = activos.size() - stock_original;
@@ -1469,4 +1467,253 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var,
             x_var[calidad[k].second] = 0.0;
         }
 	}
+}
+
+
+
+void CUtilityToolBox::CruzamientoUniformeSemiInteligente_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance)
+{
+    int n = parent1.size();
+    child.assign(n, 0.0);
+    const auto &nodos = instance->getNodes();
+
+    for (int i = 0; i < n; ++i)
+    {
+        bool p1_has = (parent1[i] == 1);
+        bool p2_has = (parent2[i] == 1);
+
+        if (p1_has && p2_has) 
+        {
+            child[i] = 1.0;
+        }
+        else if (p1_has || p2_has) 
+        {
+            if (Get_Random_Number() < 0.5) 
+            {
+                    child[i] = 1.0;
+            }
+        }
+    }
+
+    // 2. Reparación de Presupuesto (Por si la unión generó demasiados)
+    RepararPresupuesto(child, instance);
+}
+
+void CUtilityToolBox::CruzamientoUniformeInteligente_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance)
+{
+    int n = parent1.size();
+    child.assign(n, 0.0);
+
+    for (int i = 0; i < n; ++i)
+    {
+        bool p1_has = (parent1[i] > 0.5);
+        bool p2_has = (parent2[i] > 0.5);
+
+        if (p1_has && p2_has) 
+        {
+            // Intersección -> Heredar
+            child[i] = 1.0;
+        }
+        else if (p1_has || p2_has) 
+        {
+            // Unión -> Heredar con probabilidad, PERO FILTRADO
+            if (Get_Random_Number() < 0.5) 
+            {
+                // Solo lo ponemos si realmente cubre a alguien
+                // Usamos la versión _Relocation de la heurística
+                if (EsBuenCandidato_Relocation(i, instance)) {
+                    child[i] = 1.0;
+                }
+            }
+        }
+    }
+
+    RepararPresupuesto_Relocation(child, instance);
+}
+
+
+void CUtilityToolBox::CruzamientoGeografico_Relocation(const vector<double> &p1, const vector<double> &p2, vector<double> &child, ProblemInstance *instance)
+{
+    int n = p1.size();
+    child.assign(n, 0.0);
+    const auto &nodos = instance->getNodes();
+
+    // 1. Determinar límites del mapa (bounding box) para saber dónde cortar
+    // (Esto se podría pre-calcular en ProblemInstance para eficiencia, pero lo hacemos aquí por simplicidad)
+    double min_x = 1e9, max_x = -1e9;
+    double min_y = 1e9, max_y = -1e9;
+    
+    // Muestreo rápido para estimar límites (o recorrer todo si N es pequeño)
+    for(int i=0; i<n; i+=5) { // saltamos de 5 en 5 para rapidez
+        double x = nodos[i]->getX();
+        double y = nodos[i]->getY();
+        if(x < min_x) min_x = x; if(x > max_x) max_x = x;
+        if(y < min_y) min_y = y; if(y > max_y) max_y = y;
+    }
+
+    // 2. Elegir tipo de corte (Vertical u Horizontal) aleatoriamente
+    bool corte_vertical = (Get_Random_Number() < 0.5);
+    
+    // 3. Elegir punto de corte
+    double punto_corte;
+    if(corte_vertical) {
+        punto_corte = min_x + Get_Random_Number() * (max_x - min_x);
+    } else {
+        punto_corte = min_y + Get_Random_Number() * (max_y - min_y);
+    }
+
+    // 4. Construir hijo
+    for(int i=0; i<n; ++i) {
+        double pos = corte_vertical ? nodos[i]->getX() : nodos[i]->getY();
+        
+        if (pos < punto_corte) {
+            // Zona Izquierda/Arriba -> Hereda de Padre 1
+            if (p1[i] > 0.5) child[i] = 1.0;
+        } else {
+            // Zona Derecha/Abajo -> Hereda de Padre 2
+            if (p2[i] > 0.5) child[i] = 1.0;
+        }
+    }
+
+    // 5. Reparar (Siempre necesario en relocación)
+    RepararPresupuesto_Relocation(child, instance);
+}
+
+
+void CUtilityToolBox::MutacionBitFlip_Relocation(vector<double> &x_var, double mutation_rate, double bit_prob, ProblemInstance *instance)
+{
+    // Gate global
+    if (Get_Random_Number() > mutation_rate) return;
+
+    int n = x_var.size();
+
+    for (int i = 0; i < n; ++i)
+    {
+        // EN RELOCACIÓN: NO hay "continue" para flags. Todos son mutables.
+        
+        if (Get_Random_Number() <= bit_prob)
+        {
+            if (x_var[i] > 0.5) {
+                x_var[i] = 0.0; // Apagar (Ahorra costo, pierde cobertura)
+            } else {
+                // Encender (Gasta costo, gana cobertura)
+                // Opcional: Solo encender si es "Buen Candidato" para no llenar de basura
+                if (EsBuenCandidato_Relocation(i, instance)) {
+                    x_var[i] = 1.0;
+                }
+            }
+        }
+    }
+
+    // Reparar es vital porque BitFlip puede agregar muchos costos nuevos
+    RepararPresupuesto_Relocation(x_var, instance);
+}
+
+void CUtilityToolBox::MutacionSwapProbabilisticoReloc(vector<double> &x_var, double mutation_rate, double prob_swap_individual, ProblemInstance *instance)
+{
+    if (Get_Random_Number() > mutation_rate) return;
+
+    int n = x_var.size();
+    
+    // 1. Identificar vacíos (sin importar flags)
+    std::vector<int> espacios_vacios;
+    espacios_vacios.reserve(n);
+    for(int i=0; i<n; ++i) {
+        if(x_var[i] < 0.5) espacios_vacios.push_back(i);
+    }
+    
+    if (espacios_vacios.empty()) return;
+    std::random_shuffle(espacios_vacios.begin(), espacios_vacios.end());
+    int idx_vacio = 0;
+
+    // 2. Recorrer activos
+    // Creamos una lista de activos para no modificar x_var mientras iteramos linealmente
+    std::vector<int> activos;
+    for(int i=0; i<n; ++i) if(x_var[i] > 0.5) activos.push_back(i);
+    
+    // Barajamos activos para no privilegiar el orden de los nodos
+    std::random_shuffle(activos.begin(), activos.end());
+
+    for (int i : activos)
+    {
+        // ¿Este equipo se muda?
+        if (Get_Random_Number() <= prob_swap_individual)
+        {
+            // PASO A: Apagar (Delete)
+            x_var[i] = 0.0; 
+
+            // PASO B: Buscar nuevo lugar (Add)
+            bool reubicado = false;
+            
+            while (idx_vacio < (int)espacios_vacios.size())
+            {
+                int candidato = espacios_vacios[idx_vacio];
+                idx_vacio++;
+
+                // Verificar si el candidato sigue vacío (podría haberse llenado en otro swap)
+                if (x_var[candidato] > 0.5) continue;
+
+                if (EsBuenCandidato_Relocation(candidato, instance)) 
+                {
+                    x_var[candidato] = 1.0;
+                    reubicado = true;
+                    break;
+                }
+            }
+
+            // Si no encontramos casa, devolvemos el AED a su lugar original (deshacer delete)
+            if (!reubicado) {
+                x_var[i] = 1.0;
+            }
+        }
+    }
+    // Swap no altera el costo total (generalmente), pero por seguridad:
+    RepararPresupuesto_Relocation(x_var, instance);
+}
+
+
+// Fusión 1: BitFlip (1/N) vs Swap Porcentual
+void CUtilityToolBox::Mutacion_Reloc_Fusion_1_N(vector<double> &x_var, double mutation_rate, double ratio_split, double mutPctSwap, ProblemInstance *instance)
+{
+    // ratio_split decide: ¿Hago BitFlip o hago Swap?
+    double dado = Get_Random_Number();
+
+    if (dado <= ratio_split) {
+        // Opción A: BitFlip 1/N (Agresividad baja dependiente del tamaño)
+        double prob = 1.0 / (double)x_var.size();
+        MutacionBitFlip_Relocation(x_var, mutation_rate, prob, instance);
+    }
+    else {
+        // Opción B: Mover equipos existentes
+        MutacionSwapPorcentualReloc(x_var, mutation_rate, mutPctSwap, instance);
+    }
+}
+
+// Fusión 2: BitFlip (1/M) vs Swap Porcentual (M = Población)
+void CUtilityToolBox::Mutacion_Reloc_Fusion_1_M(vector<double> &x_var, double mutation_rate, double ratio_split, int populationSize, double mutPctSwap, ProblemInstance *instance)
+{
+    double dado = Get_Random_Number();
+
+    if (dado <= ratio_split) {
+        // Opción A: BitFlip 1/M (Agresividad depende de la población)
+        double prob = 1.0 / (double)populationSize;
+        MutacionBitFlip_Relocation(x_var, mutation_rate, prob, instance);
+    }
+    else {
+        MutacionSwapPorcentualReloc(x_var, mutation_rate, mutPctSwap, instance);
+    }
+}
+
+// Fusión 3: BitFlip (Fijo) vs Swap Porcentual
+void CUtilityToolBox::Mutacion_Reloc_Fusion_Fijo(vector<double> &x_var, double mutation_rate, double ratio_split, double fixed_prob, double mutPctSwap, ProblemInstance *instance)
+{
+    double dado = Get_Random_Number();
+
+    if (dado <= ratio_split) {
+        // Opción A: BitFlip Fijo (ej. 1% por gen)
+        MutacionBitFlip_Relocation(x_var, mutation_rate, fixed_prob, instance);
+    }
+    else {
+        MutacionSwapPorcentualReloc(x_var, mutation_rate, mutPctSwap, instance);
+    }
 }
