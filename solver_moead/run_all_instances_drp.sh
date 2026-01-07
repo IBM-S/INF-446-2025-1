@@ -9,44 +9,35 @@ INSTANCES_DIR="${BASE_DIR}/../datos/inst"
 RAW_RESULTS_DIR="${BASE_DIR}/../datos/res/raw_moead"
 
 # ================= PARÁMETROS =================
-PROBLEM_TYPE="cam"       
-VARIANT="location"       
+PROBLEM_TYPE="drp"       
+VARIANT="relocation"       
 NUM_RUNS=10          
 
 # Parámetros Algoritmo
-POPULATION=850
-NEIGHBORPCT=0.1
+POPULATION=400
+NEIGHBORPCT=0.05
 NEVALS=100000    # Criterio de parada por evaluaciones
 MAX_TIME=3600      # Criterio de parada por tiempo (0 = desactivado)
 MUTATION=0.5
 CROSSOVER=0.6
-OP1_PROB=0.3
+#OP1_PROB=0.3
 SAVE=0
-MUTTYPE=7
-CROSSTYPE=3
-MUTPCTDELETE=0.1
-MUTPCTSWAP=0.4
-BITPROB=0.01
-
+MUTTYPE=18
+CROSSTYPE=6
+#MUTPCTDELETE=0.4
+#MUTPCTSWAP=0.25
+#BITPROB=0.1
+INITTYPERELOCATION=2
+#PROBMOVERELOCATION=0.1
+#SPLITPCTRELOCATION=0.1
 
 # Lista de Instancias
 declare -a INSTANCE_ORDER=(
-    "cam_1390_MILPA_ALTA.dat"
-    "cam_1800_CUAJIMALPA_DE_MORELOS.dat"
-    "cam_3205_LA_MAGDALENA_CONTRERAS.dat"
-    "cam_7256_TLAHUAC.dat"
-    "cam_7408_XOCHIMILCO.dat"
-    "cam_9673_AZCAPOTZALCO.dat"
-    "cam_11096_IZTACALCO.dat"
-    "cam_11410_TLALPAN.dat"
-    "cam_11476_BENITO_JUAREZ.dat"
-    "cam_12319_COYOACAN.dat"
-    "cam_13802_MIGUEL_HIDALGO.dat"
-    "cam_14468_VENUSTIANO_CARRANZA.dat"
-    "cam_15743_ALVARO_OBREGON.dat"
-    "cam_22238_CUAUHTEMOC.dat"
-    "cam_24363_GUSTAVO_A._MADERO.dat"
-    #"cam_40264_IZTAPALAPA.dat"
+    "drp_657_STATEN_ISLAND.dat"
+    #"drp_2151_BRONX.dat"
+    #"drp_2885_QUEENS.dat"
+    #"drp_3442_BROOKLYN.dat"
+    #"drp_4432_MANHATTAN.dat"
 )
 
 # ================= INICIO =================cd
@@ -117,13 +108,14 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
             -time "${MAX_TIME}" 
             -mut "${MUTATION}" 
             -cross "${CROSSOVER}" 
-            -op1 "${OP1_PROB}" 
+            #-op1 "${OP1_PROB}" 
             -save "${SAVE}" 
             -mutType "${MUTTYPE}" 
             -crossType "${CROSSTYPE}" 
-            -mutPctDelete "${MUTPCTDELETE}" 
-            -mutPctSwap "${MUTPCTSWAP}" 
-            -bitprob "${BITPROB}" 
+            #-mutPctDelete "${MUTPCTDELETE}" 
+            #-mutPctSwap "${MUTPCTSWAP}" 
+            #-bitprob "${BITPROB}" 
+            -initTypeRelocation "${INITTYPERELOCATION}"
             -outDir "${subFolder}"
         )
 
