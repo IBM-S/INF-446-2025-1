@@ -1,0 +1,17 @@
+INST                                 ND_AMPL  ND_MOEAD_1
+cam_1390_MILPA_ALTA                       34         129
+cam_1800_CUAJIMALPA_DE_MORELOS            37         108
+cam_3205_LA_MAGDALENA_CONTRERAS           22          60
+cam_7256_TLAHUAC                          35         136
+cam_7408_XOCHIMILCO                       49         257
+cam_9673_AZCAPOTZALCO                     19          55
+cam_11096_IZTACALCO                        9          17
+cam_11410_TLALPAN                         47         196
+cam_11476_BENITO_JUAREZ                    7          10
+cam_12319_COYOACAN                        31         112
+cam_13802_MIGUEL_HIDALGO                  27          69
+cam_14468_VENUSTIANO_CARRANZA             16          31
+cam_15743_ALVARO_OBREGON                  40         166
+cam_22238_CUAUHTEMOC                       5           6
+cam_24363_GUSTAVO_A._MADERO               28          86
+cam_40264_IZTAPALAPA                       0          70
