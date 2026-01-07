@@ -1,7 +1,9 @@
 
 BASE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
-AMPL_EXECUTABLE="./../../ampl/ampl.linux-intel64/ampl"
+AMPL_EXECUTABLE="./../../ampl.linux-intel64/ampl"
+#AMPL_EXECUTABLE="./../../ampl/ampl.linux-intel64/ampl"
+
 
 MODEL_FILE="mo_relocation_model_simple.mod"
 RUN_FILE="mo_drp_relocation_simple.run"
@@ -16,10 +18,10 @@ NUM_RUNS=10
 
 declare -a INSTANCE_ORDER=(
     "drp_657_STATEN_ISLAND.dat"
-    "drp_2151_BRONX.dat"
-    "drp_2885_QUEENS.dat"
-    "drp_3442_BROOKLYN.dat"
-    "drp_4432_MANHATTAN.dat"
+    #"drp_2151_BRONX.dat"
+    #"drp_2885_QUEENS.dat"
+    #"drp_3442_BROOKLYN.dat"
+    #"drp_4432_MANHATTAN.dat"
 )
 
 # ================= INICIO DEL PROCESO =================
