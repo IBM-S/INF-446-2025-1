@@ -7,7 +7,7 @@ dirhv="../material/hv-1.3-src"
 dirOutput="../datos/res/raw_moead"
 
 # Máximo de evaluaciones totales
-evaluaciones=100000
+evaluaciones=150000
 
 type=drp
 variant=relocation
@@ -32,6 +32,9 @@ initTypeRelocation=0
 probMoveRelocation=0
 splitPctRelocation=0
 
+initDist=0
+powerExp=0
+noisePct=0
 
 instance=""
 execution_params=()
@@ -76,6 +79,10 @@ while [ $# -gt 0 ]; do
         -initTypeRelocation) initTypeRelocation="$2"; shift 2 ;;
         -probMoveRelocation) probMoveRelocation="$2"; shift 2 ;;
         -splitPctRelocation) splitPctRelocation="$2"; shift 2 ;;
+
+        -initDist) initDist="$2"; shift 2 ;;
+        -powerExp) powerExp="$2"; shift 2 ;;
+        -noisePct) noisePct="$2"; shift 2 ;;
         *)
             # Si el argumento es numérico o una cadena vacía, lo añadimos a la lista de parámetros de ejecución
             if [[ "$flag" =~ ^[0-9]+(\.[0-9]+)?$ ]] || [ "$flag" = "" ]; then
@@ -91,7 +98,7 @@ done
 
 # Calcular mi, número de objetivos y parámetros
 no=2 # número de objetivos
-params="-type ${type} -variant ${variant} -neval ${evaluaciones} -pop ${pop} -neighborPct ${neighborPct} -mut ${mut} -cross ${cross} -mutType ${mutType} -crossType ${crossType} -op1 ${op1} -bitprob ${bitprob} -mutPctDelete ${mutPctDelete} -mutPctSwap ${mutPctSwap} -initTypeRelocation ${initTypeRelocation} -probMoveRelocation ${probMoveRelocation} -splitPctRelocation ${splitPctRelocation} "
+params="-type ${type} -variant ${variant} -neval ${evaluaciones} -pop ${pop} -neighborPct ${neighborPct} -mut ${mut} -cross ${cross} -mutType ${mutType} -crossType ${crossType} -op1 ${op1} -bitprob ${bitprob} -mutPctDelete ${mutPctDelete} -mutPctSwap ${mutPctSwap} -initTypeRelocation ${initTypeRelocation} -probMoveRelocation ${probMoveRelocation} -splitPctRelocation ${splitPctRelocation} -initDist ${initDist} -powerExp ${powerExp} -noisePct ${noisePct} "
 echo "Parámetros: ${params}"
 
 screen="salida_consola.txt"

@@ -1,21 +1,51 @@
-cam_1390_MILPA_ALTA.dat                62650.153740   -178.598772  1180.875000
-cam_1800_CUAJIMALPA_DE_MORELOS.dat     78908.778723   -254.909358  1547.700000
-cam_3205_LA_MAGDALENA_CONTRERAS.dat   154911.845000   -523.550115  2901.435000
-cam_7256_TLAHUAC.dat                  918898.693169  -1195.764372  6738.525000
-cam_7408_XOCHIMILCO.dat              2357772.568341  -1098.752688  6985.755000
-cam_9673_AZCAPOTZALCO.dat             585900.030954  -1796.955138  8959.575000
-cam_11096_IZTACALCO.dat               426046.708240  -2037.504150 10425.870000
-cam_11410_TLALPAN.dat                3954720.422468  -1773.723204 10659.030000
-cam_11476_BENITO_JUAREZ.dat           314714.296668  -2296.559628 10650.990000
-cam_12319_COYOACAN.dat               2229765.030141  -2341.448703 11402.730000
-cam_13802_MIGUEL_HIDALGO.dat          904703.770038  -2654.797662 12843.900000
-cam_14468_VENUSTIANO_CARRANZA.dat     805220.548732  -2668.240377 13449.915000
-cam_15743_ALVARO_OBREGON.dat         4193817.201708  -2839.703229 14843.850000
-cam_22238_CUAUHTEMOC.dat              946177.426635  -4283.193123 20778.375000
-cam_24363_GUSTAVO_A._MADERO.dat      3037874.691713  -4461.027120 22574.310000
+cam_1390_MILPA_ALTA.dat                62649.744489   -178.598772  1180.875000
+cam_1800_CUAJIMALPA_DE_MORELOS.dat     78908.482683   -254.909358  1547.700000
+cam_3205_LA_MAGDALENA_CONTRERAS.dat   154911.562756   -523.550115  2901.435000
+cam_7256_TLAHUAC.dat                  918908.530956  -1195.764372  6738.525000
+
+cam_7408_XOCHIMILCO.dat              2357787.461402  -1098.752688  6985.755000
+cam_9673_AZCAPOTZALCO.dat             585863.520596  -1796.955138  8959.575000
+cam_11096_IZTACALCO.dat               426059.232483  -2037.504150 10425.870000
+cam_11410_TLALPAN.dat                3954737.695920  -1773.723204 10659.030000
+
+cam_11476_BENITO_JUAREZ.dat           314696.196485  -2296.559628 10650.990000
+cam_12319_COYOACAN.dat               2229724.411013  -2341.448703 11402.730000
+cam_13802_MIGUEL_HIDALGO.dat          904714.092856  -2654.797662 12843.900000
+cam_14468_VENUSTIANO_CARRANZA.dat     805251.392735  -2668.240377 13449.915000
+
+cam_15743_ALVARO_OBREGON.dat         4193769.113800  -2839.703229 14843.850000
+cam_22238_CUAUHTEMOC.dat              946218.966684  -4283.193123 20778.375000
+cam_24363_GUSTAVO_A._MADERO.dat      3037953.302897  -4461.027120 22574.310000
 cam_40264_IZTAPALAPA.dat                   0.0       -7324.695576 38224.170000
-drp_657_STATEN_ISLAND.dat                278.661241     -0.018155   308.535000       
+
+drp_657_STATEN_ISLAND.dat                223.557482     -0.229189   308.535000       
 drp_2151_BRONX.dat                       842.687510     -0.205239  1128.615000
 drp_2885_QUEENS.dat                     1405.739844     -0.088946  1702.470000
 drp_3442_BROOKLYN.dat                   1635.958062     -0.126568  2053.215000
 drp_4432_MANHATTAN.dat                   624.419730     -0.403661  1090.425000
+
+./hv -r "-178.598772  1180.875000" ../../datos/res/raw_ampl/cam/cam_1390_MILPA_ALTA/run_1/pareto_front.txt
+./hv -r "-254.909358  1547.700000" ../../datos/res/raw_ampl/cam/cam_1800_CUAJIMALPA_DE_MORELOS/run_1/pareto_front.txt
+./hv -r "-523.550115  2901.435000" ../../datos/res/raw_ampl/cam/cam_3205_LA_MAGDALENA_CONTRERAS/run_1/pareto_front.txt
+./hv -r "-1195.764372  6738.525000" ../../datos/res/raw_ampl/cam/cam_7256_TLAHUAC/run_1/pareto_front.txt
+
+./hv -r "-1098.752688  6985.755000" ../../datos/res/raw_ampl/cam/cam_7408_XOCHIMILCO/run_1/pareto_front.txt
+./hv -r "-1796.955138  8959.575000" ../../datos/res/raw_ampl/cam/cam_9673_AZCAPOTZALCO/run_1/pareto_front.txt
+./hv -r "-2037.504150 10425.870000" ../../datos/res/raw_ampl/cam/cam_11096_IZTACALCO/run_1/pareto_front.txt
+./hv -r "-1773.723204 10659.030000" ../../datos/res/raw_ampl/cam/cam_11410_TLALPAN/run_1/pareto_front.txt
+
+./hv -r "-2296.559628 10650.990000" ../../datos/res/raw_ampl/cam/cam_11476_BENITO_JUAREZ/run_1/pareto_front.txt
+./hv -r "-2341.448703 11402.730000" ../../datos/res/raw_ampl/cam/cam_12319_COYOACAN/run_1/pareto_front.txt
+./hv -r "-2654.797662 12843.900000" ../../datos/res/raw_ampl/cam/cam_13802_MIGUEL_HIDALGO/run_1/pareto_front.txt
+./hv -r "-2668.240377 13449.915000" ../../datos/res/raw_ampl/cam/cam_14468_VENUSTIANO_CARRANZA/run_1/pareto_front.txt
+
+./hv -r "-2839.703229 14843.850000" ../../datos/res/raw_ampl/cam/cam_15743_ALVARO_OBREGON/run_1/pareto_front.txt
+./hv -r "-4283.193123 20778.375000" ../../datos/res/raw_ampl/cam/cam_22238_CUAUHTEMOC/run_1/pareto_front.txt
+./hv -r "-4461.027120 22574.310000" ../../datos/res/raw_ampl/cam/cam_24363_GUSTAVO_A._MADERO/run_1/pareto_front.txt
+./hv -r "-7324.695576 38224.170000" ../../datos/res/raw_ampl/cam/cam_40264_IZTAPALAPA/run_1/pareto_front.txt
+
+./hv -r "   -0.229189   308.535000" ../../datos/res/raw_ampl/drp/drp_657_STATEN_ISLAND/run_1/pareto_front.txt
+./hv -r "   -0.205239  1128.615000" ../../datos/res/raw_ampl/drp/drp_2151_BRONX/run_1/pareto_front.txt
+./hv -r "   -0.088946  1702.470000" ../../datos/res/raw_ampl/drp/drp_2885_QUEENS/run_1/pareto_front.txt
+./hv -r "   -0.126568  2053.215000" ../../datos/res/raw_ampl/drp/drp_3442_BROOKLYN/run_1/pareto_front.txt
+./hv -r "   -0.403661  1090.425000" ../../datos/res/raw_ampl/drp/drp_4432_MANHATTAN/run_1/pareto_front.txt

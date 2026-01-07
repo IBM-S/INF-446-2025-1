@@ -1,6 +1,6 @@
 #!/bin/bash
 #100000
-maxEvaluations=50000
+maxEvaluations=25000
 algo=ILS
 
 respaldos=respaldos${algo}
