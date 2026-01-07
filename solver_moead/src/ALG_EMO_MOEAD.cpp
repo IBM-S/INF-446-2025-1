@@ -1,6 +1,7 @@
 #include "ALG_EMO_MOEAD.h"
 #include <string.h>
 #include <cmath>
+#include <iomanip>
 
 CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 {
@@ -24,6 +25,10 @@ CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 	m_MutPctSwap   = 0.05; // 5% por defecto
 
 	m_NeighborhoodSizePct = 0.0;
+
+	m_InitDistributionStrategy = 2;
+	m_PowerExp = 5.0;
+	m_NoisePct = 0.20;
 }
 
 CALG_EMO_MOEAD::~CALG_EMO_MOEAD(void)
@@ -230,63 +235,112 @@ void CALG_EMO_MOEAD::InitializePopulation()
 	}
 	int huecos_disponibles = total_nodos - aeds_preinstalados;
 
+	// Configuracion estrategia de distribucion
+	// 0: random puro
+	// 1: random con extremos fijos
+	// 2: exponencial con ruido
+	//int m_InitDistributionStrategy = 2;
+	//double m_PowerExp = 5.0;   //(1.0 linspace, 3.0, curva agresiva)
+	//double m_NoisePct = 0.20;  // Para el ruido
+
 	for (i = 0; i < s_PopulationSize; i++)
 	{
 		CSubProblemBase SP;
 		SP.m_BestIndividual.problemInstance = this->problemInstance;
 
+
+		int max_limit = 0;
+		if (m_IsRelocation) {
+			max_limit = (presupuesto > total_nodos) ? total_nodos : presupuesto;
+			//printf("Limite relocation %d\n", max_limit);
+		} else {
+			max_limit = (presupuesto < huecos_disponibles) ? presupuesto : huecos_disponibles;
+			//printf("Limite location %d\n", max_limit);
+		} 
+
+		// Calcular la cantidad a usar
+		int nums_AEDs_instalar = 0;
+
+		if (m_InitDistributionStrategy == 0){
+			nums_AEDs_instalar = rand() % (max_limit + 1);
+		} else if (m_InitDistributionStrategy == 1) {
+			if (i == 0) {
+				nums_AEDs_instalar = 0;
+			} else if (i == s_PopulationSize - 1) {
+				nums_AEDs_instalar = max_limit;
+			} else {
+				nums_AEDs_instalar = rand() % (max_limit + 1);
+			}
+		} else if (m_InitDistributionStrategy == 2) {
+			if (i == 0) {
+				nums_AEDs_instalar = 0;
+			} else if (i == s_PopulationSize - 1) {
+				nums_AEDs_instalar = max_limit;
+			} else {
+				// a. Posición normalizada (0 a 1)
+				double t = (double)i / (double)(s_PopulationSize - 1);
+
+				// b. curva
+				double base = std::pow(t, m_PowerExp) * (double)max_limit;
+			
+				// c. Ruido
+				double rango = base * m_NoisePct;
+				double aleatorio = ((double)rand() / (double) RAND_MAX) * 2.0 - 1.0;
+				double resultado = base + (rango * aleatorio);
+
+				// d. Clampling
+				if (resultado < 1.0) resultado = 1.0;
+				if (resultado > max_limit) resultado = (double)max_limit;
+
+				nums_AEDs_instalar = (int)resultado;
+			} 
+		}
+
+		//printf("Indiv %d: Estrategia %d -> Cantidad %d (Max %d)\n", i, m_InitDistributionStrategy, nums_AEDs_instalar, max_limit);
+
 		bool log_initialization = false;
 		if (m_IsRelocation) {
-
-			int techo_logico = total_nodos;
-            int presupuesto_efectivo = (presupuesto > techo_logico) ? techo_logico : presupuesto;
-			int budget_indiv = rand() % (presupuesto_efectivo + 1);
-			//double prob_choose_move = 0.5;
-			//double split_pct = 0.5;
 			switch (this->m_InitializationTypeRelocation) {
 				case 1:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyMove(budget_indiv);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyMove(nums_AEDs_instalar);
 					if (log_initialization) printf("1    relocation initialization\n");
 					break;
 				case 2:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyBuy(budget_indiv);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyBuy(nums_AEDs_instalar);
 					if (log_initialization) printf("2    relocation initialization\n");
 					break;
 				case 3:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_Choose_Move_or_Buy(budget_indiv, this->m_ProbChooseMoveRelocation);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_Choose_Move_or_Buy(nums_AEDs_instalar, this->m_ProbChooseMoveRelocation);
 					if (log_initialization) printf("3    relocation initialization\n");
 					break;
 				case 4:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_HybridSplit(budget_indiv, this->m_SplitPctRelocation);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_HybridSplit(nums_AEDs_instalar, this->m_SplitPctRelocation);
 					if (log_initialization) printf("4    relocation initialization\n");
 					break;
 				case 5:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyMove_Aleatorio(budget_indiv);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyMove_Aleatorio(nums_AEDs_instalar);
 					if (log_initialization) printf("5    relocation initialization\n");
 					break;
 				case 6:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyBuy_Aleatorio(budget_indiv);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyBuy_Aleatorio(nums_AEDs_instalar);
 					if (log_initialization) printf("6    relocation initialization\n");
 					break;
 				case 7:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_Choose_Move_or_Buy_Aleatorio(budget_indiv, this->m_ProbChooseMoveRelocation);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_Choose_Move_or_Buy_Aleatorio(nums_AEDs_instalar, this->m_ProbChooseMoveRelocation);
 					if (log_initialization) printf("7    relocation initialization\n");
 					break;
 				case 8:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_HybridSplit_Aleatorio(budget_indiv, this->m_SplitPctRelocation);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_HybridSplit_Aleatorio(nums_AEDs_instalar, this->m_SplitPctRelocation);
 					if (log_initialization) printf("8    relocation initialization\n");
 					break;
 				default:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyMove(budget_indiv);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyBuy(nums_AEDs_instalar);
 					if (log_initialization) printf("default    relocation initialization\n");
 					break;
 			}
-		} else {
-			int num_a_instalar = rand() % (presupuesto + 1); // genera número entre 0 y presupuesto
-			if (num_a_instalar > huecos_disponibles) num_a_instalar = huecos_disponibles;
-			SP.m_BestIndividual.GenerateSimpleFeasibleSolution(num_a_instalar);
+		} else {			
+			SP.m_BestIndividual.GenerateSimpleFeasibleSolution(nums_AEDs_instalar);
 			if (log_initialization) printf("default location initialization\n");
-
 		}
 
 
@@ -631,7 +685,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 						if (log_cross) printf("8 relocation cross\n");
 						break;
 					default:
-						UtilityToolBox.CruzamientoUniformeReloc(m_PopulationSOP[p1].m_BestIndividual.x_var,
+						UtilityToolBox.CruzamientoUniformeSemiInteligente_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
 														  child.x_var, this->problemInstance);
 						if (log_cross) printf("default relocation cross\n");
@@ -725,9 +779,12 @@ void CALG_EMO_MOEAD::EvolvePopulation()
     				if (log_mut) printf("22 relocation fusion Fixed\n");
 					break;
 				default:
-					UtilityToolBox.MutacionHibridaReloc(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
+					{
+					double p = 1.0 / (double)s_PopulationSize;
+					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, p, this->problemInstance);
 					if (log_mut) printf("default relocation mut\n");
 					break;
+				}
 				}
 		} else {
 			switch (m_MutationType)
@@ -827,10 +884,27 @@ void CALG_EMO_MOEAD::SaveObjSpace(char saveFilename[1024])
         return;
     }
 
+	fout << std::fixed;
+
 	for (unsigned n = 0; n < s_PopulationSize; n++)
 	{
 		for (unsigned int k = 0; k < NumberOfObjectives; k++)
-		{
+		{	
+			if (m_ProblemType == "cam") {
+				if (k == 1) {
+					fout << std::setprecision(0);
+				} else {
+					fout << std::setprecision(4);
+				}
+			} else if (m_ProblemType == "drp") {
+				if (k == 1) {
+					fout << std::setprecision(1);
+				} else {
+					fout << std::setprecision(10);
+				}
+			} else {
+				fout << std::setprecision(10);
+			}
 			fout << m_PopulationSOP[n].m_BestIndividual.f_obj[k] << "  ";
 		}
 

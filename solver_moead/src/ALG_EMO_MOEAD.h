@@ -54,6 +54,10 @@ public:
     void SetProbChooseMoveRelocation(double prob) { m_ProbChooseMoveRelocation = prob; }
     void SetSplitPctRelocation(double pct) { m_SplitPctRelocation = pct; }
 
+	void SetInitDistributionStrategy(int strategy) { m_InitDistributionStrategy = strategy; }
+    void SetPowerExp(double exp) { m_PowerExp = exp; }
+    void SetNoisePct(double pct) { m_NoisePct = pct; }
+
 	int s_PopulationSize;
 	int s_NeighborhoodSize;
 	ProblemInstance *problemInstance;
@@ -114,6 +118,10 @@ protected:
 	int m_InitializationTypeRelocation;
     double m_ProbChooseMoveRelocation;
     double m_SplitPctRelocation;
+
+	int m_InitDistributionStrategy;
+    double m_PowerExp;
+    double m_NoisePct;
 	
 	double m_MaxTimeSeconds; // Tiempo máximo en segundos (0 = sin límite)
 	int m_SaveInterval;

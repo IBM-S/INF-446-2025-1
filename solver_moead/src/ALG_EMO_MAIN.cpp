@@ -104,6 +104,11 @@ void PrintUsage() {
     std::cout << "  -mutPctSwap <double>  : % Intensidad Swap (Para MutType 4, 5, 6 ,7, 9, 11. Si no se define, usa mutPct)" << std::endl;
     std::cout << "  -bitprob <double> : Prob. BitFlip individual (Def: 0.01)" << std::endl;
 
+    std::cout << "\n--- Parámetros Distribución Inicial de Recursos ---" << std::endl;
+    std::cout << "  -initDist <int>   : Estrategia Distribución (0:Rand, 1:Extremos, 2:Curva+Ruido) (Def: 2)" << std::endl;
+    std::cout << "  -powerExp <dbl>   : Exponente para la curva en Estrategia 2 (Def: 5.0)" << std::endl;
+    std::cout << "  -noisePct <dbl>   : Porcentaje de ruido en Estrategia 2 (0.0 - 1.0) (Def: 0.20)" << std::endl;
+
     std::cout << "\n--- Parámetros de Inicialización (Relocación) ---" << std::endl;
     std::cout << "  -initTypeRelocation <int>   : Estrategia: 1:Orig, 2:Mix, 3:Move, 4:Buy, 5:M/B, 6:Hyb, 7:M/B_Rnd, 8:Hyb_Rnd (Def: 3)" << std::endl;
     std::cout << "  -probMoveRelocation <double>: Probabilidad de elegir 'Solo Mover' en estrategia 5 y 7 (Def: 0.5)" << std::endl;
@@ -147,8 +152,8 @@ int main(int argc, char *argv[])
     int decompType = 1;   // 1 por defecto (Tchebycheff)
     int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
-    int mutType = 22;     // Default: Híbrida
-    int crossType = 8;    // Default: Inteligente
+    int mutType = 7;     // Default: Híbrida
+    int crossType = 3;    // Default: Inteligente
     double mutPct = 0.2; // Default: 5% intensidad para operadores porcentuales
     double bitFlipProb = 0.01; // Default: 1% probabilidad para BitFlip Fijo
 
@@ -156,9 +161,13 @@ int main(int argc, char *argv[])
     double userMutPctDelete = 0.1; // 0 = usar default
     double userMutPctSwap = 0.4;   // 0 = usar default
 
-    int initTypeRelocation = 8;           // Default: Solo Mover (o el que prefieras como base)
+    int initTypeRelocation = 2;           // Default: Solo Mover (o el que prefieras como base)
     double probMoveRelocation = 0.5;      // Default: 50%
     double splitPctRelocation = 0.5;      // Default: 50% split
+
+    int initDist = 2;
+    double powerExp = 5.0;
+    double noisePct = 0.20;
 
 	if (argc < 2) {
         PrintUsage();
@@ -205,6 +214,10 @@ int main(int argc, char *argv[])
         else if (arg == "-initTypeRelocation") { if (i + 1 < argc) initTypeRelocation = atoi(argv[++i]); }
         else if (arg == "-probMoveRelocation") { if (i + 1 < argc) probMoveRelocation = atof(argv[++i]); }
         else if (arg == "-splitPctRelocation") { if (i + 1 < argc) splitPctRelocation = atof(argv[++i]); }
+
+        else if (arg == "-initDist") { if (i + 1 < argc) initDist = atoi(argv[++i]); }
+        else if (arg == "-powerExp") { if (i + 1 < argc) powerExp = atof(argv[++i]); }
+        else if (arg == "-noisePct") { if (i + 1 < argc) noisePct = atof(argv[++i]); }
     }
 
     if (userMutPctDelete < 0) userMutPctDelete = mutPct;
@@ -252,6 +265,10 @@ int main(int argc, char *argv[])
         if (userPop > 0) MOEAD.SetPopulationSize(userPop);
         if (userNeighbor > 0) MOEAD.SetNeighborhoodSize(userNeighbor);
         if (userNeighborPct > 0.0) MOEAD.SetNeighborhoodSizePct(userNeighborPct);
+
+        MOEAD.SetInitDistributionStrategy(initDist);
+        MOEAD.SetPowerExp(powerExp);
+        MOEAD.SetNoisePct(noisePct);
         
         MOEAD.InitializeParameter(); 
         
@@ -323,9 +340,21 @@ int main(int argc, char *argv[])
     std::cout << "     Intervalo     : " << strSave << std::endl; 
 
     std::cout << "\n [6] CONFIGURACIÓN INICIALIZACIÓN (RELOCACIÓN)" << std::endl;
-    std::cout << "     Init Type     : " << initTypeRelocation << std::endl;
-    std::cout << "     Prob Move     : " << probMoveRelocation << std::endl;
-    std::cout << "     Split Pct     : " << splitPctRelocation << std::endl;
+    std::cout << "     Tipo de inicio: " << initTypeRelocation << std::endl;
+    std::cout << "     Exp           : " << probMoveRelocation << std::endl;
+    std::cout << "     Ruido Pct     : " << splitPctRelocation << std::endl;
+
+    std::cout << "\n [7] ESTRATEGIA DE DISTRIBUCIÓN INICIAL" << std::endl;
+    std::cout << "     Estrategia    : " << initDist;
+    if (initDist == 0) std::cout << " (Random Puro)";
+    else if (initDist == 1) std::cout << " (Random c/ Extremos)";
+    else if (initDist == 2) std::cout << " (Exponencial c/ Ruido)";
+    std::cout << std::endl;
+    
+    if (initDist == 2) {
+        std::cout << "     Exponente (p) : " << powerExp << std::endl;
+        std::cout << "     Ruido (%)     : " << noisePct * 100.0 << "%" << std::endl;
+    }
     std::cout << "==========================================================\n" << std::endl;
 
 	clock_t start, temp, finish;
@@ -356,6 +385,9 @@ int main(int argc, char *argv[])
         MOEAD.SetInitializationTypeRelocation(initTypeRelocation);
         MOEAD.SetProbChooseMoveRelocation(probMoveRelocation);
         MOEAD.SetSplitPctRelocation(splitPctRelocation);
+
+    
+
         
 		MOEAD.Execute(1); // Se ejecuta solo una vez
 	}
