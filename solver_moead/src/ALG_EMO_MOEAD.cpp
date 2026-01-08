@@ -282,7 +282,7 @@ void CALG_EMO_MOEAD::InitializePopulation()
 
 				// b. curva
 				double base = std::pow(t, m_PowerExp) * (double)max_limit;
-			
+				
 				// c. Ruido
 				double rango = base * m_NoisePct;
 				double aleatorio = ((double)rand() / (double) RAND_MAX) * 2.0 - 1.0;
@@ -684,6 +684,12 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 														  child.x_var, this->problemInstance);
 						if (log_cross) printf("8 relocation cross\n");
 						break;
+					case 9: 
+							UtilityToolBox.OnePointCrossover(m_PopulationSOP[p1].m_BestIndividual.x_var,
+														  m_PopulationSOP[p2].m_BestIndividual.x_var,
+														  child.x_var, this->problemInstance);
+						if (log_cross) printf("9 relocation cross\n");
+						break;
 					default:
 						UtilityToolBox.CruzamientoUniformeSemiInteligente_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
@@ -900,10 +906,10 @@ void CALG_EMO_MOEAD::SaveObjSpace(char saveFilename[1024])
 				if (k == 1) {
 					fout << std::setprecision(1);
 				} else {
-					fout << std::setprecision(10);
+					fout << std::setprecision(7);
 				}
 			} else {
-				fout << std::setprecision(10);
+				fout << std::setprecision(7);
 			}
 			fout << m_PopulationSOP[n].m_BestIndividual.f_obj[k] << "  ";
 		}

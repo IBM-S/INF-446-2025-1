@@ -1496,8 +1496,10 @@ void CUtilityToolBox::CruzamientoUniformeSemiInteligente_Relocation(const vector
     }
 
     // 2. Reparación de Presupuesto (Por si la unión generó demasiados)
-    RepararPresupuesto(child, instance);
+    RepararPresupuesto_Relocation(child, instance);
 }
+
+
 
 void CUtilityToolBox::CruzamientoUniformeInteligente_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance)
 {
@@ -1716,4 +1718,39 @@ void CUtilityToolBox::Mutacion_Reloc_Fusion_Fijo(vector<double> &x_var, double m
     else {
         MutacionSwapPorcentualReloc(x_var, mutation_rate, mutPctSwap, instance);
     }
+}
+
+void CUtilityToolBox::OnePointCrossover(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance){
+
+    const int n = (int)parent1.size();
+    child.assign(n, 0.0);
+
+    int start = -1, end = -1;
+
+    for (int i = 0; i < n; ++i){
+        if (instance->getNodes()[i]->getFlag() == 0){
+            start = i; break;
+        }
+    }
+    for (int i = n-1; i >= 0; --i){
+        if (instance->getNodes()[i]->getFlag() == 0){
+            end = i; break;
+        }
+    }
+    if (start == -1 || end == -1 || end <= start){
+        child = parent1;
+        return;
+    }
+
+    const int span = (end - start);
+    int cut = start + (int)(Get_Random_Number() * span);
+
+    for (int i = 0; i < start; ++i) child[i] = parent1[i];
+
+    for (int i = start; i <= cut; ++i) child[i] = parent1[i];
+    for (int i = cut+1; i <= end; ++i) child[i] = parent2[i];
+
+    for (int i = end+1; i < n; ++i) child[i] = parent1[i];
+
+    for (int i = 0; i < n; ++i) child[i] = (child[i] > 0.5) ? 1.0 : 0.0; 
 }

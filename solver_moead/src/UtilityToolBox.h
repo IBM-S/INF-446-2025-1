@@ -133,6 +133,7 @@ public:
 	void MutacionSwapProbabilisticoReloc(vector<double> &x_var, double mutation_rate, double prob_swap_individual, ProblemInstance *instance);
 
 
+	void OnePointCrossover(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
 
 
 	int GetWeightNumber(int nobj, int H);
