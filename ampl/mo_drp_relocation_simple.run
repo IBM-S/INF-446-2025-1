@@ -1,8 +1,8 @@
-# reset;
+reset;
 
-# model mo_relocation_model_simple.mod;
+model mo_relocation_model_simple.mod;
 # data ../datos/inst/DRP.dat;
-# data ../datos/inst/drp_657_STATEN_ISLAND.dat;
+ data ../datos/inst/drp_657_STATEN_ISLAND.dat;
 # data ../datos/inst/drp_2151_BRONX.dat;
 # data ../datos/inst/drp_2885_QUEENS.dat;
 # data ../datos/inst/drp_3442_BROOKLYN.dat;
@@ -10,7 +10,7 @@
 
 
 # ---------- Config ----------
-# data conf_execution.dat;
+data conf_execution.dat;
 
 # Opciones del Solver
 option solver gurobi;
@@ -26,12 +26,15 @@ param formato_salida default 3;
 param n_inicial default 0;
 let n_inicial := sum{i in N} flag[i];
 
+param mis_decimales default 7; 
+
 printf "\n==========================================================\n";
 printf "               MODO: FLEXIBLE LOCATION                  \n";
 printf "==========================================================\n";
 
 printf " [1] INFORMACION DE LA INSTANCIA\n";
 printf "     Instancia     : %s\n", nombre_instancia;
+printf "     Decimales     : %d (Configurado dinamicamente)\n", mis_decimales;
 printf "     N (Nodos)     : %d\n", N_total;
 printf "     Presupuesto   : %g\n", P;
 printf "     Radio (R)     : %g\n", R;
@@ -93,10 +96,10 @@ for {gg in objetivos} {
     let f1[gg] := F[1];
     let f2[gg] := F[2];
     
-    printf "     -> Objetivo %d: F1=%.8f, F2=%.1f (%.2f s)\n", gg, F[1], F[2], TCPU1[gg];
+    printf "     -> Objetivo %d: F1=%.*f, F2=%.1f (%.2f s)\n", gg, mis_decimales, F[1], F[2], TCPU1[gg];
 
     if mostrar_detalles = 1 then {
-        printf "  Objective Values: F1(Coverage)=%.4f, F2(Cost)=%.4f\n", F[1], F[2];
+        printf "  Objective Values: F1(Coverage)=%.*f, F2(Cost)=%.4f\n", mis_decimales, F[1], F[2];
 
         # --- CALCULOS DE INVENTARIO ---
         let total_final := sum {i in N} y[i];
@@ -158,7 +161,7 @@ for {i in objetivos} {
     let PVF[i] := PV[i];
 }
 
-printf "\n-> Rango F1: [%.10f, %.4f]\n", MV[1], PV[1];
+printf "\n-> Rango F1: [%.*f, %.4f]\n", mis_decimales, MV[1], PV[1];
 printf "-> Rango F2: [%.10f, %.4f]\n", MV[2], PV[2];
 
 
@@ -190,7 +193,7 @@ for {gg in ejecuciones} {
     
     
     if mostrar_detalles = 1 then {
-        printf "  Objective Values: F1(Coverage)=%.4f, F2(Cost)=%.4f\n", F[1], F[2];
+        printf "  Objective Values: F1(Coverage)=%.*f, F2(Cost)=%.4f\n", mis_decimales, F[1], F[2];
         
         # --- CALCULOS DE INVENTARIO ---
         let total_final := sum {i in N} y[i];
@@ -250,7 +253,7 @@ if formato_salida = 3 then {
     printf "\nF1(Coverage) F2(Cost)\n";
     printf "---------------------\n";
     for {gg in ejecuciones} {
-        printf "%.10f %g\n", F1[gg], F2[gg];
+        printf "%.*f %g\n", mis_decimales, F1[gg], F2[gg];
     }
 }
 else {
@@ -265,6 +268,6 @@ else {
     printf "%-10s : %-12s | %-12s\n", "Ejecucion","F1 (Cobert.)","F2 (Costo)";
     printf "%s\n", "-----------:--------------+--------------";
     for {gg in ejecuciones} {
-        printf "%-10g : %-12.4g | %-12.4g\n", gg, F1[gg], F2[gg];
+        printf "%-10g : %-12.*g | %-12.4g\n", gg, mis_decimales, F1[gg], F2[gg];
     }
 }

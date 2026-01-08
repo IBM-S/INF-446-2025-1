@@ -263,7 +263,7 @@ else if formato_salida = 3 then {
     printf "\nF1(Coverage) F2(Cost)\n";
     printf "---------------------\n";
     for {gg in ejecuciones} {
-        printf "%.16g %g\n", F1[gg], F2[gg];
+        printf "%.4g %g\n", F1[gg], F2[gg];
     }
 }
 
