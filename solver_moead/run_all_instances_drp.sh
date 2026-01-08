@@ -14,30 +14,35 @@ VARIANT="relocation"
 NUM_RUNS=10          
 
 # Parámetros Algoritmo
-POPULATION=400
-NEIGHBORPCT=0.05
-NEVALS=100000    # Criterio de parada por evaluaciones
+POPULATION=850
+NEIGHBORPCT=0.2
+NEVALS=150000    # Criterio de parada por evaluaciones
 MAX_TIME=3600      # Criterio de parada por tiempo (0 = desactivado)
-MUTATION=0.5
-CROSSOVER=0.6
+MUTATION=1.0
+CROSSOVER=0.7
 #OP1_PROB=0.3
 SAVE=0
-MUTTYPE=18
-CROSSTYPE=6
+MUTTYPE=16
+CROSSTYPE=5
 #MUTPCTDELETE=0.4
 #MUTPCTSWAP=0.25
 #BITPROB=0.1
-INITTYPERELOCATION=2
-#PROBMOVERELOCATION=0.1
+INITTYPERELOCATION=3
+PROBMOVERELOCATION=0.4
 #SPLITPCTRELOCATION=0.1
+
+INITDIST=2
+POWEREXP=6.0
+NOISEPCT=0.1
+
 
 # Lista de Instancias
 declare -a INSTANCE_ORDER=(
     "drp_657_STATEN_ISLAND.dat"
-    #"drp_2151_BRONX.dat"
-    #"drp_2885_QUEENS.dat"
-    #"drp_3442_BROOKLYN.dat"
-    #"drp_4432_MANHATTAN.dat"
+    "drp_2151_BRONX.dat"
+    "drp_2885_QUEENS.dat"
+    "drp_3442_BROOKLYN.dat"
+    "drp_4432_MANHATTAN.dat"
 )
 
 # ================= INICIO =================cd
@@ -116,6 +121,11 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
             #-mutPctSwap "${MUTPCTSWAP}" 
             #-bitprob "${BITPROB}" 
             -initTypeRelocation "${INITTYPERELOCATION}"
+
+            -initDist "${INITDIST}"
+            -powerExp "${POWEREXP}"
+            -noisePct "${NOISEPCT}"
+
             -outDir "${subFolder}"
         )
 

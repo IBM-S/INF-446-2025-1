@@ -14,19 +14,23 @@ VARIANT="location"
 NUM_RUNS=10          
 
 # Parámetros Algoritmo
-POPULATION=850
-NEIGHBORPCT=0.1
-NEVALS=100000    # Criterio de parada por evaluaciones
+POPULATION=450
+NEIGHBORPCT=0.25
+NEVALS=150000    # Criterio de parada por evaluaciones
 MAX_TIME=3600      # Criterio de parada por tiempo (0 = desactivado)
 MUTATION=0.5
-CROSSOVER=0.6
-OP1_PROB=0.3
+CROSSOVER=0.3
+OP1_PROB=0.7
 SAVE=0
-MUTTYPE=7
-CROSSTYPE=3
-MUTPCTDELETE=0.1
-MUTPCTSWAP=0.4
-BITPROB=0.01
+MUTTYPE=6
+CROSSTYPE=1
+MUTPCTDELETE=0.05
+MUTPCTSWAP=0.35
+BITPROB=0.15
+
+INITDIST=2
+POWEREXP=4.0
+NOISEPCT=0.1
 
 
 # Lista de Instancias
@@ -124,6 +128,11 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
             -mutPctDelete "${MUTPCTDELETE}" 
             -mutPctSwap "${MUTPCTSWAP}" 
             -bitprob "${BITPROB}" 
+
+            -initDist "${INITDIST}"
+            -powerExp "${POWEREXP}"
+            -noisePct "${NOISEPCT}"
+
             -outDir "${subFolder}"
         )
 
