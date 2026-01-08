@@ -117,16 +117,31 @@ def procesar_instancia(path_dat, mode="normal"):
     base = os.path.basename(path_dat)
     nombre_instancia = os.path.splitext(base)[0]
 
+    if not (nombre_instancia.startswith("cam_") or nombre_instancia.startswith("drp_")):
+        return
+    if nombre_instancia.startswith("cam_"):
+        dec = 4
+    if nombre_instancia.startswith("drp_"):
+        dec = 7
+
     prob_cubierta = stats["prob_cubierta"]
     n_demanda_total = stats["n_demanda_total"]
 
     if mode == "ref":
         # MODO REFERENCIA:
         # {instancia} {(prob demanda cubierta * -1) + (prob demanda cubierta*0.1)} {Nodos demanda total*1.1}
-        ref_x = (-0.99 * prob_cubierta)   # = -0.9 * prob_cubierta
-        ref_y = n_demanda_total * 1.005
+        if nombre_instancia.startswith("cam_"):
+            ref_x = (-0.99 * prob_cubierta)   # = -0.9 * prob_cubierta
+        elif nombre_instancia.startswith("drp_"):
+            ref_x = (-0.5 * prob_cubierta)   # = -0.9 * prob_cubierta
 
-        print(f"{nombre_instancia} {ref_x:.6f} {ref_y:.6f}")
+        ref_y = n_demanda_total * 1.001
+
+        if nombre_instancia.startswith("cam_"):
+            print(f"{nombre_instancia:<32} {ref_x:>18.4f} {ref_y:>18.3f}")
+        elif nombre_instancia.startswith("drp_"):
+            print(f"{nombre_instancia:<32} {ref_x:>18.7f} {ref_y:>18.3f}")
+        
         return
 
     # --------- MODO NORMAL (RESUMEN COMPLETO) ----------
@@ -134,15 +149,15 @@ def procesar_instancia(path_dat, mode="normal"):
     print(f"  R = {R}")
     print(f"  AEDs (flag = 1)            : {sum(1 for (_,_,_,f,_) in nodos if f == 1)}")
     print(f"  Nodos demanda totales      : {stats['n_demanda_total']}")
-    print(f"  Prob demanda total         : {stats['prob_demanda_total']:.4f}")
+    print(f"  Prob demanda total         : {stats['prob_demanda_total']:.{dec}f}")
     print(f"  Nodos demanda cubiertos    : {stats['n_cubiertos']}")
-    print(f"  Prob demanda cubierta      : {stats['prob_cubierta']:.4f}")
+    print(f"  Prob demanda cubierta      : {stats['prob_cubierta']:.{dec}f}")
     
     nodos_no_cubiertos = stats['n_demanda_total'] - stats['n_cubiertos']
     prob_no_cubierta = stats['prob_demanda_total'] - stats['prob_cubierta']
 
     print(f"  Nodos demanda NO cubiertos : {nodos_no_cubiertos}")
-    print(f"  Prob demanda NO cubierta   : {prob_no_cubierta:.4f}")
+    print(f"  Prob demanda NO cubierta   : {prob_no_cubierta:.{dec}f}")
 
     if stats['n_demanda_total'] > 0:
         porc_nodos = 100.0 * stats['n_cubiertos'] / stats['n_demanda_total']
@@ -183,7 +198,34 @@ def main():
         if not patrones:
             print(f"No se encontraron .dat en {DIR_INSTANCES}")
             return
-        for path in sorted(patrones):
+
+        cam_files = []
+        drp_files = []
+        for path in patrones:
+            name = os.path.basename(path)
+            name_noext = os.path.splitext(name)[0]
+            if name_noext.startswith("cam_"):
+                num = int(re.search(r"(\d+)", name_noext).group())
+                cam_files.append((num, path))
+            if name_noext.startswith("drp_"):
+                num = int(re.search(r"(\d+)", name_noext).group())
+                drp_files.append((num, path))
+
+        cam_files.sort(key=lambda x: x[0])
+        drp_files.sort(key=lambda x: x[0])
+
+        files_sorted = [p for _, p in cam_files + drp_files]
+
+        if args.mode == "ref":
+            print("# === Referencias calculadas ===")
+            print("# cam ref_x = -0.99 * prob_demanda_cubierta")
+            print("# drp ref_x = -0.5 * prob_demanda_cubierta")
+            print("# ref_y = 1.001 * nodos_demanda_total")
+            print("# --------------------------------")
+            print("# Formato: instancia ref_x ref_y")
+            print("# --------------------------------")
+        
+        for path in files_sorted:
             procesar_instancia(path, mode=args.mode)
 
 
