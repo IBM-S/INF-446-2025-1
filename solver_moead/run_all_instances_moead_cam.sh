@@ -50,7 +50,7 @@ declare -a INSTANCE_ORDER=(
     "cam_15743_ALVARO_OBREGON.dat"
     "cam_22238_CUAUHTEMOC.dat"
     "cam_24363_GUSTAVO_A._MADERO.dat"
-    #"cam_40264_IZTAPALAPA.dat"
+    "cam_40264_IZTAPALAPA.dat"
 )
 
 # ================= INICIO =================cd
