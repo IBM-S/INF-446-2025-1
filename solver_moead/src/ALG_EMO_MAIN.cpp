@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
     int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
     int mutType = 16;     // Default: Híbrida
-    int crossType = 9;    // Default: Inteligente
+    int crossType = 4;    // Default: Inteligente
     double mutPct = 0.2; // Default: 5% intensidad para operadores porcentuales
     double bitFlipProb = 0.01; // Default: 1% probabilidad para BitFlip Fijo
 

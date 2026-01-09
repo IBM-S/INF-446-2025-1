@@ -134,7 +134,10 @@ public:
 
 
 	void OnePointCrossover(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
+	void OnePointCrossover_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
 
+	void TwoPointCrossover(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
+	void TwoPointCrossover_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
 
 	int GetWeightNumber(int nobj, int H);
 

@@ -788,6 +788,27 @@ bool CUtilityToolBox::EsBuenCandidato(int idx_candidato, ProblemInstance *instan
     return false;
 }
 
+bool CUtilityToolBox::EsBuenCandidato_Relocation(int idx_candidato, ProblemInstance *instance)
+{
+	const auto &nodos = instance->getNodes();
+
+    const std::vector<int>& vecinos = instance->getNodosCubiertosPor(idx_candidato);
+    double ganancia = 0.0;
+    ganancia += nodos[idx_candidato]->getProbOhca();
+    for (int id_vecino : vecinos) 
+    {
+        // Buscamos si cubre a alguien con demanda
+        // (Nota: Si tu instancia tiene "PreCubierto" real por cosas externas al problema, mantenlo.
+        //  Si "PreCubierto" se refería a los AEDs Flag=1, quítalo).
+        ganancia += nodos[id_vecino]->getProbOhca();
+    }
+    if (ganancia >= 1.0e-9){
+        return true;
+    }
+
+    return false;
+}
+
 // =========================================================================
 // 2. CRUZAMIENTO INTELIGENTE (Preserva estructuras)
 // =========================================================================
@@ -1272,32 +1293,6 @@ void CUtilityToolBox::MutacionHibrida_location(vector<double> &x_var, double mut
 
 
 
-bool CUtilityToolBox::EsBuenCandidato_Relocation(int idx_candidato, ProblemInstance *instance)
-{
-	const auto &nodos = instance->getNodes();
-    
-    // EN RELOCACIÓN: Eliminamos el bloqueo de Flag == 1.
-    // Cualquier nodo es candidato válido para recibir un AED si cubre demanda.
-	if (nodos[idx_candidato]->getProbOhca() > 0.0) return true;
-
-    const std::vector<int>& vecinos = instance->getNodosCubiertosPor(idx_candidato);
-    
-    for (int id_vecino : vecinos) 
-    {
-        // Buscamos si cubre a alguien con demanda
-        // (Nota: Si tu instancia tiene "PreCubierto" real por cosas externas al problema, mantenlo.
-        //  Si "PreCubierto" se refería a los AEDs Flag=1, quítalo).
-        if (nodos[id_vecino]->getProbOhca() > 0.0) {
-            return true; // Si cubre al menos un nodo con demanda, sirve.
-        }
-    }
-    return false;
-}
-
-
-
-
-
 void CUtilityToolBox::CruzamientoUniformeReloc(const vector<double>& p1,
                               const vector<double>& p2,
                               vector<double>& child,
@@ -1720,6 +1715,7 @@ void CUtilityToolBox::Mutacion_Reloc_Fusion_Fijo(vector<double> &x_var, double m
     }
 }
 
+
 void CUtilityToolBox::OnePointCrossover(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance){
 
     const int n = (int)parent1.size();
@@ -1753,4 +1749,85 @@ void CUtilityToolBox::OnePointCrossover(const vector<double> &parent1, const vec
     for (int i = end+1; i < n; ++i) child[i] = parent1[i];
 
     for (int i = 0; i < n; ++i) child[i] = (child[i] > 0.5) ? 1.0 : 0.0; 
+}
+
+
+
+void CUtilityToolBox::OnePointCrossover_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance){
+
+    const int n = (int)parent1.size();
+    child.assign(n, 0.0);
+
+    int start = 0, end = n-1;
+
+    const int span = (end - start);
+    int cut = start + (int)(Get_Random_Number() * span);
+
+    for (int i = 0; i < start; ++i) child[i] = parent1[i];
+
+    for (int i = start; i <= cut; ++i) child[i] = parent1[i];
+    for (int i = cut+1; i <= end; ++i) child[i] = parent2[i];
+
+    for (int i = end+1; i < n; ++i) child[i] = parent1[i];
+
+    for (int i = 0; i < n; ++i) child[i] = (child[i] > 0.5) ? 1.0 : 0.0; 
+}
+
+void CUtilityToolBox::TwoPointCrossover(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance){
+
+    const int n = (int)parent1.size();
+    child.assign(n, 0.0);
+
+    int start = -1, end = -1;
+
+    const auto& nodes = instance->getNodes();
+
+    for (int i = 0; i < n; ++i){
+        if (nodes[i]->getFlag() == 0){
+            start = i; break;
+        }
+    }
+    for (int i = n-1; i >= 0; --i){
+        if (nodes[i]->getFlag() == 0){
+            end = i; break;
+        }
+    }
+    if (start == -1 || end == -1 || (end - start) < 2){
+        child = parent1;
+        return;
+    }
+
+    int cut1 = start + (int)(Get_Random_Number() * (end - start));
+    if (cut1 > end - 2) cut1 = end - 2;
+
+    int cut2 = (cut1 + 1) + (int)(Get_Random_Number() * (end - (cut1 + 1)));
+
+    for (int i = 0; i < start; ++i) child[i] = parent1[i];
+
+    for (int i = start; i <= cut1; ++i) child[i] = parent1[i];
+    for (int i = cut1 + 1; i <= cut2; ++i) child[i] = parent2[i];
+    for (int i = cut2 + 1; i < end; ++i) child[i] = parent1[i];
+
+    for (int i = end + 1; i < n; ++i) child[i] = (child[i] > 0.5) ? 1.0 : 0.0; 
+}
+
+void CUtilityToolBox::TwoPointCrossover_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance){
+
+    const int n = (int)parent1.size();
+    child.assign(n, 0.0);
+
+    int start = 0, end = n-1;
+
+    int cut1 = start + (int)(Get_Random_Number() * (end - start));
+    if (cut1 > end - 2) cut1 = end - 2;
+
+    int cut2 = (cut1 + 1) + (int)(Get_Random_Number() * (end - (cut1 + 1)));
+
+    for (int i = 0; i < start; ++i) child[i] = parent1[i];
+
+    for (int i = start; i <= cut1; ++i) child[i] = parent1[i];
+    for (int i = cut1 + 1; i <= cut2; ++i) child[i] = parent2[i];
+    for (int i = cut2 + 1; i < end; ++i) child[i] = parent1[i];
+
+    for (int i = end + 1; i < n; ++i) child[i] = (child[i] > 0.5) ? 1.0 : 0.0; 
 }
