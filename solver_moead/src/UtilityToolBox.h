@@ -82,7 +82,7 @@ public:
 	void MutacionBitFlip_Fijo(vector<double> &x_var, double mutation_rate, double fixed_prob, ProblemInstance *instance);
 
 	// 4. Swap Probabilistica: cada bit que este activo tiene prob fija de mudarse a otra posicion (solo se muda si mejora)   utiliza es BuenCandidato
-	void MutacionSwapProbabilistico(vector<double> &x_var, double mutation_rate, double mutPctSwap, ProblemInstance *instance);
+	void MutacionSwapProbabilistico(vector<double> &x_var, double mutation_rate, double MutProbSwap, ProblemInstance *instance);
 
 	// 5. Mutacion Combinada (Elegir entre BitFlip y Swap segun probabilidad)
 	void Mutacion_Swap_Porcentual_1_N(vector<double> &x_var, double mutation_rate, double ratio_swap, double mutPctSwap, ProblemInstance *instance);
@@ -130,7 +130,7 @@ public:
 	void Mutacion_Reloc_Fusion_1_M(vector<double> &x_var, double mutation_rate, double ratio_split, int populationSize, double mutPctSwap, ProblemInstance *instance);
 	void Mutacion_Reloc_Fusion_Fijo(vector<double> &x_var, double mutation_rate, double ratio_split, double fixed_prob, double mutPctSwap, ProblemInstance *instance);
 	void MutacionBitFlip_Relocation(vector<double> &x_var, double mutation_rate, double bit_prob, ProblemInstance *instance);
-	void MutacionSwapProbabilisticoReloc(vector<double> &x_var, double mutation_rate, double prob_swap_individual, ProblemInstance *instance);
+	void MutacionSwapProbabilisticoReloc(vector<double> &x_var, double mutation_rate, double MutProbSwap, ProblemInstance *instance);
 
 
 	void OnePointCrossover(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);

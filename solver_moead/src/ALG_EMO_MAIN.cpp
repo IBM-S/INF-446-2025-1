@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #include <string>
+#include <iomanip>
 
 std::string exe_dir_path;
 
@@ -64,7 +65,110 @@ std::string PrepararDirectorioSalida(std::string nombreInstancia, std::string ti
     return rutaCompleta;
 }
 
-// ... includes y funciones previas (set_exe_path, PrepararDirectorioSalida) ...
+// helpers
+
+static std::string pct(double x) {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(2) << (x * 100.0) << "%";
+    return oss.str();
+}
+
+static std::string dbl(double x, int prec=6) {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(prec) << x ;
+    return oss.str();
+}
+// Mutation
+static std::string MutName(int mutType, bool isReloc){
+    if (!isReloc) {
+        switch(mutType){
+            case 1: return "BitFlip (p = 1/N)";
+            case 2: return "BitFlip (p = 1/M)";
+            case 3: return "BitFlip (p = fijo = bitprob)";
+            case 4: return "SwapBitFlip (p = ProbSwap)";
+            case 5: return "Fusion (Swap% + BitFlip p = 1/N) (op1)";
+            case 6: return "Fusion (Swap% + BitFlip p = 1/M) (op1)";
+            case 7: return "Fusion (Swap% + BitFlip p = fijo) (op1)";
+            case 8: return "Mutacion modificada (sin reubicacion) (op1)";
+            case 9: return "Swap% (mutPctSwap)";
+            case 10: return "Delete% (mutPctDelete)";
+            case 11: return "Hibrida (Delete%/Swap%) (op1)";
+            default: return "DEFAULT -> BitFlip (p = fijo)";
+        }
+    } else {
+        switch(mutType) {
+            case 12: return "Mutacion modificada (con reubicacion) (op1)";
+            case 13: return "Swap% Reloc (mutPctSwap)";
+            case 14: return "Delete% Reloc (mutPctDelete)";
+            case 15: return "Hibrida Reloc (Delete% Reloc/Swap% Reloc) (op1)";
+            case 16: return "BitFlip Reloc (p = 1/N)";
+            case 17: return "BitFlip Reloc (p = fijo = bitprob)";
+            case 18: return "BitFlip Reloc (p = 1/M)";
+            case 19: return "SwapBitFlip Reloc (p = ProbSwap)";
+            case 20: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = 1/N) (op1)";
+            case 21: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = 1/M) (op1)";
+            case 22: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = fijo) (op1)";
+            default: return "DEFAULT -> BitFlip Reloc (p = 1/M)";
+        }
+    }
+}
+
+static std::vector<std::string> MutParamsLines(
+    int mutType, bool isReloc, double mutationRate, double op1Prob, double mutPctDelete, double mutPctSwap,
+    double ProbSwap, double bitFlipProb, int popSize, int nVars
+){
+    std::vector<std::string> L;
+    L.push_back("Tasa global (mut)         : " + pct(mutationRate));
+
+    auto add_op1       = [&](){ L.push_back("op1 (prob. Delete / Op1): " + pct(op1Prob)); };
+    auto add_pct_del   = [&](){ L.push_back("mutPctDelete            : " + pct(mutPctDelete)); };
+    auto add_pct_swap  = [&](){ L.push_back("mutPctSwap              : " + pct(mutPctSwap)); };
+    auto add_prob_swap = [&](){ L.push_back("ProbSwap                : " + pct(ProbSwap)); };
+    auto add_bit       = [&](){ L.push_back("bitprob (p fijo)        : " + dbl(bitFlipProb, 6)); };
+    auto add_p_1N      = [&](){
+        double p = (nVars > 0) ? (1.0 / (double)nVars) : 0.0; 
+        L.push_back("p usado     : 1/N = " + dbl(p, 10) + " (N=" + std::to_string(nVars) + ")"); };
+    
+    auto add_p_1M      = [&](){
+        double p = (popSize > 0) ? (1.0 / (double)popSize) : 0.0; 
+        L.push_back("p usado     : 1/M = " + dbl(p, 10) + " (M=" + std::to_string(popSize) + ")"); };
+
+    if (!isReloc) {
+        switch(mutType) {
+            case 1: add_p_1N(); break;
+            case 2: add_p_1M(); break;
+            case 3: add_bit(); break;
+            case 4: add_prob_swap(); break;
+            case 5: add_op1(); add_pct_swap; add_p_1N; break;
+            case 6: add_op1(); add_pct_swap; add_p_1M; break;
+            case 7: add_op1(); add_pct_swap; add_bit; break;
+            case 8: add_op1(); break;
+            case 9: add_pct_swap(); break;
+            case 10: add_pct_del(); break;
+            case 12: add_op1(); add_pct_del(); add_pct_swap(); break;
+        }
+    } else {
+        switch(mutType) {
+            case 1: add_p_1N(); break;
+            case 2: add_p_1M(); break;
+            case 3: add_bit(); break;
+            case 4: add_prob_swap(); break;
+            case 5: add_op1(); add_pct_swap; add_p_1N; break;
+            case 6: add_op1(); add_pct_swap; add_p_1M; break;
+            case 7: add_op1(); add_pct_swap; add_bit; break;
+            case 8: add_op1(); break;
+            case 9: add_pct_swap(); break;
+            case 10: add_pct_del(); break;
+            case 12: add_op1(); add_pct_del(); add_pct_swap(); break;
+        }
+    }
+
+    return L;
+}
+
+
+
+
 
 void PrintUsage() {
     std::cout << "\n==========================================================" << std::endl;
@@ -102,6 +206,7 @@ void PrintUsage() {
     std::cout << "  -mutPct <double>  : % Intensidad (Para MutType 4, 5, 6, 7, 9, 10, 11) (Def: 0.2)" << std::endl;
     std::cout << "  -mutPctDelete <double>: % Intensidad Delete (Para MutType 10, 11. Si no se define, usa mutPct)" << std::endl;
     std::cout << "  -mutPctSwap <double>  : % Intensidad Swap (Para MutType 4, 5, 6 ,7, 9, 11. Si no se define, usa mutPct)" << std::endl;
+    std::cout << "  -mutProbSwap <double> : Probabilidad individual para Swap Probabilistico (Def: 0.05)" << std::endl;
     std::cout << "  -bitprob <double> : Prob. BitFlip individual (Def: 0.01)" << std::endl;
 
     std::cout << "\n--- Parámetros Distribución Inicial de Recursos ---" << std::endl;
@@ -152,7 +257,7 @@ int main(int argc, char *argv[])
     int decompType = 1;   // 1 por defecto (Tchebycheff)
     int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
-    int mutType = 16;     // Default: Híbrida
+    int mutType = 4;     // Default: Híbrida
     int crossType = 10;    // Default: Inteligente
     double mutPct = 0.2; // Default: 5% intensidad para operadores porcentuales
     double bitFlipProb = 0.01; // Default: 1% probabilidad para BitFlip Fijo
@@ -160,6 +265,7 @@ int main(int argc, char *argv[])
     double userNeighborPct = 0.0; // 0 = usar archivo, >0 usar porcentaje
     double userMutPctDelete = 0.1; // 0 = usar default
     double userMutPctSwap = 0.4;   // 0 = usar default
+    double userMutProbSwap = 0.05;
 
     int initTypeRelocation = 2;           // Default: Solo Mover (o el que prefieras como base)
     double probMoveRelocation = 0.5;      // Default: 50%
@@ -169,7 +275,9 @@ int main(int argc, char *argv[])
     double powerExp = 6.0;
     double noisePct = 0.10;
 
-	if (argc < 2) {
+    bool isRelocation = (variant == "relocation");
+
+    if (argc < 2) {
         PrintUsage();
         return 0;
     }
@@ -210,6 +318,7 @@ int main(int argc, char *argv[])
         else if (arg == "-bitprob") { if (i + 1 < argc) bitFlipProb = atof(argv[++i]); }
         else if (arg == "-mutPctDelete") { if (i + 1 < argc) userMutPctDelete = atof(argv[++i]); }
         else if (arg == "-mutPctSwap") { if (i + 1 < argc) userMutPctSwap = atof(argv[++i]); }
+        else if (arg == "-mutProbSwap") { if (i + 1 < argc) userMutProbSwap = atof(argv[++i]); }
 
         else if (arg == "-initTypeRelocation") { if (i + 1 < argc) initTypeRelocation = atoi(argv[++i]); }
         else if (arg == "-probMoveRelocation") { if (i + 1 < argc) probMoveRelocation = atof(argv[++i]); }
@@ -323,12 +432,17 @@ int main(int argc, char *argv[])
     std::cout << "     Evaluaciones  : " << NumberOfFuncEvals << std::endl;
     std::cout << "     Tiempo Máx    : " << (maxTime > 0 ? std::to_string(maxTime) + " s" : "Sin Límite") << std::endl;
 
-    std::cout << "\n [4] PARÁMETROS EVOLUTIVOS" << std::endl;
-    std::cout << "     Mutación Global : " << mutationRate * 100.0 << "%" << std::endl;
-    std::cout << "     Mutation Type   : " << mutType << std::endl; 
-    std::cout << "       -> Pct Delete : " << userMutPctDelete * 100.0 << "%" << std::endl;
-    std::cout << "       -> Pct Swap   : " << userMutPctSwap * 100.0 << "%" << std::endl;
-    std::cout << "       -> Bit Prob   : " << bitFlipProb << std::endl;
+    std::cout << "\n [4] OPERADORES  (MUTACION /CRUZAMIENTO" << std::endl;
+
+    std::cout << "     Mutacion Type: " << mutType << " (" << MutName(mutType, isRelocation) << ")" << std::endl;
+    
+    auto mutLines = MutParamsLines(
+        mutType, isRelocation, mutationRate, op1Prob, userMutPctDelete, userMutPctSwap, userMutProbSwap,
+        bitFlipProb, finalPop, NumberOfVariables
+    );
+    for (const auto &ln : mutLines) {
+        std::cout << "      - " << ln << std::endl;
+    }
 
     std::cout << "     Prob. Op1 (Del) : " << op1Prob * 100.0 << "%" << std::endl;
     std::cout << "     Prob. Op2 (Swap): " << (1.0 - op1Prob) * 100.0 << "%" << std::endl;
@@ -380,6 +494,7 @@ int main(int argc, char *argv[])
         MOEAD.SetBitFlipProb(bitFlipProb);
         MOEAD.SetMutPctDelete(userMutPctDelete);
         MOEAD.SetMutPctSwap(userMutPctSwap);
+        MOEAD.SetMutProbSwap(userMutProbSwap);
         MOEAD.SetNeighborhoodSizePct(userNeighborPct);
 
         MOEAD.SetInitializationTypeRelocation(initTypeRelocation);

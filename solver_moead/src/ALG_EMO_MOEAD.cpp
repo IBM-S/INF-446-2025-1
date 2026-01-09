@@ -23,6 +23,7 @@ CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 
 	m_MutPctDelete = 0.05; // 5% por defecto
 	m_MutPctSwap   = 0.05; // 5% por defecto
+	m_MutProbSwap  = 0.05;
 
 	m_NeighborhoodSizePct = 0.0;
 
@@ -787,7 +788,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 					break;
 				}
 				case 19:
-					UtilityToolBox.MutacionSwapProbabilisticoReloc(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
+					UtilityToolBox.MutacionSwapProbabilisticoReloc(child.x_var, m_MutationRate, m_MutProbSwap, this->problemInstance);
 					if (log_mut) printf("19 relocation mut\n");
 					break;
 				case 20:
@@ -826,7 +827,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 					if (log_mut) printf("3 location mut\n");
 					break;
 				case 4:
-					UtilityToolBox.MutacionSwapProbabilistico(child.x_var, m_MutationRate, m_MutPctSwap, this->problemInstance);
+					UtilityToolBox.MutacionSwapProbabilistico(child.x_var, m_MutationRate, m_MutProbSwap, this->problemInstance);
 					if (log_mut) printf("4 location mut\n");
 					break;
 				case 5:

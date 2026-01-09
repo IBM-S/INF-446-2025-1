@@ -49,6 +49,7 @@ public:
 
 	void SetMutPctDelete (double pct) { m_MutPctDelete = pct; }
 	void SetMutPctSwap   (double pct) { m_MutPctSwap = pct; }
+	void SetMutProbSwap (double prob) { m_MutProbSwap = prob;}
 
 	void SetInitializationTypeRelocation(int type) { m_InitializationTypeRelocation = type; }
     void SetProbChooseMoveRelocation(double prob) { m_ProbChooseMoveRelocation = prob; }
@@ -114,6 +115,7 @@ protected:
 
 	double m_MutPctDelete;
 	double m_MutPctSwap;
+	double m_MutProbSwap;
 
 	int m_InitializationTypeRelocation;
     double m_ProbChooseMoveRelocation;

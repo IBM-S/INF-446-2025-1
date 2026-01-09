@@ -1002,7 +1002,7 @@ void CUtilityToolBox::MutacionBitFlip_Fijo(vector<double> &x_var, double mutatio
 }
 
 
-void CUtilityToolBox::MutacionSwapProbabilistico(vector<double> &x_var, double mutation_rate, double mutPctSwap, ProblemInstance *instance)
+void CUtilityToolBox::MutacionSwapProbabilistico(vector<double> &x_var, double mutation_rate, double MutProbSwap, ProblemInstance *instance)
 {
     // 1. Probabilidad Global
     if (Get_Random_Number() > mutation_rate) return;
@@ -1030,7 +1030,7 @@ void CUtilityToolBox::MutacionSwapProbabilistico(vector<double> &x_var, double m
         if (x_var[i] == 1 && nodos[i]->getFlag() == 0)
         {
             // ¿Este equipo se muda?
-            if (Get_Random_Number() <= mutPctSwap)
+            if (Get_Random_Number() <= MutProbSwap)
             {
                 // PASO A: Apagar el equipo actual (Delete)
                 x_var[i] = 0; 
@@ -1606,7 +1606,7 @@ void CUtilityToolBox::MutacionBitFlip_Relocation(vector<double> &x_var, double m
     RepararPresupuesto_Relocation(x_var, instance);
 }
 
-void CUtilityToolBox::MutacionSwapProbabilisticoReloc(vector<double> &x_var, double mutation_rate, double prob_swap_individual, ProblemInstance *instance)
+void CUtilityToolBox::MutacionSwapProbabilisticoReloc(vector<double> &x_var, double mutation_rate, double MutProbSwap, ProblemInstance *instance)
 {
     if (Get_Random_Number() > mutation_rate) return;
 
@@ -1634,7 +1634,7 @@ void CUtilityToolBox::MutacionSwapProbabilisticoReloc(vector<double> &x_var, dou
     for (int i : activos)
     {
         // ¿Este equipo se muda?
-        if (Get_Random_Number() <= prob_swap_individual)
+        if (Get_Random_Number() <= MutProbSwap)
         {
             // PASO A: Apagar (Delete)
             x_var[i] = 0.0; 

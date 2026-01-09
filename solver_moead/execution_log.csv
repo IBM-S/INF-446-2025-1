@@ -3476,3 +3476,8 @@ drp_657_STATEN_ISLAND.dat,MOEAD,drp,relocation,200,10,657,10000,0,409603,0.5,0.3
 drp_657_STATEN_ISLAND.dat,MOEAD,drp,relocation,200,10,657,10000,0,409603,0.5,0.3,0.6,1,0,0.136235,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_657_STATEN_ISLAND
 drp_657_STATEN_ISLAND.dat,MOEAD,drp,relocation,200,10,657,10000,0,409603,0.5,0.3,0.6,1,0,0.142376,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_657_STATEN_ISLAND
 drp_657_STATEN_ISLAND.dat,MOEAD,drp,relocation,200,10,657,10000,0,409603,0.5,0.3,0.6,1,0,0.136359,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_657_STATEN_ISLAND
+drp_657_STATEN_ISLAND.dat,MOEAD,drp,relocation,200,10,657,10000,0,237994,1,0.3,0.8,1,0,0.161531,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_657_STATEN_ISLAND
+cam_1390_MILPA_ALTA.dat,MOEAD,cam,location,200,10,1390,10000,0,363764,1,0.3,0.8,1,0,0.416759,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_1390_MILPA_ALTA
+cam_1390_MILPA_ALTA.dat,MOEAD,cam,location,200,10,1390,10000,0,620105,1,0.3,0.8,1,0,0.682072,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_1390_MILPA_ALTA
+cam_1390_MILPA_ALTA.dat,MOEAD,cam,location,200,10,1390,10000,0,972912,1,0.3,0.8,1,0,0.597304,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_1390_MILPA_ALTA
+cam_1390_MILPA_ALTA.dat,MOEAD,cam,location,200,10,1390,10000,0,317985,0.1,0.3,0.8,1,0,0.339178,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_1390_MILPA_ALTA
