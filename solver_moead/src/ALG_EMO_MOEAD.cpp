@@ -690,6 +690,12 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 														  child.x_var, this->problemInstance);
 						if (log_cross) printf("9 relocation cross\n");
 						break;
+					case 10: 
+							UtilityToolBox.TwoPointCrossover_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
+														  m_PopulationSOP[p2].m_BestIndividual.x_var,
+														  child.x_var, this->problemInstance);
+						if (log_cross) printf("10 relocation cross\n");
+						break;
 					default:
 						UtilityToolBox.CruzamientoUniformeSemiInteligente_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
@@ -718,10 +724,16 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 						if (log_cross) printf("3 location cross\n");
 						break;
 					case 4: 
-							UtilityToolBox.OnePointCrossover(m_PopulationSOP[p1].m_BestIndividual.x_var,
+						UtilityToolBox.OnePointCrossover(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
 														  child.x_var, this->problemInstance);
 						if (log_cross) printf("4 location cross\n");
+						break;
+					case 5:
+						UtilityToolBox.TwoPointCrossover(m_PopulationSOP[p1].m_BestIndividual.x_var,
+														  m_PopulationSOP[p2].m_BestIndividual.x_var,
+														  child.x_var, this->problemInstance);
+						if (log_cross) printf("5 location cross\n");
 						break;
 					default:
 						UtilityToolBox.CruzamientoUniformeSemiInteligente(m_PopulationSOP[p1].m_BestIndividual.x_var,
