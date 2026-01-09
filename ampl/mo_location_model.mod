@@ -60,12 +60,12 @@ minimize FO2: sum {i in objetivos} betha[i] *
 
 # R1: Un nuevo AED no puede ser instalado donde ya existe uno.
 #     flag[i] es 1 si ya hay uno, 0 si no. 1-flag[i] invierte esto.
- subject to Restriccion_No_Duplicar {i in N}:
+subject to Restriccion_No_Duplicar {i in N}:
     y[i] <= 1 - flag[i];
 
 # R2: El costo total de las nuevas instalaciones no puede superar el presupuesto.
 subject to Restriccion_Presupuesto:
-    sum {i in N} y[i] * c1 <= P;
+    F[2] <= P;
 
 # R3: Un sitio de demanda 'j' está cubierto (x[j]=1) si hay un AED al alcance.
 #     Un AED puede ser uno pre-existente (flag[i]=1) o uno nuevo (y[i]=1).
