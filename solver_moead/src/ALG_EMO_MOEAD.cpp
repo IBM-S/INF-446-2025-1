@@ -655,50 +655,44 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		if (rand_cross <= m_CrossoverRate) {
 			if (m_IsRelocation) {
 				switch (m_CrossoverType) {
-					case 4:
+					case 6:
 						UtilityToolBox.CruzamientoUniformeModificado_con_reubicacion(m_PopulationSOP[p1].m_BestIndividual.x_var,
 																			m_PopulationSOP[p2].m_BestIndividual.x_var,
 																			child.x_var, this->problemInstance);
-						if (log_cross) printf("4 relocation cross\n");
-						break;
-					case 5:
-						UtilityToolBox.CruzamientoUniformeReloc(m_PopulationSOP[p1].m_BestIndividual.x_var,
-														  m_PopulationSOP[p2].m_BestIndividual.x_var,
-														  child.x_var, this->problemInstance);
-						if (log_cross) printf("5 relocation cross\n");
-						break;
-					case 6:
-						UtilityToolBox.CruzamientoUniformeSemiInteligente_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
-														  m_PopulationSOP[p2].m_BestIndividual.x_var,
-														  child.x_var, this->problemInstance);
 						if (log_cross) printf("6 relocation cross\n");
 						break;
 					case 7:
-						UtilityToolBox.CruzamientoUniformeInteligente_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
+						UtilityToolBox.CruzamientoUniformeReloc(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
 														  child.x_var, this->problemInstance);
 						if (log_cross) printf("7 relocation cross\n");
 						break;
 					case 8:
-						UtilityToolBox.CruzamientoGeografico_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
+						UtilityToolBox.CruzamientoUniformeInteligente_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
 														  child.x_var, this->problemInstance);
 						if (log_cross) printf("8 relocation cross\n");
 						break;
-					case 9: 
-							UtilityToolBox.OnePointCrossover_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
+					case 9:
+						UtilityToolBox.CruzamientoGeografico_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
 														  child.x_var, this->problemInstance);
 						if (log_cross) printf("9 relocation cross\n");
 						break;
 					case 10: 
-							UtilityToolBox.TwoPointCrossover_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
+							UtilityToolBox.OnePointCrossover_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
 														  child.x_var, this->problemInstance);
 						if (log_cross) printf("10 relocation cross\n");
 						break;
+					case 11: 
+							UtilityToolBox.TwoPointCrossover_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
+														  m_PopulationSOP[p2].m_BestIndividual.x_var,
+														  child.x_var, this->problemInstance);
+						if (log_cross) printf("11 relocation cross\n");
+						break;
 					default:
-						UtilityToolBox.CruzamientoUniformeSemiInteligente_Relocation(m_PopulationSOP[p1].m_BestIndividual.x_var,
+						UtilityToolBox.CruzamientoUniformeReloc(m_PopulationSOP[p1].m_BestIndividual.x_var,
 														  m_PopulationSOP[p2].m_BestIndividual.x_var,
 														  child.x_var, this->problemInstance);
 						if (log_cross) printf("default relocation cross\n");
@@ -754,8 +748,60 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		bool log_mut = false;
 		if (m_IsRelocation) {
 			switch (m_MutationType)
-			{
+			{	
 				case 12:
+					UtilityToolBox.MutacionModificada_con_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
+					if (log_mut) printf("12 relocation mut\n");
+					break;
+				case 13:
+					UtilityToolBox.MutacionSwapProbabilisticoReloc(child.x_var, m_MutationRate, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("13 relocation mut\n");
+					break;
+				case 14:
+					UtilityToolBox.MutacionSwapPorcentualReloc(child.x_var, m_MutationRate, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("14 relocation mut\n");
+					break;
+				case 15:
+					UtilityToolBox.MutacionDeletePorcentualReloc(child.x_var, m_MutationRate, m_MutPctDelete, this->problemInstance);
+					if (log_mut) printf("15 relocation mut\n");
+					break;
+				case 16:{
+					double p = 1.0 / (double)child.x_var.size();
+					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, p, this->problemInstance);
+					if (log_mut) printf("16 relocation mut\n");
+					break;}
+				case 17:{
+					double p = 1.0 / (double)s_PopulationSize;
+					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, p, this->problemInstance);
+					if (log_mut) printf("17 relocation mut\n");
+					break;}
+				case 18:
+					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
+					if (log_mut) printf("18 relocation mut\n");
+					break;
+				case 19:
+					UtilityToolBox.Mutacion_Reloc_Fusion_1_N(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("19 relocation fusion 1/N\n");
+					break;
+				case 20:
+					UtilityToolBox.Mutacion_Reloc_Fusion_1_M(child.x_var, m_MutationRate, m_Op1MutationProb, s_PopulationSize, m_MutPctSwap, this->problemInstance);
+    				if (log_mut) printf("20 relocation fusion 1/M\n");
+					break;
+				case 21:
+					UtilityToolBox.Mutacion_Reloc_Fusion_Fijo(child.x_var, m_MutationRate, m_Op1MutationProb, m_BitFlipProb, m_MutPctSwap, this->problemInstance);
+    				if (log_mut) printf("21 relocation fusion Fixed\n");
+					break;
+				case 22:
+					UtilityToolBox.MutacionHibridaReloc(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("22 relocation mut\n");
+					break;
+				default:{
+					double p = 1.0 / (double)s_PopulationSize;
+					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, p, this->problemInstance);
+					if (log_mut) printf("default relocation mut\n");
+					break;} 
+
+				/* case 12:
 					UtilityToolBox.MutacionModificada_con_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
 					if (log_mut) printf("12 relocation mut\n");
 					break;
@@ -809,12 +855,61 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, p, this->problemInstance);
 					if (log_mut) printf("default relocation mut\n");
 					break;
-				}
+				} */
 				}
 		} else {
 			switch (m_MutationType)
-			{
+			{	
 				case 1:
+					UtilityToolBox.MutacionModificada_sin_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
+					if (log_mut) printf("1 location mut\n");
+					break;
+				case 2:
+					UtilityToolBox.MutacionSwapProbabilistico(child.x_var, m_MutationRate, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("2 location mut\n");
+					break;
+				case 3:
+					UtilityToolBox.MutacionSwapPorcentual(child.x_var, m_MutationRate, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("3 location mut\n");
+					break;
+				case 4:
+					UtilityToolBox.MutacionDeletePorcentual(child.x_var, m_MutationRate, m_MutPctDelete, this->problemInstance);
+					if (log_mut) printf("4 location mut\n");
+					break;
+				case 5:
+					UtilityToolBox.MutacionBitFlip_1_N(child.x_var, m_MutationRate, this->problemInstance);
+					if (log_mut) printf("5 location mut\n");
+					break;
+				case 6:
+					UtilityToolBox.MutacionBitFlip_1_M(child.x_var, m_MutationRate, s_PopulationSize, this->problemInstance);
+					if (log_mut) printf("6 location mut\n");
+					break;
+				case 7:
+					UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
+					if (log_mut) printf("7 location mut\n");
+					break;
+				case 8:
+					UtilityToolBox.Mutacion_Swap_Porcentual_1_N(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("8 location mut\n");
+					break;
+				case 9:
+					UtilityToolBox.Mutacion_Swap_Porcentual_1_M(child.x_var, m_MutationRate, m_Op1MutationProb, s_PopulationSize, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("9 location mut\n");
+					break;
+				case 10:
+					UtilityToolBox.Mutacion_Swap_Porcentual_Fijo(child.x_var, m_MutationRate, m_Op1MutationProb, m_BitFlipProb, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("10 location mut\n");
+					break;
+				case 11:
+					UtilityToolBox.MutacionHibrida_location(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
+					if (log_mut) printf("11 location mut\n");
+					break;
+				default:
+					UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
+					if (log_mut) printf("default location mut\n");
+					break;
+
+				/* case 1:
 					UtilityToolBox.MutacionBitFlip_1_N(child.x_var, m_MutationRate, this->problemInstance);
 					if (log_mut) printf("1 location mut\n");
 					break;
@@ -861,7 +956,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 				default:
 					UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
 					if (log_mut) printf("default location mut\n");
-					break;
+					break; */
 				}
 		}
 

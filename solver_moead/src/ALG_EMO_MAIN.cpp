@@ -82,32 +82,32 @@ static std::string dbl(double x, int prec=6) {
 static std::string MutName(int mutType, bool isReloc){
     if (!isReloc) {
         switch(mutType){
-            case 1: return "BitFlip (p = 1/N)";
-            case 2: return "BitFlip (p = 1/M)";
-            case 3: return "BitFlip (p = fijo = bitprob)";
-            case 4: return "SwapBitFlip (p = ProbSwap)";
-            case 5: return "Fusion (Swap% + BitFlip p = 1/N) (op1)";
-            case 6: return "Fusion (Swap% + BitFlip p = 1/M) (op1)";
-            case 7: return "Fusion (Swap% + BitFlip p = fijo) (op1)";
-            case 8: return "Mutacion modificada (sin reubicacion) (op1)";
-            case 9: return "Swap% (mutPctSwap)";
-            case 10: return "Delete% (mutPctDelete)";
+            case 1: return "Mutacion modificada (sin reubicacion) (op1)";
+            case 2: return "SwapBitFlip (p = ProbSwap)";
+            case 3: return "Swap% (mutPctSwap)";
+            case 4: return "Delete% (mutPctDelete)";
+            case 5: return "BitFlip (p = 1/N)";
+            case 6: return "BitFlip (p = 1/M)";
+            case 7: return "BitFlip (p = fijo = bitprob)";
+            case 8: return "Fusion (Swap% + BitFlip p = 1/N) (op1)";
+            case 9: return "Fusion (Swap% + BitFlip p = 1/M) (op1)";
+            case 10: return "Fusion (Swap% + BitFlip p = fijo) (op1)";
             case 11: return "Hibrida (Delete%/Swap%) (op1)";
             default: return "DEFAULT -> BitFlip (p = fijo)";
         }
     } else {
         switch(mutType) {
             case 12: return "Mutacion modificada (con reubicacion) (op1)";
-            case 13: return "Swap% Reloc (mutPctSwap)";
-            case 14: return "Delete% Reloc (mutPctDelete)";
-            case 15: return "Hibrida Reloc (Delete% Reloc/Swap% Reloc) (op1)";
+            case 13: return "SwapBitFlip Reloc (p = ProbSwap)";
+            case 14: return "Swap% Reloc (mutPctSwap)";
+            case 15: return "Delete% Reloc (mutPctDelete)";
             case 16: return "BitFlip Reloc (p = 1/N)";
-            case 17: return "BitFlip Reloc (p = fijo = bitprob)";
-            case 18: return "BitFlip Reloc (p = 1/M)";
-            case 19: return "SwapBitFlip Reloc (p = ProbSwap)";
-            case 20: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = 1/N) (op1)";
-            case 21: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = 1/M) (op1)";
-            case 22: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = fijo) (op1)";
+            case 17: return "BitFlip Reloc (p = 1/M)";
+            case 18: return "BitFlip Reloc (p = fijo = bitprob)";
+            case 19: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = 1/N) (op1)";
+            case 20: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = 1/M) (op1)";
+            case 21: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = fijo) (op1)";
+            case 22: return "Hibrida Reloc (Delete% Reloc/Swap% Reloc) (op1)";
             default: return "DEFAULT -> BitFlip Reloc (p = 1/M)";
         }
     }
@@ -120,7 +120,7 @@ static std::vector<std::string> MutParamsLines(
     std::vector<std::string> L;
     L.push_back("Tasa global (mut)         : " + pct(mutationRate));
 
-    auto add_op1       = [&](){ L.push_back("op1 (prob. Delete / Op1): " + pct(op1Prob)); };
+    auto add_op1       = [&](){ L.push_back("Prob op1: " + pct(op1Prob) + "     Prob op2 (1 - op1): " + pct(1-op1Prob) ); };
     auto add_pct_del   = [&](){ L.push_back("mutPctDelete            : " + pct(mutPctDelete)); };
     auto add_pct_swap  = [&](){ L.push_back("mutPctSwap              : " + pct(mutPctSwap)); };
     auto add_prob_swap = [&](){ L.push_back("ProbSwap                : " + pct(ProbSwap)); };
@@ -135,37 +135,62 @@ static std::vector<std::string> MutParamsLines(
 
     if (!isReloc) {
         switch(mutType) {
-            case 1: add_p_1N(); break;
-            case 2: add_p_1M(); break;
-            case 3: add_bit(); break;
-            case 4: add_prob_swap(); break;
-            case 5: add_op1(); add_pct_swap; add_p_1N; break;
-            case 6: add_op1(); add_pct_swap; add_p_1M; break;
-            case 7: add_op1(); add_pct_swap; add_bit; break;
-            case 8: add_op1(); break;
-            case 9: add_pct_swap(); break;
-            case 10: add_pct_del(); break;
-            case 12: add_op1(); add_pct_del(); add_pct_swap(); break;
+            case 1: add_op1(); break;
+            case 2: add_prob_swap(); break;
+            case 3: add_pct_swap(); break;
+            case 4: add_pct_del(); break;
+            case 5: add_p_1N(); break;
+            case 6: add_p_1M(); break;
+            case 7: add_bit(); break;
+            case 8: add_op1(); add_pct_swap; add_p_1N; break;
+            case 9: add_op1(); add_pct_swap; add_p_1M; break;
+            case 10: add_op1(); add_pct_swap; add_bit; break;
+            case 11: add_op1(); add_pct_del(); add_pct_swap(); break;
+            default: add_bit(); break;
         }
     } else {
         switch(mutType) {
-            case 1: add_p_1N(); break;
-            case 2: add_p_1M(); break;
-            case 3: add_bit(); break;
-            case 4: add_prob_swap(); break;
-            case 5: add_op1(); add_pct_swap; add_p_1N; break;
-            case 6: add_op1(); add_pct_swap; add_p_1M; break;
-            case 7: add_op1(); add_pct_swap; add_bit; break;
-            case 8: add_op1(); break;
-            case 9: add_pct_swap(); break;
-            case 10: add_pct_del(); break;
-            case 12: add_op1(); add_pct_del(); add_pct_swap(); break;
+            case 12: add_op1(); break;
+            case 13: add_prob_swap(); break;
+            case 14: add_pct_swap(); break;
+            case 15: add_pct_del(); break;
+            case 16: add_p_1N(); break;
+            case 17: add_p_1M(); break;
+            case 18: add_bit(); break;
+            case 19: add_op1(); add_pct_swap; add_p_1N; break;
+            case 20: add_op1(); add_pct_swap; add_p_1M; break;
+            case 21: add_op1(); add_pct_swap; add_bit; break;
+            case 22: add_op1(); add_pct_del(); add_pct_swap(); break;
+            default: add_p_1M(); break;
         }
     }
 
     return L;
 }
 
+// Crossover
+
+static std::string CrossName(int crossType, bool isReloc){
+    if (!isReloc) {
+        switch(crossType){
+            case 1: return "Uniforme modificado (sin reubicacion)";
+            case 2: return "Uniforme inteligente";
+            case 3: return "Uniforme semi-inteligente";
+            case 4: return "One-point crossover";
+            case 5: return "Two-point crossover";
+            default: return "DEFAULT -> Uniforme semi-inteligente";
+        }
+    } else {
+        switch(crossType){
+            case 1: return "Uniforme modificado (con reubicacion)";
+            case 2: return "Uniforme modificado (sin reubicacion)";
+            case 3: return "Uniforme modificado (sin reubicacion)";
+            case 4: return "Uniforme modificado (sin reubicacion)";
+            case 5: return "Uniforme modificado (sin reubicacion)";
+            default: return "Uniforme modificado (sin reubicacion)";
+        }
+    }
+}
 
 
 
@@ -257,7 +282,7 @@ int main(int argc, char *argv[])
     int decompType = 1;   // 1 por defecto (Tchebycheff)
     int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
-    int mutType = 4;     // Default: Híbrida
+    int mutType = 11;     // Default: Híbrida
     int crossType = 10;    // Default: Inteligente
     double mutPct = 0.2; // Default: 5% intensidad para operadores porcentuales
     double bitFlipProb = 0.01; // Default: 1% probabilidad para BitFlip Fijo
@@ -444,8 +469,6 @@ int main(int argc, char *argv[])
         std::cout << "      - " << ln << std::endl;
     }
 
-    std::cout << "     Prob. Op1 (Del) : " << op1Prob * 100.0 << "%" << std::endl;
-    std::cout << "     Prob. Op2 (Swap): " << (1.0 - op1Prob) * 100.0 << "%" << std::endl;
     std::cout << "     Cruzamiento     : " << crossoverRate * 100.0 << "%" << std::endl;
     std::cout << "     Crossover Type  : " << crossType << std::endl;
     

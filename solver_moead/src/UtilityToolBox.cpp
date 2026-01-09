@@ -1293,17 +1293,17 @@ void CUtilityToolBox::MutacionHibrida_location(vector<double> &x_var, double mut
 
 
 
-void CUtilityToolBox::CruzamientoUniformeReloc(const vector<double>& p1,
-                              const vector<double>& p2,
+void CUtilityToolBox::CruzamientoUniformeReloc(const vector<double>& parent1,
+                              const vector<double>& parent2,
                               vector<double>& child,
-                              ProblemInstance* inst)
+                              ProblemInstance* instance)
 {
-    int n = p1.size();
+    int n = parent1.size();
     child.assign(n, 0.0);
 
     for (int i=0;i<n;++i){
-        bool p1_tiene = (p1[i] > 0.5);
-        bool p2_tiene = (p2[i] > 0.5);
+        bool p1_tiene = (parent1[i] > 0.5);
+        bool p2_tiene = (parent2[i] > 0.5);
 
         if (p1_tiene && p2_tiene) child[i] = 1.0;
         else if (p1_tiene || p2_tiene) {
@@ -1313,7 +1313,7 @@ void CUtilityToolBox::CruzamientoUniformeReloc(const vector<double>& p1,
     	}
 	}
 
-    RepararPresupuesto_Relocation(child, inst); // NUEVA
+    RepararPresupuesto_Relocation(child, instance); 
 }
 
 void CUtilityToolBox::MutacionDeletePorcentualReloc(vector<double>& x, double mutation_rate,
@@ -1463,37 +1463,6 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var,
         }
 	}
 }
-
-
-
-void CUtilityToolBox::CruzamientoUniformeSemiInteligente_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance)
-{
-    int n = parent1.size();
-    child.assign(n, 0.0);
-    const auto &nodos = instance->getNodes();
-
-    for (int i = 0; i < n; ++i)
-    {
-        bool p1_has = (parent1[i] == 1);
-        bool p2_has = (parent2[i] == 1);
-
-        if (p1_has && p2_has) 
-        {
-            child[i] = 1.0;
-        }
-        else if (p1_has || p2_has) 
-        {
-            if (Get_Random_Number() < 0.5) 
-            {
-                    child[i] = 1.0;
-            }
-        }
-    }
-
-    // 2. Reparación de Presupuesto (Por si la unión generó demasiados)
-    RepararPresupuesto_Relocation(child, instance);
-}
-
 
 
 void CUtilityToolBox::CruzamientoUniformeInteligente_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance)

@@ -106,14 +106,15 @@ public:
 	void MutacionModificada_con_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
 
 
-	void CruzamientoUniformeReloc(const vector<double>& p1,
-                              const vector<double>& p2,
-                              vector<double>& c,
-                              ProblemInstance* inst);
+	void CruzamientoUniformeReloc(const vector<double>& parent1, const vector<double>& parent2,
+                              vector<double>& child, ProblemInstance* instance);
+
 	void MutacionDeletePorcentualReloc(vector<double>& x, double mutation_rate,
                                   double delete_ratio, ProblemInstance* inst);
+
 	void MutacionSwapPorcentualReloc(vector<double>& x, double mutation_rate,
 								 double swap_ratio, ProblemInstance* inst);
+								 
 	void MutacionHibridaReloc(std::vector<double>& x,
 											double mutation_rate,
 											double prob_delete,
@@ -123,7 +124,6 @@ public:
 	void RepararPresupuesto_Relocation(vector<double>& x_var, ProblemInstance* instance);
 	bool EsBuenCandidato_Relocation(int idx_candidato, ProblemInstance *instance);
 	void CruzamientoUniformeInteligente_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
-	void CruzamientoUniformeSemiInteligente_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
 	void CruzamientoGeografico_Relocation(const vector<double> &p1, const vector<double> &p2, vector<double> &child, ProblemInstance *instance);
 
 	void Mutacion_Reloc_Fusion_1_N(vector<double> &x_var, double mutation_rate, double ratio_split, double mutPctSwap, ProblemInstance *instance);
