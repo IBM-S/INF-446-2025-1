@@ -1238,6 +1238,23 @@
       return nd;
     }
 
+    function frontDecimalsFromInstance(instName) {
+      const s = String(instName || '').toLowerCase();
+      if (s.startsWith('drp_')) return { xDec: 7, yDec: 1 };
+      if (s.startsWith('cam_')) return { xDec: 4, yDec: 0 };
+      return { xDec: 4, yDec: 2 }; // fallback por seguridad
+    }
+
+    function tickFmt(dec) {
+      return `.${dec}f`; // Plotly/D3 format, ej ".7f"
+    }
+
+    function hvHoverTemplate(xDec, yDec, extraLabel = '') {
+      const extra = extraLabel ? `<extra>${extraLabel}</extra>` : '<extra></extra>';
+      return `(%{x:.${xDec}f}, %{y:.${yDec}f})${extra}`;
+    }
+
+
 
     /**
      * ============================================================================
@@ -1570,6 +1587,7 @@
           .filter(p => isFinite(p.x) && isFinite(p.y));
       },
       async plotCompareFronts(row) {
+        const { xDec, yDec } = frontDecimalsFromInstance(row.instance);
         const plotId = 'compare-plot';
         const [amplAll, gen0All, genLastAll] = await Promise.all([
           row.ampl_front ? APP.logic.fetchXYFile(row.ampl_front) : Promise.resolve([]),
@@ -1619,8 +1637,8 @@
 
         Plotly.newPlot('compare-plot', traces, {
           title: `Comparación de frentes – ${row.instance}`,
-          xaxis: { title: 'f1' },
-          yaxis: { title: 'f2' },
+          xaxis: { title: 'f1', tickformat: tickFmt(xDec) },
+          yaxis: { title: 'f2', tickformat: tickFmt(yDec) },
           margin: { t: 40, l: 50, r: 20, b: 40 },
           legend: { orientation: 'h' }
         });
@@ -1709,7 +1727,11 @@
         const dom = points.filter(p => !p.isPareto);
 
         // Tooltip Helper
-        const mkTooltip = (p) => `(${p.x.toFixed(2)}, ${p.y.toFixed(2)})<br>IDs: ${compressRanges(p.ids)}`;
+        const instName = APP.dom['instancia'].value;
+        const { xDec, yDec } = frontDecimalsFromInstance(instName);
+
+        const mkTooltip = (p) => `(${p.x.toFixed(xDec)}, ${p.y.toFixed(yDec)})<br>IDs: ${compressRanges(p.ids)}`;
+
 
         const data = [
           {
@@ -1733,7 +1755,8 @@
           data.push({
             x: st.amplPoints.map(p => p.x), y: st.amplPoints.map(p => p.y),
             mode: 'markers', type: 'scatter', name: 'AMPL',
-            marker: { color: 'green', symbol: 'cross', size: 7 }
+            marker: { color: 'green', symbol: 'cross', size: 7 },
+            hovertemplate: hvHoverTemplate(xDec, yDec, 'AMPL')
           });
         }
 
@@ -1742,8 +1765,9 @@
           margin: { t: 30, l: 50, r: 20, b: 40 },
           hovermode: 'closest',
           showlegend: true,
-          xaxis: { title: 'f1 (Cobertura)' },
-          yaxis: { title: 'f2 (Costo)' }
+          xaxis: { title: 'f1 (Cobertura)', tickformat: tickFmt(xDec) },
+          yaxis: { title: 'f2 (Costo)', tickformat: tickFmt(yDec) }
+
         };
 
         // Escala Fija
@@ -1868,9 +1892,13 @@
           }
         });
 
+        const instName = APP.dom['instancia'].value;
+        const { xDec, yDec } = frontDecimalsFromInstance(instName);
+
         Plotly.newPlot('history-plot', traces, {
           margin: { t: 20, l: 40, r: 20, b: 30 },
-          xaxis: { title: 'f1' }, yaxis: { title: 'f2' }
+          xaxis: { title: 'f1', tickformat: tickFmt(xDec) },
+          yaxis: { title: 'f2', tickformat: tickFmt(yDec) }
         });
       },
 

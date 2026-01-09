@@ -25,6 +25,33 @@ HV_EXEC = os.path.join(PROYECTO_ROOT, "material", "hv-1.3-src", "hv")
 REPORT_FILE = None
 
 # ================= FUNCIONES =================
+INST_PREFIX_RE = re.compile(r"^(cam|drp)_\d+_", re.IGNORECASE)
+
+def display_inst_name(inst: str) -> str:
+    # cam_1390_MILPA_ALTA -> MILPA_ALTA
+    # drp_657_STATEN_ISLAND -> STATEN_ISLAND
+    return INST_PREFIX_RE.sub("", inst)
+
+
+def is_drp(problem_type: str) -> bool:
+    return str(problem_type).lower().startswith("drp")
+
+def f1_dec(problem_type: str) -> int:
+    return 7 if is_drp(problem_type) else 4
+
+def f2_dec(problem_type: str) -> int:
+    return 3  # siempre 3 para costo / F2
+
+def fmt_f1(problem_type: str, v: float) -> str:
+    return f"{v:.{f1_dec(problem_type)}f}"
+
+def fmt_f2(problem_type: str, v: float) -> str:
+    return f"{v:.{f2_dec(problem_type)}f}"
+
+def fmt_ref(problem_type: str, rx: float, ry: float) -> str:
+    # (F1 con 4/7; F2 con 3)
+    return f"({fmt_f1(problem_type, rx)}, {fmt_f2(problem_type, ry)})"
+
 
 def read_points(filepath):
     points = []
@@ -84,19 +111,17 @@ def save_points_to_file(points, filepath):
             f.write(f"{p[0]:.10f} {p[1]:.10f}\n")
 
 def calculate_hv_transparent(points, ref_point, temp_file_path):
-    if not points: return 0.0, 0.0
+    if not points: return 0.0
     
     save_points_to_file(points, temp_file_path)
     ref_string = f"{ref_point[0]} {ref_point[1]}"
     cmd = [HV_EXEC, "-r", ref_string, temp_file_path]
     
-    hv_start = time.time()
     try:
         result = subprocess.run(cmd, capture_output=True, text=True)
-        hv_duration = time.time() - hv_start
-        if result.returncode != 0: return 0.0, hv_duration
-        return float(result.stdout.strip()), hv_duration
-    except: return 0.0, 0.0
+        if result.returncode != 0: return 0.0
+        return float(result.stdout.strip())
+    except: return 0.0
     finally:
         if os.path.exists(temp_file_path): os.remove(temp_file_path)
 
@@ -231,12 +256,12 @@ def mark_winner_cell(value_text: str, width: int) -> str:
 def print_best_row(name, points, ref, out_dir):
     if points:
         temp_f = os.path.join(out_dir, f"temp_best_{name.lower()}.dat")
-        hv, t = calculate_hv_transparent(points, ref, temp_f)
-        print(f"{name:<10} {len(points):<15} {hv:<15.4f} {t:<15.6f}")
-        return len(points), hv, t
+        hv = calculate_hv_transparent(points, ref, temp_f)
+        print(f"{name:<10} {len(points):<15} {hv:<15.6f}")
+        return len(points), hv
     else:
-        print(f"{name:<10} {'-':<15} {'-':<15} {'-':<15}")
-        return 0, 0.0, 0.0
+        print(f"{name:<10} {'-':<15} {'-':<15}")
+        return 0, 0.0
 
 def _is_missing(v):
     return v is None or (isinstance(v, float) and np.isnan(v))
@@ -329,10 +354,12 @@ def procesar_instancias(problem_type="cam", target_instance=None):
     wins_hv_total = {"AMPL": 0, "MOEAD": 0, "EMPATE": 0, "-": 0}
     wins_te_prom  = {"AMPL": 0, "MOEAD": 0, "EMPATE": 0, "-": 0}
 
-    W_INST = 32
-    W_HV   = 18   # sube a 18 si quieres
-    W_TE   = 28   # para que quepa "123.4567 s (2.06 min)"
+    W_INST = 22       
+    W_HV   = 18    
+    W_GAP  = 12          
+    W_TE   = 28        
     W_WIN  = 12
+
 
 
     for inst in todas_instancias:
@@ -358,7 +385,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             t_scan = time.time() - t_start
             
             if max_x_ampl is not None:
-                print(f"      -> AMPL  : F1={max_x_ampl:.4f}, F2={max_y_ampl:.4f} (Scan: {t_scan:.4f}s)")
+                print(f"      -> AMPL  : F1={fmt_f1(problem_type, max_x_ampl)}, F2={fmt_f2(problem_type, max_y_ampl)} (Scan: {t_scan:.4f}s)")
             else:
                 print(f"      -> AMPL  : Carpeta existe pero sin puntos válidos.")
         else:
@@ -383,7 +410,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             _, _, all_moead_final_points = get_max_values_and_points(moead_final_files)
 
             if max_x_moead is not None:
-                print(f"      -> MOEAD : F1={max_x_moead:.4f}, F2={max_y_moead:.4f} (Scan: {t_scan:.4f}s)")
+                print(f"      -> MOEAD : F1={fmt_f1(problem_type, max_x_moead)}, F2={fmt_f2(problem_type, max_y_moead)} (Scan: {t_scan:.4f}s)")
             else:
                 print(f"      -> MOEAD : Carpeta existe pero sin puntos válidos.")
         else:
@@ -400,12 +427,39 @@ def procesar_instancias(problem_type="cam", target_instance=None):
         global_max_x = max(valid_x)
         global_max_y = max(valid_y)
 
-        ref_x = global_max_x + (abs(global_max_x) * 0.01 if global_max_x != 0 else 0.1)
-        ref_y = global_max_y + (abs(global_max_y) * 0.01 if global_max_y != 0 else 0.1)
+        FACTOR_F1 = 0.99
+        FACTOR_F2 = 1.001
 
-        print(f"      -> PUNTO REF: ({ref_x:.4f}, {ref_y:.4f})")
+        ref_x = global_max_x * FACTOR_F1
+        ref_y = global_max_y * FACTOR_F2
+
+        if (ref_x == 0.0):
+            ref_x = 0.1
+
+        src_x = []
+        src_y = []
+        if max_x_ampl is not None and abs(max_x_ampl - global_max_x) <= 1e-12: src_x.append("AMPL")
+        if max_x_moead is not None and abs(max_x_moead - global_max_x) <= 1e-12: src_x.append("MOEAD")
+        if max_y_ampl is not None and abs(max_y_ampl - global_max_y) <= 1e-12: src_y.append("AMPL")
+        if max_y_moead is not None and abs(max_y_moead - global_max_y) <= 1e-12: src_y.append("MOEAD")
+
+        src_x_txt = "/".join(src_x) if src_x else "-"
+        src_y_txt = "/".join(src_y) if src_y else "-"
+
+        # prints con decimales correctos
+        print(f"      -> peor F1 = {fmt_f1(problem_type, global_max_x)}  (desde {src_x_txt})")
+        print(f"      -> peor F2 = {fmt_f2(problem_type, global_max_y)}  (desde {src_y_txt})")
+        print(
+            f"      -> PUNTO REF: F1_ref = {FACTOR_F1} * peorF1 = {FACTOR_F1} * {fmt_f1(problem_type, global_max_x)}"
+            f" = {fmt_f1(problem_type, ref_x)}; "
+            f"F2_ref = {FACTOR_F2} * peorF2 = {FACTOR_F2} * {fmt_f2(problem_type, global_max_y)}"
+            f" = {fmt_f2(problem_type, ref_y)}"
+        )
+        print(f"      -> PUNTO REF: {fmt_ref(problem_type, ref_x, ref_y)}")
+
+        # guardar ref (puedes guardar con full precisión o con formato)
         with open(os.path.join(out_dir, "reference_point.txt"), "w") as f:
-            f.write(f"{ref_x} {ref_y}")
+            f.write(f"{ref_x:.12f} {ref_y:.12f}\n")
 
         # D. GUARDAR BEST FRONTS (Si existen puntos)
         ampl_best = filter_nondominated(all_ampl_points)
@@ -464,24 +518,23 @@ def procesar_instancias(problem_type="cam", target_instance=None):
                     print(f"VACÍO/ERROR")
                     final_data.append({
                         "metodo": m_name, "run": run_id, "time_ejec": np.nan,
-                        "nd_points": 0, "hv": 0.0, "time_hv": 0.0
+                        "nd_points": 0, "hv": 0.0
                     })
                     continue
 
                 clean_points = filter_nondominated(points)
                 temp_file = os.path.join(out_dir, f"temp_{m_name}_{run_id}.dat")
-                hv_val, hv_time = calculate_hv_transparent(clean_points, (ref_x, ref_y), temp_file)
+                hv_val = calculate_hv_transparent(clean_points, (ref_x, ref_y), temp_file)
                 time_exec = times_dict.get(run_id, np.nan)
                 
-                print(f"OK. HV={hv_val:.4f}, Time HV={hv_time:.4f}")
+                print(f"OK. HV={hv_val:.6f}")
 
                 final_data.append({
                     "metodo": m_name,
                     "run": run_id,
                     "time_ejec": time_exec,
                     "nd_points": len(clean_points),
-                    "hv": hv_val,
-                    "time_hv": hv_time
+                    "hv": hv_val
                 })
 
         # ---------------------------------------------------------
@@ -499,10 +552,10 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             # --- TABLA 1: PROMEDIOS POR ALGORITMO + GAP ---
             print(f"\n  [3] RESUMEN PROMEDIO (Por Run):")
             print("-" * 75)
-            print(f"{'metodo':<10} {'T. Ejec prom':<15} {'HV Promedio':<15} {'T. HV prom':<15}")
+            print(f"{'metodo':<10} {'T. Ejec prom':<15} {'HV Promedio':<15}")
             print("-" * 75)
 
-            resumen = df.groupby("metodo")[["time_ejec", "hv", "time_hv"]].mean()
+            resumen = df.groupby("metodo")[["time_ejec", "hv"]].mean()
 
             def safe_get(method, col):
                 return float(resumen.loc[method, col]) if method in resumen.index and pd.notna(resumen.loc[method, col]) else np.nan
@@ -511,41 +564,37 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             moead_te = safe_get("MOEAD", "time_ejec")
             ampl_hv  = safe_get("AMPL", "hv")
             moead_hv = safe_get("MOEAD", "hv")
-            ampl_thv = safe_get("AMPL", "time_hv")
-            moead_thv= safe_get("MOEAD", "time_hv")
 
             def fmt_time(v, d=4): return f"{v:.{d}f} s" if pd.notna(v) else "-"
-            def fmt_num(v, d=4):  return f"{v:.{d}f}" if pd.notna(v) else "-"
+            def fmt_num(v, d=6):  return f"{v:.{d}f}" if pd.notna(v) else "-"
             def fmt_gap(v):       return f"{v:.4f} %" if pd.notna(v) else "-"
 
             # filas AMPL/MOEAD
-            print(f"{'AMPL':<10} {fmt_time(ampl_te,4):<15} {fmt_num(ampl_hv,4):<15} {fmt_time(ampl_thv,6):<15}")
-            print(f"{'MOEAD':<10} {fmt_time(moead_te,4):<15} {fmt_num(moead_hv,4):<15} {fmt_time(moead_thv,6):<15}")
+            print(f"{'AMPL':<10} {fmt_time(ampl_te,4):<15} {fmt_num(ampl_hv,4):<15}")
+            print(f"{'MOEAD':<10} {fmt_time(moead_te,4):<15} {fmt_num(moead_hv,4):<15}")
 
             # fila GAP (con tu fórmula AMPL-MOEAD sobre AMPL)
             g_te  = gap_pct(ampl_te, moead_te)
             g_hv_avg  = gap_pct(ampl_hv, moead_hv)
-            g_thv = gap_pct(ampl_thv, moead_thv)
 
             print("-" * 75)
-            print(f"{'GAP%':<10} {fmt_gap(g_te):<15} {fmt_gap(g_hv_avg):<15} {fmt_gap(g_thv):<15}")
+            print(f"{'GAP%':<10} {fmt_gap(g_te):<15} {fmt_gap(g_hv_avg):<15}")
             print("-" * 75)
 
             w_time = winner_min(ampl_te, moead_te)
             w_hv   = winner_max(ampl_hv, moead_hv)
-            w_thv  = winner_min(ampl_thv, moead_thv)
 
-            print(f"{'WINNER':<10} {w_time:<15} {w_hv:<15} {w_thv:<15}")
+            print(f"{'WINNER':<10} {w_time:<15} {w_hv:<15}")
             print("-" * 75)
 
             # --- TABLA 2: BEST FRONTS UNIFICADOS ---
             print(f"\n  [4] COMPARACIÓN DE BEST FRONTS (Frentes Unificados):")
             print("-" * 75)
-            print(f"{'metodo':<10} {'nd_points':<15} {'hv_total':<15} {'time_hv':<15}")
+            print(f"{'metodo':<10} {'nd_points':<15} {'hv_total':<15}")
             print("-" * 75)
 
-            n_a, h_a, t_a = print_best_row("AMPL", ampl_best, (ref_x, ref_y), out_dir)
-            n_m, h_m, t_m = print_best_row("MOEAD", moead_best, (ref_x, ref_y), out_dir)
+            n_a, h_a = print_best_row("AMPL", ampl_best, (ref_x, ref_y), out_dir)
+            n_m, h_m = print_best_row("MOEAD", moead_best, (ref_x, ref_y), out_dir)
 
             # ======= Fila para resumen final =======
             win_hv = winner_max(h_a, h_m)          # HV best front: mayor es mejor
@@ -557,11 +606,14 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
             summary_rows.append({
                 "inst": inst,
+                "inst_disp": display_inst_name(inst),
                 "hv_ampl": h_a,
                 "hv_moead": h_m,
+                "gap_hv": gap_pct(h_a, h_m),
                 "win_hv": win_hv,
                 "te_ampl": ampl_te,
                 "te_moead": moead_te,
+                "gap_te": gap_pct(moead_te, ampl_te),
                 "win_te": win_te
             })
 
@@ -605,16 +657,15 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             # Guardar metrics de Best Fronts
             best_csv = os.path.join(out_dir, "best_fronts_metrics.csv")
             with open(best_csv, 'w') as f:
-                f.write("metodo,nd_points,hv_total,time_hv\n")
-                if ampl_best: f.write(f"AMPL,{n_a},{h_a},{t_a}\n")
-                if moead_best: f.write(f"MOEAD,{n_m},{h_m},{t_m}\n")
+                f.write("metodo,nd_points,hv_total\n")
+                if ampl_best: f.write(f"AMPL,{n_a},{h_a}\n")
+                if moead_best: f.write(f"MOEAD,{n_m},{h_m}\n")
 
             # ---------------------------------------------------------
             # REPORTE GLOBAL (append por instancia) - TABLAS ALINEADAS
             # ---------------------------------------------------------
             w_time = winner_min(ampl_te, moead_te)
             w_hv   = winner_max(ampl_hv, moead_hv)
-            w_thv  = winner_min(ampl_thv, moead_thv)
 
             w_nd   = winner_max(float(n_a), float(n_m))
             w_hvt  = winner_max(h_a, h_m)
@@ -622,27 +673,39 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             with open(report_path, "a", encoding="utf-8") as rf:
                 rf.write(f"INSTANCIA: {inst}\n")
 
+                rf.write("[1] ANALISIS PUNTOS EXTREMOS (Nadir)\n")
+                rf.write(f"AMPL : F1={fmt_f1(problem_type, max_x_ampl) if max_x_ampl is not None else '-'} "
+                        f"F2={fmt_f2(problem_type, max_y_ampl) if max_y_ampl is not None else '-'}\n")
+                rf.write(f"MOEAD: F1={fmt_f1(problem_type, max_x_moead) if max_x_moead is not None else '-'} "
+                        f"F2={fmt_f2(problem_type, max_y_moead) if max_y_moead is not None else '-'}\n")
+                rf.write(f"peorF1={fmt_f1(problem_type, global_max_x)} (src {src_x_txt}), "
+                        f"peorF2={fmt_f2(problem_type, global_max_y)} (src {src_y_txt})\n")
+                rf.write(f"REF: F1_ref=0.99*peorF1={fmt_f1(problem_type, ref_x)} | "
+                        f"F2_ref=1.001*peorF2={fmt_f2(problem_type, ref_y)}\n")
+                rf.write(f"PUNTO REF: {fmt_ref(problem_type, ref_x, ref_y)}\n\n")
+
+
                 # [3]
                 rf.write("[3] RESUMEN PROMEDIO (Por Run)\n")
-                rf.write(f"{'metodo':<8}{'T.Ejec(s)':>12}{'HV':>16}{'T.HV(s)':>12}\n")
+                rf.write(f"{'metodo':<8}{'T.Ejec(s)':>12}{'HV':>18}\n")
                 rf.write("-" * 48 + "\n")
-                rf.write(f"{'AMPL':<8}{fmt_float(ampl_te,12,4)}{fmt_float(ampl_hv,16,4)}{fmt_float(ampl_thv,12,6)}\n")
-                rf.write(f"{'MOEAD':<8}{fmt_float(moead_te,12,4)}{fmt_float(moead_hv,16,4)}{fmt_float(moead_thv,12,6)}\n")
+                rf.write(f"{'AMPL':<8}{fmt_float(ampl_te,12,4)}{fmt_float(ampl_hv,18,6)}\n")
+                rf.write(f"{'MOEAD':<8}{fmt_float(moead_te,12,4)}{fmt_float(moead_hv,18,6)}\n")
                 rf.write("-" * 48 + "\n")
-                rf.write(f"{'GAP%':<8}{fmt_gap_only(g_te):>12}{fmt_gap_only(g_hv_avg):>16}{fmt_gap_only(g_thv):>12}\n")
-                rf.write(f"{'WINNER':<8}{w_time:>12}{w_hv:>16}{w_thv:>12}\n")
+                rf.write(f"{'GAP%':<8}{fmt_gap_only(g_te):>12}{fmt_gap_only(g_hv_avg):>18}\n")
+                rf.write(f"{'WINNER':<8}{w_time:>12}{w_hv:>18}\n")
 
                 rf.write("\n")
 
                 # [4]
                 rf.write("[4] COMPARACIÓN BEST FRONTS (Unificados)\n")
-                rf.write(f"{'metodo':<8}{'ND':>12}{'HV':>16}{'T.HV(s)':>12}\n")
+                rf.write(f"{'metodo':<8}{'ND':>12}{'HV':>18}\n")
                 rf.write("-" * 48 + "\n")
-                rf.write(f"{'AMPL':<8}{fmt_int(n_a,12)}{fmt_float(h_a,16,4)}{fmt_float(t_a,12,6)}\n")
-                rf.write(f"{'MOEAD':<8}{fmt_int(n_m,12)}{fmt_float(h_m,16,4)}{fmt_float(t_m,12,6)}\n")
+                rf.write(f"{'AMPL':<8}{fmt_int(n_a,12)}{fmt_float(h_a,18,6)}\n")
+                rf.write(f"{'MOEAD':<8}{fmt_int(n_m,12)}{fmt_float(h_m,18,6)}\n")
                 rf.write("-" * 48 + "\n")
-                rf.write(f"{'GAP%':<8}{fmt_gap_only(g_nd):>12}{fmt_gap_only(g_hv_best):>16}{'-':>12}\n")
-                rf.write(f"{'WINNER':<8}{w_nd:>12}{w_hvt:>16}{'-':>12}\n")
+                rf.write(f"{'GAP%':<8}{fmt_gap_only(g_nd):>12}{fmt_gap_only(g_hv_best):>18}\n")
+                rf.write(f"{'WINNER':<8}{w_nd:>12}{w_hvt:>18}\n")
 
                 rf.write("\n" + ("-" * 60) + "\n\n")
    
@@ -662,9 +725,10 @@ def procesar_instancias(problem_type="cam", target_instance=None):
         # Formato fijo
         header = (
             f"{'INSTANCIA':<{W_INST}}"
-            f"{'HV_AMPL':>{W_HV}}{'HV_MOEAD':>{W_HV}}{'WIN_HV':>{W_WIN}}"
-            f"{'TE_PROM_AMPL':>{W_TE}}{'TE_PROM_MOEAD':>{W_TE}}{'WIN_TE':>{W_WIN}}"
+            f"{'HV_AMPL':>{W_HV}}{'HV_MOEAD':>{W_HV}}{'GAP_HV':>{W_GAP}}{'WIN_HV':>{W_WIN}}"
+            f"{'TE_AMPL':>{W_TE}}{'TE_MOEAD':>{W_TE}}{'GAP_TE':>{W_GAP}}{'WIN_TE':>{W_WIN}}"
         )
+
         summary_lines = []
 
         print(header)
@@ -681,11 +745,13 @@ def procesar_instancias(problem_type="cam", target_instance=None):
         te_w_moead = 0
 
         for r in summary_rows:
-            inst = r["inst"]
+            inst_disp = r["inst_disp"]
             hv_a = r["hv_ampl"]
             hv_m = r["hv_moead"]
+            g_hv = r["gap_hv"]
             te_a = r["te_ampl"]
             te_m = r["te_moead"]
+            g_te = r["gap_te"]
             win_hv = r["win_hv"]
             win_te = r["win_te"]
 
@@ -702,8 +768,8 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
 
             # --- HV base (sin paréntesis todavía)
-            hv_a_txt = "-" if pd.isna(hv_a) else f"{hv_a:.4f}"
-            hv_m_txt = "-" if pd.isna(hv_m) else f"{hv_m:.4f}"
+            hv_a_txt = "-" if pd.isna(hv_a) else f"{hv_a:.6f}"
+            hv_m_txt = "-" if pd.isna(hv_m) else f"{hv_m:.6f}"
 
             hv_a_cell = cell(hv_a_txt, W_HV)
             hv_m_cell = cell(hv_m_txt, W_HV)
@@ -714,12 +780,17 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             elif win_hv == "MOEAD" and hv_m_txt != "-":
                 hv_m_cell = mark_winner_cell(hv_m_txt, W_HV)
 
+            gap_hv_cell = cell(fmt_gap_only(g_hv), W_GAP)
+
             # --- Tiempo con minutos
             te_a_txt = fmt_seconds_with_minutes(te_a, dec_s=4, dec_m=2)
             te_m_txt = fmt_seconds_with_minutes(te_m, dec_s=4, dec_m=2)
 
             te_a_cell = cell(te_a_txt, W_TE)
             te_m_cell = cell(te_m_txt, W_TE)
+
+            gap_te_cell = cell(fmt_gap_only(g_te), W_GAP)
+
 
             # marcar ganador de tiempo (también con paréntesis)
             # OJO: aquí el paréntesis encapsula el texto completo "xx s (yy min)"
@@ -730,10 +801,11 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
 
             line = (
-                f"{inst:<{W_INST}}"
-                f"{hv_a_cell}{hv_m_cell}{win_hv:>{W_WIN}}"
-                f"{te_a_cell}{te_m_cell}{win_te:>{W_WIN}}"
+                f"{inst_disp:<{W_INST}}"
+                f"{hv_a_cell}{hv_m_cell}{gap_hv_cell}{win_hv:>{W_WIN}}"
+                f"{te_a_cell}{te_m_cell}{gap_te_cell}{win_te:>{W_WIN}}"
             )
+
             print(line)
             summary_lines.append(strip_ansi(line))
 

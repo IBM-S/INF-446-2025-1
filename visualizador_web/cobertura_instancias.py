@@ -14,6 +14,19 @@ RE_FLOAT = r'[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?'
 PAT_R = re.compile(r'param\s+R\s*:=\s*(' + RE_FLOAT + r')')
 PAT_LINEA_NODO = re.compile(r'^\s*\d+\s')
 
+PAT_CAM_NUM = re.compile(r"^cam_(\d+)_", re.IGNORECASE)
+PAT_DRP_NUM = re.compile(r"^drp_(\d+)_", re.IGNORECASE)
+
+def kind_and_size(name_noext: str):
+    """Retorna ('cam'|'drp', size:int) o (None, None) si no calza."""
+    m = PAT_CAM_NUM.match(name_noext)
+    if m:
+        return "cam", int(m.group(1))
+    m = PAT_DRP_NUM.match(name_noext)
+    if m:
+        return "drp", int(m.group(1))
+    return None, None
+
 
 def leer_nodos_y_R(path_dat):
     """
@@ -127,22 +140,35 @@ def procesar_instancia(path_dat, mode="normal"):
     prob_cubierta = stats["prob_cubierta"]
     n_demanda_total = stats["n_demanda_total"]
 
+    kind, size = kind_and_size(nombre_instancia)
+    if kind is None:
+        return None  # Ignorar otras instancias
+
+    if nombre_instancia.startswith("cam_"):
+        ref_x = (-0.99 * prob_cubierta)   # = -0.9 * prob_cubierta
+    elif nombre_instancia.startswith("drp_"):
+        ref_x = (-0.5 * prob_cubierta)   # = -0.9 * prob_cubierta
+
+    ref_y = n_demanda_total * 1.001
+
     if mode == "ref":
         # MODO REFERENCIA:
         # {instancia} {(prob demanda cubierta * -1) + (prob demanda cubierta*0.1)} {Nodos demanda total*1.1}
-        if nombre_instancia.startswith("cam_"):
-            ref_x = (-0.99 * prob_cubierta)   # = -0.9 * prob_cubierta
-        elif nombre_instancia.startswith("drp_"):
-            ref_x = (-0.5 * prob_cubierta)   # = -0.9 * prob_cubierta
-
-        ref_y = n_demanda_total * 1.001
-
         if nombre_instancia.startswith("cam_"):
             print(f"{nombre_instancia:<32} {ref_x:>18.4f} {ref_y:>18.3f}")
         elif nombre_instancia.startswith("drp_"):
             print(f"{nombre_instancia:<32} {ref_x:>18.7f} {ref_y:>18.3f}")
         
         return
+    if mode == "final":
+        return {
+            "file": base,                 # con .dat
+            "name_noext": nombre_instancia,
+            "kind": kind,                 # cam/drp
+            "size": size,                 # número intermedio
+            "ref_x": ref_x,
+            "ref_y": ref_y,
+        }
 
     # --------- MODO NORMAL (RESUMEN COMPLETO) ----------
     print(f"Instancia: {base}")
@@ -180,7 +206,7 @@ def main():
     )
     parser.add_argument(
         "--mode", "-m",
-        choices=["normal", "ref"],
+        choices=["normal", "ref", "final"],
         default="normal",
         help="Formato de salida: 'normal' (resumen) o 'ref' (instancia ref_x ref_y)."
     )
@@ -204,12 +230,12 @@ def main():
         for path in patrones:
             name = os.path.basename(path)
             name_noext = os.path.splitext(name)[0]
-            if name_noext.startswith("cam_"):
-                num = int(re.search(r"(\d+)", name_noext).group())
-                cam_files.append((num, path))
-            if name_noext.startswith("drp_"):
-                num = int(re.search(r"(\d+)", name_noext).group())
-                drp_files.append((num, path))
+            kind, size = kind_and_size(name_noext)
+            if kind == "cam":
+                cam_files.append((size, path))
+            elif kind == "drp":
+                drp_files.append((size, path))
+
 
         cam_files.sort(key=lambda x: x[0])
         drp_files.sort(key=lambda x: x[0])
@@ -224,9 +250,47 @@ def main():
             print("# --------------------------------")
             print("# Formato: instancia ref_x ref_y")
             print("# --------------------------------")
+
+            for path in files_sorted:
+                procesar_instancia(path, mode="ref")
+            return
+
+        if args.mode == "final":
+            rows = []
+            for path in files_sorted:
+                out = procesar_instancia(path, mode="final")
+                if out is not None:
+                    rows.append(out)
+
+            if not rows:
+                return
+
+            # ---- Parte 1: tabla 3 columnas (bonita) ----
+            w_file = max(len(r["file"]) for r in rows)
+            w_x = 14
+            w_y = 14
+
+            for r in rows:
+                # tabla: cam 4 dec, drp 7 dec (como venías pidiendo)
+                if r["kind"] == "cam":
+                    print(f"{r['file']:<{w_file}}  {r['ref_x']:>{w_x}.4f}  {r['ref_y']:>{w_y}.3f}")
+                elif r["kind"] == "drp":
+                    print(f"{r['file']:<{w_file}}  {r['ref_x']:>{w_x}.7f}  {r['ref_y']:>{w_y}.3f}")
+
+
+            print()  # línea en blanco
+
+            # ---- Parte 2: comandos hv ----
+            # (para hv normalmente conviene 6 dec; acá lo dejo fijo a 6 como en tus ejemplos)
+            for r in rows:
+                if r["kind"] == "cam":
+                    print(f'./hv -r "{r["ref_x"]:.4f}  {r["ref_y"]:.3f}" ../../datos/res/raw_ampl/{r["kind"]}/{r["name_noext"]}/run_1/pareto_front.txt')
+                elif r["kind"] == "drp":
+                    print(f'./hv -r "{r["ref_x"]:.7f}  {r["ref_y"]:.3f}" ../../datos/res/raw_ampl/{r["kind"]}/{r["name_noext"]}/run_1/pareto_front.txt')
+            return
         
         for path in files_sorted:
-            procesar_instancia(path, mode=args.mode)
+            procesar_instancia(path, mode="normal")
 
 
 if __name__ == "__main__":
