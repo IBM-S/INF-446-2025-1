@@ -43,7 +43,7 @@ var F {objetivos} >= -1000000;
 subject to Objetivo_1:
     F[1] = - (sum {j in N} x[j] * prob_ohca[j]);
 
-# O2: Minimizar el costo total (¡AQUÍ ESTÁ EL CAMBIO CLAVE!)
+# O2: Minimizar el costo total
 subject to Objetivo_2:
     F[2] = (c1 * N_nuevos)                                # Costo de los AEDs NUEVOS COMPRADOS
          + sum {i in N} ( c2 * flag[i] * (1 - y[i]) );    # Costo de MOVER existentes
@@ -56,7 +56,7 @@ minimize FO2: sum {i in objetivos} betha[i] * (if (PV[i] - MV[i]) <> 0 then (F[i
 # R1: Definir el número de nuevos AEDs comprados.
 # N_nuevos debe ser al menos el incremento en el total de AEDs.
 subject to Define_Nuevos:
-    N_nuevos >= (sum {i in N} y[i]) - N0;
+    N_nuevos = (sum {i in N} y[i]) - N0;
 
 # R2: Restricción de cobertura (sin cambios)
 subject to Restriccion_Cobertura {j in N}:

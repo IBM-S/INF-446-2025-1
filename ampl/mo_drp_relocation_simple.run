@@ -1,8 +1,8 @@
-reset;
+# reset;
 
-model mo_relocation_model_simple.mod;
+# model mo_relocation_model_simple.mod;
 # data ../datos/inst/DRP.dat;
- data ../datos/inst/drp_657_STATEN_ISLAND.dat;
+# data ../datos/inst/drp_657_STATEN_ISLAND.dat;
 # data ../datos/inst/drp_2151_BRONX.dat;
 # data ../datos/inst/drp_2885_QUEENS.dat;
 # data ../datos/inst/drp_3442_BROOKLYN.dat;
@@ -10,13 +10,13 @@ model mo_relocation_model_simple.mod;
 
 
 # ---------- Config ----------
-data conf_execution.dat;
+# data conf_execution.dat;
 
 # Opciones del Solver
 option solver gurobi;
 option solver_msg 0;
 option show_stats 1;
-option gurobi_options 'timelim=3600';
+option gurobi_options 'timelimit=3600';
 
 # Parametros de Salida
 param mostrar_detalles default 1;
@@ -90,6 +90,14 @@ for {gg in objetivos} {
     let Ttotal := time();
     solve;
     let TCPU1[gg] := time() - Ttotal;
+
+    #printf "[CHECK] sumy=%g N0=%g N_nuevos=%g removed=%g F2=%g\n",
+    #sum{i in N} y[i],
+    #N0,
+    #N_nuevos,
+    #sum{i in N} flag[i]*(1-y[i]),
+    #F[2];
+
     
     # Guarda el vector de objetivos F completo en la fila 'gg' de la tabla
     for {i in objetivos} { let SolucionExtrema[gg, i] := F[i]; }
@@ -103,10 +111,7 @@ for {gg in objetivos} {
 
         # --- CALCULOS DE INVENTARIO ---
         let total_final := sum {i in N} y[i];
-        let n_purchased := 0;
-        if total_final > n_inicial then {
-            let n_purchased := total_final - n_inicial;
-        }
+        let n_purchased := N_nuevos;
         let n_new_locs := sum {i in N: flag[i]=0 and y[i]=1} 1;
         let n_reused := n_new_locs - n_purchased; # Los nuevos sitios que no son compra, son reuso
 
@@ -124,7 +129,7 @@ for {gg in objetivos} {
 
         # 2. REMOVIDOS (flag=1, y=0)
         let n_removed := sum {i in N: flag[i] = 1 and y[i] = 0} 1;
-        printf "  - AEDs Removed from old spots (%d) (Desinstalacion): ", n_removed, n_removed, c2, (n_removed * c2);
+        printf "  - AEDs Removed from old spots (%d) (Desinstalacion): ", n_removed;
         let count := 0;
         for {i in N: flag[i]=1 and y[i]=0} {
             if count > 0 then printf ", ";
@@ -197,10 +202,7 @@ for {gg in ejecuciones} {
         
         # --- CALCULOS DE INVENTARIO ---
         let total_final := sum {i in N} y[i];
-        let n_purchased := 0;
-        if total_final > n_inicial then {
-            let n_purchased := total_final - n_inicial;
-        }
+        let n_purchased := N_nuevos;
         let n_new_locs := sum {i in N: flag[i]=0 and y[i]=1} 1;
         let n_reused := n_new_locs - n_purchased; # Los nuevos sitios que no son compra, son reuso
 
@@ -218,7 +220,7 @@ for {gg in ejecuciones} {
 
         # 2. REMOVIDOS
         let n_removed := sum {i in N: flag[i] = 1 and y[i] = 0} 1;
-        printf "  - AEDs Removed from old spots (%d) (Desinstalacion): ", n_removed, n_removed, c2, (n_removed * c2);
+        printf "  - AEDs Removed from old spots (%d) (Desinstalacion): ", n_removed;
         let count := 0;
         for {i in N: flag[i]=1 and y[i]=0} {
             if count > 0 then printf ", ";
@@ -232,6 +234,7 @@ for {gg in ejecuciones} {
         printf "  - Installations in NEW locations (%d):\n", n_new_locs;
         printf "      >> Sourced from Relocation: %d  (Cost: %d * %g = %g)\n", n_reused, n_reused, c2, n_reused*c2;
         printf "      >> Sourced from Purchase:   %d  (Cost: %d * %g = %g)\n", n_purchased, n_purchased, c1, n_purchased*c1;
+        printf "      >> Total Cost Check: %g + %g = %g\n", n_reused*c2, n_purchased*c1, (n_reused*c2 + n_purchased*c1);
         printf "      >> IDs: ";
         let count := 0;
         for {i in N: flag[i]=0 and y[i]=1} {
