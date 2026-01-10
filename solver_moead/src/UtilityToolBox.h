@@ -98,7 +98,7 @@ public:
 	void MutacionHibrida_location(vector<double> &x_var, double mutation_rate, double prob_delete, double mutPctDelete, double mutPctSwap, ProblemInstance *instance);
 
 	void CruzamientoUniformeInteligente(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
-	void CruzamientoUniformeSemiInteligente(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
+	void CruzamientoUniforme(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance);
 
 	void RepararPresupuesto(vector<double> &x_var, ProblemInstance *instance);
 	

@@ -1154,7 +1154,7 @@ void CUtilityToolBox::CruzamientoUniformeInteligente(const vector<double> &paren
     RepararPresupuesto(child, instance);
 }
 
-void CUtilityToolBox::CruzamientoUniformeSemiInteligente(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance)
+void CUtilityToolBox::CruzamientoUniforme(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance)
 {
     int n = parent1.size();
     child.assign(n, 0.0);

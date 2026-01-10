@@ -187,7 +187,6 @@ void CIndividualBase::GenerateSimpleFeasible_Reloc_OnlyMove(double presupuesto_d
 		}
 	}
 
-
 	double c2 = problemInstance->getC2();
 	int total_pre = pre_instalados.size();
 

@@ -118,9 +118,9 @@ static std::vector<std::string> MutParamsLines(
     double ProbSwap, double bitFlipProb, int popSize, int nVars
 ){
     std::vector<std::string> L;
-    L.push_back("Tasa global (mut)         : " + pct(mutationRate));
+    L.push_back("Tasa global (mut)       : " + pct(mutationRate));
 
-    auto add_op1       = [&](){ L.push_back("Prob op1: " + pct(op1Prob) + "     Prob op2 (1 - op1): " + pct(1-op1Prob) ); };
+    auto add_op1       = [&](){ L.push_back("Prob op1: " + pct(op1Prob) + "            Prob op2 (1 - op1): " + pct(1-op1Prob) ); };
     auto add_pct_del   = [&](){ L.push_back("mutPctDelete            : " + pct(mutPctDelete)); };
     auto add_pct_swap  = [&](){ L.push_back("mutPctSwap              : " + pct(mutPctSwap)); };
     auto add_prob_swap = [&](){ L.push_back("ProbSwap                : " + pct(ProbSwap)); };
@@ -142,9 +142,9 @@ static std::vector<std::string> MutParamsLines(
             case 5: add_p_1N(); break;
             case 6: add_p_1M(); break;
             case 7: add_bit(); break;
-            case 8: add_op1(); add_pct_swap; add_p_1N; break;
-            case 9: add_op1(); add_pct_swap; add_p_1M; break;
-            case 10: add_op1(); add_pct_swap; add_bit; break;
+            case 8: add_op1(); add_pct_swap(); add_p_1N(); break;
+            case 9: add_op1(); add_pct_swap(); add_p_1M(); break;
+            case 10: add_op1(); add_pct_swap(); add_bit(); break;
             case 11: add_op1(); add_pct_del(); add_pct_swap(); break;
             default: add_bit(); break;
         }
@@ -157,9 +157,9 @@ static std::vector<std::string> MutParamsLines(
             case 16: add_p_1N(); break;
             case 17: add_p_1M(); break;
             case 18: add_bit(); break;
-            case 19: add_op1(); add_pct_swap; add_p_1N; break;
-            case 20: add_op1(); add_pct_swap; add_p_1M; break;
-            case 21: add_op1(); add_pct_swap; add_bit; break;
+            case 19: add_op1(); add_pct_swap(); add_p_1N(); break;
+            case 20: add_op1(); add_pct_swap(); add_p_1M(); break;
+            case 21: add_op1(); add_pct_swap(); add_bit(); break;
             case 22: add_op1(); add_pct_del(); add_pct_swap(); break;
             default: add_p_1M(); break;
         }
@@ -175,24 +175,71 @@ static std::string CrossName(int crossType, bool isReloc){
         switch(crossType){
             case 1: return "Uniforme modificado (sin reubicacion)";
             case 2: return "Uniforme inteligente";
-            case 3: return "Uniforme semi-inteligente";
+            case 3: return "Uniforme";
             case 4: return "One-point crossover";
             case 5: return "Two-point crossover";
-            default: return "DEFAULT -> Uniforme semi-inteligente";
+            default: return "DEFAULT -> Uniforme";
         }
     } else {
         switch(crossType){
-            case 1: return "Uniforme modificado (con reubicacion)";
-            case 2: return "Uniforme modificado (sin reubicacion)";
-            case 3: return "Uniforme modificado (sin reubicacion)";
-            case 4: return "Uniforme modificado (sin reubicacion)";
-            case 5: return "Uniforme modificado (sin reubicacion)";
-            default: return "Uniforme modificado (sin reubicacion)";
+            case 6: return "Uniforme modificado (con reubicacion)";
+            case 7: return "Uniforme inteligente Reloc";
+            case 8: return "Uniforme";
+            case 9: return "One-point crossover Reloc";
+            case 10: return "Two-point crossover Reloc";
+            case 11: return "Uniforme Geografico Reloc";
+            default: return "DEFAULT -> Uniforme";
         }
     }
 }
 
+// Distribucion inicial
+static std::string InitDistName(int initDist){
+    switch(initDist){
+        case 0: return "Random puro";
+        case 1: return "Random con extremos (0 y max)";
+        case 2: return "Curva exponencial + ruido";
+        default: return "Desconocida";
+    }
+}
 
+static std::vector<std::string> InitDistParamsLines(int initDist, double powerExp, double noisePct){
+    std::vector<std::string> L;
+    L.push_back("Estrategia (initDist): " + std::to_string(initDist) + " (" + InitDistName(initDist) + ")");
+    if (initDist == 2){
+        L.push_back("powerExp       : " + dbl(powerExp, 3));
+        L.push_back("noisePct       : " + pct(noisePct));
+    }
+    return L;
+}
+
+// relocation initialization 
+static std::string InitRelocName(int t){
+    switch(t){
+        case 1: return "OnlyMove (deterministico)";
+        case 2: return "OnlyBuy (deterministico)";
+        case 3: return "Choose Move/Buy (probMoveRelocation)";
+        case 4: return "HybridSplit (splitPctRelocation)";
+        case 5: return "OnlyMove (aleatorio)";
+        case 6: return "OnlyBuy (aleatorio)";
+        case 7: return "Choose Move/Buy (aleatorio) (probMoveRelocation)";
+        case 8: return "HybridSplit (aleatorio) (splitPctRelocation)";
+        default: return "DEFAULT -> OnlyBuy (deterministico)";
+    }
+}
+
+static std::vector<std::string> InitRelocParamsLines(int t, double probMoveRelocation, double splitPctRelocation){
+    std::vector<std::string> L;
+    L.push_back("initTypeRelocation      : " + std::to_string(t) + " (" + InitRelocName(t) + ")");
+
+    if (t == 3 || t == 7){
+        L.push_back("probMoveRelocation     : " + pct(probMoveRelocation));
+    }
+    if (t == 4 || t == 8){
+        L.push_back("splitPctRelocation     : " + pct(splitPctRelocation));
+    }
+    return L;
+}
 
 
 void PrintUsage() {
@@ -271,7 +318,7 @@ int main(int argc, char *argv[])
 	NumberOfObjectives = 2;
     NumberOfFuncEvals = 40000; 
 
-    std::string variant = "location"; // o "relocation"
+    std::string variant = "relocation"; // o "relocation"
     std::string problemType = "cam";  // o "drp"
     std::string algName = "MOEAD";
 
@@ -299,8 +346,6 @@ int main(int argc, char *argv[])
     int initDist = 2;
     double powerExp = 6.0;
     double noisePct = 0.10;
-
-    bool isRelocation = (variant == "relocation");
 
     if (argc < 2) {
         PrintUsage();
@@ -356,6 +401,8 @@ int main(int argc, char *argv[])
 
     if (userMutPctDelete < 0) userMutPctDelete = mutPct;
     if (userMutPctSwap < 0)   userMutPctSwap = mutPct;
+
+    bool isRelocation = (variant == "relocation");
 
 
 	if (instancePath == "") {
@@ -469,28 +516,27 @@ int main(int argc, char *argv[])
         std::cout << "      - " << ln << std::endl;
     }
 
-    std::cout << "     Cruzamiento     : " << crossoverRate * 100.0 << "%" << std::endl;
-    std::cout << "     Crossover Type  : " << crossType << std::endl;
+    std::cout << "     Crossover Type  : " << crossType << " (" << CrossName(crossType, isRelocation) << ")" << std::endl;
+    std::cout << "     Cruzamiento     : " << pct(crossoverRate) << std::endl;
     
     std::cout << "\n [5] SALIDA DE DATOS" << std::endl;
     std::cout << "     Destino       : " << rutaSalida << std::endl;
     std::cout << "     Intervalo     : " << strSave << std::endl; 
 
-    std::cout << "\n [6] CONFIGURACIÓN INICIALIZACIÓN (RELOCACIÓN)" << std::endl;
-    std::cout << "     Tipo de inicio: " << initTypeRelocation << std::endl;
-    std::cout << "     Exp           : " << probMoveRelocation << std::endl;
-    std::cout << "     Ruido Pct     : " << splitPctRelocation << std::endl;
+    std::cout << "\n [6] INICIALIZACIÓN (SOLO RELOCACIÓN)" << std::endl;
+    if (isRelocation) {
+        auto initRelLines = InitRelocParamsLines(initTypeRelocation, probMoveRelocation, splitPctRelocation);
+        for (const auto &ln : initRelLines){
+            std::cout << "     " << ln << std::endl;
+        }
+    } else {
+        std::cout << "    (N/A) Variante = location (no aplica initTypeRelocation)" << std::endl;
+    } 
 
-    std::cout << "\n [7] ESTRATEGIA DE DISTRIBUCIÓN INICIAL" << std::endl;
-    std::cout << "     Estrategia    : " << initDist;
-    if (initDist == 0) std::cout << " (Random Puro)";
-    else if (initDist == 1) std::cout << " (Random c/ Extremos)";
-    else if (initDist == 2) std::cout << " (Exponencial c/ Ruido)";
-    std::cout << std::endl;
-    
-    if (initDist == 2) {
-        std::cout << "     Exponente (p) : " << powerExp << std::endl;
-        std::cout << "     Ruido (%)     : " << noisePct * 100.0 << "%" << std::endl;
+    std::cout << "\n [7] DISTRIBUCIÓN INICIAL DE #AEDs (initDist)" << std::endl;
+    auto initDistLines = InitDistParamsLines(initDist, powerExp, noisePct);
+    for (const auto &ln : initDistLines) {
+        std::cout << "     " << ln << std::endl;
     }
     std::cout << "==========================================================\n" << std::endl;
 
