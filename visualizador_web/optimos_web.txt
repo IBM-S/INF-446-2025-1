@@ -14,11 +14,11 @@ cam_15743_ALVARO_OBREGON.dat             -2839.7032       14784.770
 cam_22238_CUAUHTEMOC.dat                 -4283.1931       20695.675
 cam_24363_GUSTAVO_A._MADERO.dat          -4461.0271       22484.462
 cam_40264_IZTAPALAPA.dat                 -7324.6956       38072.034
-drp_657_STATEN_ISLAND.dat                -0.0091684         307.307
-drp_2151_BRONX.dat                       -0.1036558        1124.123
-drp_2885_QUEENS.dat                      -0.0449225        1695.694
-drp_3442_BROOKLYN.dat                    -0.0639230        2045.043
-drp_4432_MANHATTAN.dat                   -0.2038694        1086.085
+drp_657_STATEN_ISLAND.dat   280.588394  -0.0091684   307.307
+drp_2151_BRONX.dat          952.767531  -0.1036558  1124.123
+drp_2885_QUEENS.dat        1474.787863  -0.0449225  1695.694
+drp_3442_BROOKLYN.dat      1757.464840  -0.0639230  2045.043
+drp_4432_MANHATTAN.dat      838.663288  -0.2038694  1086.085
 
 
 cam_1390_MILPA_ALTA.dat                62649.744489   -178.5988      1176.175

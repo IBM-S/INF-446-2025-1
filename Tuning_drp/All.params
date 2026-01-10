@@ -4,23 +4,23 @@ neighborPct {0.05, 0.1, 0.15, 0.2, 0.25}[0.1]
 mut {0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0}[0.9]   
 cross {0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0}[0.8]   
 
-mutType {12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22}[18] 
-crossType {4, 5, 6, 7, 8}[6] 
+mutType {12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22}[16] 
+crossType {6, 7, 8, 9, 10}[8] 
 
 op1 {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0}[0.5] 
-op1 | mutType in {12, 15, 20, 21, 22}
+op1 | mutType in {12, 19, 20, 21, 22}
 
 bitprob {0.01, 0.05, 0.1, 0.15, 0.2}[0.01]
-bitprob | mutType in {17, 22}
+bitprob | mutType in {18, 21}
 
 mutPctDelete {0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4}[0.2]  
-mutPctDelete | mutType in {14, 15}
+mutPctDelete | mutType in {15, 22}
 
 mutPctSwap {0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4}[0.2]
-mutPctSwap | mutType in {13, 15, 20, 21, 22}
+mutPctSwap | mutType in {14, 19, 20, 21, 22}
 
-mutProbSwap{0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4}[0.2] 
-mutProbSwap | mutType in {19}
+mutProbSwap {0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4}[0.2] 
+mutProbSwap | mutType in {13}
 
 initTypeRelocation {1, 2, 3, 4, 5, 6, 7, 8}[2]
 
@@ -35,5 +35,5 @@ initDist {0, 1, 2}[2]
 powerExp {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}[6.0]
 powerExp | initDist in {2} 
 
-noisePct {0.1, 0.15, 0.2, 0.25, 0.3}[0.1]
+noisePct {0.05, 0.1, 0.15, 0.2, 0.25}[0.1]
 noisePct | initDist in {2} 

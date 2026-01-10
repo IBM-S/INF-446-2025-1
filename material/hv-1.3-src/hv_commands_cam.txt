@@ -16,10 +16,3 @@
 ./hv -r "-2839.7032  14784.770" ../../datos/res/raw_ampl/cam/cam_15743_ALVARO_OBREGON/run_1/pareto_front.txt
 ./hv -r "-4283.1931  20695.675" ../../datos/res/raw_ampl/cam/cam_22238_CUAUHTEMOC/run_1/pareto_front.txt
 ./hv -r "-4461.0271  22484.462" ../../datos/res/raw_ampl/cam/cam_24363_GUSTAVO_A._MADERO/run_1/pareto_front.txt
-
-
-./hv -r "-0.0091684  307.307" ../../datos/res/raw_ampl/drp/drp_657_STATEN_ISLAND/run_1/pareto_front.txt
-./hv -r "-0.1036558  1124.123" ../../datos/res/raw_ampl/drp/drp_2151_BRONX/run_1/pareto_front.txt
-./hv -r "-0.0449225  1695.694" ../../datos/res/raw_ampl/drp/drp_2885_QUEENS/run_1/pareto_front.txt
-./hv -r "-0.0639230  2045.043" ../../datos/res/raw_ampl/drp/drp_3442_BROOKLYN/run_1/pareto_front.txt
-./hv -r "-0.2038694  1086.085" ../../datos/res/raw_ampl/drp/drp_4432_MANHATTAN/run_1/pareto_front.txt

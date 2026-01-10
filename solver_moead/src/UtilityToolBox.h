@@ -71,8 +71,6 @@ public:
 	void RepararPresupuesto_Relocation(vector<double>& x_var, ProblemInstance* instance);
 
 
-
-
 	// =========================================================================
 	//   cruzamiento location
 	// =========================================================================					   
