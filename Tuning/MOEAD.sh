@@ -27,6 +27,7 @@ bitprob=0
 
 mutPctDelete=0
 mutPctSwap=0
+mutProbSwap=0
 
 initDist=0
 powerExp=0
@@ -71,6 +72,7 @@ while [ $# -gt 0 ]; do
 
         -mutPctDelete) mutPctDelete="$2"; shift 2 ;;
         -mutPctSwap) mutPctSwap="$2"; shift 2 ;;
+        -mutProbSwap) mutProbSwap="$2"; shift 2 ;;
 
         -initDist) initDist="$2"; shift 2 ;;
         -powerExp) powerExp="$2"; shift 2 ;;
@@ -90,7 +92,7 @@ done
 
 # Calcular mi, número de objetivos y parámetros
 no=2 # número de objetivos
-params="-type ${type} -variant ${variant} -neval ${evaluaciones} -pop ${pop} -neighborPct ${neighborPct} -mut ${mut} -cross ${cross} -mutType ${mutType} -crossType ${crossType} -op1 ${op1} -bitprob ${bitprob} -mutPctDelete ${mutPctDelete} -mutPctSwap ${mutPctSwap} -initDist ${initDist} -powerExp ${powerExp} -noisePct ${noisePct}  "
+params="-type ${type} -variant ${variant} -neval ${evaluaciones} -pop ${pop} -neighborPct ${neighborPct} -mut ${mut} -cross ${cross} -mutType ${mutType} -crossType ${crossType} -op1 ${op1} -bitprob ${bitprob} -mutPctDelete ${mutPctDelete} -mutPctSwap ${mutPctSwap} -mutProbSwap ${mutProbSwap} -initDist ${initDist} -powerExp ${powerExp} -noisePct ${noisePct}  "
 echo "Parámetros: ${params}"
 
 screen="salida_consola.txt"
