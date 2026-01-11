@@ -10,6 +10,7 @@ import argparse
 import sys
 import time
 import re
+from decimal import Decimal, ROUND_HALF_UP
 
 # ================= CONFIGURACIÓN DE RUTAS =================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -105,10 +106,21 @@ def get_max_values_and_points(file_list):
                 
     return (max_x, max_y, all_points) if found else (None, None, [])
 
-def save_points_to_file(points, filepath):
+def _qexp(decimals: int) -> Decimal:
+    return Decimal("1") if decimals <= 0 else Decimal("1." + ("0" * decimals))
+
+def quantize_float(v: float, decimals: int) -> float:
+    # evita artefactos binarios tipo -0.018153432000...
+    return float(Decimal(str(v)).quantize(_qexp(decimals), rounding=ROUND_HALF_UP))
+
+def save_points_to_file(points, filepath, dec_x: int = 10, dec_y: int = 10, do_quantize: bool = False):
     with open(filepath, 'w') as f:
         for p in points:
-            f.write(f"{p[0]:.10f} {p[1]:.10f}\n")
+            x, y = float(p[0]), float(p[1])
+            if do_quantize:
+                x = quantize_float(x, dec_x)
+                y = quantize_float(y, dec_y)
+            f.write(f"{x:.{dec_x}f} {y:.{dec_y}f}\n")
 
 def calculate_hv_transparent(points, ref_point, temp_file_path):
     if not points: return 0.0
@@ -124,6 +136,18 @@ def calculate_hv_transparent(points, ref_point, temp_file_path):
     except: return 0.0
     finally:
         if os.path.exists(temp_file_path): os.remove(temp_file_path)
+
+def calculate_hv_from_file(ref_point, points_file_path):
+    ref_string = f"{ref_point[0]} {ref_point[1]}"
+    cmd = [HV_EXEC, "-r", ref_string, points_file_path]
+    cmd_pretty = f'{HV_EXEC} -r "{ref_string}" {points_file_path}'
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            return 0.0, cmd_pretty
+        return float(result.stdout.strip()), cmd_pretty
+    except:
+        return 0.0, cmd_pretty
 
 def get_execution_times(folder_path):
     # Busca summary log
@@ -338,7 +362,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
         return
 
     # Reporte global (en el mismo directorio donde está este script)
-    report_path = os.path.join(BASE_DIR, f"reporte_{problem_type}_resumen.txt")
+    report_path = os.path.join(BASE_DIR, f"final_reporte_{problem_type}_resumen.txt")
     # Si estás analizando todas las instancias, lo reiniciamos
     if target_instance is None:
         with open(report_path, "w", encoding="utf-8") as rf:
@@ -457,18 +481,23 @@ def procesar_instancias(problem_type="cam", target_instance=None):
         )
         print(f"      -> PUNTO REF: {fmt_ref(problem_type, ref_x, ref_y)}")
 
+
+        dec_x_config = f1_dec(problem_type)
+        dec_y_best_config = 1 if is_drp(problem_type) else 0
+
         # guardar ref (puedes guardar con full precisión o con formato)
         with open(os.path.join(out_dir, "reference_point.txt"), "w") as f:
-            f.write(f"{ref_x:.12f} {ref_y:.12f}\n")
+            f.write(f"{ref_x:.{dec_x_config}f} {ref_y:.3f}\n")
+
 
         # D. GUARDAR BEST FRONTS (Si existen puntos)
         ampl_best = filter_nondominated(all_ampl_points)
         if ampl_best:
-            save_points_to_file(ampl_best, os.path.join(out_dir, "best_front_ampl.txt"))
+            save_points_to_file(ampl_best, os.path.join(out_dir, "best_front_ampl.txt"), dec_x=dec_x_config, dec_y=dec_y_best_config)
         
         moead_best = filter_nondominated(all_moead_final_points)
         if moead_best:
-            save_points_to_file(moead_best, os.path.join(out_dir, "best_front_moead.txt"))
+            save_points_to_file(moead_best, os.path.join(out_dir, "best_front_moead.txt"), dec_x=dec_x_config, dec_y=dec_y_best_config)
 
         print(f"      -> Best Fronts: AMPL ({len(ampl_best)} pts), MOEAD ({len(moead_best)} pts)")
 
