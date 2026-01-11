@@ -504,7 +504,7 @@ int main(int argc, char *argv[])
     std::cout << "     Evaluaciones  : " << NumberOfFuncEvals << std::endl;
     std::cout << "     Tiempo Máx    : " << (maxTime > 0 ? std::to_string(maxTime) + " s" : "Sin Límite") << std::endl;
 
-    std::cout << "\n [4] OPERADORES  (MUTACION /CRUZAMIENTO" << std::endl;
+    std::cout << "\n [4] OPERADORES  (MUTACION /CRUZAMIENTO)" << std::endl;
 
     std::cout << "     Mutacion Type: " << mutType << " (" << MutName(mutType, isRelocation) << ")" << std::endl;
     
