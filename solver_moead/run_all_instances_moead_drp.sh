@@ -14,26 +14,26 @@ VARIANT="relocation"
 NUM_RUNS=10          
 
 # Parámetros Algoritmo
-POPULATION=850
-NEIGHBORPCT=0.2
+POPULATION=1000
+NEIGHBORPCT=0.1
 NEVALS=150000    # Criterio de parada por evaluaciones
 MAX_TIME=3600      # Criterio de parada por tiempo (0 = desactivado)
-MUTATION=1.0
-CROSSOVER=0.7
+MUTATION=0.9
+CROSSOVER=1.0
 #OP1_PROB=0.3
 SAVE=0
-MUTTYPE=16
-CROSSTYPE=5
+MUTTYPE=17
+CROSSTYPE=7
 #MUTPCTDELETE=0.4
 #MUTPCTSWAP=0.25
 #BITPROB=0.1
 INITTYPERELOCATION=3
-PROBMOVERELOCATION=0.4
+PROBMOVERELOCATION=0.3
 #SPLITPCTRELOCATION=0.1
 
-INITDIST=2
-POWEREXP=6.0
-NOISEPCT=0.1
+INITDIST=1
+#POWEREXP=6.0
+#NOISEPCT=0.1
 
 
 # Lista de Instancias
@@ -121,10 +121,11 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
             #-mutPctSwap "${MUTPCTSWAP}" 
             #-bitprob "${BITPROB}" 
             -initTypeRelocation "${INITTYPERELOCATION}"
+            -probMoveRelocation "${PROBMOVERELOCATION}"
 
             -initDist "${INITDIST}"
-            -powerExp "${POWEREXP}"
-            -noisePct "${NOISEPCT}"
+            #-powerExp "${POWEREXP}"
+            #-noisePct "${NOISEPCT}"
 
             -outDir "${subFolder}"
         )
