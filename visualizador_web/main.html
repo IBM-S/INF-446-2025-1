@@ -556,6 +556,7 @@
                 <option value="70">70</option>
                 <option value="85" selected>85</option>
                 <option value="90">90</option>
+                <option value="100">100</option>
                 <option value="150">150</option>
               </select>
             </div>
@@ -1813,15 +1814,21 @@
 
         Promise.all([
           APP.api.post('/map', { instancia: inst, ids: ids, show_probs: showProb, x: pt.x, y: pt.y }),
-          APP.api.post('/map_json', { instancia: inst, ids: ids, show_probs: showProb, x: pt.x, y: pt.y })
-        ]).then(([resImg, resJson]) => {
+          APP.api.post('/coverage', { instancia: inst, ids: ids })
+        ]).then(([resImg, cov]) => {
           // Mostrar Imagen Estática
           APP.dom['map-image'].src = `data:image/png;base64,${resImg.img}`;
           APP.dom['map-image-container'].classList.remove('hidden');
-          APP.dom['map-stats'].textContent = resJson.stats;
 
-          // Guardar datos para modo interactivo
-          APP.state.currentMapData = resJson;
+          APP.dom['map-stats'].textContent =
+            `📊 ${cov.instancia}\n` +
+            `Estaciones: ${cov.stations}\n` +
+            `Cobertura: ${cov.covered_n}/${cov.total_n} (${cov.covered_pct.toFixed(2)}%)\n` +
+            `Probabilidad: ${cov.prob_cov.toFixed(4)}/${cov.prob_tot.toFixed(4)}`;
+
+          // Aún no cargamos JSON interactivo (lazy)
+          APP.state.currentMapData = null;
+          APP.state.lastClicked = { inst, ids, showProb, x: pt.x, y: pt.y };
         });
       },
 
@@ -1837,7 +1844,24 @@
           btn.textContent = "Ver Interactivo";
         } else {
           // Cambiar a interactivo
-          if (!APP.state.currentMapData) return;
+          if (!APP.state.currentMapData) {
+            const p = APP.state.lastClicked;
+            if (!p) return;
+
+            APP.dom['map-stats'].textContent = "Cargando modo interactivo...";
+            APP.api.post('/map_json', { instancia: p.inst, ids: p.ids, show_probs: p.showProb, x: p.x, y: p.y })
+              .then(resJson => {
+                APP.state.currentMapData = resJson;
+                // aquí llamas a tu función que dibuja el plot interactivo con resJson
+                APP.ui.renderInteractiveMapFromJson(resJson); // <- usa el nombre real que tengas
+                // luego haces el swap a interactivo
+                imgCont.classList.add('hidden');
+                plotCont.classList.remove('hidden');
+                btn.textContent = "Ver Estático";
+              });
+
+            return;
+          }
           imgCont.classList.add('hidden');
           plotCont.classList.remove('hidden');
           btn.textContent = "Ver Estático";

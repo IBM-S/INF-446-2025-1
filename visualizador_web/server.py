@@ -491,6 +491,7 @@ def cobertura_por_ids(ids, demanda, pre, radio):
     tot_p = sum(d[2] for d in demanda)
     return cubiertos, prob_cov, (prob_cov/tot_p*100 if tot_p>0 else 0), tot_p, len(demanda)
 
+
 def save_aeds_with_flags_and_coverage(entries, filepath):
     # Desempatar y ordenar
     best = {}
@@ -532,6 +533,9 @@ def core_process_results(instancia, raw_files, hv_every):
 
     # Cargar datos instancia
     nodes, coords_map, demanda, pre_coords, radio = cargar_instancia_coords_y_demanda(os.path.join(DIR_INSTANCES, instancia))
+
+    tot_p = sum(p for _,_,p in demanda)
+    r2 = radio*radio
     
     # Referencia HV
     opt = load_optimos().get(base_name)
@@ -583,9 +587,10 @@ def core_process_results(instancia, raw_files, hv_every):
             for k, (x, y, ids, _, _) in enumerate(raw_pts):
                 is_par = k in nd_idx
                 # Cobertura
-                c_coords = [coords_map[mid] for mid in ids if mid in coords_map]
-                _, _, porc, _, _ = cobertura_por_ids(c_coords, demanda, pre_coords, radio)
-                entries.append((x, y, ids, is_par, porc))
+                #c_coords = [coords_map[mid] for mid in ids if mid in coords_map]
+                #_, _, porc, _, _ = cobertura_por_ids(c_coords, demanda, pre_coords, r2, tot_p)
+                #entries.append((x, y, ids, is_par, porc))
+                entries.append((x, y, ids, is_par, None))
 
             t2 = time.perf_counter()
 
@@ -601,7 +606,7 @@ def core_process_results(instancia, raw_files, hv_every):
             hv = calculate_hv(fp_path, ref_point, gen)
             t4 = time.perf_counter()
             print(f"[GEN {gen}] ND={t1-t0:.4f}s  "
-                f"cobertura={t2-t1:.4f}s  "
+                f"entries={t2-t1:.4f}s  "
                 f"write_fp={t3-t2:.4f}s  "
                 f"hv={t4-t3:.4f}s")
             last_hv = hv
@@ -1233,6 +1238,40 @@ def compare_load():
 
     return jsonify({"count": len(results), "results": results})
 
+
+# Cache simple para no releer la instancia en cada click (opcional pero recomendado)
+INSTANCE_CACHE = {}
+
+def get_instance_cached(inst):
+    if inst in INSTANCE_CACHE:
+        return INSTANCE_CACHE[inst]
+    data = cargar_instancia_coords_y_demanda(os.path.join(DIR_INSTANCES, inst))
+    INSTANCE_CACHE[inst] = data
+    return data
+
+@app.route("/coverage", methods=["POST"])
+def coverage():
+    d = request.json or {}
+    try:
+        inst = d["instancia"]
+        ids = set(map(int, d["ids"]))
+        nodes, coords, demanda, pre_orig, radio = get_instance_cached(inst)
+    except:
+        return jsonify({"error": "bad request"}), 400
+
+    final_coords = [coords[i] for i in ids if i in coords]
+    n_cov, p_cov, pct, tot_p, tot_n = cobertura_por_ids(final_coords, demanda, [], radio)
+
+    return jsonify({
+        "instancia": inst,
+        "radio": radio,
+        "stations": len(ids),
+        "covered_n": n_cov,
+        "total_n": tot_n,
+        "covered_pct": pct,
+        "prob_cov": p_cov,
+        "prob_tot": tot_p
+    })
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
