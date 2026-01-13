@@ -520,7 +520,7 @@ bool CUtilityToolBox::EsBuenCandidato_Relocation(int idx_candidato, ProblemInsta
         //  Si "PreCubierto" se refería a los AEDs Flag=1, quítalo).
         ganancia += nodos[id_vecino]->getProbOhca();
     }
-    if (ganancia >= 1.0e-9){
+    if (ganancia >= 1.0e-4){
         return true;
     }
 
@@ -528,25 +528,30 @@ bool CUtilityToolBox::EsBuenCandidato_Relocation(int idx_candidato, ProblemInsta
 }
 
 void CUtilityToolBox::RepararPresupuesto(vector<double> &x_var, ProblemInstance *instance)
-{
+{   
+    //return
+
     int max_P = instance->getP();
     const auto &nodos = instance->getNodes();
     int n = x_var.size();
 
     // 1. Identificar activos que se pueden borrar (flag 0)
     std::vector<int> activos_moviles;
-    int total_activos = 0;
+    int total_instalados = 0;
 
     for(int i=0; i<n; ++i) {
-        if(x_var[i] == 1) {
-            total_activos++;
-            if(nodos[i]->getFlag() == 0) activos_moviles.push_back(i);
+        if(x_var[i] == 1 && nodos[i]->getFlag() == 0) {
+            activos_moviles.push_back(i);
+            total_instalados++;
         }
     }
 
     // 2. Si nos pasamos, eliminar los peores
-    if (total_activos > max_P) {
-        int a_quitar = total_activos - max_P;
+    if (total_instalados > max_P) {
+        //printf("\ntotal activos: %d\n", total_instalados);
+        //printf("maximo presupuesto: %d\n\n", max_P);
+
+        int a_quitar = total_instalados - max_P;
         
         // Calcular aporte marginal
         std::vector<std::pair<double, int>> calidad;
@@ -569,28 +574,48 @@ void CUtilityToolBox::RepararPresupuesto(vector<double> &x_var, ProblemInstance 
     }
 }
 
-void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var,
-                                             ProblemInstance* instance)
+void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, ProblemInstance* instance)
 {
     int max_P = instance->getP();
+    double c1 = instance->getC1();
+    double c2 = instance->getC2();
+
     const auto &nodos = instance->getNodes();
     int n = x_var.size();
 
+    //1) Contar moved_out y entradas_no_base
+    int moved_out = 0;     // cuantos fueron movidos y eran preinstaldos
+    int entradas_no_base = 0;   // cuantos nodos sin equipos original terminaron con AED. movidos + compras nuevas
 
-	std::vector<int> indices_activos;
-	for(int i = 0; i< n; ++i) {
-		if (x_var[i] > 0.5) {
-			indices_activos.push_back(i);
-		}
+    std::vector<int> activos_no_base;
+    activos_no_base.reserve(n);
+
+    for(int i = 0; i< n; ++i) {
+        bool xi = (x_var[i] > 0.5);
+        bool base = (nodos[i]->getFlag() == 1);
+
+		if (base && !xi) moved_out++;
+        if (!base && xi){
+            entradas_no_base++;   // movidos mas nuevos
+            activos_no_base.push_back(i);  // movidos mas nuevos
+        }
 	}
-	int total_activos = indices_activos.size();
 
-	if (total_activos > max_P) {
-		int a_quitar = total_activos - max_P;
-		std::vector<std::pair<double, int>> calidad;
-		calidad.reserve(total_activos);
+    int movidos = moved_out;
+    int instalados = std::max(0, entradas_no_base - moved_out);
 
-		for(int idx : indices_activos) {
+    double gasto = c2 * movidos + c1 * instalados;
+
+
+    
+	if (gasto > max_P) {
+        //printf("\n%f    %d", gasto, max_P);
+        //printf("aaa\n");
+
+        std::vector<std::pair<double, int>> calidad;
+        calidad.reserve(activos_no_base.size());
+
+		for(int idx : activos_no_base) {
             double aporte = 0.0;
             // Obtenemos vecinos que cubre este nodo
             const auto& vecinos = instance->getNodosCubiertosPor(idx);
@@ -598,7 +623,6 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var,
             for(int v : vecinos) {
                 // Sumamos probabilidad solo si NO está cubierto por otros FIJOS externos
                 // (En relocación asumimos que todo se puede mover, así que calculamos aporte bruto)
-                // OJO: Si usas isPreCubierto aquí, asegúrate que se refiera a cosas externas al problema.
                 aporte += nodos[v]->getProbOhca();
             }
             calidad.push_back({aporte, idx});
@@ -606,8 +630,12 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var,
 		std::sort(calidad.begin(), calidad.end());
 
         // 5. Apagar los peores
-        for(int k=0; k<a_quitar && k<(int)calidad.size(); ++k) {
-            x_var[calidad[k].second] = 0.0;
+        for(int k=0; k<(int)calidad.size() && gasto > max_P; ++k) {
+            if (instalados <= 0) break;
+            int idx = calidad[k].second;
+            x_var[idx] = 0.0;
+            instalados--;
+            gasto -= c1;
         }
 	}
 }
@@ -1297,7 +1325,12 @@ void CUtilityToolBox::MutacionBitFlip_1_M(vector<double> &x_var, double mutation
 
 void CUtilityToolBox::MutacionBitFlip_Fijo(vector<double> &x_var, double mutation_rate, double fixed_prob, ProblemInstance *instance)
 {
-    if (Get_Random_Number() > mutation_rate) return;
+    double random_number = Get_Random_Number();
+    //printf("\n%f > %f    ", random_number, mutation_rate);
+    //if (random_number > mutation_rate) printf("retorno\n");
+    //else printf ("muto\n");
+
+    if (random_number > mutation_rate) return;
 
     int n = x_var.size();
     const auto &nodos = instance->getNodes();

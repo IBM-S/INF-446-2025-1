@@ -311,8 +311,8 @@ int main(int argc, char *argv[])
     NumberOfVariables = 324;
     
     // Parámetros Algoritmo
-    double mutationRate = 0.5;
-    double crossoverRate = 0.7;
+    double mutationRate = 0.995;
+    double crossoverRate = 1.0;
     double op1Prob = 0.5; // 20% delete, 80% swap (por ejemplo)
 
 	NumberOfObjectives = 2;
@@ -329,23 +329,23 @@ int main(int argc, char *argv[])
     int decompType = 1;   // 1 por defecto (Tchebycheff)
     int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
-    int mutType = 11;     // Default: Híbrida
-    int crossType = 10;    // Default: Inteligente
+    int mutType = 12;     // Default: Híbrida
+    int crossType = 8;    // Default: Inteligente
     double mutPct = 0.2; // Default: 5% intensidad para operadores porcentuales
-    double bitFlipProb = 0.01; // Default: 1% probabilidad para BitFlip Fijo
+    double bitFlipProb = 0.2; // Default: 1% probabilidad para BitFlip Fijo
 
     double userNeighborPct = 0.0; // 0 = usar archivo, >0 usar porcentaje
-    double userMutPctDelete = 0.1; // 0 = usar default
+    double userMutPctDelete = 0.25; // 0 = usar default
     double userMutPctSwap = 0.4;   // 0 = usar default
-    double userMutProbSwap = 0.05;
+    double userMutProbSwap = 0.15;
 
-    int initTypeRelocation = 2;           // Default: Solo Mover (o el que prefieras como base)
-    double probMoveRelocation = 0.5;      // Default: 50%
+    int initTypeRelocation = 3;           // Default: Solo Mover (o el que prefieras como base)
+    double probMoveRelocation = 0.1;      // Default: 50%
     double splitPctRelocation = 0.5;      // Default: 50% split
 
     int initDist = 2;
-    double powerExp = 6.0;
-    double noisePct = 0.10;
+    double powerExp = 9.0;
+    double noisePct = 0.1;
 
     if (argc < 2) {
         PrintUsage();
