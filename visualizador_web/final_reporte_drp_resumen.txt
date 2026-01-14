@@ -1,0 +1,184 @@
+REPORTE RESUMEN - TIPO DRP
+
+INSTANCIA: drp_657_STATEN_ISLAND
+[1] ANALISIS PUNTOS EXTREMOS (Nadir)
+AMPL : F1=-0.0183368 F2=60.000
+MOEAD: F1=-0.0183368 F2=307.000
+peorF1=-0.0183368 (src AMPL/MOEAD), peorF2=307.000 (src MOEAD)
+REF: F1_ref=0.99*peorF1=-0.0181534 | F2_ref=1.001*peorF2=307.307
+PUNTO REF: (-0.0181534, 307.307)
+
+[3] RESUMEN PROMEDIO (Por Run)
+metodo     T.Ejec(s)                HV
+------------------------------------------------
+AMPL         12.8478        277.827230
+MOEAD        12.8360        278.919697
+------------------------------------------------
+GAP%        +0.0919%          -0.3932%
+WINNER         MOEAD             MOEAD
+
+[4] COMPARACIÓN BEST FRONTS (Unificados)
+metodo            ND                HV
+------------------------------------------------
+AMPL              40        277.827230
+MOEAD            296        278.928833
+------------------------------------------------
+GAP%      -640.0000%          -0.3965%
+WINNER         MOEAD             MOEAD
+
+------------------------------------------------------------
+
+INSTANCIA: drp_2151_BRONX
+[1] ANALISIS PUNTOS EXTREMOS (Nadir)
+AMPL : F1=-0.2073115 F2=215.200
+MOEAD: F1=-0.2072422 F2=1123.000
+peorF1=-0.2072422 (src MOEAD), peorF2=1123.000 (src MOEAD)
+REF: F1_ref=0.99*peorF1=-0.2051698 | F2_ref=1.001*peorF2=1124.123
+PUNTO REF: (-0.2051698, 1124.123)
+
+[3] RESUMEN PROMEDIO (Por Run)
+metodo     T.Ejec(s)                HV
+------------------------------------------------
+AMPL         41.5884        838.653334
+MOEAD        35.3460        840.810889
+------------------------------------------------
+GAP%       +15.0101%          -0.2573%
+WINNER         MOEAD             MOEAD
+
+[4] COMPARACIÓN BEST FRONTS (Unificados)
+metodo            ND                HV
+------------------------------------------------
+AMPL              51        838.653334
+MOEAD            713        841.179465
+------------------------------------------------
+GAP%     -1298.0392%          -0.3012%
+WINNER         MOEAD             MOEAD
+
+------------------------------------------------------------
+
+INSTANCIA: drp_2885_QUEENS
+[1] ANALISIS PUNTOS EXTREMOS (Nadir)
+AMPL : F1=-0.0898449 F2=721.000
+MOEAD: F1=-0.0896522 F2=1694.000
+peorF1=-0.0896522 (src MOEAD), peorF2=1694.000 (src MOEAD)
+REF: F1_ref=0.99*peorF1=-0.0887557 | F2_ref=1.001*peorF2=1695.694
+PUNTO REF: (-0.0887557, 1695.694)
+
+[3] RESUMEN PROMEDIO (Por Run)
+metodo     T.Ejec(s)                HV
+------------------------------------------------
+AMPL         34.8502       1400.460207
+MOEAD        24.7207       1403.133328
+------------------------------------------------
+GAP%       +29.0659%          -0.1909%
+WINNER         MOEAD             MOEAD
+
+[4] COMPARACIÓN BEST FRONTS (Unificados)
+metodo            ND                HV
+------------------------------------------------
+AMPL              60       1400.460207
+MOEAD           1222       1404.428759
+------------------------------------------------
+GAP%     -1936.6667%          -0.2834%
+WINNER         MOEAD             MOEAD
+
+------------------------------------------------------------
+
+INSTANCIA: drp_3442_BROOKLYN
+[1] ANALISIS PUNTOS EXTREMOS (Nadir)
+AMPL : F1=-0.1278460 F2=808.800
+MOEAD: F1=-0.1267078 F2=2043.000
+peorF1=-0.1267078 (src MOEAD), peorF2=2043.000 (src MOEAD)
+REF: F1_ref=0.99*peorF1=-0.1254407 | F2_ref=1.001*peorF2=2045.043
+PUNTO REF: (-0.1254407, 2045.043)
+
+[3] RESUMEN PROMEDIO (Por Run)
+metodo     T.Ejec(s)                HV
+------------------------------------------------
+AMPL         43.7377       1631.658453
+MOEAD        24.6147       1629.230308
+------------------------------------------------
+GAP%       +43.7220%          +0.1488%
+WINNER         MOEAD              AMPL
+
+[4] COMPARACIÓN BEST FRONTS (Unificados)
+metodo            ND                HV
+------------------------------------------------
+AMPL              67       1631.658453
+MOEAD           1075       1631.189092
+------------------------------------------------
+GAP%     -1504.4776%          +0.0288%
+WINNER         MOEAD              AMPL
+
+------------------------------------------------------------
+
+INSTANCIA: drp_4432_MANHATTAN
+[1] ANALISIS PUNTOS EXTREMOS (Nadir)
+AMPL : F1=-0.4077388 F2=122.600
+MOEAD: F1=-0.4068321 F2=1085.000
+peorF1=-0.4068321 (src MOEAD), peorF2=1085.000 (src MOEAD)
+REF: F1_ref=0.99*peorF1=-0.4027638 | F2_ref=1.001*peorF2=1086.085
+PUNTO REF: (-0.4027638, 1086.085)
+
+[3] RESUMEN PROMEDIO (Por Run)
+metodo     T.Ejec(s)                HV
+------------------------------------------------
+AMPL        327.1558        622.647086
+MOEAD        39.8343        623.141407
+------------------------------------------------
+GAP%       +87.8241%          -0.0794%
+WINNER         MOEAD             MOEAD
+
+[4] COMPARACIÓN BEST FRONTS (Unificados)
+metodo            ND                HV
+------------------------------------------------
+AMPL              42        622.647086
+MOEAD            468        623.379932
+------------------------------------------------
+GAP%     -1014.2857%          -0.1177%
+WINNER         MOEAD             MOEAD
+
+------------------------------------------------------------
+
+INSTANCIA: drp_13567_NEW_YORK_CITY
+[1] ANALISIS PUNTOS EXTREMOS (Nadir)
+AMPL : F1=-0.8509726 F2=991.600
+MOEAD: F1=- F2=-
+peorF1=-0.8509726 (src AMPL), peorF2=991.600 (src AMPL)
+REF: F1_ref=0.99*peorF1=-0.8424629 | F2_ref=1.001*peorF2=992.592
+PUNTO REF: (-0.8424629, 992.592)
+
+[3] RESUMEN PROMEDIO (Por Run)
+metodo     T.Ejec(s)                HV
+------------------------------------------------
+AMPL        174.1691       2829.759728
+MOEAD              -                 -
+------------------------------------------------
+GAP%               -                 -
+WINNER          AMPL              AMPL
+
+[4] COMPARACIÓN BEST FRONTS (Unificados)
+metodo            ND                HV
+------------------------------------------------
+AMPL              90       2829.759728
+MOEAD              0          0.000000
+------------------------------------------------
+GAP%      +100.0000%        +100.0000%
+WINNER          AMPL              AMPL
+
+------------------------------------------------------------
+
+
+====================================
+RESUMEN FINAL (por instancia)
+====================================
+INSTANCIA                        HV_AMPL          HV_MOEAD      GAP_HV      WIN_HV                     TE_AMPL                    TE_MOEAD      GAP_TE      WIN_TE
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+STATEN_ISLAND                 277.827230      (278.928833)    -0.3965%       MOEAD        12.8478 s (0.21 min)      (12.8360 s (0.21 min))    -0.0920%       MOEAD
+BRONX                         838.653334      (841.179465)    -0.3012%       MOEAD        41.5884 s (0.69 min)      (35.3460 s (0.59 min))   -17.6611%       MOEAD
+QUEENS                       1400.460207     (1404.428759)    -0.2834%       MOEAD        34.8502 s (0.58 min)      (24.7207 s (0.41 min))   -40.9760%       MOEAD
+BROOKLYN                   (1631.658453)       1631.189092    +0.0288%        AMPL        43.7377 s (0.73 min)      (24.6147 s (0.41 min))   -77.6893%       MOEAD
+MANHATTAN                     622.647086      (623.379932)    -0.1177%       MOEAD       327.1558 s (5.45 min)      (39.8343 s (0.66 min))  -721.2918%       MOEAD
+NEW_YORK_CITY              (2829.759728)          0.000000  +100.0000%        AMPL     (174.1691 s (2.90 min))                           -           -        AMPL
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+WINS                                   2                 4                                       1                           5            
