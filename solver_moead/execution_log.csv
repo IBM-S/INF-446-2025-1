@@ -4512,3 +4512,17 @@ cam_14468_VENUSTIANO_CARRANZA.dat,MOEAD,cam,location,750,75,14468,150000,0,80213
 cam_15743_ALVARO_OBREGON.dat,MOEAD,cam,location,750,75,15743,150000,0,98593,0.9,0.5,0.8,1,0,89.2477,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_15743_ALVARO_OBREGON
 cam_24363_GUSTAVO_A._MADERO.dat,MOEAD,cam,location,750,75,24363,150000,0,776557,0.9,0.5,0.8,1,0,141.399,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_24363_GUSTAVO_A._MADERO
 cam_40264_IZTAPALAPA.dat,MOEAD,cam,location,750,75,40264,150000,0,113061,0.9,0.5,0.8,1,0,262.63,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_40264_IZTAPALAPA
+drp_657_STATEN_ISLAND.dat,MOEAD,drp,relocation,500,125,657,10000,0,965094,0.4,0.5,0.7,1,0,0.210479,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_657_STATEN_ISLAND
+drp_657_STATEN_ISLAND.dat,MOEAD,drp,relocation,500,125,657,50000,0,650607,0.4,0.5,0.7,1,0,0.840809,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_657_STATEN_ISLAND
+drp_657_STATEN_ISLAND.dat,MOEAD,drp,relocation,500,125,657,150000,0,921038,0.4,0.5,0.7,1,0,2.13435,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_657_STATEN_ISLAND
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,150000,0,667151,0.4,0.5,0.7,1,0,8.6668,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,150000,0,748309,0.4,0.5,0.7,1,0,8.06695,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,150000,0,356544,0.4,0.5,0.7,1,0,8.06531,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,300000,0,636535,0.4,0.5,0.7,1,0,15.8338,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,150000,0,191470,0.4,0.5,0.7,1,0,8.25067,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,150000,0,404277,0.4,0.5,0.7,1,0,9.00938,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2885_QUEENS.dat,MOEAD,drp,relocation,500,125,2885,150000,0,461031,0.4,0.5,0.7,1,0,10.1027,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2885_QUEENS
+drp_3442_BROOKLYN.dat,MOEAD,drp,relocation,500,125,3442,150000,0,316951,0.4,0.5,0.7,1,0,13.4521,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_3442_BROOKLYN
+drp_3442_BROOKLYN.dat,MOEAD,drp,relocation,500,125,3442,300000,0,603877,0.4,0.5,0.7,1,0,24.8974,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_3442_BROOKLYN
+drp_4432_MANHATTAN.dat,MOEAD,drp,relocation,500,125,4432,300000,0,183245,0.4,0.5,0.7,1,0,51.1973,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_4432_MANHATTAN
+drp_13567_NEW_YORK_CITY.dat,MOEAD,drp,relocation,500,125,13567,150000,0,572959,0.4,0.5,0.7,1,0,74.044,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_13567_NEW_YORK_CITY
