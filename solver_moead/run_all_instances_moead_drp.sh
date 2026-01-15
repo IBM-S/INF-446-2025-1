@@ -14,26 +14,28 @@ VARIANT="relocation"
 NUM_RUNS=10          
 
 # Parámetros Algoritmo
-POPULATION=1000
-NEIGHBORPCT=0.1
+BITPROB=0.001          # No se ocupa
+CROSSOVER=0.7
+CROSSTYPE=7            # Cruzamiento uniforme inteligente
+INITDIST=2             # Distribucion Estructurada
+INITTYPERELOCATION=3   # Choose Move or Buy puro (usan ProbMoveRelocation)
+MUTATION=0.4
+MUTPCTDELETE=0.25      # No se ocupa
+MUTPCTSWAP=0.4         # No se ocupa
+MUTPROBSWAP=0.4        # No se ocupa
+MUTTYPE=12             # Mutacion modificada con reubicacion
+NEIGHBORPCT=0.25
+NOISEPCT=0.1    
+OP1_PROB=0.5           
+POPULATION=500
+POWEREXP=1.0
+PROBMOVERELOCATION=0.5
+SPLITPCTRELOCATION=0.4 # No se ocupa
+
 NEVALS=150000    # Criterio de parada por evaluaciones
 MAX_TIME=3600      # Criterio de parada por tiempo (0 = desactivado)
-MUTATION=0.9
-CROSSOVER=1.0
-#OP1_PROB=0.3
 SAVE=0
-MUTTYPE=17
-CROSSTYPE=7
-#MUTPCTDELETE=0.4
-#MUTPCTSWAP=0.25
-#BITPROB=0.1
-INITTYPERELOCATION=3
-PROBMOVERELOCATION=0.3
-#SPLITPCTRELOCATION=0.1
 
-INITDIST=1
-#POWEREXP=6.0
-#NOISEPCT=0.1
 
 
 # Lista de Instancias
@@ -113,19 +115,21 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
             -time "${MAX_TIME}" 
             -mut "${MUTATION}" 
             -cross "${CROSSOVER}" 
-            #-op1 "${OP1_PROB}" 
+            -op1 "${OP1_PROB}" 
             -save "${SAVE}" 
             -mutType "${MUTTYPE}" 
             -crossType "${CROSSTYPE}" 
             #-mutPctDelete "${MUTPCTDELETE}" 
             #-mutPctSwap "${MUTPCTSWAP}" 
             #-bitprob "${BITPROB}" 
+            #-mutProbSwap "${MUTPROBSWAP}"
             -initTypeRelocation "${INITTYPERELOCATION}"
             -probMoveRelocation "${PROBMOVERELOCATION}"
+            #-splitPctRelocation "${SPLITPCTRELOCATION}"
 
             -initDist "${INITDIST}"
-            #-powerExp "${POWEREXP}"
-            #-noisePct "${NOISEPCT}"
+            -powerExp "${POWEREXP}"
+            -noisePct "${NOISEPCT}"
 
             -outDir "${subFolder}"
         )

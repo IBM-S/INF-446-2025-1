@@ -14,23 +14,32 @@ VARIANT="location"
 NUM_RUNS=10          
 
 # Parámetros Algoritmo
-POPULATION=450
-NEIGHBORPCT=0.25
+BITPROB=0.01      # No se ocupa
+CROSSOVER=0.8
+CROSSTYPE=3       # Cruzamiento uniforme normal
+INITDIST=2        # Distribucion Estructurada
+MUTATION=0.9
+MUTPCTDELETE=0.2  # No se ocupa
+MUTPCTSWAP=0.2    # No se ocupa
+MUTPROBSWAP=0.2   # No se ocupa
+MUTTYPE=5         # BitFlip 1/N
+NEIGHBORPCT=0.1
+NOISEPCT=0.1 
+OP1_PROB=0.5      # No se ocupa
+POPULATION=750
+POWEREXP=6.0
+
+
 NEVALS=150000    # Criterio de parada por evaluaciones
 MAX_TIME=3600      # Criterio de parada por tiempo (0 = desactivado)
-MUTATION=0.5
-CROSSOVER=0.3
-OP1_PROB=0.7
-SAVE=0
-MUTTYPE=6
-CROSSTYPE=1
-MUTPCTDELETE=0.05
-MUTPCTSWAP=0.35
-BITPROB=0.15
 
-INITDIST=2
-POWEREXP=4.0
-NOISEPCT=0.1
+
+
+SAVE=0
+
+
+
+
 
 
 # Lista de Instancias
@@ -121,14 +130,14 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
             -time "${MAX_TIME}" 
             -mut "${MUTATION}" 
             -cross "${CROSSOVER}" 
-            -op1 "${OP1_PROB}" 
+            #-op1 "${OP1_PROB}" 
             -save "${SAVE}" 
             -mutType "${MUTTYPE}" 
             -crossType "${CROSSTYPE}" 
-            -mutPctDelete "${MUTPCTDELETE}" 
-            -mutPctSwap "${MUTPCTSWAP}" 
-            -bitprob "${BITPROB}" 
-
+            #-mutPctDelete "${MUTPCTDELETE}" 
+            #-mutPctSwap "${MUTPCTSWAP}" 
+            #-bitprob "${BITPROB}" 
+            #-mutProbSwap "${MUTPROBSWAP}"
             -initDist "${INITDIST}"
             -powerExp "${POWEREXP}"
             -noisePct "${NOISEPCT}"
