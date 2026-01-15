@@ -607,7 +607,6 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
     double gasto = c2 * movidos + c1 * instalados;
 
 
-    
 	if (gasto > max_P) {
         //printf("\n%f    %d", gasto, max_P);
         //printf("aaa\n");
@@ -1094,10 +1093,10 @@ void CUtilityToolBox::MutacionModificada_sin_reubicacion(vector<double> &x_var, 
 
 	if (rnd <= prob_op1_delete) {
         //Rango [0, prob_op1] -> Operador 1 (Solo Delete)
-        esSwap = true; 
+        esSwap = false; 
     } else {
         // Rango (prob_op1, 1.0] -> Operador 2 (Swap)
-        esSwap = false;
+        esSwap = true;
     }
 
 	if (esSwap && candidatos_poner.empty())

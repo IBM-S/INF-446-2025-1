@@ -329,22 +329,22 @@ int main(int argc, char *argv[])
     int decompType = 1;   // 1 por defecto (Tchebycheff)
     int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
-    int mutType = 5;     // Default: Híbrida
-    int crossType = 3;    // Default: Inteligente
+    int mutType = 12;     // Default: Híbrida
+    int crossType = 7;    // Default: Inteligente
     double mutPct = 0.4; // Default: 5% intensidad para operadores porcentuales
-    double bitFlipProb = 0.01; // Default: 1% probabilidad para BitFlip Fijo
+    double bitFlipProb = 0.001; // Default: 1% probabilidad para BitFlip Fijo
 
     double userNeighborPct = 0.0; // 0 = usar archivo, >0 usar porcentaje
-    double userMutPctDelete = 0.2; // 0 = usar default
-    double userMutPctSwap = 0.2;   // 0 = usar default
-    double userMutProbSwap = 0.2;
+    double userMutPctDelete = 0.25; // 0 = usar default
+    double userMutPctSwap = 0.4;   // 0 = usar default
+    double userMutProbSwap = 0.15;
 
     int initTypeRelocation = 3;           // Default: Solo Mover (o el que prefieras como base)
     double probMoveRelocation = 0.5;      // Default: 50%
     double splitPctRelocation = 0.4;      // Default: 50% split
 
     int initDist = 2;
-    double powerExp = 6.0;
+    double powerExp = 1.0;
     double noisePct = 0.1;
 
     if (argc < 2) {
