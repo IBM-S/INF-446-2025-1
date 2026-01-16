@@ -1113,7 +1113,7 @@
         if (d['compare-tipo']) d['compare-tipo'].onchange = () => this.logic.updateComparePreview();
 
         // Inputs
-        d['instancia'].onchange = () => this.logic.refreshHistory();
+        d['instancia'].onchange = () => this.logic.autoLoadOnInstanceChange();
 
         // Slider y Visualización
         d['slider'].oninput = (e) => this.ui.renderGeneration(parseInt(e.target.value));
@@ -1137,6 +1137,8 @@
         APP.dom['btn-compare-load'].addEventListener('click', () => APP.logic.compareLoad());
       }
     };
+
+
 
     /**
      * ============================================================================
@@ -1271,6 +1273,8 @@
 
 
 
+
+
     /**
      * ============================================================================
      * LÓGICA DE NEGOCIO
@@ -1332,6 +1336,8 @@
         // Modo 'full' si pedimos intervalos, 'simple' si es normal
         const mode = saveInterval > 0 ? 'full' : 'simple';
         await this.processResultData(res, mode);
+
+        await this.autoSelectAndLoadAmplFor(APP.dom['instancia'].value);
 
         APP.ui.setStatus(`Listo: ${APP.state.frames.length} gens`, 'success');
         this.refreshHistory();
@@ -2192,6 +2198,7 @@
     // ============================================================================
     // HELPERS (Utilidades puras)
     // ============================================================================
+
     function compressRanges(ids) {
       if (!ids || !ids.length) return "";
       const arr = [...new Set(ids)].sort((a, b) => a - b);
