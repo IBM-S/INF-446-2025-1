@@ -1014,7 +1014,7 @@ void CUtilityToolBox::OnePointCrossover_Relocation(const vector<double> &parent1
 
     for (int i = 0; i < n; ++i) child[i] = (child[i] > 0.5) ? 1.0 : 0.0; 
 
-    RepararPresupuesto_Relocation(child, problemInstance);
+    RepararPresupuesto_Relocation(child, instance);
 }
 
 void CUtilityToolBox::TwoPointCrossover_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance){
@@ -1035,7 +1035,7 @@ void CUtilityToolBox::TwoPointCrossover_Relocation(const vector<double> &parent1
 
     for (int i = end + 1; i < n; ++i) child[i] = (child[i] > 0.5) ? 1.0 : 0.0; 
 
-    RepararPresupuesto_Relocation(child, problemInstance);
+    RepararPresupuesto_Relocation(child, instance);
 }
 
 void CUtilityToolBox::CruzamientoGeografico_Relocation(const vector<double> &p1, const vector<double> &p2, vector<double> &child, ProblemInstance *instance)
