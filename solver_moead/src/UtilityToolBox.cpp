@@ -588,28 +588,49 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
     int entradas_no_base = 0;   // cuantos nodos sin equipos original terminaron con AED. movidos + compras nuevas
 
     std::vector<int> activos_no_base;
+    std::vector<int> bases_vacias;
     activos_no_base.reserve(n);
 
     for(int i = 0; i< n; ++i) {
         bool xi = (x_var[i] > 0.5);
-        bool base = (nodos[i]->getFlag() == 1);
+        bool es_base = (nodos[i]->getFlag() == 1);
 
-		if (base && !xi) moved_out++;
-        if (!base && xi){
-            entradas_no_base++;   // movidos mas nuevos
-            activos_no_base.push_back(i);  // movidos mas nuevos
+		if (es_base && !xi) {
+            moved_out++;                 //Liberamos un equipo preinstalado
+            bases_vacias.push_back(i);
+        } 
+        if (!es_base && xi){
+            activos_no_base.push_back(i);  // aqui pusimos un equipo (o es movido o es comprado)
         }
 	}
+    // movi 6 preinstalados, pero solo instale 4, entonces los 2 equipos restantes se tienen que volver a poner en sus bases originales
+    while (bases_vacias.size() > activos_no_base.size()) 
+    {
+        // Elegir una base vacía al azar
+        int rnd_idx = rand() % bases_vacias.size();
+        int idx_base = bases_vacias[rnd_idx];
 
-    int movidos = moved_out;
-    int instalados = std::max(0, entradas_no_base - moved_out);
+        // Encenderla (Recuperamos el AED)
+        x_var[idx_base] = 1.0;
+        
+        // Actualizar contadores
+        moved_out--; 
 
-    double gasto = c2 * movidos + c1 * instalados;
+        // Eliminar de la lista de vacías (Swap and Pop para eficiencia)
+        bases_vacias[rnd_idx] = bases_vacias.back();
+        bases_vacias.pop_back();
+    }
+
+    int total_nuevos_sitios = activos_no_base.size();
+
+    int n_instalados = std::max(0, total_nuevos_sitios - moved_out);
+
+    double gasto = c2 * moved_out + c1 * n_instalados;
 
 
 	if (gasto > max_P) {
-        //printf("\n%f    %d", gasto, max_P);
-        //printf("aaa\n");
+        printf("\n%f    %d", gasto, max_P);
+        printf("aaa\n");
 
         std::vector<std::pair<double, int>> calidad;
         calidad.reserve(activos_no_base.size());
@@ -618,23 +639,37 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
             double aporte = 0.0;
             // Obtenemos vecinos que cubre este nodo
             const auto& vecinos = instance->getNodosCubiertosPor(idx);
-            
             for(int v : vecinos) {
-                // Sumamos probabilidad solo si NO está cubierto por otros FIJOS externos
-                // (En relocación asumimos que todo se puede mover, así que calculamos aporte bruto)
                 aporte += nodos[v]->getProbOhca();
             }
             calidad.push_back({aporte, idx});
         }
+        // ordenar menor a mayor calidad
 		std::sort(calidad.begin(), calidad.end());
 
         // 5. Apagar los peores
-        for(int k=0; k<(int)calidad.size() && gasto > max_P; ++k) {
-            if (instalados <= 0) break;
+        for(int k=0; k<(int)calidad.size(); ++k) {
+            if (gasto <= max_P) break;
+
             int idx = calidad[k].second;
             x_var[idx] = 0.0;
-            instalados--;
-            gasto -= c1;
+            if (n_instalados > 0){
+                // si tenemos equipos comprados, al borrar nos ahorramos c1
+                gasto -= c1;
+                n_instalados--;
+            } else {
+                // si ya no hay comprados, significa que estamos liberando un equipo que venia preinstalado
+                gasto -= c2;
+                moved_out--;
+
+                if (!bases_vacias.empty()){
+                    int rand_idx = rand() % bases_vacias.size();
+                    int base_libre = bases_vacias[rand_idx];
+                    x_var[base_libre] = 1.0; // Reinstalamos el equipo liberado en su base original
+                    bases_vacias[rand_idx] = bases_vacias.back();
+                    bases_vacias.pop_back();
+                }
+            }
         }
 	}
 }
@@ -978,6 +1013,8 @@ void CUtilityToolBox::OnePointCrossover_Relocation(const vector<double> &parent1
     for (int i = end+1; i < n; ++i) child[i] = parent1[i];
 
     for (int i = 0; i < n; ++i) child[i] = (child[i] > 0.5) ? 1.0 : 0.0; 
+
+    RepararPresupuesto_Relocation(child, problemInstance);
 }
 
 void CUtilityToolBox::TwoPointCrossover_Relocation(const vector<double> &parent1, const vector<double> &parent2, vector<double> &child, ProblemInstance *instance){
@@ -997,6 +1034,8 @@ void CUtilityToolBox::TwoPointCrossover_Relocation(const vector<double> &parent1
     for (int i = cut2 + 1; i < end; ++i) child[i] = parent1[i];
 
     for (int i = end + 1; i < n; ++i) child[i] = (child[i] > 0.5) ? 1.0 : 0.0; 
+
+    RepararPresupuesto_Relocation(child, problemInstance);
 }
 
 void CUtilityToolBox::CruzamientoGeografico_Relocation(const vector<double> &p1, const vector<double> &p2, vector<double> &child, ProblemInstance *instance)
@@ -1106,12 +1145,12 @@ void CUtilityToolBox::MutacionModificada_sin_reubicacion(vector<double> &x_var, 
 	}
 
 	int idx_borrar = candidatos_borrar[rand() % candidatos_borrar.size()];
-	x_var[idx_borrar] = 0;
+	x_var[idx_borrar] = 0.0;
 
 	if (esSwap)
 	{
 		int idx_poner = candidatos_poner[rand() % candidatos_poner.size()];
-		x_var[idx_poner] = 1;
+		x_var[idx_poner] = 1.0;
 	}
 
 }
@@ -1467,12 +1506,12 @@ void CUtilityToolBox::MutacionModificada_con_reubicacion(vector<double> &x_var, 
     }
 
 	int idx_borrar = candidatos_borrar[rand() % candidatos_borrar.size()];
-    x_var[idx_borrar] = 0;
+    x_var[idx_borrar] = 0.0;
 
 	// Agregar (Swap)
     if (esSwap) {
         int idx_poner = candidatos_poner[rand() % candidatos_poner.size()];
-        x_var[idx_poner] = 1;
+        x_var[idx_poner] = 1.0;
     }
 
 	// imprmir x_var
@@ -1482,6 +1521,8 @@ void CUtilityToolBox::MutacionModificada_con_reubicacion(vector<double> &x_var, 
 		std::cout << val << " ";
 	}
 	std::cout << std::endl; */
+
+    RepararPresupuesto_Relocation(x_var, problemInstance);
 }
 
 void CUtilityToolBox::MutacionSwapProbabilisticoReloc(vector<double> &x_var, double mutation_rate, double MutProbSwap, ProblemInstance *instance)
@@ -1580,6 +1621,7 @@ void CUtilityToolBox::MutacionDeletePorcentualReloc(vector<double>& x, double mu
     std::random_shuffle(activos.begin(), activos.end());
     for(int k=0;k<a_borrar_real;++k) x[activos[k]] = 0.0;
 
+    RepararPresupuesto_Relocation(x, inst);
 }
 
 void CUtilityToolBox::MutacionSwapPorcentualReloc(vector<double>& x_var, double mutation_rate, double swap_ratio, ProblemInstance* inst)
@@ -1616,6 +1658,8 @@ void CUtilityToolBox::MutacionSwapPorcentualReloc(vector<double>& x_var, double 
 			puestos++;
 		}
 	}
+
+    RepararPresupuesto_Relocation(x_var, inst);
 }
 
 

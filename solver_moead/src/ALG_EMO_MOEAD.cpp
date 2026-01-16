@@ -6,9 +6,9 @@
 CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 {
 	s_PBI_type = 1;
-	m_MutationRate = 0.3;
-    m_CrossoverRate = 1.0;
-    m_Op1MutationProb = 0.2;
+	m_MutationRate = 0.4;
+    m_CrossoverRate = 0.7;
+    m_Op1MutationProb = 0.5;
     m_IsRelocation = true; // Por defecto Location (fijo)
     m_ProblemType = "cam";
 	s_PopulationSize = 0;
@@ -19,17 +19,17 @@ CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 	m_MutationType = 11;      // Híbrida por defecto
     m_CrossoverType = 3;     // Inteligente por defecto
     m_MutationPercentage = 0.05; 
-    m_BitFlipProb = 0.01;
+    m_BitFlipProb = 0.001;
 
-	m_MutPctDelete = 0.05; // 5% por defecto
-	m_MutPctSwap   = 0.05; // 5% por defecto
-	m_MutProbSwap  = 0.05;
+	m_MutPctDelete = 0.25; // 5% por defecto
+	m_MutPctSwap   = 0.40; // 5% por defecto
+	m_MutProbSwap  = 0.15;
 
 	m_NeighborhoodSizePct = 0.0;
 
 	m_InitDistributionStrategy = 2;
-	m_PowerExp = 5.0;
-	m_NoisePct = 0.20;
+	m_PowerExp = 1.0;
+	m_NoisePct = 0.1;
 }
 
 CALG_EMO_MOEAD::~CALG_EMO_MOEAD(void)
@@ -48,15 +48,14 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 	printf("Instance:  %s  RUN:  %d  GEN = 0 (Inicio)\n", strTestInstance, run_id);
 	this->SavePopulation(0);
 
-	printf("\nNadir Point Inicial\n"); // Son los peores valores de objetivos
-	printf("%f", v_NadirPoint[0]);
-	printf("\n");
-	printf("%f", v_NadirPoint[1]);
-	printf("\nIdeal Point Inicial\n");  // Son los mejores valores de objetivos
-	printf("%f", v_IdealPoint[0]);
-	printf("\n");
-	printf("%f\n", v_IdealPoint[1]);
-
+	printf("\n================================================\n");
+    printf("  RESUMEN DE OPTIMIZACIÓN (Inicio)\n");
+    printf("================================================\n");
+    printf("  Punto      |  f1 (Obj 1)   |  f2 (Obj 2)\n");
+    printf("  -----------|---------------|---------------\n");
+    printf("  Nadir      |  %-12.7f |  %-12.1f\n", v_NadirPoint[0], v_NadirPoint[1]);
+    printf("  Ideal      |  %-12.7f |  %-12.1f\n", v_IdealPoint[0], v_IdealPoint[1]);
+    printf("================================================\n");
 
 	int gen = 1;
 
@@ -89,14 +88,14 @@ void CALG_EMO_MOEAD::Execute(int run_id)
 	this->SavePopulation(gen);
 	this->SaveFinalPopulation();
 
-	printf("\nNadir Point Final\n"); // Son los peores valores de objetivos
-	printf("%f", v_NadirPoint[0]);
-	printf("\n");
-	printf("%f", v_NadirPoint[1]);
-	printf("\nIdeal Point Final\n");  // Son los mejores valores de objetivos
-	printf("%f", v_IdealPoint[0]);
-	printf("\n");
-	printf("%f\n", v_IdealPoint[1]);
+	printf("\n================================================\n");
+    printf("  RESUMEN DE OPTIMIZACIÓN (Final)\n");
+    printf("================================================\n");
+    printf("  Punto      |  f1 (Obj 1)   |  f2 (Obj 2)\n");
+    printf("  -----------|---------------|---------------\n");
+    printf("  Nadir      |  %-12.7f |  %-12.1f\n", v_NadirPoint[0], v_NadirPoint[1]);
+    printf("  Ideal      |  %-12.7f |  %-12.1f\n", v_IdealPoint[0], v_IdealPoint[1]);
+    printf("================================================\n");
 
 	m_PopulationSOP.clear();
 	v_IdealPoint.clear();
@@ -230,6 +229,42 @@ void CALG_EMO_MOEAD::InitializePopulation()
 	int total_nodos = nodos.size();
 	int presupuesto = this->problemInstance->getP();
 
+	auto ImprimirConteo = [&](const vector<double>& v, std::string label) {
+        int pre = 0;           
+        int inst = 0;          
+        int moved_out = 0;     
+
+        double c1 = this->problemInstance->getC1(); 
+        double c2 = this->problemInstance->getC2(); 
+        int max_P = this->problemInstance->getP();
+
+        for(size_t k=0; k<v.size(); ++k) {
+            bool is_active = (v[k] > 0.5);
+            bool is_pre = (nodos[k]->getFlag() == 1);
+
+            if(is_active) {
+                if(is_pre) pre++;
+                else inst++;
+            }
+            if(is_pre && !is_active) {
+                moved_out++;
+            }
+        }
+        
+        int n_movidos = std::min(inst, moved_out);
+        int n_nuevos = inst - n_movidos;
+        double costo_total = (n_nuevos * c1) + (n_movidos * c2);
+        std::string estado = (costo_total > max_P) ? "[VIOLA]" : "[OK]";
+        
+        std::cout << std::setw(20) << std::left << label 
+                  << "| Pre: " << std::setw(4) << pre 
+                  << "| Inst: " << std::setw(4) << inst 
+                  << "(Mov:" << std::setw(3) << n_movidos << " New:" << std::setw(3) << n_nuevos << ") "
+                  << "| Tot: " << std::setw(4) << (pre+inst)
+                  << "| Costo: " << std::setw(6) << std::fixed << std::setprecision(1) << costo_total 
+                  << " / " << max_P << " " << estado << std::endl;
+    };
+
 	int aeds_preinstalados = 0;
 	if (!m_IsRelocation) {
 		for (const auto &nodo : nodos) if (nodo->getFlag() == 1) aeds_preinstalados++;
@@ -253,11 +288,14 @@ void CALG_EMO_MOEAD::InitializePopulation()
 		int max_limit = 0;
 		if (m_IsRelocation) {
 			max_limit = (presupuesto > total_nodos) ? total_nodos : presupuesto;
+			//printf("presupuesto %d      total nodos %d\n", presupuesto, total_nodos);
 			//printf("Limite relocation %d\n", max_limit);
 		} else {
 			max_limit = (presupuesto < huecos_disponibles) ? presupuesto : huecos_disponibles;
+			//printf("presupuesto %d      huecos disponibles %d\n", presupuesto, huecos_disponibles);
 			//printf("Limite location %d\n", max_limit);
-		} 
+		}
+
 
 		// Calcular la cantidad a usar
 		int nums_AEDs_instalar = 0;
@@ -343,6 +381,12 @@ void CALG_EMO_MOEAD::InitializePopulation()
 			SP.m_BestIndividual.GenerateSimpleFeasibleSolution(nums_AEDs_instalar);
 			if (log_initialization) printf("default location initialization\n");
 		}
+
+		if (i < 0) {
+             if (i==0) std::cout << "\n--- DEBUG INICIALIZACION (Primeros 5) ---" << std::endl;
+             std::string label = "Init Indiv " + std::to_string(i);
+             ImprimirConteo(SP.m_BestIndividual.x_var, label);
+        }
 
 
 		// Sin contar el presupuesto
@@ -637,6 +681,59 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 	int p1, p2;
 	vector<unsigned> mating_pool;
 
+	auto ImprimirConteo = [&](const vector<double>& v, std::string label) {
+        int pre = 0;           // Bases activas
+        int inst = 0;          // Sitios nuevos activos
+        int moved_out = 0;     // Bases que se apagaron (disponibles para mover)
+
+        const auto& nodes = this->problemInstance->getNodes();
+        double c1 = this->problemInstance->getC1(); // Costo Compra
+        double c2 = this->problemInstance->getC2(); // Costo Movimiento
+        int max_P = this->problemInstance->getP();
+
+        for(size_t i=0; i<v.size(); ++i) {
+            bool is_active = (v[i] > 0.5);
+            bool is_pre = (nodes[i]->getFlag() == 1);
+
+            if(is_active) {
+                if(is_pre) pre++;
+                else inst++;
+            }
+
+            // Contar cuántos preinstalados se quitaron (son la fuente de los "Movidos")
+            if(is_pre && !is_active) {
+                moved_out++;
+            }
+        }
+
+        // --- CALCULO DE ORIGEN (Movidos vs Nuevos) ---
+        // Los sitios "Inst" se llenan priorizando los equipos movidos (moved_out)
+        // porque son más baratos. El resto se compra.
+        
+        // Cuantos instalados provienen de una reubicación:
+        int n_movidos = std::min(inst, moved_out);
+        
+        // Cuantos son compras totalmente nuevas:
+        int n_nuevos = inst - n_movidos;
+        
+        // Calculo de Costo
+        double costo_total = (n_nuevos * c1) + (n_movidos * c2);
+
+        // Estado del presupuesto
+        std::string estado = (costo_total > max_P) ? "[VIOLA]" : "[OK]";
+        
+        // --- IMPRESION FORMATEADA ---
+        std::cout << std::setw(20) << std::left << label 
+                  << "| Pre: " << std::setw(4) << pre 
+                  << "| Inst: " << std::setw(4) << inst 
+                  << "(Mov:" << std::setw(3) << n_movidos << " New:" << std::setw(3) << n_nuevos << ") "
+                  << "| Tot: " << std::setw(4) << (pre+inst)
+                  << "| Costo: " << std::setw(6) << std::fixed << std::setprecision(1) << costo_total 
+                  << " / " << max_P << " " << estado << std::endl;
+    };
+
+	int num_ind = 5;
+
 	for (unsigned int s = 0; s < s_PopulationSize; s++)
 	{
 		unsigned int id_c = order[s];
@@ -646,6 +743,13 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		p1 = mating_pool[0];
 		p2 = mating_pool[1];
 		mating_pool.clear();
+
+		if (s < num_ind) { // Limite para no saturar consola
+            std::cout << "\n-----------------------------------------------------------" << std::endl;
+            std::cout << "DEBUG EVOLUCION - Individuo " << s << " (Gen actual)" << std::endl;
+            ImprimirConteo(m_PopulationSOP[p1].m_BestIndividual.x_var, "Padre 1 (P1)");
+            ImprimirConteo(m_PopulationSOP[p2].m_BestIndividual.x_var, "Padre 2 (P2)");
+        }
 
 		child.problemInstance = this->problemInstance;
 
@@ -788,6 +892,15 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 				child.x_var = m_PopulationSOP[p2].m_BestIndividual.x_var;
 			}
 		}
+
+		// -------------------------------------------------------------
+        // IMPRESION DEBUG: HIJO POST-CROSSOVER
+        // -------------------------------------------------------------
+        if (s < num_ind) {
+            ImprimirConteo(child.x_var, "Hijo (Despues Cruce)");
+        }
+        // -------------------------------------------------------------
+
 		bool log_mut = false;
 		if (m_IsRelocation) {
 			switch (m_MutationType)
@@ -1002,6 +1115,15 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 					break; */
 				}
 		}
+
+		// -------------------------------------------------------------
+        // IMPRESION DEBUG: HIJO POST-MUTACION
+        // -------------------------------------------------------------
+        if (s < num_ind) {
+            ImprimirConteo(child.x_var, "Hijo (Despues Mutac)");
+            std::cout << "-----------------------------------------------------------\n" << std::endl;
+        }
+        // -------------------------------------------------------------
 
 
 		child.Evaluate();

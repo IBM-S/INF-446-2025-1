@@ -311,8 +311,8 @@ int main(int argc, char *argv[])
     NumberOfVariables = 324;
     
     // Parámetros Algoritmo
-    double mutationRate = 0.9;
-    double crossoverRate = 0.8;
+    double mutationRate = 0.4;
+    double crossoverRate = 0.7;
     double op1Prob = 0.5; // 20% delete, 80% swap (por ejemplo)
 
 	NumberOfObjectives = 2;
@@ -330,7 +330,7 @@ int main(int argc, char *argv[])
     int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
     int mutType = 12;     // Default: Híbrida
-    int crossType = 7;    // Default: Inteligente
+    int crossType = 10;    // Default: Inteligente
     double mutPct = 0.4; // Default: 5% intensidad para operadores porcentuales
     double bitFlipProb = 0.001; // Default: 1% probabilidad para BitFlip Fijo
 
