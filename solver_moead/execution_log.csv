@@ -4605,3 +4605,13 @@ drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,2000,0,165458,0.4,0.5,0.7,1
 drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,2000,0,510367,0.4,0.5,0.7,1,0,0.296724,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
 drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,2000,0,444429,0.4,0.5,0.7,1,0,0.27936,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
 drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,2000,0,170798,0.4,0.5,0.7,1,0,0.388467,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,10000,0,743470,0.4,0.5,0.7,1,0,1.47989,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,10000,0,46070,0.4,0.5,0.7,1,0,1.66889,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,10000,0,46485,0.9,0.5,0.7,1,0,1.837,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,100000,0,322116,0.9,0.5,0.7,1,0,10.1007,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,150000,0,823081,0.9,0.5,0.7,1,0,14.1115,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,150000,0,72170,0.01,0.5,0.7,1,0,10.1331,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,500000,0,602659,0.01,0.5,0.7,1,0,29.1705,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,500000,0,829460,0.01,0.5,0.7,1,0,42.2913,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,100000,0,508125,0.01,0.5,0.7,1,0,10.5506,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX
+drp_2151_BRONX.dat,MOEAD,drp,relocation,500,125,2151,100000,0,140774,0.01,0.5,0.7,1,0,8.01484,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2151_BRONX

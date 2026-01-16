@@ -732,7 +732,7 @@ void CALG_EMO_MOEAD::EvolvePopulation()
                   << " / " << max_P << " " << estado << std::endl;
     };
 
-	int num_ind = 5;
+	int num_ind = 0;
 
 	for (unsigned int s = 0; s < s_PopulationSize; s++)
 	{

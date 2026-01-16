@@ -605,7 +605,8 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
 	}
     // movi 6 preinstalados, pero solo instale 4, entonces los 2 equipos restantes se tienen que volver a poner en sus bases originales
     while (bases_vacias.size() > activos_no_base.size()) 
-    {
+    {   
+        // printf("\nReparando presupuesto por reubicacion: bases vacias %d > activos no base %d\n", (int)bases_vacias.size(), (int)activos_no_base.size());
         // Elegir una base vacía al azar
         int rnd_idx = rand() % bases_vacias.size();
         int idx_base = bases_vacias[rnd_idx];
@@ -629,8 +630,8 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
 
 
 	if (gasto > max_P) {
-        printf("\n%f    %d", gasto, max_P);
-        printf("aaa\n");
+        //printf("\n%f    %d", gasto, max_P);
+        //printf("aaa\n");
 
         std::vector<std::pair<double, int>> calidad;
         calidad.reserve(activos_no_base.size());
@@ -1462,7 +1463,8 @@ void CUtilityToolBox::MutacionModificada_con_reubicacion(vector<double> &x_var, 
 	// 1 Verificar probabilidad
 	double prob_mutation_rate = Get_Random_Number();
 	if (prob_mutation_rate > mutation_rate)
-	{
+	{   
+        //printf("No hay mutacion\n");
 		return;
 	}
 
