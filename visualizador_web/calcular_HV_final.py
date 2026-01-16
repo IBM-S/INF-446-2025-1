@@ -248,6 +248,16 @@ def fmt_seconds_with_minutes(sec, dec_s=4, dec_m=2):
     m = s / 60.0
     return f"{s:.{dec_s}f} s ({m:.{dec_m}f} min)"
 
+def fmt_seconds_only(sec, dec_s=4):
+    """Devuelve: "12.3456 s". Si sec es NaN -> "-" """
+    if sec is None or (isinstance(sec, float) and np.isnan(sec)):
+        return "-"
+    try:
+        s = float(sec)
+    except:
+        return "-"
+    return f"{s:,.{dec_s}f}"
+
 def cell(text: str, width: int) -> str:
     """Ajusta a ancho fijo (derecha)."""
     return f"{text:>{width}}"
@@ -378,10 +388,12 @@ def procesar_instancias(problem_type="cam", target_instance=None):
     wins_hv_total = {"AMPL": 0, "MOEAD": 0, "EMPATE": 0, "-": 0}
     wins_te_prom  = {"AMPL": 0, "MOEAD": 0, "EMPATE": 0, "-": 0}
 
-    W_INST = 22       
-    W_HV   = 18    
+    W_INST = 22
+    W_REF_X = 14
+    W_REF_Y = 14       
+    W_HV   = 20    
     W_GAP  = 12          
-    W_TE   = 28        
+    W_TE   = 32        
     W_WIN  = 12
 
 
@@ -636,13 +648,15 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             summary_rows.append({
                 "inst": inst,
                 "inst_disp": display_inst_name(inst),
+                "ref_x": ref_x,
+                "ref_y": ref_y,
                 "hv_ampl": h_a,
                 "hv_moead": h_m,
                 "gap_hv": gap_pct(h_a, h_m),
                 "win_hv": win_hv,
                 "te_ampl": ampl_te,
                 "te_moead": moead_te,
-                "gap_te": gap_pct(moead_te, ampl_te),
+                "gap_te": gap_pct(ampl_te, moead_te),
                 "win_te": win_te
             })
 
@@ -748,17 +762,19 @@ def procesar_instancias(problem_type="cam", target_instance=None):
     print(" RESUMEN FINAL (por instancia)")
     print("========================================================================================================================================================\n")
 
+    summary_lines = []
+    summary2_lines = []
+
     if not summary_rows:
         print("No hay filas para resumir (no se procesó ninguna instancia con datos).")
     else:
         # Formato fijo
         header = (
-            f"{'INSTANCIA':<{W_INST}}"
-            f"{'HV_AMPL':>{W_HV}}{'HV_MOEAD':>{W_HV}}{'GAP_HV':>{W_GAP}}{'WIN_HV':>{W_WIN}}"
+            f"{'Instance':<{W_INST}}"
+            f"{'ref_1':>{W_REF_X}}{'ref_2':>{W_REF_Y}}"
+            f"{'Hv(AMPL)':>{W_HV}}{'AgHv(MOEA/D)':>{W_HV}}{'GAP_HV':>{W_GAP}}{'WIN_HV':>{W_WIN}}"
             f"{'TE_AMPL':>{W_TE}}{'TE_MOEAD':>{W_TE}}{'GAP_TE':>{W_GAP}}{'WIN_TE':>{W_WIN}}"
         )
-
-        summary_lines = []
 
         print(header)
         print("-" * len(header))
@@ -775,6 +791,8 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
         for r in summary_rows:
             inst_disp = r["inst_disp"]
+            ref_x = r.get("ref_x", np.nan)
+            ref_y = r.get("ref_y", np.nan)
             hv_a = r["hv_ampl"]
             hv_m = r["hv_moead"]
             g_hv = r["gap_hv"]
@@ -794,7 +812,13 @@ def procesar_instancias(problem_type="cam", target_instance=None):
                 te_w_ampl += 1
             elif win_te == "MOEAD":
                 te_w_moead += 1
+            
+            ## Ref X/Y
 
+            ref_x_txt = "-" if _is_missing(ref_x) else fmt_f1(problem_type, float(ref_x))
+            ref_y_txt = "-" if _is_missing(ref_y) else fmt_f2(problem_type, float(ref_y))
+            ref_x_cell = cell(ref_x_txt, W_REF_X)
+            ref_y_cell = cell(ref_y_txt, W_REF_Y)
 
             # --- HV base (sin paréntesis todavía)
             hv_a_txt = "-" if pd.isna(hv_a) else f"{hv_a:.6f}"
@@ -831,6 +855,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
             line = (
                 f"{inst_disp:<{W_INST}}"
+                f"{ref_x_cell}{ref_y_cell}"
                 f"{hv_a_cell}{hv_m_cell}{gap_hv_cell}{win_hv:>{W_WIN}}"
                 f"{te_a_cell}{te_m_cell}{gap_te_cell}{win_te:>{W_WIN}}"
             )
@@ -841,6 +866,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
         wins_line = (
             f"{'WINS':<{W_INST}}"
+            f"{'':>{W_REF_X}}{'':>{W_REF_Y}}"
             f"{hv_w_ampl:>{W_HV}}{hv_w_moead:>{W_HV}}{'':>{W_WIN}}"
             f"{te_w_ampl:>{W_TE}}{te_w_moead:>{W_TE}}{'':>{W_WIN}}"
         )
@@ -849,15 +875,84 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
         summary_lines.append("-" * len(header))
         summary_lines.append(strip_ansi(wins_line))
+
+        W_TE2 = 20
+        print("\n")
+        print(" RESUMEN FINAL FINAL (compacto)")
+        print("=" * (W_INST + W_REF_X + W_REF_Y + W_HV*2 + W_GAP + W_WIN + W_TE2*2 + W_GAP))
+
+        header2 = (
+            f"{'Instance':<{W_INST}}"
+            f"{'ref_1':>{W_REF_X}}{'ref_2':>{W_REF_Y}}"
+            f"{'Hv(AMPL)':>{W_HV}}{'AgHv(MOEA/D)':>{W_HV}}{'GapHv':>{W_GAP}}"
+            f"{'Time [s] (AMPL)':>{W_TE2}}{'Time [s] (MOEA/D)':>{W_TE2}}{'GapTime':>{W_GAP}}"
+        )
+
+        print(header2)
+        print("-" * len(header2))
+
+        summary2_lines.append(header2)
+        summary2_lines.append("-" * len(header2))
+
+        def fmt_gap_only_2(v):
+            return f"{v:+.2f}%" if pd.notna(v) else "-"
+
+
+        for r in summary_rows:
+            inst_disp = r["inst_disp"]
+            ref_x = r.get("ref_x", np.nan)
+            ref_y = r.get("ref_y", np.nan)
+            hv_a = r["hv_ampl"]
+            hv_m = r["hv_moead"]
+            g_hv = r["gap_hv"]
+            te_a = r["te_ampl"]
+            te_m = r["te_moead"]
+            g_te = r["gap_te"]
+
+            # Ref X/Y
+            ref_x_txt = "-" if _is_missing(ref_x) else f"{float(ref_x):,.2f}"
+            ref_y_txt = "-" if _is_missing(ref_y) else f"{float(ref_y):,.2f}"
+
+            hv_a_txt = "-" if pd.isna(hv_a) else f"{float(hv_a):,.2f}"
+            hv_m_txt = "-" if pd.isna(hv_m) else f"{float(hv_m):,.2f}"
+
+            te_a_txt = fmt_seconds_only(te_a, dec_s=2)
+            te_m_txt = fmt_seconds_only(te_m, dec_s=2)
+
+            line2 = (
+                f"{inst_disp:<{W_INST}}"
+                f"{cell(ref_x_txt, W_REF_X)}{cell(ref_y_txt, W_REF_Y)}"
+                f"{cell(hv_a_txt, W_HV)}{cell(hv_m_txt, W_HV)}{cell(fmt_gap_only_2(g_hv), W_GAP)}"
+                f"{cell(te_a_txt, W_TE2)}{cell(te_m_txt, W_TE2)}{cell(fmt_gap_only_2(g_te), W_GAP)}"
+            )
+
+            print(line2)
+            summary2_lines.append(strip_ansi(line2))
+
     print("========================================================================================================================================================\n")
 
+    
     with open(report_path, "a", encoding="utf-8") as rf:
         rf.write("\n")
         rf.write("====================================\n")
         rf.write("RESUMEN FINAL (por instancia)\n")
         rf.write("====================================\n")
-        rf.write("\n".join(summary_lines))
+        if summary_lines:
+            rf.write("\n".join(summary_lines))
+            rf.write("\n")
+        else:
+            rf.write("(sin datos)\n")
+
         rf.write("\n")
+        rf.write("====================================\n")
+        rf.write("RESUMEN FINAL FINAL (compacto)\n")
+        rf.write("====================================\n")
+        if summary2_lines:
+            rf.write("\n".join(summary2_lines))
+            rf.write("\n")
+        else:
+            rf.write("(sin datos)\n")
+
 
 
 
