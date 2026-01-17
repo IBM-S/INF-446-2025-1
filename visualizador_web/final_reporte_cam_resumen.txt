@@ -1,15 +1,12 @@
 REPORTE RESUMEN - TIPO CAM
 
 INSTANCIA: cam_1390_MILPA_ALTA
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-180.4028 F2=118.000
-MOEAD: F1=-180.4028 F2=1175.000
-peorF1=-180.4028 (src AMPL/MOEAD), peorF2=1175.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-178.5988 | F2_ref=1.001*peorF2=1176.175
-PUNTO REF: (-178.5988, 1176.175)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-178.5988, 1176.175)
+Ref Final (Best Fronts): (-178.5988, 124.124)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL         14.1883      62393.444898
 MOEAD         7.4334      62459.294728
@@ -17,27 +14,24 @@ MOEAD         7.4334      62459.294728
 GAP%       +47.6092%          -0.1055%
 WINNER         MOEAD             MOEAD
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL              34      62393.444898
-MOEAD            125      62504.072198
+AMPL              34       5023.180719
+MOEAD            125       5133.808019
 ------------------------------------------------
-GAP%      -267.6471%          -0.1773%
+GAP%      -267.6471%          -2.2023%
 WINNER         MOEAD             MOEAD
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_1800_CUAJIMALPA_DE_MORELOS
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-257.4842 F2=102.000
-MOEAD: F1=-257.4842 F2=1540.000
-peorF1=-257.4842 (src AMPL/MOEAD), peorF2=1540.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-254.9094 | F2_ref=1.001*peorF2=1541.540
-PUNTO REF: (-254.9094, 1541.540)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-254.9094, 1541.540)
+Ref Final (Best Fronts): (-254.9094, 104.104)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL         19.7126      78589.681481
 MOEAD         8.7486      78577.971351
@@ -45,27 +39,24 @@ MOEAD         8.7486      78577.971351
 GAP%       +55.6193%          +0.0149%
 WINNER         MOEAD              AMPL
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL              37      78589.681481
-MOEAD            104      78625.840681
+AMPL              37       4197.420826
+MOEAD            104       4233.580026
 ------------------------------------------------
-GAP%      -181.0811%          -0.0460%
+GAP%      -181.0811%          -0.8615%
 WINNER         MOEAD             MOEAD
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_3205_LA_MAGDALENA_CONTRERAS
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-528.8385 F2=52.000
-MOEAD: F1=-528.8385 F2=2887.000
-peorF1=-528.8385 (src AMPL/MOEAD), peorF2=2887.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-523.5501 | F2_ref=1.001*peorF2=2889.887
-PUNTO REF: (-523.5501, 2889.887)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-523.5501, 2889.887)
+Ref Final (Best Fronts): (-523.5501, 55.055)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL         35.9964     154291.911107
 MOEAD        16.9650     154267.463877
@@ -73,27 +64,24 @@ MOEAD        16.9650     154267.463877
 GAP%       +52.8703%          +0.0158%
 WINNER         MOEAD              AMPL
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL              22     154291.911107
-MOEAD             56     154322.720807
+AMPL              22       2178.270308
+MOEAD             56       2209.080008
 ------------------------------------------------
-GAP%      -154.5455%          -0.0200%
+GAP%      -154.5455%          -1.4144%
 WINNER         MOEAD             MOEAD
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_7256_TLAHUAC
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-1207.8428 F2=124.000
-MOEAD: F1=-1207.8428 F2=6705.000
-peorF1=-1207.8428 (src AMPL/MOEAD), peorF2=6705.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-1195.7644 | F2_ref=1.001*peorF2=6711.705
-PUNTO REF: (-1195.7644, 6711.705)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-1195.7644, 6711.705)
+Ref Final (Best Fronts): (-1195.7644, 145.145)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL        100.6504     915235.340783
 MOEAD        37.8636     914852.783533
@@ -101,27 +89,24 @@ MOEAD        37.8636     914852.783533
 GAP%       +62.3811%          +0.0418%
 WINNER         MOEAD              AMPL
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL              35     915235.340783
-MOEAD            137     915061.626783
+AMPL              35      15898.142344
+MOEAD            137      15724.428344
 ------------------------------------------------
-GAP%      -291.4286%          +0.0190%
+GAP%      -291.4286%          +1.0927%
 WINNER         MOEAD              AMPL
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_7408_XOCHIMILCO
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-1109.8512 F2=300.000
-MOEAD: F1=-1109.8512 F2=6951.000
-peorF1=-1109.8512 (src AMPL/MOEAD), peorF2=6951.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-1098.7527 | F2_ref=1.001*peorF2=6957.951
-PUNTO REF: (-1098.7527, 6957.951)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-1098.7527, 6957.951)
+Ref Final (Best Fronts): (-1098.7527, 376.376)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL        133.5444    2348314.374130
 MOEAD        40.1582    2344296.914660
@@ -129,27 +114,24 @@ MOEAD        40.1582    2344296.914660
 GAP%       +69.9289%          +0.1711%
 WINNER         MOEAD              AMPL
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL              49    2348314.374130
-MOEAD            310    2345256.853430
+AMPL              49     105909.167689
+MOEAD            310     102851.646989
 ------------------------------------------------
-GAP%      -532.6531%          +0.1302%
+GAP%      -532.6531%          +2.8869%
 WINNER         MOEAD              AMPL
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_9673_AZCAPOTZALCO
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-1815.1062 F2=55.000
-MOEAD: F1=-1815.1062 F2=8915.000
-peorF1=-1815.1062 (src AMPL/MOEAD), peorF2=8915.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-1796.9551 | F2_ref=1.001*peorF2=8923.915
-PUNTO REF: (-1796.9551, 8923.915)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-1796.9551, 8923.915)
+Ref Final (Best Fronts): (-1796.9551, 56.056)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL        173.7652     583529.189823
 MOEAD        51.2707     583540.616183
@@ -157,27 +139,24 @@ MOEAD        51.2707     583540.616183
 GAP%       +70.4943%          -0.0020%
 WINNER         MOEAD             MOEAD
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL              19     583529.189823
-MOEAD             57     583576.600923
+AMPL              19       3032.382375
+MOEAD             57       3079.793475
 ------------------------------------------------
-GAP%      -200.0000%          -0.0081%
+GAP%      -200.0000%          -1.5635%
 WINNER         MOEAD             MOEAD
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_11096_IZTACALCO
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-2058.0850 F2=16.000
-MOEAD: F1=-2058.0850 F2=10374.000
-peorF1=-2058.0850 (src AMPL/MOEAD), peorF2=10374.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-2037.5041 | F2_ref=1.001*peorF2=10384.374
-PUNTO REF: (-2037.5041, 10384.374)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-2037.5041, 10384.374)
+Ref Final (Best Fronts): (-2037.5041, 15.015)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL        306.7501     424362.998417
 MOEAD        60.9581     424382.559857
@@ -185,27 +164,24 @@ MOEAD        60.9581     424382.559857
 GAP%       +80.1278%          -0.0046%
 WINNER         MOEAD             MOEAD
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL               9     424362.998417
-MOEAD             16     424385.774317
+AMPL               9        494.192106
+MOEAD             16        516.968006
 ------------------------------------------------
-GAP%       -77.7778%          -0.0054%
+GAP%       -77.7778%          -4.6087%
 WINNER         MOEAD             MOEAD
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_11410_TLALPAN
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-1791.6396 F2=358.000
-MOEAD: F1=-1791.6396 F2=10606.000
-peorF1=-1791.6396 (src AMPL/MOEAD), peorF2=10606.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-1773.7232 | F2_ref=1.001*peorF2=10616.606
-PUNTO REF: (-1773.7232, 10616.606)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-1773.7232, 10616.606)
+Ref Final (Best Fronts): (-1773.7232, 459.459)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL        194.0030    3938879.668525
 MOEAD        61.8378    3933424.688785
@@ -213,27 +189,24 @@ MOEAD        61.8378    3933424.688785
 GAP%       +68.1253%          +0.1385%
 WINNER         MOEAD              AMPL
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL              47    3938879.668525
-MOEAD            316    3934916.756025
+AMPL              47     142153.396274
+MOEAD            316     138190.483774
 ------------------------------------------------
-GAP%      -572.3404%          +0.1006%
+GAP%      -572.3404%          +2.7878%
 WINNER         MOEAD              AMPL
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_11476_BENITO_JUAREZ
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-2319.7572 F2=9.000
-MOEAD: F1=-2319.7572 F2=10598.000
-peorF1=-2319.7572 (src AMPL/MOEAD), peorF2=10598.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-2296.5596 | F2_ref=1.001*peorF2=10608.598
-PUNTO REF: (-2296.5596, 10608.598)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-2296.5596, 10608.598)
+Ref Final (Best Fronts): (-2296.5596, 9.009)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL        305.7270     313443.569182
 MOEAD        62.1653     313445.864732
@@ -241,27 +214,24 @@ MOEAD        62.1653     313445.864732
 GAP%       +79.6664%          -0.0007%
 WINNER         MOEAD             MOEAD
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL               7     313443.569182
-MOEAD             10     313448.227282
+AMPL               7        239.790486
+MOEAD             10        244.448586
 ------------------------------------------------
-GAP%       -42.8571%          -0.0015%
+GAP%       -42.8571%          -1.9426%
 WINNER         MOEAD             MOEAD
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_12319_COYOACAN
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-2365.0997 F2=120.000
-MOEAD: F1=-2365.0997 F2=11346.000
-peorF1=-2365.0997 (src AMPL/MOEAD), peorF2=11346.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-2341.4487 | F2_ref=1.001*peorF2=11357.346
-PUNTO REF: (-2341.4487, 11357.346)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-2341.4487, 11357.346)
+Ref Final (Best Fronts): (-2341.4487, 136.136)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL        261.7531    2220831.066892
 MOEAD        64.3810    2220384.933082
@@ -269,27 +239,24 @@ MOEAD        64.3810    2220384.933082
 GAP%       +75.4039%          +0.0201%
 WINNER         MOEAD              AMPL
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL              31    2220831.066892
-MOEAD            131    2220659.920592
+AMPL              31      21948.597739
+MOEAD            131      21777.451439
 ------------------------------------------------
-GAP%      -322.5806%          +0.0077%
+GAP%      -322.5806%          +0.7798%
 WINNER         MOEAD              AMPL
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_13802_MIGUEL_HIDALGO
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-2681.6138 F2=63.000
-MOEAD: F1=-2681.6138 F2=12780.000
-peorF1=-2681.6138 (src AMPL/MOEAD), peorF2=12780.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-2654.7977 | F2_ref=1.001*peorF2=12792.780
-PUNTO REF: (-2654.7977, 12792.780)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-2654.7977, 12792.780)
+Ref Final (Best Fronts): (-2654.7977, 66.066)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL        645.8224     901110.483644
 MOEAD        84.3778     901107.120134
@@ -297,27 +264,24 @@ MOEAD        84.3778     901107.120134
 GAP%       +86.9348%          +0.0004%
 WINNER         MOEAD              AMPL
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL              27     901110.483644
-MOEAD             65     901154.245744
+AMPL              27       3964.477355
+MOEAD             65       4008.239455
 ------------------------------------------------
-GAP%      -140.7407%          -0.0049%
+GAP%      -140.7407%          -1.1039%
 WINNER         MOEAD             MOEAD
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_14468_VENUSTIANO_CARRANZA
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-2695.1923 F2=29.000
-MOEAD: F1=-2695.1923 F2=13383.000
-peorF1=-2695.1923 (src AMPL/MOEAD), peorF2=13383.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-2668.2404 | F2_ref=1.001*peorF2=13396.383
-PUNTO REF: (-2668.2404, 13396.383)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-2668.2404, 13396.383)
+Ref Final (Best Fronts): (-2668.2404, 30.030)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL        585.3368     802045.258315
 MOEAD        84.3145     802077.360955
@@ -325,27 +289,24 @@ MOEAD        84.3145     802077.360955
 GAP%       +85.5956%          -0.0040%
 WINNER         MOEAD             MOEAD
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL              16     802045.258315
-MOEAD             31     802091.082715
+AMPL              16       1508.673648
+MOEAD             31       1554.498048
 ------------------------------------------------
-GAP%       -93.7500%          -0.0057%
+GAP%       -93.7500%          -3.0374%
 WINNER         MOEAD             MOEAD
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_15743_ALVARO_OBREGON
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-2868.3871 F2=214.000
-MOEAD: F1=-2868.3871 F2=14770.000
-peorF1=-2868.3871 (src AMPL/MOEAD), peorF2=14770.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-2839.7032 | F2_ref=1.001*peorF2=14784.770
-PUNTO REF: (-2839.7032, 14784.770)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-2839.7032, 14784.770)
+Ref Final (Best Fronts): (-2839.7032, 246.246)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL        513.3513    4177035.089537
 MOEAD        86.8438    4175901.045987
@@ -353,27 +314,24 @@ MOEAD        86.8438    4175901.045987
 GAP%       +83.0830%          +0.0271%
 WINNER         MOEAD              AMPL
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL              40    4177035.089537
-MOEAD            224    4176566.531337
+AMPL              40      59093.088560
+MOEAD            224      58624.530360
 ------------------------------------------------
-GAP%      -460.0000%          +0.0112%
+GAP%      -460.0000%          +0.7929%
 WINNER         MOEAD              AMPL
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_22238_CUAUHTEMOC
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-4326.4577 F2=5.000
-MOEAD: F1=-4326.4577 F2=20675.000
-peorF1=-4326.4577 (src AMPL/MOEAD), peorF2=20675.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-4283.1931 | F2_ref=1.001*peorF2=20695.675
-PUNTO REF: (-4283.1931, 20695.675)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-4283.1931, 20695.675)
+Ref Final (Best Fronts): (-4283.1931, 5.005)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL       1569.3615     942452.901557
 MOEAD       138.3132     942453.413097
@@ -381,27 +339,24 @@ MOEAD       138.3132     942453.413097
 GAP%       +91.1867%          -0.0001%
 WINNER         MOEAD             MOEAD
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL               5     942452.901557
-MOEAD              6     942453.575957
+AMPL               5        223.025379
+MOEAD              6        223.699779
 ------------------------------------------------
-GAP%       -20.0000%          -0.0001%
+GAP%       -20.0000%          -0.3024%
 WINNER         MOEAD             MOEAD
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_24363_GUSTAVO_A._MADERO
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=-4506.0880 F2=101.000
-MOEAD: F1=-4506.0880 F2=22462.000
-peorF1=-4506.0880 (src AMPL/MOEAD), peorF2=22462.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-4461.0271 | F2_ref=1.001*peorF2=22484.462
-PUNTO REF: (-4461.0271, 22484.462)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-4461.0271, 22484.462)
+Ref Final (Best Fronts): (-4461.0271, 110.110)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL       1823.5174    3025852.899508
 MOEAD       127.8796    3025672.174828
@@ -409,27 +364,24 @@ MOEAD       127.8796    3025672.174828
 GAP%       +92.9872%          +0.0060%
 WINNER         MOEAD              AMPL
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
-AMPL              28    3025852.899508
-MOEAD            105    3025846.515508
+AMPL              28      12556.167302
+MOEAD            105      12549.783302
 ------------------------------------------------
-GAP%      -275.0000%          +0.0002%
+GAP%      -275.0000%          +0.0508%
 WINNER         MOEAD              AMPL
 
 ------------------------------------------------------------
 
 INSTANCIA: cam_40264_IZTAPALAPA
-[1] ANALISIS PUNTOS EXTREMOS (Nadir)
-AMPL : F1=- F2=-
-MOEAD: F1=-7398.6824 F2=38034.000
-peorF1=-7398.6824 (src MOEAD), peorF2=38034.000 (src MOEAD)
-REF: F1_ref=0.99*peorF1=-7324.6956 | F2_ref=1.001*peorF2=38072.034
-PUNTO REF: (-7324.6956, 38072.034)
+[1] ANALISIS PUNTOS (Nadir)
+Ref Global (Runs): (-7324.6956, 38072.034)
+Ref Final (Best Fronts): (-7324.6956, 233.233)
 
-[3] RESUMEN PROMEDIO (Por Run)
-metodo     T.Ejec(s)                HV
+[3] RESUMEN PROMEDIO (Ref Global)
+metodo     T.Ejec(s)            HV Avg
 ------------------------------------------------
 AMPL               -          0.000000
 MOEAD       214.2995   12846664.759988
@@ -437,11 +389,11 @@ MOEAD       214.2995   12846664.759988
 GAP%               -                 -
 WINNER         MOEAD             MOEAD
 
-[4] COMPARACIÓN BEST FRONTS (Unificados)
-metodo            ND                HV
+[4] COMPARACIÓN BEST FRONTS (Ref Final)
+metodo            ND           HV Best
 ------------------------------------------------
 AMPL               0          0.000000
-MOEAD            197   12847373.941808
+MOEAD            197      65448.759158
 ------------------------------------------------
 GAP%               -                 -
 WINNER         MOEAD             MOEAD
@@ -452,45 +404,45 @@ WINNER         MOEAD             MOEAD
 ====================================
 RESUMEN FINAL (por instancia)
 ====================================
-Instance                       ref_1         ref_2            Hv(AMPL)        AgHv(MOEA/D)      GAP_HV      WIN_HV                         TE_AMPL                        TE_MOEAD      GAP_TE      WIN_TE
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-MILPA_ALTA                 -178.5988      1176.175        62393.444898      (62504.072198)    -0.1773%       MOEAD            14.1883 s (0.24 min)           (7.4334 s (0.12 min))   +47.6092%       MOEAD
-CUAJIMALPA_DE_MORELOS      -254.9094      1541.540        78589.681481      (78625.840681)    -0.0460%       MOEAD            19.7126 s (0.33 min)           (8.7486 s (0.15 min))   +55.6193%       MOEAD
-LA_MAGDALENA_CONTRERAS     -523.5501      2889.887       154291.911107     (154322.720807)    -0.0200%       MOEAD            35.9964 s (0.60 min)          (16.9650 s (0.28 min))   +52.8703%       MOEAD
-TLAHUAC                   -1195.7644      6711.705     (915235.340783)       915061.626783    +0.0190%        AMPL           100.6504 s (1.68 min)          (37.8636 s (0.63 min))   +62.3811%       MOEAD
-XOCHIMILCO                -1098.7527      6957.951    (2348314.374130)      2345256.853430    +0.1302%        AMPL           133.5444 s (2.23 min)          (40.1582 s (0.67 min))   +69.9289%       MOEAD
-AZCAPOTZALCO              -1796.9551      8923.915       583529.189823     (583576.600923)    -0.0081%       MOEAD           173.7652 s (2.90 min)          (51.2707 s (0.85 min))   +70.4943%       MOEAD
-IZTACALCO                 -2037.5041     10384.374       424362.998417     (424385.774317)    -0.0054%       MOEAD           306.7501 s (5.11 min)          (60.9581 s (1.02 min))   +80.1278%       MOEAD
-TLALPAN                   -1773.7232     10616.606    (3938879.668525)      3934916.756025    +0.1006%        AMPL           194.0030 s (3.23 min)          (61.8378 s (1.03 min))   +68.1253%       MOEAD
-BENITO_JUAREZ             -2296.5596     10608.598       313443.569182     (313448.227282)    -0.0015%       MOEAD           305.7270 s (5.10 min)          (62.1653 s (1.04 min))   +79.6664%       MOEAD
-COYOACAN                  -2341.4487     11357.346    (2220831.066892)      2220659.920592    +0.0077%        AMPL           261.7531 s (4.36 min)          (64.3810 s (1.07 min))   +75.4039%       MOEAD
-MIGUEL_HIDALGO            -2654.7977     12792.780       901110.483644     (901154.245744)    -0.0049%       MOEAD          645.8224 s (10.76 min)          (84.3778 s (1.41 min))   +86.9348%       MOEAD
-VENUSTIANO_CARRANZA       -2668.2404     13396.383       802045.258315     (802091.082715)    -0.0057%       MOEAD           585.3368 s (9.76 min)          (84.3145 s (1.41 min))   +85.5956%       MOEAD
-ALVARO_OBREGON            -2839.7032     14784.770    (4177035.089537)      4176566.531337    +0.0112%        AMPL           513.3513 s (8.56 min)          (86.8438 s (1.45 min))   +83.0830%       MOEAD
-CUAUHTEMOC                -4283.1931     20695.675       942452.901557     (942453.575957)    -0.0001%       MOEAD         1569.3615 s (26.16 min)         (138.3132 s (2.31 min))   +91.1867%       MOEAD
-GUSTAVO_A._MADERO         -4461.0271     22484.462    (3025852.899508)      3025846.515508    +0.0002%        AMPL         1823.5174 s (30.39 min)         (127.8796 s (2.13 min))   +92.9872%       MOEAD
-IZTAPALAPA                -7324.6956     38072.034            0.000000   (12847373.941808)           -       MOEAD                               -         (214.2995 s (3.57 min))           -       MOEAD
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-WINS                                                                 6                  10                                           0                              16            
+Instance                    ref_glob_1  ref_global_2        HvBest(AMPL)    AgHvBest(MOEA/D)        AvHv(MOEA/D)  GAP_HvBest  WIN_HvBest                         TE_AMPL                        TE_MOEAD      GAP_TE      WIN_TE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+MILPA_ALTA                   -178.5988      1176.175        62393.444898      (62504.072198)        62459.294728    -0.1773%       MOEAD            14.1883 s (0.24 min)           (7.4334 s (0.12 min))   +47.6092%       MOEAD
+CUAJIMALPA_DE_MORELOS        -254.9094      1541.540        78589.681481      (78625.840681)        78577.971351    -0.0460%       MOEAD            19.7126 s (0.33 min)           (8.7486 s (0.15 min))   +55.6193%       MOEAD
+LA_MAGDALENA_CONTRERAS       -523.5501      2889.887       154291.911107     (154322.720807)       154267.463877    -0.0200%       MOEAD            35.9964 s (0.60 min)          (16.9650 s (0.28 min))   +52.8703%       MOEAD
+TLAHUAC                     -1195.7644      6711.705     (915235.340783)       915061.626783       914852.783533    +0.0190%        AMPL           100.6504 s (1.68 min)          (37.8636 s (0.63 min))   +62.3811%       MOEAD
+XOCHIMILCO                  -1098.7527      6957.951    (2348314.374130)      2345256.853430      2344296.914660    +0.1302%        AMPL           133.5444 s (2.23 min)          (40.1582 s (0.67 min))   +69.9289%       MOEAD
+AZCAPOTZALCO                -1796.9551      8923.915       583529.189823     (583576.600923)       583540.616183    -0.0081%       MOEAD           173.7652 s (2.90 min)          (51.2707 s (0.85 min))   +70.4943%       MOEAD
+IZTACALCO                   -2037.5041     10384.374       424362.998417     (424385.774317)       424382.559857    -0.0054%       MOEAD           306.7501 s (5.11 min)          (60.9581 s (1.02 min))   +80.1278%       MOEAD
+TLALPAN                     -1773.7232     10616.606    (3938879.668525)      3934916.756025      3933424.688785    +0.1006%        AMPL           194.0030 s (3.23 min)          (61.8378 s (1.03 min))   +68.1253%       MOEAD
+BENITO_JUAREZ               -2296.5596     10608.598       313443.569182     (313448.227282)       313445.864732    -0.0015%       MOEAD           305.7270 s (5.10 min)          (62.1653 s (1.04 min))   +79.6664%       MOEAD
+COYOACAN                    -2341.4487     11357.346    (2220831.066892)      2220659.920592      2220384.933082    +0.0077%        AMPL           261.7531 s (4.36 min)          (64.3810 s (1.07 min))   +75.4039%       MOEAD
+MIGUEL_HIDALGO              -2654.7977     12792.780       901110.483644     (901154.245744)       901107.120134    -0.0049%       MOEAD          645.8224 s (10.76 min)          (84.3778 s (1.41 min))   +86.9348%       MOEAD
+VENUSTIANO_CARRANZA         -2668.2404     13396.383       802045.258315     (802091.082715)       802077.360955    -0.0057%       MOEAD           585.3368 s (9.76 min)          (84.3145 s (1.41 min))   +85.5956%       MOEAD
+ALVARO_OBREGON              -2839.7032     14784.770    (4177035.089537)      4176566.531337      4175901.045987    +0.0112%        AMPL           513.3513 s (8.56 min)          (86.8438 s (1.45 min))   +83.0830%       MOEAD
+CUAUHTEMOC                  -4283.1931     20695.675       942452.901557     (942453.575957)       942453.413097    -0.0001%       MOEAD         1569.3615 s (26.16 min)         (138.3132 s (2.31 min))   +91.1867%       MOEAD
+GUSTAVO_A._MADERO           -4461.0271     22484.462    (3025852.899508)      3025846.515508      3025672.174828    +0.0002%        AMPL         1823.5174 s (30.39 min)         (127.8796 s (2.13 min))   +92.9872%       MOEAD
+IZTAPALAPA                  -7324.6956     38072.034            0.000000   (12847373.941808)     12846664.759988           -       MOEAD                               -         (214.2995 s (3.57 min))           -       MOEAD
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+WINS                                                                   6                  10                                                                           0                              16                        
 
 ====================================
 RESUMEN FINAL FINAL (compacto)
 ====================================
-Instance                       ref_1         ref_2            Hv(AMPL)        AgHv(MOEA/D)       GapHv     Time [s] (AMPL)   Time [s] (MOEA/D)     GapTime
-----------------------------------------------------------------------------------------------------------------------------------------------------------
-MILPA_ALTA                   -178.60      1,176.17           62,393.44           62,504.07      -0.18%               14.19                7.43     +47.61%
-CUAJIMALPA_DE_MORELOS        -254.91      1,541.54           78,589.68           78,625.84      -0.05%               19.71                8.75     +55.62%
-LA_MAGDALENA_CONTRERAS       -523.55      2,889.89          154,291.91          154,322.72      -0.02%               36.00               16.96     +52.87%
-TLAHUAC                    -1,195.76      6,711.70          915,235.34          915,061.63      +0.02%              100.65               37.86     +62.38%
-XOCHIMILCO                 -1,098.75      6,957.95        2,348,314.37        2,345,256.85      +0.13%              133.54               40.16     +69.93%
-AZCAPOTZALCO               -1,796.96      8,923.91          583,529.19          583,576.60      -0.01%              173.77               51.27     +70.49%
-IZTACALCO                  -2,037.50     10,384.37          424,363.00          424,385.77      -0.01%              306.75               60.96     +80.13%
-TLALPAN                    -1,773.72     10,616.61        3,938,879.67        3,934,916.76      +0.10%              194.00               61.84     +68.13%
-BENITO_JUAREZ              -2,296.56     10,608.60          313,443.57          313,448.23      -0.00%              305.73               62.17     +79.67%
-COYOACAN                   -2,341.45     11,357.35        2,220,831.07        2,220,659.92      +0.01%              261.75               64.38     +75.40%
-MIGUEL_HIDALGO             -2,654.80     12,792.78          901,110.48          901,154.25      -0.00%              645.82               84.38     +86.93%
-VENUSTIANO_CARRANZA        -2,668.24     13,396.38          802,045.26          802,091.08      -0.01%              585.34               84.31     +85.60%
-ALVARO_OBREGON             -2,839.70     14,784.77        4,177,035.09        4,176,566.53      +0.01%              513.35               86.84     +83.08%
-CUAUHTEMOC                 -4,283.19     20,695.67          942,452.90          942,453.58      -0.00%            1,569.36              138.31     +91.19%
-GUSTAVO_A._MADERO          -4,461.03     22,484.46        3,025,852.90        3,025,846.52      +0.00%            1,823.52              127.88     +92.99%
-IZTAPALAPA                 -7,324.70     38,072.03                0.00       12,847,373.94           -                   -              214.30           -
+Instance                         ref_1         ref_2            Hv(AMPL)        AgHv(MOEA/D)       GapHv     Time [s] (AMPL)   Time [s] (MOEA/D)     GapTime
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+MILPA_ALTA                     -178.60        124.12            5,023.18            5,133.81      -2.20%               14.19                7.43     +47.61%
+CUAJIMALPA_DE_MORELOS          -254.91        104.10            4,197.42            4,233.58      -0.86%               19.71                8.75     +55.62%
+LA_MAGDALENA_CONTRERAS         -523.55         55.05            2,178.27            2,209.08      -1.41%               36.00               16.96     +52.87%
+TLAHUAC                      -1,195.76        145.14           15,898.14           15,724.43      +1.09%              100.65               37.86     +62.38%
+XOCHIMILCO                   -1,098.75        376.38          105,909.17          102,851.65      +2.89%              133.54               40.16     +69.93%
+AZCAPOTZALCO                 -1,796.96         56.06            3,032.38            3,079.79      -1.56%              173.77               51.27     +70.49%
+IZTACALCO                    -2,037.50         15.01              494.19              516.97      -4.61%              306.75               60.96     +80.13%
+TLALPAN                      -1,773.72        459.46          142,153.40          138,190.48      +2.79%              194.00               61.84     +68.13%
+BENITO_JUAREZ                -2,296.56          9.01              239.79              244.45      -1.94%              305.73               62.17     +79.67%
+COYOACAN                     -2,341.45        136.14           21,948.60           21,777.45      +0.78%              261.75               64.38     +75.40%
+MIGUEL_HIDALGO               -2,654.80         66.07            3,964.48            4,008.24      -1.10%              645.82               84.38     +86.93%
+VENUSTIANO_CARRANZA          -2,668.24         30.03            1,508.67            1,554.50      -3.04%              585.34               84.31     +85.60%
+ALVARO_OBREGON               -2,839.70        246.25           59,093.09           58,624.53      +0.79%              513.35               86.84     +83.08%
+CUAUHTEMOC                   -4,283.19          5.00              223.03              223.70      -0.30%            1,569.36              138.31     +91.19%
+GUSTAVO_A._MADERO            -4,461.03        110.11           12,556.17           12,549.78      +0.05%            1,823.52              127.88     +92.99%
+IZTAPALAPA                   -7,324.70        233.23                0.00           65,448.76           -                   -              214.30           -
