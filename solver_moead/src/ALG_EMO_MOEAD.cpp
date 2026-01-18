@@ -287,8 +287,7 @@ void CALG_EMO_MOEAD::InitializePopulation()
 
 		int max_limit = 0;
 		if (m_IsRelocation) {
-			max_limit = (presupuesto > total_nodos) ? total_nodos : presupuesto;
-			//printf("presupuesto %d      total nodos %d\n", presupuesto, total_nodos);
+			max_limit = presupuesto;
 			//printf("Limite relocation %d\n", max_limit);
 		} else {
 			max_limit = (presupuesto < huecos_disponibles) ? presupuesto : huecos_disponibles;

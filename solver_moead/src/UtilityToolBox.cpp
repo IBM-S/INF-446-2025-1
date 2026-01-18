@@ -589,7 +589,11 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
 
     std::vector<int> activos_no_base;
     std::vector<int> bases_vacias;
+    std::vector<int> lugares_libres;
+
     activos_no_base.reserve(n);
+    bases_vacias.reserve(n);
+    lugares_libres.reserve(n);
 
     for(int i = 0; i< n; ++i) {
         bool xi = (x_var[i] > 0.5);
@@ -598,28 +602,39 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
 		if (es_base && !xi) {
             moved_out++;                 //Liberamos un equipo preinstalado
             bases_vacias.push_back(i);
-        } 
-        if (!es_base && xi){
+        } else if (!es_base && xi){
             activos_no_base.push_back(i);  // aqui pusimos un equipo (o es movido o es comprado)
+        } else if (!es_base && !xi){
+            lugares_libres.push_back(i);   // lugar sin equipo
         }
 	}
+
+    std::random_shuffle(lugares_libres.begin(), lugares_libres.end());
+
     // movi 6 preinstalados, pero solo instale 4, entonces los 2 equipos restantes se tienen que volver a poner en sus bases originales
     while (bases_vacias.size() > activos_no_base.size()) 
     {   
-        // printf("\nReparando presupuesto por reubicacion: bases vacias %d > activos no base %d\n", (int)bases_vacias.size(), (int)activos_no_base.size());
+        //printf("\nReparando presupuesto por reubicacion: bases vacias %d > activos no base %d\n", (int)bases_vacias.size(), (int)activos_no_base.size());
         // Elegir una base vacía al azar
-        int rnd_idx = rand() % bases_vacias.size();
-        int idx_base = bases_vacias[rnd_idx];
-
-        // Encenderla (Recuperamos el AED)
-        x_var[idx_base] = 1.0;
+        double rand_1 = Get_Random_Number();
         
-        // Actualizar contadores
-        moved_out--; 
+        if (!lugares_libres.empty() && rand_1 < 0.5) {
+            // EXPLORACIÓN: Tomar un lugar al azar y encenderlo
+            int candidato_random = lugares_libres.back();
+            lugares_libres.pop_back();
 
-        // Eliminar de la lista de vacías (Swap and Pop para eficiencia)
-        bases_vacias[rnd_idx] = bases_vacias.back();
-        bases_vacias.pop_back();
+            x_var[candidato_random] = 1.0;
+            activos_no_base.push_back(candidato_random);
+        } 
+        else {
+            // Solo si NO quedan lugares libres en todo el mapa (raro), devolvemos a la base.
+            int rnd_idx = rand() % bases_vacias.size();
+            int idx_base = bases_vacias[rnd_idx];
+            x_var[idx_base] = 1.0; 
+
+            bases_vacias[rnd_idx] = bases_vacias.back();
+            bases_vacias.pop_back();
+        }
     }
 
     int total_nuevos_sitios = activos_no_base.size();
@@ -631,7 +646,7 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
 
 	if (gasto > max_P) {
         //printf("\n%f    %d", gasto, max_P);
-        //printf("aaa\n");
+        printf("aaa\n");
 
         std::vector<std::pair<double, int>> calidad;
         calidad.reserve(activos_no_base.size());
