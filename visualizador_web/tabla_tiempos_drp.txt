@@ -1,17 +1,21 @@
-INST                                 ND_AMPL  ND_MOEAD_1
-cam_1390_MILPA_ALTA                       34         129
-cam_1800_CUAJIMALPA_DE_MORELOS            37         108
-cam_3205_LA_MAGDALENA_CONTRERAS           22          60
-cam_7256_TLAHUAC                          35         136
-cam_7408_XOCHIMILCO                       49         257
-cam_9673_AZCAPOTZALCO                     19          55
-cam_11096_IZTACALCO                        9          17
-cam_11410_TLALPAN                         47         196
-cam_11476_BENITO_JUAREZ                    7          10
-cam_12319_COYOACAN                        31         112
-cam_13802_MIGUEL_HIDALGO                  27          69
-cam_14468_VENUSTIANO_CARRANZA             16          31
-cam_15743_ALVARO_OBREGON                  40         166
-cam_22238_CUAUHTEMOC                       5           6
-cam_24363_GUSTAVO_A._MADERO               28          86
-cam_40264_IZTAPALAPA                       0          70
+drp_657_STATEN_ISLAND.dat   280.588394  -0.0091684   307.307
+drp_2151_BRONX.dat          952.767531  -0.1036558  1124.123
+drp_2885_QUEENS.dat        1474.787863  -0.0449225  1695.694
+drp_3442_BROOKLYN.dat      1757.464840  -0.0639230  2045.043
+drp_4432_MANHATTAN.dat      838.663288  -0.2038694  1086.085
+cam_1390_MILPA_ALTA.dat                62393.411965   -178.5988      1176.175
+cam_1800_CUAJIMALPA_DE_MORELOS.dat     78589.616736   -254.9094      1541.540
+cam_3205_LA_MAGDALENA_CONTRERAS.dat   154291.954456   -523.5501      2889.887
+cam_7256_TLAHUAC.dat                  915235.152856  -1195.7644      6711.705
+cam_7408_XOCHIMILCO.dat              2348314.290634  -1098.7527      6957.951
+cam_9673_AZCAPOTZALCO.dat             583529.528932  -1796.9551      8923.915
+cam_11096_IZTACALCO.dat               424363.517635  -2037.5041     10384.374
+cam_11410_TLALPAN.dat                3938879.710991  -1773.7232     10616.606
+cam_11476_BENITO_JUAREZ.dat           313443.866223  -2296.5596     10608.598
+cam_12319_COYOACAN.dat               2220831.100964  -2341.4487     11357.346
+cam_13802_MIGUEL_HIDALGO.dat          901109.997518  -2654.7977     12792.780
+cam_14468_VENUSTIANO_CARRANZA.dat     802044.950198  -2668.2404     13396.383
+cam_15743_ALVARO_OBREGON.dat         4177035.518295  -2839.7032     14784.770
+cam_22238_CUAUHTEMOC.dat              942453.377557  -4283.1931     20695.675
+cam_24363_GUSTAVO_A._MADERO.dat      3025853.349197  -4461.0271     22484.462
+cam_40264_IZTAPALAPA.dat                   -         -7324.6956     38072.034

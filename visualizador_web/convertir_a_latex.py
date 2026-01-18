@@ -50,39 +50,52 @@ def normalize_table(cells: list[list[str]], rows: int, cols: int) -> list[list[s
 def to_latex_tabular(table: list[list[str]], header: bool, align: str | None, booktabs: bool,
                      caption: str | None, label: str | None) -> str:
     cols = len(table[0]) if table else 0
-    if align:
-        spec = align
-        if len(spec) != cols:
-            raise ValueError(f"--align tiene largo {len(spec)} pero cols={cols}. Ej: {'c'*cols}")
-    else:
-        spec = "c" * cols
 
-    lines = []
+    spec = "l" + ("r" * (cols - 1))
+    
+    if cols == 0:
+        return ""
+
+    lines: list[str] = []
     if caption or label:
         lines.append(r"\begin{table}[ht]")
         lines.append(r"\centering")
 
-    if booktabs:
-        lines.append(rf"\begin{{tabular}}{{{spec}}}")
-        lines.append(r"\toprule")
-    else:
-        # con bordes verticales
-        spec2 = "|" + "|".join(list(spec)) + "|"
-        lines.append(rf"\begin{{tabular}}{{{spec2}}}")
-        lines.append(r"\hline")
+    lines.append(rf"\begin{{tabular}}{{{spec}}}")
 
-    for i, row in enumerate(table):
-        row_esc = [escape_latex(x) for x in row]
-        lines.append(" " + " & ".join(row_esc) + r" \\")
-        if header and i == 0:
-            lines.append(r"\midrule" if booktabs else r"\hline")
-        else:
-            # opcional: línea por fila solo si NO booktabs
-            if not booktabs:
-                lines.append(r"\hline")
+    if booktabs:
+        lines.append(r"\toprule")
+
+
+    EXTRA = 1  # si quieres más espacio visual en el .tex, sube a 2 o 3
+
+    # 1) escapar primero (para que \_ cuente en el largo del .tex)
+    escaped_rows = [[escape_latex(x) for x in row] for row in table]
+
+    # 2) anchos máximos por columna + EXTRA
+    widths = [0] * cols
+    for r in escaped_rows:
+        for c in range(cols):
+            widths[c] = max(widths[c], len(r[c]))
+    widths = [w + EXTRA for w in widths]
+
+    def pad_cell(s: str, w: int, mode: str) -> str:
+        if mode == "l":
+            return s.ljust(w)
+        if mode == "r":
+            return s.rjust(w)
+        return s.center(w)  # 'c' u otros -> centrado
+
+    # 3) imprimir filas ya “padded”
+    for i, row_esc in enumerate(escaped_rows):
+        padded = [pad_cell(row_esc[c], widths[c], spec[c]) for c in range(cols)]
+        lines.append(" " + " & ".join(padded) + r" \\")
+        if header and i == 0 and booktabs:
+            lines.append(r"\midrule")
 
     if booktabs:
         lines.append(r"\bottomrule")
+
     lines.append(r"\end{tabular}")
 
     if caption:

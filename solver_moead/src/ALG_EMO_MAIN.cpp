@@ -310,11 +310,6 @@ int main(int argc, char *argv[])
     rnd_uni_seed = 123;
     NumberOfVariables = 324;
     
-    // Parámetros Algoritmo
-    double mutationRate = 0.4;
-    double crossoverRate = 0.7;
-    double op1Prob = 0.5; // 20% delete, 80% swap (por ejemplo)
-
 	NumberOfObjectives = 2;
     NumberOfFuncEvals = 40000; 
 
@@ -326,26 +321,30 @@ int main(int argc, char *argv[])
 
     std::string userOutputDir = ""; 
 
-    int decompType = 1;   // 1 por defecto (Tchebycheff)
-    int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
-
-    int mutType = 12;     // Default: Híbrida
-    int crossType = 9;    // Default: Inteligente
-    double mutPct = 0.4; // Default: 5% intensidad para operadores porcentuales
+    // Parámetros Algoritmo
     double bitFlipProb = 0.001; // Default: 1% probabilidad para BitFlip Fijo
+    double crossoverRate = 0.7;
+    int crossType = 7;    // Default: Inteligente
+    int initDist = 2;
+    int initTypeRelocation = 3;           // Default: Solo Mover (o el que prefieras como base)
+    double mutationRate = 0.4;
 
-    double userNeighborPct = 0.0; // 0 = usar archivo, >0 usar porcentaje
+    double mutPct = 0.4; // Default: 5% intensidad para operadores porcentuales
     double userMutPctDelete = 0.25; // 0 = usar default
     double userMutPctSwap = 0.4;   // 0 = usar default
-    double userMutProbSwap = 0.15;
 
-    int initTypeRelocation = 3;           // Default: Solo Mover (o el que prefieras como base)
-    double probMoveRelocation = 0.5;      // Default: 50%
+    double userMutProbSwap = 0.15;
+    int mutType = 12;     // Default: Híbrida
+    double userNeighborPct = 0.0; // 0 = usar archivo, >0 usar porcentaje
+    double noisePct = 0.1;
+    double op1Prob = 0.5; // 20% delete, 80% swap (por ejemplo)
+    double powerExp = 4.0;
+    double probMoveRelocation = 0.4;      // Default: 50%
     double splitPctRelocation = 0.4;      // Default: 50% split
 
-    int initDist = 2;
-    double powerExp = 1.0;
-    double noisePct = 0.1;
+
+    int decompType = 1;   // 1 por defecto (Tchebycheff)
+    int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
     if (argc < 2) {
         PrintUsage();
