@@ -224,6 +224,10 @@ static std::string InitRelocName(int t){
         case 6: return "OnlyBuy (aleatorio)";
         case 7: return "Choose Move/Buy (aleatorio) (probMoveRelocation)";
         case 8: return "HybridSplit (aleatorio) (splitPctRelocation)";
+        case 9: return "Random instala pre mas una cantidad aleatoria";
+        case 10: return "Random instala de 0 a total nodos incremental";
+        case 11: return "BalancedQuantity incremental (splitPctRelocation)";
+        case 12: return "Greedy incremental (factor aleatoriedad)";
         default: return "DEFAULT -> OnlyBuy (deterministico)";
     }
 }
@@ -235,7 +239,7 @@ static std::vector<std::string> InitRelocParamsLines(int t, double probMoveReloc
     if (t == 3 || t == 7){
         L.push_back("probMoveRelocation     : " + pct(probMoveRelocation));
     }
-    if (t == 4 || t == 8){
+    if (t == 4 || t == 8 || t == 11){
         L.push_back("splitPctRelocation     : " + pct(splitPctRelocation));
     }
     return L;
@@ -326,7 +330,7 @@ int main(int argc, char *argv[])
     double crossoverRate = 0.7;
     int crossType = 7;    // Default: Inteligente
     int initDist = 2;
-    int initTypeRelocation = 3;           // Default: Solo Mover (o el que prefieras como base)
+    int initTypeRelocation = 12;           // Default: Solo Mover (o el que prefieras como base)
     double mutationRate = 0.4;
 
     double mutPct = 0.4; // Default: 5% intensidad para operadores porcentuales
@@ -340,7 +344,7 @@ int main(int argc, char *argv[])
     double op1Prob = 0.5; // 20% delete, 80% swap (por ejemplo)
     double powerExp = 4.0;
     double probMoveRelocation = 0.4;      // Default: 50%
-    double splitPctRelocation = 0.4;      // Default: 50% split
+    double splitPctRelocation = 0.5;      // Default: 50% split
 
 
     int decompType = 1;   // 1 por defecto (Tchebycheff)

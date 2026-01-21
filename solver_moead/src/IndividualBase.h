@@ -41,6 +41,10 @@ public:
 	void GenerateSimpleFeasible_Reloc_Choose_Move_or_Buy_Aleatorio(double presupuesto_disponible, double prob_choose_move);
 	void GenerateSimpleFeasible_Reloc_HybridSplit_Aleatorio(double presupuesto_disponible, double split_pct);
 
+	void GenerateSimpleFeasible_Random(double num_AEDs, double nums_Preinstalados);
+	void GenerateRandomFullRange(int nums_AEDs_instalar);
+	void GenerateSimpleFeasible_Reloc_BalancedQuantity(double presupuesto_disponible, double split_pct);
+	//void GenerateGreedyFeasibleSolution(int num_total, double factor);
 	
 	void GenerateSimpleFeasibleSolution_v2(int num_AEDs, int total_locations);
 	void GenerateGreedyFeasibleSolution(int num_AEDs, double randomness_factor);

@@ -610,6 +610,7 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
 	}
 
     std::random_shuffle(lugares_libres.begin(), lugares_libres.end());
+    std::random_shuffle(bases_vacias.begin(), bases_vacias.end());
 
     // movi 6 preinstalados, pero solo instale 4, entonces los 2 equipos restantes se tienen que volver a poner en sus bases originales
     while (bases_vacias.size() > activos_no_base.size()) 
@@ -627,13 +628,14 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
             activos_no_base.push_back(candidato_random);
         } 
         else {
+            if (!bases_vacias.empty()) {
             // Solo si NO quedan lugares libres en todo el mapa (raro), devolvemos a la base.
-            int rnd_idx = rand() % bases_vacias.size();
-            int idx_base = bases_vacias[rnd_idx];
-            x_var[idx_base] = 1.0; 
-
-            bases_vacias[rnd_idx] = bases_vacias.back();
+            int idx_base = bases_vacias.back();
             bases_vacias.pop_back();
+
+            x_var[idx_base] = 1.0; 
+            moved_out--;
+            }
         }
     }
 
@@ -641,7 +643,9 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
 
     int n_instalados = std::max(0, total_nuevos_sitios - moved_out);
 
-    double gasto = c2 * moved_out + c1 * n_instalados;
+    int n_reubicados = moved_out;
+
+    double gasto = c2 * n_reubicados + c1 * n_instalados;
 
 
 	if (gasto > max_P) {
@@ -676,14 +680,14 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
             } else {
                 // si ya no hay comprados, significa que estamos liberando un equipo que venia preinstalado
                 gasto -= c2;
+                n_reubicados--;
                 moved_out--;
 
                 if (!bases_vacias.empty()){
-                    int rand_idx = rand() % bases_vacias.size();
-                    int base_libre = bases_vacias[rand_idx];
-                    x_var[base_libre] = 1.0; // Reinstalamos el equipo liberado en su base original
-                    bases_vacias[rand_idx] = bases_vacias.back();
+                    int base_libre = bases_vacias.back();
                     bases_vacias.pop_back();
+                    x_var[base_libre] = 1.0; // Reinstalamos el equipo liberado en su base original
+
                 }
             }
         }

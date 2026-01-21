@@ -266,9 +266,7 @@ void CALG_EMO_MOEAD::InitializePopulation()
     };
 
 	int aeds_preinstalados = 0;
-	if (!m_IsRelocation) {
-		for (const auto &nodo : nodos) if (nodo->getFlag() == 1) aeds_preinstalados++;
-	}
+	for (const auto &nodo : nodos) if (nodo->getFlag() == 1) aeds_preinstalados++;
 	int huecos_disponibles = total_nodos - aeds_preinstalados;
 
 	// Configuracion estrategia de distribucion
@@ -279,13 +277,25 @@ void CALG_EMO_MOEAD::InitializePopulation()
 	//double m_PowerExp = 5.0;   //(1.0 linspace, 3.0, curva agresiva)
 	//double m_NoisePct = 0.20;  // Para el ruido
 
+	bool useFullRange = false;
+	if (this->m_InitializationTypeRelocation == 10) useFullRange = true;
+
 	for (i = 0; i < s_PopulationSize; i++)
 	{
 		CSubProblemBase SP;
 		SP.m_BestIndividual.problemInstance = this->problemInstance;
 
+		
 
 		int max_limit = 0;
+		
+		
+		if (useFullRange) {
+			// Modo full range: desde 0 hasta todos los nodos
+			max_limit = total_nodos;
+			printf("Limite full range true\n");
+		} else {
+			// Modo normal: limitado por presupuesto o huecos disponibles
 		if (m_IsRelocation) {
 			max_limit = presupuesto;
 			//printf("Limite relocation %d\n", max_limit);
@@ -293,7 +303,7 @@ void CALG_EMO_MOEAD::InitializePopulation()
 			max_limit = (presupuesto < huecos_disponibles) ? presupuesto : huecos_disponibles;
 			//printf("presupuesto %d      huecos disponibles %d\n", presupuesto, huecos_disponibles);
 			//printf("Limite location %d\n", max_limit);
-		}
+		}}
 
 
 		// Calcular la cantidad a usar
@@ -371,6 +381,23 @@ void CALG_EMO_MOEAD::InitializePopulation()
 					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_HybridSplit_Aleatorio(nums_AEDs_instalar, this->m_SplitPctRelocation);
 					if (log_initialization) printf("8    relocation initialization\n");
 					break;
+				case 9:
+					SP.m_BestIndividual.GenerateSimpleFeasible_Random(nums_AEDs_instalar, aeds_preinstalados);
+					if (log_initialization) printf("9    relocation initialization\n");
+					break;
+				case 10:
+					SP.m_BestIndividual.GenerateRandomFullRange(nums_AEDs_instalar);
+					if (log_initialization) printf("10    relocation initialization\n");
+					break;
+				case 11:
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_BalancedQuantity(nums_AEDs_instalar, this->m_SplitPctRelocation);
+					if (log_initialization) printf("11    relocation initialization\n");
+					break;
+				case 12: {
+					double factor = 0.15; // 15% de aleatoriedad
+					SP.m_BestIndividual.GenerateGreedyFeasibleSolution(nums_AEDs_instalar, factor);
+					if (log_initialization) printf("12    relocation initialization\n");
+					break;}
 				default:
 					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyBuy(nums_AEDs_instalar);
 					if (log_initialization) printf("default    relocation initialization\n");

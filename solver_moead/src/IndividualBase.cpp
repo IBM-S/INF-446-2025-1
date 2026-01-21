@@ -5,6 +5,10 @@
 #include <random>
 #include "IndividualBase.h"
 
+#include <algorithm>
+#include <vector>
+#include <utility> // para std::pair
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -409,6 +413,259 @@ void CIndividualBase::GenerateSimpleFeasible_Reloc_Choose_Move_or_Buy_Aleatorio(
     }
 }
 
+void CIndividualBase::GenerateSimpleFeasible_Random(double num_AEDs, double nums_Preinstalados)
+{
+	const auto &nodos = problemInstance->getNodes();
+	int largo_vector = x_var.size();
+
+	int total_a_instalar = num_AEDs + nums_Preinstalados;
+
+	//printf("a instalar: %d\n", total_a_instalar);
+
+	std::fill(x_var.begin(), x_var.end(), 0.0);
+
+	std::vector<int> candidate_ids(largo_vector);
+	for (int i = 0; i < largo_vector; ++i)
+	{
+		candidate_ids[i] = i;
+	}
+
+	std::random_shuffle(candidate_ids.begin(), candidate_ids.end());
+	int limit = std::min(total_a_instalar, largo_vector);
+
+	for (int i = 0; i < limit; ++i)
+	{
+		int idx = candidate_ids[i];
+		x_var[idx] = 1.0;
+	}
+}
+
+void CIndividualBase::GenerateRandomFullRange(int nums_AEDs_instalar)
+{
+    // 1. Limpieza (Tabula Rasa)
+    std::fill(x_var.begin(), x_var.end(), 0.0);
+    int total_nodes = x_var.size();
+
+    // 2. Determinar aleatoriamente CUÁNTOS instalar
+    // rand() % (total_nodes + 1) genera un número entre 0 y total_nodes (inclusive).
+    int random_count = nums_AEDs_instalar;
+
+    // 3. Generar lista de candidatos completa
+    std::vector<int> candidates(total_nodes);
+    for (int i = 0; i < total_nodes; ++i) {
+        candidates[i] = i;
+    }
+
+    // 4. Mezclar aleatoriamente (Shuffle)
+    std::random_shuffle(candidates.begin(), candidates.end());
+
+    // 5. Instalar la cantidad aleatoria seleccionada
+    for (int i = 0; i < random_count; ++i) {
+        int idx = candidates[i];
+        x_var[idx] = 1.0;
+    }
+}
+
+
+void CIndividualBase::GenerateGreedyFeasibleSolution(int num_AEDs, double randomness_factor)
+{
+    // 1. Limpieza Total (Tabula Rasa)
+    std::fill(x_var.begin(), x_var.end(), 0.0);
+    int n = x_var.size();
+
+    // 2. Control de estado de cobertura
+    // Vector auxiliar para saber qué nodos de demanda ya están cubiertos
+    std::vector<bool> is_covered(n, false);
+    
+    // NOTA: Como es reubicación total, NO asumimos que las cámaras fijas (Flag 1) 
+    // están activas ni cubriendo. Empezamos con el mapa vacío.
+    
+    int instalados = 0;
+    const auto &nodos = problemInstance->getNodes();
+
+    // 3. Bucle Constructivo
+    while (instalados < num_AEDs)
+    {
+        // Lista de candidatos: Pareja <Ganancia Marginal, ID del Nodo>
+        std::vector<std::pair<double, int>> candidates;
+        candidates.reserve(n - instalados);
+
+        // A. Evaluar ganancia marginal de cada sitio posible
+        for (int i = 0; i < n; ++i) 
+        {
+            // Solo considerar si el sitio está vacío (x_var[i] == 0)
+            if (x_var[i] < 0.5) 
+            {
+                double ganancia_marginal = 0.0;
+                
+                // Obtenemos a quiénes cubriría si instalamos aquí
+                const std::vector<int>& alcanzables = problemInstance->getNodosCubiertosPor(i);
+
+                for (int target_id : alcanzables) 
+                {
+                    // Sumamos valor solo si el objetivo NO está cubierto ya
+                    if (!is_covered[target_id]) {
+                        ganancia_marginal += nodos[target_id]->getProbOhca();
+                    }
+                }
+
+                // Solo añadimos a la lista si aporta algo nuevo
+                if (ganancia_marginal > 0.0) {
+                    candidates.push_back({ganancia_marginal, i});
+                }
+            }
+        }
+
+        // B. Criterio de Parada temprano: Ya no hay ganancia posible
+        if (candidates.empty()) {
+            break; // Salimos al relleno aleatorio
+        }
+
+        // C. Ordenar candidatos por Ganancia (Mayor a Menor)
+        // std::pair ordena por el primer elemento por defecto
+        std::sort(candidates.rbegin(), candidates.rend());
+
+        // D. Selección RCL (Restricted Candidate List)
+        // randomness_factor (0.0 a 1.0) define qué tan larga es la lista de finalistas.
+        // 0.0 = Greedy Puro (Top 1). 1.0 = Cualquier candidato útil.
+        int rcl_size = std::max(1, (int)(candidates.size() * randomness_factor));
+        
+        // Elegir aleatoriamente dentro del top
+        int selected_idx = rand() % rcl_size;
+        int node_to_install = candidates[selected_idx].second;
+
+        // E. Instalar y Actualizar Cobertura
+        x_var[node_to_install] = 1.0;
+        instalados++;
+
+        // Marcar los nodos recién cubiertos
+        const std::vector<int>& nuevos_cubiertos = problemInstance->getNodosCubiertosPor(node_to_install);
+        for (int covered_node : nuevos_cubiertos) {
+            is_covered[covered_node] = true;
+        }
+    }
+
+    // 4. Relleno Aleatorio (Si el greedy paró antes de llenar el cupo)
+    // Esto ocurre si cubrimos toda la demanda posible pero nos sobra presupuesto.
+    // Llenamos para cumplir la restricción estricta de num_AEDs.
+    if (instalados < num_AEDs) 
+    {
+        std::vector<int> vacios;
+        for(int i=0; i<n; ++i) {
+            if(x_var[i] < 0.5) vacios.push_back(i);
+        }
+        
+        std::random_shuffle(vacios.begin(), vacios.end());
+
+        int faltantes = num_AEDs - instalados;
+        int limit = std::min(faltantes, (int)vacios.size());
+
+        for(int k=0; k<limit; ++k) {
+            x_var[vacios[k]] = 1.0;
+        }
+    }
+}
+
+void CIndividualBase::GenerateSimpleFeasible_Reloc_BalancedQuantity(double presupuesto_disponible, double split_pct)
+{
+    // Limpieza inicial
+    std::fill(x_var.begin(), x_var.end(), 0.0);
+    
+    const auto &nodos = problemInstance->getNodes();
+    int n = x_var.size();
+    double P = (double)presupuesto_disponible;
+    double c1 = problemInstance->getC1(); // Costo Nuevo (Caro)
+    double c2 = problemInstance->getC2(); // Costo Mover (Barato)
+
+    // Identificar preinstalados
+    std::vector<int> pre_indices;
+    for(int i=0; i<n; ++i) if(nodos[i]->getFlag() == 1) pre_indices.push_back(i);
+    int total_pre = (int)pre_indices.size();
+
+    // -----------------------------------------------------------------
+    // CÁLCULO DE CANTIDADES BALANCEADAS
+    // -----------------------------------------------------------------
+    // split_pct define qué proporción de las ACCIONES totales deben ser MOVER.
+    // Ejemplo: 0.5 => Queremos misma cantidad de mover que de comprar.
+    //          0.8 => Queremos mover mucho y comprar poco.
+    
+    // Evitamos división por cero si split_pct es extremo
+    if (split_pct <= 0.0) split_pct = 0.01;
+    if (split_pct >= 1.0) split_pct = 0.99;
+
+    // Ratio deseado: N_move / N_new
+    // Si split = 0.5 -> ratio = 0.5/0.5 = 1.0
+    // Si split = 0.8 -> ratio = 0.8/0.2 = 4.0
+    double ratio = split_pct / (1.0 - split_pct);
+
+    // Costo promedio ponderado por acción según el ratio deseado
+    // "Costo del paquete" (1 nuevo + R movidos) = c1 + R*c2
+    double package_cost = c1 + (ratio * c2);
+
+    // Cuántos "paquetes" caben en el presupuesto
+    double num_packages = P / package_cost;
+
+    // Desglosamos en cantidades enteras ideales
+    int target_new = (int)num_packages;
+    int target_move = (int)(num_packages * ratio);
+
+    // -----------------------------------------------------------------
+    // APLICACIÓN DE LÍMITES FÍSICOS
+    // -----------------------------------------------------------------
+    
+    // 1. Limite de Mover: No podemos mover más de los que existen
+    if (target_move > total_pre) {
+        target_move = total_pre;
+        // Si sobramos dinero al topar mover, lo pasamos a comprar (si queremos ser greedy)
+        // O simplemente recalculamos budget restante para comprar
+    }
+
+    // 2. Recalcular reales según presupuesto exacto
+    // Aseguramos que la combinación calculada entre en el dinero
+    double cost_curr = (target_new * c1) + (target_move * c2);
+    while (cost_curr > P) {
+        // Si nos pasamos (por redondeo), reducimos proporcionalmente
+        if (target_new > 0) { target_new--; cost_curr -= c1; }
+        else if (target_move > 0) { target_move--; cost_curr -= c2; }
+        else break;
+    }
+    
+    // Opcional: Gastar remanente. Si sobra dinero tras topar los Moves, compramos más News.
+    double remanente = P - cost_curr;
+    while (remanente >= c1) {
+        target_new++;
+        remanente -= c1;
+    }
+
+    // -----------------------------------------------------------------
+    // ALEATORIEDAD (Opcional, igual que tu función anterior)
+    // -----------------------------------------------------------------
+    // Si quieres que sea estocástico entre 0 y el objetivo calculado:
+    if (target_move > 0) target_move = rand() % (target_move + 1);
+    if (target_new > 0) target_new = rand() % (target_new + 1);
+
+
+    // -----------------------------------------------------------------
+    // EJECUCIÓN FÍSICA
+    // -----------------------------------------------------------------
+
+    // A. Gestionar los que se quedan quietos
+    // Se quedan = Total - Mover
+    int keep_count = total_pre - target_move;
+    if (keep_count < 0) keep_count = 0;
+
+    std::random_shuffle(pre_indices.begin(), pre_indices.end());
+    for(int i=0; i<keep_count; ++i) {
+        x_var[pre_indices[i]] = 1.0;
+    }
+
+    // B. Instalar los "Muebles" (Mover + Nuevos)
+    // Estos se colocan en huecos libres aleatorios
+    int total_to_place = target_move + target_new;
+    
+    InstalarEnHuecosLibres(total_to_place);
+}
+
 void CIndividualBase::GenerateSimpleFeasibleSolution_v2(int num_AEDs, int total_locations)
 {
 	std::fill(x_var.begin(), x_var.end(), 0.0);
@@ -559,7 +816,7 @@ bool CIndividualBase::operator==(const CIndividualBase &ind2)
 }
 
 
-void CIndividualBase::GenerateGreedyFeasibleSolution(int num_AEDs, double randomness_factor){
+/* void CIndividualBase::GenerateGreedyFeasibleSolution(int num_AEDs, double randomness_factor){
 
  	// 1. Limpiar genotipo
     std::fill(x_var.begin(), x_var.end(), 0.0);
@@ -658,4 +915,4 @@ void CIndividualBase::GenerateGreedyFeasibleSolution(int num_AEDs, double random
             is_covered[v] = true;
         }
     }
-}
+} */
