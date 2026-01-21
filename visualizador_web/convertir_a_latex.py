@@ -36,6 +36,61 @@ def escape_latex(s: str) -> str:
     }
     return "".join(repl.get(ch, ch) for ch in s)
 
+def prettify_city_from_instance(s: str) -> str:
+    """
+    Soporta:
+      - 'drp_657_STATEN_ISLAND.dat' -> 'Staten Island'
+      - 'cam_1800_CUAJIMALPA_DE_MORELOS.dat' -> 'Cuajimalpa de Morelos'
+      - 'MILPA_ALTA' -> 'Milpa Alta'
+      - 'GUSTAVO_A._MADERO' -> 'Gustavo A. Madero'
+    """
+    raw = (s or "").strip()
+    if not raw:
+        return raw
+
+    # Quita path si venía con carpeta
+    name = Path(raw).name
+
+    # Quita extensión .dat si existe
+    name = re.sub(r"\.dat$", "", name, flags=re.IGNORECASE)
+
+    # Caso 1: {type}_{n}_{CITY_PART}
+    m = re.match(r"^(drp|cam)_(\d+?)_(.+)$", name, flags=re.IGNORECASE)
+    if m:
+        place = m.group(3)
+    else:
+        # Caso 2: ya viene como slug (MILPA_ALTA, BENITO_JUAREZ, etc.)
+        place = name
+
+    words = [w for w in place.split("_") if w]
+
+    # Conectores frecuentes en minúscula (salvo si son primera palabra)
+    stop = {"de", "del", "la", "las", "los", "el", "al", "y", "of", "the"}
+
+    out = []
+    for idx, w in enumerate(words):
+        wl = w.lower()
+        wl_key = wl.strip(".")  # por si viene 'A.' u otros tokens con punto
+
+        # 1) Conectores: minúscula salvo que sea primera palabra
+        if wl_key in stop:
+            out.append(wl_key.capitalize() if idx == 0 else wl_key)
+            continue
+
+        # 2) Siglas cortas (NYC, A., etc.) -> se dejan tal cual
+        #    OJO: esto ya no atrapará 'DE' o 'LA' porque esas se van por el bloque anterior.
+        if w.isupper() and len(w) <= 3:
+            out.append(w)
+            continue
+
+        # 3) Normal: Title Case
+        out.append(wl.capitalize())
+
+    return " ".join(out)
+
+
+
+
 def normalize_table(cells: list[list[str]], rows: int, cols: int) -> list[list[str]]:
     # asegurar tamaño rows x cols
     out = []
@@ -141,6 +196,7 @@ def main():
     ap.add_argument("--thousands", default=",", help="Separador de miles (default ','). Ej: '.'")
     ap.add_argument("--decimal", default=".", help="Separador decimal (default '.'). Ej: ','")
     ap.add_argument("--format_cols", default=None, help="Columnas (1-index) a formatear, ej: '2,3,4'. Default: todas menos la 1.")
+    ap.add_argument("--pretty_first_col", action="store_true", help="Convierte la primera columna desde 'drp_657_STATEN_ISLAND.dat' a 'Staten Island' (solo nombre de ciudad).")
     args = ap.parse_args()
 
     path = Path(args.file)
@@ -159,6 +215,12 @@ def main():
 
     cells = [split_line(ln, sep) for ln in raw_lines]
     table = normalize_table(cells, args.rows, args.cols)
+
+    if args.pretty_first_col:
+        start_r = 1 if args.header else 0
+        for r in range(start_r, len(table)):
+            if table[r] and len(table[r]) > 0:
+                table[r][0] = prettify_city_from_instance(table[r][0])
 
     if args.format_numbers:
         if args.format_cols:
