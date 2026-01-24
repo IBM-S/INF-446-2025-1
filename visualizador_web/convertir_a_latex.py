@@ -21,7 +21,14 @@ def split_line(line: str, sep: str) -> list[str]:
     return [x.strip() for x in line.split(sep)]
 
 def escape_latex(s: str) -> str:
-    # escape básico de caracteres especiales
+    s = "" if s is None else str(s)
+
+    # ✅ Si ya viene como math LaTeX ($...$), NO escapar nada
+    st = s.strip()
+    if len(st) >= 2 and st[0] == "$" and st[-1] == "$":
+        return s
+
+    # escape básico de caracteres especiales (modo texto)
     repl = {
         "\\": r"\textbackslash{}",
         "&": r"\&",
@@ -35,6 +42,7 @@ def escape_latex(s: str) -> str:
         "^": r"\textasciicircum{}",
     }
     return "".join(repl.get(ch, ch) for ch in s)
+
 
 def prettify_city_from_instance(s: str) -> str:
     """

@@ -26,6 +26,12 @@ HV_EXEC = os.path.join(PROYECTO_ROOT, "material", "hv-1.3-src", "hv")
 REPORT_FILE = None
 
 # ================= FUNCIONES =================
+BOLD_WINNERS = True   # <- prende/apaga negritas en el compacto
+
+def bold_latex(s: str) -> str:
+    # s debe ser el string ya formateado (ej: "60.06")
+    return rf"$\mathbf{{{s}}}$"
+
 INST_PREFIX_RE = re.compile(r"^(cam|drp)_\d+_", re.IGNORECASE)
 
 def display_inst_name(inst: str) -> str:
@@ -311,7 +317,7 @@ def winner_max(ampl, moead, tol=1e-12):
 
 # ================= MAIN =================
 
-def procesar_instancias(problem_type="cam", target_instance=None):
+def procesar_instancias(problem_type="cam", target_instance=None, args=None):
     print(f"\n==================================================")
     print(f" ANALIZANDO TIPO: {problem_type.upper()}")
     if target_instance: print(f" FILTRO INSTANCIA: {target_instance}")
@@ -319,7 +325,8 @@ def procesar_instancias(problem_type="cam", target_instance=None):
     
     # 1. LISTAR TODAS LAS INSTANCIAS (Uniendo AMPL y MOEAD)
     path_ampl_base = os.path.join(DIR_AMPL, problem_type)
-    path_moead_base = os.path.join(DIR_MOEAD, problem_type)
+    moead_folder = args.moead_subdir if args.moead_subdir else problem_type
+    path_moead_base = os.path.join(DIR_MOEAD, moead_folder)
     
     insts_ampl = []
     if os.path.exists(path_ampl_base):
@@ -358,11 +365,13 @@ def procesar_instancias(problem_type="cam", target_instance=None):
     processed = 0
     summary_rows = []  # una fila por instancia (HV best + T.Ejec promedio)
 
+    Width_ND = 18
+
     if problem_type.lower() == "cam":
         W_INST = 24
         W_REF_X = 14
         W_REF_Y = 14       
-        W_HV   = 20    
+        W_HV   = 24    
         W_GAP  = 12          
         W_TE   = 32        
         W_WIN  = 12
@@ -563,6 +572,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
         
         hv_moead_avg_global = np.mean(moead_hv_runs_global) if moead_hv_runs_global else np.nan
         te_moead_avg = np.mean(moead_times) if moead_times else np.nan
+        te_moead_total = np.sum(moead_times) if moead_times else np.nan
 
         # 3.2 Tiempos AMPL
         ampl_times = []
@@ -673,9 +683,14 @@ def procesar_instancias(problem_type="cam", target_instance=None):
                 "hv_ampl_best_final": hv_ampl_best_final,                   # tu "HV(AMPL) Fin"
                 "hv_moead_best_final": hv_moead_best_final,       # tu "HV(MOEA Best) Fin"
 
+                # ND best fronts finales
+                "nd_ampl_best_final": n_a,
+                "nd_moead_best_final": n_m,
+
                 # tiempos (promedios)
                 "te_ampl": te_ampl_avg,
                 "te_moead": te_moead_avg,
+                "te_moead_total": te_moead_total
             })
 
 
@@ -751,10 +766,10 @@ def procesar_instancias(problem_type="cam", target_instance=None):
     else:
         # Formato fijo
         header = (
-            f"{'Instance':<{W_INST}}"
+            f"{'Instance':<{W_INST}}{'Nd(AMPL)':>{Width_ND}}{'NdAg(MOEA/D)':>{Width_ND}}"
             f"{'ref_glob_1':>{W_REF_X}}{'ref_global_2':>{W_REF_Y}}"
             f"{'HvBest(AMPL)':>{W_HV}}{'AgHvBest(MOEA/D)':>{W_HV}}{'AvHv(MOEA/D)':>{W_HV}}{'GAP_HvBest':>{W_GAP}}{'WIN_HvBest':>{W_WIN}}"
-            f"{'TE_AMPL':>{W_TE}}{'TE_MOEAD':>{W_TE}}{'GAP_TE':>{W_GAP}}{'WIN_TE':>{W_WIN}}"
+            f"{'TE_PROM_AMPL':>{W_TE}}{'TE_PROM_MOEAD':>{W_TE}}{'GAP_TE':>{W_GAP}}{'WIN_TE':>{W_WIN}}"
         )
 
         print(header)
@@ -771,6 +786,13 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
         for r in summary_rows:
             inst_disp = r["inst_disp"]
+
+            # puntos ND best fronts finales
+            n_a_final = r["nd_ampl_best_final"]
+            n_m_final = r["nd_moead_best_final"]
+
+            nd_a_cell = cell(str(n_a_final), Width_ND)
+            nd_m_cell = cell(str(n_m_final), Width_ND)
 
             # referencia global para mostrar
             rgx, rgy = r["ref_global"]
@@ -835,7 +857,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             gap_te_cell = cell(fmt_gap_only(g_te), W_GAP)
 
             line = (
-                f"{inst_disp:<{W_INST}}"
+                f"{inst_disp:<{W_INST}}{nd_a_cell}{nd_m_cell}"
                 f"{ref_x_cell}{ref_y_cell}"
                 f"{hv_a_cell}{hv_m_cell}{hv_prom_m_cell}{gap_hv_cell}{win_hv:>{W_WIN}}"
                 f"{te_a_cell}{te_m_cell}{gap_te_cell}{win_te:>{W_WIN}}"
@@ -847,6 +869,7 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
         wins_line = (
             f"{'WINS':<{W_INST}}"
+            f"{'':>{Width_ND}}{'':>{Width_ND}}"
             f"{'':>{W_REF_X}}{'':>{W_REF_Y}}"
             f"{str(hv_w_ampl):>{W_HV}}"      # HV wins AMPL bajo HvBest(AMPL)
             f"{str(hv_w_moead):>{W_HV}}"     # HV wins MOEAD bajo AgHvBest(MOEA/D)
@@ -868,14 +891,17 @@ def procesar_instancias(problem_type="cam", target_instance=None):
         W_TE2 = 20
         print("\n")
         print(" RESUMEN FINAL FINAL (compacto)")
-        print("=" * (W_INST + W_REF_X + W_REF_Y + W_HV*2 + W_GAP + W_WIN + W_TE2*2 + W_GAP))
+        print("=" * (W_INST + W_REF_X + W_REF_Y + W_HV*2 + W_GAP + W_WIN + W_TE2*2 + W_GAP + Width_ND*2))
 
         header2 = (
-            f"{'Instance':<{W_INST}}"
-            f"{'ref_1':>{W_REF_X}}{'ref_2':>{W_REF_Y}}"
+            f"{'Instance':<{W_INST}}{'Nd(AMPL)':>{Width_ND}}{'AgNd(MOEA/D)':>{Width_ND}}"
+            f"{'$y_{ref1}$':>{W_REF_X}}{'$y_{ref2}$':>{W_REF_Y}}"
             f"{'Hv(AMPL)':>{W_HV}}{'AgHv(MOEA/D)':>{W_HV}}{'GapHv':>{W_GAP}}"
-            f"{'Time [s] (AMPL)':>{W_TE2}}{'Time [s] (MOEA/D)':>{W_TE2}}{'GapTime':>{W_GAP}}"
+            f"{'Time[s](AMPL)':>{W_TE2}}{'AgTime[s](MOEA/D)':>{W_TE2}}{'GapTime':>{W_GAP}}"
         )
+
+        # f"{'T [s] (AMPL)':>{W_TE2}}{'AgT [s] (MOEA/D)':>{W_TE2}}{'GapT':>{W_GAP}}"
+
 
         print(header2)
         print("-" * len(header2))
@@ -889,14 +915,22 @@ def procesar_instancias(problem_type="cam", target_instance=None):
 
         for r in summary_rows:
             inst_disp = r["inst_disp"]
+            
+            # puntos ND best fronts finales
+            n_a_final_tabla2 = r["nd_ampl_best_final"]
+            n_m_final_tabla2 = r["nd_moead_best_final"]
+
+            nd_a_txt_tabla2 = "-" if pd.isna(n_a_final_tabla2) else f"{n_a_final_tabla2}"
+            nd_m_txt_tabla2 = "-" if pd.isna(n_m_final_tabla2) else f"{n_m_final_tabla2}"
+
             rfx, rfy = r["ref_final"]
 
             hv_a_final     = r["hv_ampl_best_final"]
             hv_best_final  = r["hv_moead_best_final"]
             gap_hv_final   = gap_pct(hv_a_final, hv_best_final)
-            te_a = r["te_ampl"]
-            te_m = r["te_moead"]
-            gap_te_final = gap_pct(te_a, te_m)
+            te_a_2 = r["te_ampl"]
+            te_m_sum = r["te_moead_total"]
+            gap_te_final = gap_pct(te_a_2, te_m_sum)
 
             # Ref X/Y
             ref_x_txt = "-" if _is_missing(rfx) else f"{float(rfx):,.2f}"
@@ -905,11 +939,63 @@ def procesar_instancias(problem_type="cam", target_instance=None):
             hv_a_txt = "-" if pd.isna(hv_a_final) else f"{float(hv_a_final):,.2f}"
             hv_m_txt = "-" if pd.isna(hv_best_final) else f"{float(hv_best_final):,.2f}"
 
-            te_a_txt = fmt_seconds_only(te_a, dec_s=2)
-            te_m_txt = fmt_seconds_only(te_m, dec_s=2)
+            te_a_txt = fmt_seconds_only(te_a_2, dec_s=2)
+            te_m_txt = fmt_seconds_only(te_m_sum, dec_s=2)
+
+            def to_float_or_nan(x):
+                try:
+                    if x is None: 
+                        return np.nan
+                    if isinstance(x, str) and x.strip() == "-":
+                        return np.nan
+                    return float(x)
+                except:
+                    return np.nan
+
+            if args.bold_winners:
+
+                # ---------------- ND (mayor es mejor) ----------------
+                nd_a_num = to_float_or_nan(n_a_final_tabla2)
+                nd_m_num = to_float_or_nan(n_m_final_tabla2)
+
+                if np.isfinite(nd_a_num) and np.isfinite(nd_m_num):
+                    if nd_a_num > nd_m_num:
+                        nd_a_txt_tabla2 = bold_latex(nd_a_txt_tabla2)
+                    elif nd_m_num > nd_a_num:
+                        nd_m_txt_tabla2 = bold_latex(nd_m_txt_tabla2)
+                    else:
+                        nd_a_txt_tabla2 = bold_latex(nd_a_txt_tabla2)
+                        nd_m_txt_tabla2 = bold_latex(nd_m_txt_tabla2)
+
+                # ---------------- HV (mayor es mejor) ----------------
+                hv_a_num = to_float_or_nan(hv_a_final)
+                hv_m_num = to_float_or_nan(hv_best_final)
+
+                if np.isfinite(hv_a_num) and np.isfinite(hv_m_num):
+                    if hv_a_num > hv_m_num:
+                        hv_a_txt = bold_latex(hv_a_txt)
+                    elif hv_m_num > hv_a_num:
+                        hv_m_txt = bold_latex(hv_m_txt)
+                    else:
+                        hv_a_txt = bold_latex(hv_a_txt)
+                        hv_m_txt = bold_latex(hv_m_txt)
+
+                # ---------------- TIME (menor es mejor) ----------------
+                te_a_num = to_float_or_nan(te_a_2)
+                te_m_num = to_float_or_nan(te_m_sum)
+
+                if np.isfinite(te_a_num) and np.isfinite(te_m_num):
+                    if te_a_num < te_m_num:
+                        te_a_txt = bold_latex(te_a_txt)
+                    elif te_m_num < te_a_num:
+                        te_m_txt = bold_latex(te_m_txt)
+                    else:
+                        te_a_txt = bold_latex(te_a_txt)
+                        te_m_txt = bold_latex(te_m_txt)
+
 
             line2 = (
-                f"{inst_disp:<{W_INST}}"
+                f"{inst_disp:<{W_INST}}{cell(nd_a_txt_tabla2, Width_ND)}{cell(nd_m_txt_tabla2, Width_ND)}"
                 f"{cell(ref_x_txt, W_REF_X)}{cell(ref_y_txt, W_REF_Y)}"
                 f"{cell(hv_a_txt, W_HV)}{cell(hv_m_txt, W_HV)}{cell(fmt_gap_only_2(gap_hv_final), W_GAP)}"
                 f"{cell(te_a_txt, W_TE2)}{cell(te_m_txt, W_TE2)}{cell(fmt_gap_only_2(gap_te_final), W_GAP)}"
@@ -950,6 +1036,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--instancia', type=str, default=None)
     parser.add_argument('--tipo', type=str, default="cam")
+    parser.add_argument("--moead_subdir", type=str, default=None, help="Subcarpeta dentro de raw_moead. Ej: cam_final. Si no se pasa, se usa --tipo (cam/drp).")
+    parser.add_argument( "--bold_winners", action="store_true", help="Si se activa, pone en negrita (LaTeX \\mathbf{...}) a los ganadores en el RESUMEN FINAL FINAL."
+)
+
+
     args = parser.parse_args()
     
-    procesar_instancias(args.tipo, args.instancia)
+    procesar_instancias(args.tipo, args.instancia, args)
