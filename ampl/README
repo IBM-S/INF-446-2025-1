@@ -1,22 +1,35 @@
-txt_to_dat.py
-toma la carpeta casos_txt y por cada archivo los convierte en .dat
+conf_execution.dat
+Contiene los parametros de ejecucion para AMPL. La cantidad de objetivos,
+la cadntidad de ejecuciones y la matriz de pesos.
 
-txt_to_dat_with_prob.py
-toma la carpeta casos_txt y por cada archivo los convierte en .dat y les agrega tambien las probabilidades
+DRP_con_probs.dat
+Ejemplo simple de archivo de datos para el problema de localizacion y reubicacion
 
-inicio.py
-toma la carpeta casos_dats, y genera los respectivos graficos de cada uno. 
-
-
-voy a dejar los codigos importantes en TT2 los de AMPL finales de relocation y location
 mo_drp_location.run
+Script AMPL para correr el modelo de localizacion (para utilizar hay que 
+descomentar: reset, model, data, conf_execution)
+
 mo_location_model.mod
+Modelo AMPL para el problema de localizacion
+
 mo_drp_relocation_simple.run
+Script AMPL para correr el modelo de reubicacion simple (para utilizar hay que
+descomentar: reset, model, data, conf_execution)
+
 mo_relocation_model_simple.mod
+Modelo AMPL para el problema de reubicacion simple
 
 run_all_instances_ampl_drp.sh
-run_all_instances_ampl.sh
+Script bash para correr todas las instancias AMPL del problema DRP
 
+run_all_instances_ampl_cam.sh
+Script bash para correr todas las instancias AMPL del problema CAM
+
+sigma.py
+Genera matrices de pesos para el metodo MOEA/D, para 2 objetivos.
+Cambiar el valor de CANTIDAD_DE_PUNTOS para generar diferentes cantidades de puntos.
+
+# Matrices de pesos para 2 objetivos, de 11 y 101 puntos respectivamente
 param sigma
 :    1        2 :=
 1    0.00001  0.99999
@@ -32,18 +45,6 @@ param sigma
 11   0.99999  0.00001
 ;
 
-BASE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-
-AMPL_EXECUTABLE="./../../ampl/ampl.linux-intel64/ampl"
-
-MODEL_FILE="mo_location_model.mod"
-RUN_FILE="mo_drp_location.run"
-CONFIG_FILE="conf_execution.dat"
-
-PROBLEM_TYPE="cam"
-
-INSTANCES_DIR="${BASE_DIR}/datos/inst"
-RESULTS_DIR="${BASE_DIR}/datos/res/raw_ampl/${PROBLEM_TYPE}"
 
 param sigma
 :    1        2 :=

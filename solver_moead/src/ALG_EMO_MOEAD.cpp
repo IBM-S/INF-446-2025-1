@@ -733,9 +733,6 @@ void CALG_EMO_MOEAD::EvolvePopulation()
         }
 
         // --- CALCULO DE ORIGEN (Movidos vs Nuevos) ---
-        // Los sitios "Inst" se llenan priorizando los equipos movidos (moved_out)
-        // porque son más baratos. El resto se compra.
-        
         // Cuantos instalados provienen de una reubicación:
         int n_movidos = std::min(inst, moved_out);
         

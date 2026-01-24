@@ -97,7 +97,7 @@ public:
 	//   Mutacion location
 	// =========================================================================
 	void MutacionModificada_sin_reubicacion(vector<double> &x_var, double mutation_rate, double prob_op1_delete, ProblemInstance *problemInstance);
-	// 1. Swap Probabilistica: cada bit que este activo tiene prob fija de mudarse a otra posicion (solo se muda si mejora)   utiliza es BuenCandidato
+	// 1. Swap Probabilistica: cada bit que este activo tiene prob fija de mudarse a otra posicion (solo se muda si mejora)
 	void MutacionSwapProbabilistico(vector<double> &x_var, double mutation_rate, double MutProbSwap, ProblemInstance *instance);
 
 	// 2. Mutación Swap (Hace un swap de un % de equipos al azar)
@@ -107,13 +107,13 @@ public:
     // mutPctDelete: Porcentaje de equipos actuales a eliminar (ej: 0.1 para borrar el 10%)
     void MutacionDeletePorcentual(vector<double> &x_var, double mutation_rate, double mutPctDelete, ProblemInstance *instance);
 
-	// 4. Bit Flip Normal: cada bit tiene Prob (1 / N_movibles) de cambiar           utiliza es BuenCandidato
+	// 4. Bit Flip Normal: cada bit tiene Prob (1 / N_movibles) de cambiar       
 	void MutacionBitFlip_1_N(vector<double> &x_var, double mutation_rate, ProblemInstance *instance);
 
-	// 5. Bit Flip Poblacional: cada bit tiene Prob (1 / M_poblacion) de cambiar     utiliza es BuenCandidato
+	// 5. Bit Flip Poblacional: cada bit tiene Prob (1 / M_poblacion) de cambiar    
 	void MutacionBitFlip_1_M(vector<double> &x_var, double mutation_rate, int populationSize, ProblemInstance *instance);
 
-	// 6. Bit Flip Fijo: cada bit tiene Prob fija de cambiar (mas alta que la 1 y 2) utiliza es BuenCandidato
+	// 6. Bit Flip Fijo: cada bit tiene Prob fija de cambiar 
 	void MutacionBitFlip_Fijo(vector<double> &x_var, double mutation_rate, double fixed_prob, ProblemInstance *instance);
 
 	// 7. Mutacion Combinada (Elegir entre BitFlip y Swap segun probabilidad)

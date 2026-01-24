@@ -36,8 +36,8 @@ void CIndividualBase::Randomize()
 	}
 }
 
-// Con est funcion vamos a crear funciones factibles.
-// A partir de la representacion binaria. Con k desfibriladores, con
+// Con esta funcion vamos a crear funciones factibles.
+// A partir de la representacion binaria. Con k equipos, con
 // el presupuesto.
 
 void CIndividualBase::GenerateSimpleFeasibleSolution(int num_AEDs)
@@ -154,10 +154,6 @@ void CIndividualBase::InstalarEnHuecosLibres(int cantidad_a_instalar)
 {
 
 	////////////////////////////
-	////////////////////////////
-	////////////////////////////
-	////////////////////////////
-	////////////////////////////
     if (cantidad_a_instalar <= 0) return; 
 
     std::vector<int> vacios;
@@ -272,10 +268,6 @@ void CIndividualBase::GenerateSimpleFeasible_Reloc_HybridSplit(double presupuest
 
     // 2. FASE COMPRAR (Con el vuelto real)
     double budget_buy = P_total - gastado_moves; // Lo que sobró
-    // Llamamos al nucleo de comprar pero OJO:
-    // Core_OnlyBuy asume que los preinstalados están fijos. 
-    // Aquí ya fijamos algunos y otros los tenemos "en la mano" (moves_count).
-    // Así que hacemos la lógica manual aquí para sumar todo a la bolsa:
     
     double c1 = problemInstance->getC1();
     int max_new = (int)(budget_buy / c1);
@@ -442,7 +434,7 @@ void CIndividualBase::GenerateSimpleFeasible_Random(double num_AEDs, double nums
 
 void CIndividualBase::GenerateRandomFullRange(int nums_AEDs_instalar)
 {
-    // 1. Limpieza (Tabula Rasa)
+    // 1. Limpieza
     std::fill(x_var.begin(), x_var.end(), 0.0);
     int total_nodes = x_var.size();
 
@@ -477,8 +469,7 @@ void CIndividualBase::GenerateGreedyFeasibleSolution(int num_AEDs, double random
     // Vector auxiliar para saber qué nodos de demanda ya están cubiertos
     std::vector<bool> is_covered(n, false);
     
-    // NOTA: Como es reubicación total, NO asumimos que las cámaras fijas (Flag 1) 
-    // están activas ni cubriendo. Empezamos con el mapa vacío.
+    // Empezamos con el mapa vacío.
     
     int instalados = 0;
     const auto &nodos = problemInstance->getNodes();
@@ -546,7 +537,6 @@ void CIndividualBase::GenerateGreedyFeasibleSolution(int num_AEDs, double random
     }
 
     // 4. Relleno Aleatorio (Si el greedy paró antes de llenar el cupo)
-    // Esto ocurre si cubrimos toda la demanda posible pero nos sobra presupuesto.
     // Llenamos para cumplir la restricción estricta de num_AEDs.
     if (instalados < num_AEDs) 
     {
@@ -616,8 +606,6 @@ void CIndividualBase::GenerateSimpleFeasible_Reloc_BalancedQuantity(double presu
     // 1. Limite de Mover: No podemos mover más de los que existen
     if (target_move > total_pre) {
         target_move = total_pre;
-        // Si sobramos dinero al topar mover, lo pasamos a comprar (si queremos ser greedy)
-        // O simplemente recalculamos budget restante para comprar
     }
 
     // 2. Recalcular reales según presupuesto exacto
@@ -638,9 +626,8 @@ void CIndividualBase::GenerateSimpleFeasible_Reloc_BalancedQuantity(double presu
     }
 
     // -----------------------------------------------------------------
-    // ALEATORIEDAD (Opcional, igual que tu función anterior)
+    // ALEATORIEDAD
     // -----------------------------------------------------------------
-    // Si quieres que sea estocástico entre 0 y el objetivo calculado:
     if (target_move > 0) target_move = rand() % (target_move + 1);
     if (target_new > 0) target_new = rand() % (target_new + 1);
 
@@ -747,7 +734,6 @@ void CIndividualBase::Evaluate()
 	// TestInstance.fdvrp(x_var, f_obj, x_var.size());
 
 	TestInstance.DRP_Evaluate(x_var, f_obj, problemInstance);
-	// TestInstance.DRP_Evaluate(x_var, f_obj, problemInstance);
 }
 
 void CIndividualBase::Show(int type)
@@ -814,105 +800,3 @@ bool CIndividualBase::operator==(const CIndividualBase &ind2)
 	else
 		return false;
 }
-
-
-/* void CIndividualBase::GenerateGreedyFeasibleSolution(int num_AEDs, double randomness_factor){
-
- 	// 1. Limpiar genotipo
-    std::fill(x_var.begin(), x_var.end(), 0.0);
-
-    const auto &nodos = problemInstance->getNodes();
-    int n = x_var.size();
-    
-    // 2. Estado de cobertura actual (inicia con lo que cubren las cámaras fijas)
-    // Usamos un vector auxiliar para saber qué nodos de demanda ya están salvados
-    std::vector<bool> is_covered(n, false);
-    int instalados = 0;
-
-    // A. Pre-instalar infraestructura fija (Flag 1) y marcar su cobertura
-    for (int i = 0; i < n; ++i) {
-        if (nodos[i]->getFlag() == 1) {
-            x_var[i] = 1.0;
-            instalados++; // Generalmente no cuentan para el presupuesto P, pero depende de tu lógica
-            
-            // Marcar vecinos como cubiertos
-            const std::vector<int>& vecinos = problemInstance->getNodosCubiertosPor(i);
-            for (int v : vecinos) is_covered[v] = true;
-        } else {
-            // Si es demanda y ya está cubierto por base (cámaras), marcarlo
-            if (problemInstance->isPreCubierto(i)) is_covered[i] = true;
-        }
-    }
-
-    // B. Bucle Greedy: Instalar hasta llegar al objetivo
-    // Ajustamos el objetivo restando los fijos si tu num_AEDs incluye fijos.
-    // Asumiremos que num_AEDs es el TOTAL de equipos en el mapa.
-    
-    while (instalados < num_AEDs)
-    {
-        // Lista de candidatos potenciales (ID, Ganancia Marginal)
-        std::vector<std::pair<double, int>> candidatos;
-
-        // Recorremos todos los nodos candidatos (Flag 0 y que estén vacíos)
-        for (int i = 0; i < n; ++i) 
-        {
-            if (x_var[i] == 0.0 && nodos[i]->getFlag() == 0) 
-            {
-                double ganancia = 0.0;
-                const std::vector<int>& vecinos = problemInstance->getNodosCubiertosPor(i);
-                
-                // Calculamos cuánto aporta este candidato
-                for (int v : vecinos) {
-                    // Si es un nodo de demanda y NO está cubierto aun
-                    if (!is_covered[v] && nodos[v]->getFlag() == 0) {
-                        ganancia += nodos[v]->getProbOhca();
-                    }
-                }
-
-                // Solo lo consideramos si aporta algo positivo
-                if (ganancia > 0) {
-                    candidatos.push_back({ganancia, i});
-                }
-            }
-        }
-
-        if (candidatos.empty()) {
-            // Ya no hay nada útil que cubrir, rellenar con aleatorios para cumplir presupuesto
-            std::vector<int> vacios;
-            for(int i=0; i<n; ++i) if(x_var[i]==0 && nodos[i]->getFlag()==0) vacios.push_back(i);
-            std::random_shuffle(vacios.begin(), vacios.end());
-            
-            for(int k=0; k < (int)vacios.size() && instalados < num_AEDs; ++k) {
-                x_var[vacios[k]] = 1.0;
-                instalados++;
-            }
-            break; 
-        }
-
-        // C. Selección (Greedy vs Aleatorio)
-        int elegido_idx = -1;
-
-        // Ordenamos de MAYOR ganancia a MENOR
-        std::sort(candidatos.rbegin(), candidatos.rend());
-
-        // randomness_factor: 
-        // 0.0 = Greedy Puro (siempre el mejor)
-        // 1.0 = Totalmente Aleatorio dentro de los candidatos útiles
-        
-        // Estrategia: Torneo o Selección de los "Top N"
-        // Aquí usaremos selección dentro del Top %
-        int top_k = std::max(1, (int)(candidatos.size() * randomness_factor));
-        int r = rand() % top_k; // Elegir uno al azar entre los mejores
-        
-        elegido_idx = candidatos[r].second;
-
-        // D. Instalar y Actualizar Cobertura
-        x_var[elegido_idx] = 1.0;
-        instalados++;
-
-        const std::vector<int>& nuevos_cubiertos = problemInstance->getNodosCubiertosPor(elegido_idx);
-        for (int v : nuevos_cubiertos) {
-            is_covered[v] = true;
-        }
-    }
-} */

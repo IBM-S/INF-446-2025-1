@@ -44,7 +44,6 @@ std::string PrepararDirectorioSalida(std::string nombreInstancia, std::string ti
     }
 
     // 2. Construir la ruta completa
-    // Usamos strings de C++ para concatenar fácil
     std::string rutaBase = exe_dir_path + "/../datos/res/raw_moead/" + tipoProblema + "/" + nombreCarpeta;
 
     std::string rutaCompleta = rutaBase;

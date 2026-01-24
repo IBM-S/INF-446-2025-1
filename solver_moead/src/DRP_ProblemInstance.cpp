@@ -124,7 +124,7 @@ void ProblemInstance::PrecalcularCoberturas()
         {
             // Calculamos distancia al cuadrado
             double dx = ax - nodes[j]->getX();
-            double dy = nodes[j]->getY() - ay; // corrección typo ay
+            double dy = nodes[j]->getY() - ay;
             
             // Distancia euclidiana optimizada
             if ((dx*dx + dy*dy) <= R2) 

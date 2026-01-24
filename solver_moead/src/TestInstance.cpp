@@ -19,23 +19,86 @@ CTestInstance::~CTestInstance()
 
 }
 
+// Final evaluation function for the DRP and CAM problem
 
-void CTestInstance::fdvrp(vector<double> &x, vector<double> &f, const unsigned int nx)
+void CTestInstance::DRP_Evaluate(const vector<double>& x, vector<double>& f, ProblemInstance* instance)
 {
-	f = std::vector<double>(2, 0);
+	double cobertura_total = 0.0;
+	double aeds_totales = 0.0;
 
-	unsigned int j;
-	double sum1,g;
+    // 1. OPTIMIZACIÓN DE MEMORIA
+    static std::vector<bool> is_covered; 
+    if (is_covered.size() != x.size()) {
+        is_covered.resize(x.size());
+    }
+    // Reiniciamos el mapa de cobertura a false
+    std::fill(is_covered.begin(), is_covered.end(), false);
 
-	sum1 = 0.0;
-	for(j = 1; j <= nx-1; j++)
-	{
-		sum1 += x[j];
+    const auto& nodos = instance->getNodes();
+    double c1 = instance->getC1(); // Costo de instalación nueva
+    double c2 = instance->getC2(); // Costo de reubicación
+
+	// -----------------------------------------------------------
+	// 2. CÁLCULO DE COSTOS (Lógica de Reubicación vs Nuevo)
+	// -----------------------------------------------------------
+	int count_removidos = 0; // Estaba (Flag 1) y ahora es 0
+	int count_nuevos = 0;    // No estaba (Flag 0) y ahora es 1
+
+	for (size_t i = 0; i < x.size(); ++i) {
+        bool es_preinstalado = (nodos[i]->getFlag() == 1);
+        bool esta_activo = (x[i] >= 0.5);
+
+		if (es_preinstalado && !esta_activo) {
+			count_removidos++; 
+		}
+		if (!es_preinstalado && esta_activo) {
+			count_nuevos++; 
+		}
 	}
-	g=1+9*sum1/(nx-1);
-	f[0] = x[0];
-	f[1] = g*(1-sqrt(x[0]/g));
+
+    // Si quitamos 3 y ponemos 5 nuevos:
+    // 3 se consideran "reubicaciones" (costo c2)
+    // 2 se consideran "compras nuevas" (costo c1)
+	int reubicaciones = std::min(count_removidos, count_nuevos);
+	int solo_nuevos = count_nuevos - reubicaciones;
+
+	aeds_totales = (reubicaciones * c2) + (solo_nuevos * c1);
+
+    // -----------------------------------------------------------
+    // 3. CÁLCULO DE COBERTURA (Usando Mapa Pre-Calculado)
+    // -----------------------------------------------------------
+    
+    // A. Marcar cobertura en el mapa booleano
+    for (size_t i = 0; i < x.size(); ++i) 
+    {
+        if (x[i] >= 0.5) // Si hay un AED activo en el nodo i
+        {
+            // Obtenemos la lista de vecinos que este nodo cubre (Pre-calculada en ProblemInstance)
+            const std::vector<int>& vecinos = instance->getNodosCubiertosPor(i);
+            
+            // Marcamos a todos los vecinos como cubiertos
+            for (int vecino_id : vecinos) {
+                is_covered[vecino_id] = true;
+            }
+        }
+    }
+
+    // B. Sumar probabilidades
+    // sumamos todo lo que esté marcado.
+    for (size_t j = 0; j < x.size(); ++j) 
+    {
+        if (is_covered[j]) 
+        {
+            cobertura_total += nodos[j]->getProbOhca();
+        }
+    }
+
+    f[0] = -cobertura_total; 
+    f[1] = aeds_totales;    
 }
+
+
+// Firsts versions of the evaluation function
 
 void CTestInstance::DRP_Evaluate_v2(const vector<double>& x, vector<double>& f, ProblemInstance* instance)
 {
@@ -168,81 +231,21 @@ void CTestInstance::DRP_Evaluate_v6(const vector<double>& x, vector<double>& f, 
     f[1] = aeds_totales;     
 }
 
-
-void CTestInstance::DRP_Evaluate(const vector<double>& x, vector<double>& f, ProblemInstance* instance)
+void CTestInstance::fdvrp(vector<double> &x, vector<double> &f, const unsigned int nx)
 {
-	double cobertura_total = 0.0;
-	double aeds_totales = 0.0;
+	f = std::vector<double>(2, 0);
 
-    // 1. OPTIMIZACIÓN DE MEMORIA
-    static std::vector<bool> is_covered; 
-    if (is_covered.size() != x.size()) {
-        is_covered.resize(x.size());
-    }
-    // Reiniciamos el mapa de cobertura a false (muy rápido en C++)
-    std::fill(is_covered.begin(), is_covered.end(), false);
+	unsigned int j;
+	double sum1,g;
 
-    const auto& nodos = instance->getNodes();
-    double c1 = instance->getC1(); // Costo de instalación nueva
-    double c2 = instance->getC2(); // Costo de reubicación
-
-	// -----------------------------------------------------------
-	// 2. CÁLCULO DE COSTOS (Lógica de Reubicación vs Nuevo)
-	// -----------------------------------------------------------
-	int count_removidos = 0; // Estaba (Flag 1) y ahora es 0
-	int count_nuevos = 0;    // No estaba (Flag 0) y ahora es 1
-
-	for (size_t i = 0; i < x.size(); ++i) {
-        bool es_preinstalado = (nodos[i]->getFlag() == 1);
-        bool esta_activo = (x[i] >= 0.5);
-
-		if (es_preinstalado && !esta_activo) {
-			count_removidos++; 
-		}
-		if (!es_preinstalado && esta_activo) {
-			count_nuevos++; 
-		}
+	sum1 = 0.0;
+	for(j = 1; j <= nx-1; j++)
+	{
+		sum1 += x[j];
 	}
-
-    // Si quitamos 3 y ponemos 5 nuevos:
-    // 3 se consideran "reubicaciones" (costo c2)
-    // 2 se consideran "compras nuevas" (costo c1)
-	int reubicaciones = std::min(count_removidos, count_nuevos);
-	int solo_nuevos = count_nuevos - reubicaciones;
-
-	aeds_totales = (reubicaciones * c2) + (solo_nuevos * c1);
-
-    // -----------------------------------------------------------
-    // 3. CÁLCULO DE COBERTURA (Usando Mapa Pre-Calculado)
-    // -----------------------------------------------------------
-    
-    // A. Marcar cobertura en el mapa booleano
-    for (size_t i = 0; i < x.size(); ++i) 
-    {
-        if (x[i] >= 0.5) // Si hay un AED activo en el nodo i
-        {
-            // Obtenemos la lista de vecinos que este nodo cubre (Pre-calculada en ProblemInstance)
-            const std::vector<int>& vecinos = instance->getNodosCubiertosPor(i);
-            
-            // Marcamos a todos los vecinos como cubiertos
-            for (int vecino_id : vecinos) {
-                is_covered[vecino_id] = true;
-            }
-        }
-    }
-
-    // B. Sumar probabilidades
-    // sumamos todo lo que esté marcado.
-    for (size_t j = 0; j < x.size(); ++j) 
-    {
-        if (is_covered[j]) 
-        {
-            cobertura_total += nodos[j]->getProbOhca();
-        }
-    }
-
-    f[0] = -cobertura_total; 
-    f[1] = aeds_totales;    
+	g=1+9*sum1/(nx-1);
+	f[0] = x[0];
+	f[1] = g*(1-sqrt(x[0]/g));
 }
 
 void CTestInstance::DTLZ1(vector<double> &x, vector<double> &f, const unsigned int nx)
