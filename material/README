@@ -1,0 +1,25 @@
+metrics.py
+Carpeta con herramientas para calcular métricas
+
+material/hv-1.3-src
+Para compilar make
+para borrar make clean
+
+para utilizar 
+./hv -r "{ref_point_1} {ref_point_2} ... {ref_point_n}" {pareto_front_file}
+
+example:
+./hv -r "15 3" data
+
+data
+example of pareto pareto front file
+
+run_hv_from_txt.py
+facilita ejecutar hv desde archivos de texto.
+
+Por ejemplo
+python3 run_hv_from_txt.py hv_commamds_cam.txt -o hv_results_cam.txt
+python3 run_hv_from_txt.py hv_commamds_drp.txt -o hv_results_drp.txt
+
+
+

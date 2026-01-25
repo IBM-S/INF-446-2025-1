@@ -4865,3 +4865,4 @@ drp_2151_BRONX.dat,MOEAD,drp,relocation,1000,125,2151,500000,0,338935,0.4,0.5,0.
 drp_2885_QUEENS.dat,MOEAD,drp,relocation,1000,125,2885,500000,0,311673,0.4,0.5,0.7,1,0,54.2449,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2885_QUEENS
 drp_2885_QUEENS.dat,MOEAD,drp,relocation,1000,125,2885,150000,0,271410,0.4,0.5,0.7,1,0,18.103,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2885_QUEENS
 drp_2885_QUEENS.dat,MOEAD,drp,relocation,1000,125,2885,10000,0,98712,0.4,0.5,0.7,1,0,32.2907,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2885_QUEENS
+DRP.dat,MOEAD,drp,relocation,100,20,21,1000,0,1,0.4,0.5,0.7,1,0,0.017797,./../datos/res/raw_moead/drp/DRP

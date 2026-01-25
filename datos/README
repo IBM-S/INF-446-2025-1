@@ -1,0 +1,22 @@
+geo/
+Contiene la informacion utilizada para el problema de video vigilancia
+
+inst/
+Contiene las instancias utilizadas para los problemas resueltos y otras instancias mas pequeñas
+
+res/
+aqui se guardan los resultados
+
+res/raw_ampl/
+aqui se guardan los resultados que ejecuta ampl
+
+res/raw_ampl/cam y res/raw_ampl/drp
+aqui se guardan los resultados que ejecuta para el problema cam y para drp
+
+res/raw_moead/
+aqui se guardan los resultados que ejecuta moead
+
+res/raw_moead/cam y res/raw_moead/drp
+aqui se guardan los resultados que ejecuta para el problema cam y para drp
+
+viz/

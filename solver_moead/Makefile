@@ -8,11 +8,15 @@ BINDIR = .
 
 TARGET = MOEAD
 
-INSTANCE    = ../datos/inst/150-11.dat
-SEED        = 123
-N_VARIABLES = 150
+INSTANCE    = ../datos/inst/DRP.dat
+TYPE        = drp
+VARIANT     = relocation
+alg         = MOEAD
+pop 	    = 100
+neighbors   = 20
+SEED        = 1
 N_EVAL      = 1000
-ARGS        = -inst $(INSTANCE) -seed $(SEED) -nvars $(N_VARIABLES) -neval $(N_EVAL) -neighbor 40
+ARGS        = -inst $(INSTANCE) -seed $(SEED) -neval $(N_EVAL) -type $(TYPE) -variant $(VARIANT) -alg $(alg) -pop $(pop) -neighbors $(neighbors)
 
 SOURCES := $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))

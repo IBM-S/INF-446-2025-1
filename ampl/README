@@ -2,9 +2,6 @@ conf_execution.dat
 Contiene los parametros de ejecucion para AMPL. La cantidad de objetivos,
 la cadntidad de ejecuciones y la matriz de pesos.
 
-DRP_con_probs.dat
-Ejemplo simple de archivo de datos para el problema de localizacion y reubicacion
-
 mo_drp_location.run
 Script AMPL para correr el modelo de localizacion (para utilizar hay que 
 descomentar: reset, model, data, conf_execution)
@@ -20,10 +17,10 @@ mo_relocation_model_simple.mod
 Modelo AMPL para el problema de reubicacion simple
 
 run_all_instances_ampl_drp.sh
-Script bash para correr todas las instancias AMPL del problema DRP
+Script bash para correr todas las instancias del problema DRP usando AMPL
 
 run_all_instances_ampl_cam.sh
-Script bash para correr todas las instancias AMPL del problema CAM
+Script bash para correr todas las instancias del problema CAM usando AMPL
 
 sigma.py
 Genera matrices de pesos para el metodo MOEA/D, para 2 objetivos.
