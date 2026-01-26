@@ -4866,3 +4866,6 @@ drp_2885_QUEENS.dat,MOEAD,drp,relocation,1000,125,2885,500000,0,311673,0.4,0.5,0
 drp_2885_QUEENS.dat,MOEAD,drp,relocation,1000,125,2885,150000,0,271410,0.4,0.5,0.7,1,0,18.103,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2885_QUEENS
 drp_2885_QUEENS.dat,MOEAD,drp,relocation,1000,125,2885,10000,0,98712,0.4,0.5,0.7,1,0,32.2907,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/drp/drp_2885_QUEENS
 DRP.dat,MOEAD,drp,relocation,100,20,21,1000,0,1,0.4,0.5,0.7,1,0,0.017797,./../datos/res/raw_moead/drp/DRP
+cam_24363_GUSTAVO_A._MADERO.dat,MOEAD,cam,location,750,75,24363,7500,0,482399,0.8,0.5,0.9,1,1,15.0252,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_24363_GUSTAVO_A._MADERO
+cam_24363_GUSTAVO_A._MADERO.dat,MOEAD,cam,location,750,75,24363,7500,0,398985,0.9,0.5,0.8,1,0,9.59292,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_24363_GUSTAVO_A._MADERO
+cam_24363_GUSTAVO_A._MADERO.dat,MOEAD,cam,location,750,75,24363,150000,0,409769,0.9,0.5,0.8,1,1,148.217,/home/ignacio/TT2/visualizador_web/../solver_moead/../datos/res/raw_moead/cam/cam_24363_GUSTAVO_A._MADERO

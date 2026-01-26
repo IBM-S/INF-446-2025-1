@@ -1296,6 +1296,7 @@
         APP.state.hvValues = [];
         APP.state.amplPoints = null;
 
+
         // Actualizar UI
         APP.ui.setStatus('Seleccione una instancia', 'normal');
         APP.dom['hv-moead'].textContent = '-';
@@ -1750,6 +1751,12 @@
 
         // Tooltip Helper
         const instName = APP.dom['instancia'].value;
+        const instKey = `${APP.dom['problem-type'].value}|${APP.dom['problem-variant'].value}|${APP.dom['instancia'].value}`;
+        if (st.traceVisibilityKey !== instKey) {
+          st.traceVisibilityKey = instKey;
+          st.traceVisibility = { Dominados: true, Pareto: true, AMPL: true, Ref: true };
+        }
+
         const { xDec, yDec } = frontDecimalsFromInstance(instName);
 
         const mkTooltip = (p) => `(${p.x.toFixed(xDec)}, ${p.y.toFixed(yDec)})<br>IDs: ${compressRanges(p.ids)}`;
@@ -1761,14 +1768,16 @@
             text: dom.map(mkTooltip), customdata: dom.map(p => p.ids),
             mode: 'markers', type: 'scatter', name: 'Dominados',
             marker: { color: 'rgba(50, 100, 255, 0.6)', size: 8 },
-            hovertemplate: '%{text}<extra></extra>'
+            hovertemplate: '%{text}<extra></extra>',
+            visible: st.traceVisibility.Dominados ? true : 'legendonly'
           },
           {
             x: pareto.map(p => p.x), y: pareto.map(p => p.y),
             text: pareto.map(mkTooltip), customdata: pareto.map(p => p.ids),
             mode: 'markers', type: 'scatter', name: 'Pareto',
             marker: { color: '#ef4444', size: 10, symbol: 'circle-open', line: { width: 2 } },
-            hovertemplate: '%{text}<extra></extra>'
+            hovertemplate: '%{text}<extra></extra>',
+            visible: st.traceVisibility.Pareto ? true : 'legendonly'
           }
         ];
 
@@ -1778,7 +1787,8 @@
             x: st.amplPoints.map(p => p.x), y: st.amplPoints.map(p => p.y),
             mode: 'markers', type: 'scatter', name: 'AMPL',
             marker: { color: 'green', symbol: 'cross', size: 7 },
-            hovertemplate: hvHoverTemplate(xDec, yDec, 'AMPL')
+            hovertemplate: hvHoverTemplate(xDec, yDec, 'AMPL'),
+            visible: st.traceVisibility.AMPL ? true : 'legendonly'
           });
         }
 
@@ -1805,14 +1815,32 @@
           data.push({
             x: [st.refPoint.x], y: [st.refPoint.y],
             mode: 'markers', name: 'Ref',
-            marker: { symbol: 'x', color: 'black', size: 12 }
+            marker: { symbol: 'x', color: 'black', size: 12 },
+            visible: st.traceVisibility.Ref ? true : 'legendonly'
           });
         }
 
         Plotly.react('plot', data, layout).then(gd => {
           gd.removeAllListeners('plotly_click');
           gd.on('plotly_click', d => this.handlePointClick(d.points[0]));
+
+          // Guardar visibilidad cuando el usuario oculte/muestre desde la leyenda
+          gd.removeAllListeners('plotly_restyle');
+          gd.on('plotly_restyle', ev => {
+            const update = ev[0];
+            const traces = ev[1];
+            if (!update || !('visible' in update)) return;
+
+            // update.visible puede ser un string o array
+            traces.forEach((tIdx, i) => {
+              const v = Array.isArray(update.visible) ? update.visible[i] : update.visible;
+              const traceName = gd.data[tIdx]?.name;
+              if (!traceName) return;
+              st.traceVisibility[traceName] = (v !== 'legendonly');
+            });
+          });
         });
+
       },
 
       /**

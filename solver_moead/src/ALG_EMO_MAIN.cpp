@@ -316,7 +316,7 @@ int main(int argc, char *argv[])
 	NumberOfObjectives = 2;
     NumberOfFuncEvals = 40000; 
 
-    std::string variant = "relocation"; // o "relocation"
+    std::string variant = "location"; // o "relocation"
     std::string problemType = "cam";  // o "drp"
     std::string algName = "MOEAD";
 
@@ -326,22 +326,22 @@ int main(int argc, char *argv[])
 
     // Parámetros Algoritmo
     double bitFlipProb = 0.001; // Default: 1% probabilidad para BitFlip Fijo
-    double crossoverRate = 0.7;
-    int crossType = 7;    // Default: Inteligente
+    double crossoverRate = 0.8;
+    int crossType = 3;    // Default: Inteligente
     int initDist = 2;
-    int initTypeRelocation = 12;           // Default: Solo Mover (o el que prefieras como base)
-    double mutationRate = 0.4;
+    int initTypeRelocation = 11;           // Default: Solo Mover (o el que prefieras como base)
+    double mutationRate = 0.9;
 
     double mutPct = 0.4; // Default: 5% intensidad para operadores porcentuales
     double userMutPctDelete = 0.25; // 0 = usar default
     double userMutPctSwap = 0.4;   // 0 = usar default
 
     double userMutProbSwap = 0.15;
-    int mutType = 12;     // Default: Híbrida
+    int mutType = 5;     // Default: Híbrida
     double userNeighborPct = 0.0; // 0 = usar archivo, >0 usar porcentaje
     double noisePct = 0.1;
     double op1Prob = 0.5; // 20% delete, 80% swap (por ejemplo)
-    double powerExp = 4.0;
+    double powerExp = 6.0;
     double probMoveRelocation = 0.4;      // Default: 50%
     double splitPctRelocation = 0.5;      // Default: 50% split
 
