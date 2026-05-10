@@ -1,7 +1,7 @@
-# reset;
+reset;
 
-# model mo_relocation_model_simple.mod;
-# data ../datos/inst/DRP.dat;
+model mo_relocation_model_simple.mod;
+data ../datos/inst/DRP.dat;
 # data ../datos/inst/drp_657_STATEN_ISLAND.dat;
 # data ../datos/inst/drp_2151_BRONX.dat;
 # data ../datos/inst/drp_2885_QUEENS.dat;
@@ -10,7 +10,7 @@
 
 
 # ---------- Config ----------
-# data conf_execution.dat;
+data conf_execution.dat;
 
 # Opciones del Solver
 option solver gurobi;

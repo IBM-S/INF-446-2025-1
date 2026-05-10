@@ -1,11 +1,8 @@
-# reset ;
+reset ;
 
+model mo_location_model.mod;
 
-# model mo_location_model.mod;
-
-# data ../datos/inst/DRP.dat;
-# data casos_dats_prob/100-3.dat;
-# data ../datos/inst/100-3.dat;
+data ../datos/inst/DRP.dat;
 # data ../datos/inst/cam_1390_MILPA_ALTA.dat;
 # data ../datos/inst/cam_1800_CUAJIMALPA_DE_MORELOS.dat;
 # data ../datos/inst/cam_3205_LA_MAGDALENA_CONTRERAS.dat;
@@ -29,7 +26,7 @@
 # data ../datos/inst/drp_4432_MANHATTAN.dat;
 
 
-# data conf_execution.dat;
+data conf_execution.dat;
 
 /* GUROBI */
 option solver gurobi;
