@@ -1,0 +1,264 @@
+Instancia: cam_1390_MILPA_ALTA.dat
+  R = 200.0
+  AEDs (flag = 1)            : 215
+  Nodos demanda totales      : 1175
+  Prob demanda total         : 233.1306
+  Nodos demanda cubiertos    : 864
+  Prob demanda cubierta      : 180.4028
+  Nodos demanda NO cubiertos : 311
+  Prob demanda NO cubierta   : 52.7278
+  % de nodos cubiertos       : 73.53%
+  % de probabilidad cubierta : 77.38%
+
+Instancia: cam_1800_CUAJIMALPA_DE_MORELOS.dat
+  R = 200.0
+  AEDs (flag = 1)            : 260
+  Nodos demanda totales      : 1540
+  Prob demanda total         : 306.6628
+  Nodos demanda cubiertos    : 1269
+  Prob demanda cubierta      : 257.4842
+  Nodos demanda NO cubiertos : 271
+  Prob demanda NO cubierta   : 49.1786
+  % de nodos cubiertos       : 82.40%
+  % de probabilidad cubierta : 83.96%
+
+Instancia: cam_3205_LA_MAGDALENA_CONTRERAS.dat
+  R = 200.0
+  AEDs (flag = 1)            : 318
+  Nodos demanda totales      : 2887
+  Prob demanda total         : 577.2089
+  Nodos demanda cubiertos    : 2629
+  Prob demanda cubierta      : 528.8385
+  Nodos demanda NO cubiertos : 258
+  Prob demanda NO cubierta   : 48.3704
+  % de nodos cubiertos       : 91.06%
+  % de probabilidad cubierta : 91.62%
+
+Instancia: cam_7256_TLAHUAC.dat
+  R = 200.0
+  AEDs (flag = 1)            : 551
+  Nodos demanda totales      : 6705
+  Prob demanda total         : 1332.7215
+  Nodos demanda cubiertos    : 6060
+  Prob demanda cubierta      : 1207.8428
+  Nodos demanda NO cubiertos : 645
+  Prob demanda NO cubierta   : 124.8787
+  % de nodos cubiertos       : 90.38%
+  % de probabilidad cubierta : 90.63%
+
+Instancia: cam_7408_XOCHIMILCO.dat
+  R = 200.0
+  AEDs (flag = 1)            : 457
+  Nodos demanda totales      : 6951
+  Prob demanda total         : 1439.4622
+  Nodos demanda cubiertos    : 5240
+  Prob demanda cubierta      : 1109.8512
+  Nodos demanda NO cubiertos : 1711
+  Prob demanda NO cubierta   : 329.6110
+  % de nodos cubiertos       : 75.38%
+  % de probabilidad cubierta : 77.10%
+
+Instancia: cam_9673_AZCAPOTZALCO.dat
+  R = 200.0
+  AEDs (flag = 1)            : 758
+  Nodos demanda totales      : 8915
+  Prob demanda total         : 1862.4159
+  Nodos demanda cubiertos    : 8683
+  Prob demanda cubierta      : 1815.1062
+  Nodos demanda NO cubiertos : 232
+  Prob demanda NO cubierta   : 47.3097
+  % de nodos cubiertos       : 97.40%
+  % de probabilidad cubierta : 97.46%
+
+Instancia: cam_11096_IZTACALCO.dat
+  R = 200.0
+  AEDs (flag = 1)            : 722
+  Nodos demanda totales      : 10374
+  Prob demanda total         : 2078.3812
+  Nodos demanda cubiertos    : 10293
+  Prob demanda cubierta      : 2058.0850
+  Nodos demanda NO cubiertos : 81
+  Prob demanda NO cubierta   : 20.2962
+  % de nodos cubiertos       : 99.22%
+  % de probabilidad cubierta : 99.02%
+
+Instancia: cam_11410_TLALPAN.dat
+  R = 200.0
+  AEDs (flag = 1)            : 804
+  Nodos demanda totales      : 10606
+  Prob demanda total         : 2147.5217
+  Nodos demanda cubiertos    : 8706
+  Prob demanda cubierta      : 1791.6396
+  Nodos demanda NO cubiertos : 1900
+  Prob demanda NO cubierta   : 355.8821
+  % de nodos cubiertos       : 82.09%
+  % de probabilidad cubierta : 83.43%
+
+Instancia: cam_11476_BENITO_JUAREZ.dat
+  R = 200.0
+  AEDs (flag = 1)            : 878
+  Nodos demanda totales      : 10598
+  Prob demanda total         : 2326.1083
+  Nodos demanda cubiertos    : 10572
+  Prob demanda cubierta      : 2319.7572
+  Nodos demanda NO cubiertos : 26
+  Prob demanda NO cubierta   : 6.3511
+  % de nodos cubiertos       : 99.75%
+  % de probabilidad cubierta : 99.73%
+
+Instancia: cam_12319_COYOACAN.dat
+  R = 200.0
+  AEDs (flag = 1)            : 973
+  Nodos demanda totales      : 11346
+  Prob demanda total         : 2537.4064
+  Nodos demanda cubiertos    : 10550
+  Prob demanda cubierta      : 2365.0997
+  Nodos demanda NO cubiertos : 796
+  Prob demanda NO cubierta   : 172.3067
+  % de nodos cubiertos       : 92.98%
+  % de probabilidad cubierta : 93.21%
+
+Instancia: cam_13802_MIGUEL_HIDALGO.dat
+  R = 200.0
+  AEDs (flag = 1)            : 1022
+  Nodos demanda totales      : 12780
+  Prob demanda total         : 2725.2908
+  Nodos demanda cubiertos    : 12540
+  Prob demanda cubierta      : 2681.6138
+  Nodos demanda NO cubiertos : 240
+  Prob demanda NO cubierta   : 43.6770
+  % de nodos cubiertos       : 98.12%
+  % de probabilidad cubierta : 98.40%
+
+Instancia: cam_14468_VENUSTIANO_CARRANZA.dat
+  R = 200.0
+  AEDs (flag = 1)            : 1085
+  Nodos demanda totales      : 13383
+  Prob demanda total         : 2728.1323
+  Nodos demanda cubiertos    : 13204
+  Prob demanda cubierta      : 2695.1923
+  Nodos demanda NO cubiertos : 179
+  Prob demanda NO cubierta   : 32.9400
+  % de nodos cubiertos       : 98.66%
+  % de probabilidad cubierta : 98.79%
+
+Instancia: cam_15743_ALVARO_OBREGON.dat
+  R = 200.0
+  AEDs (flag = 1)            : 973
+  Nodos demanda totales      : 14770
+  Prob demanda total         : 3122.9467
+  Nodos demanda cubiertos    : 13492
+  Prob demanda cubierta      : 2868.3871
+  Nodos demanda NO cubiertos : 1278
+  Prob demanda NO cubierta   : 254.5596
+  % de nodos cubiertos       : 91.35%
+  % de probabilidad cubierta : 91.85%
+
+Instancia: cam_22238_CUAUHTEMOC.dat
+  R = 200.0
+  AEDs (flag = 1)            : 1563
+  Nodos demanda totales      : 20675
+  Prob demanda total         : 4328.7320
+  Nodos demanda cubiertos    : 20661
+  Prob demanda cubierta      : 4326.4577
+  Nodos demanda NO cubiertos : 14
+  Prob demanda NO cubierta   : 2.2743
+  % de nodos cubiertos       : 99.93%
+  % de probabilidad cubierta : 99.95%
+
+Instancia: cam_24363_GUSTAVO_A._MADERO.dat
+  R = 200.0
+  AEDs (flag = 1)            : 1901
+  Nodos demanda totales      : 22462
+  Prob demanda total         : 4595.7035
+  Nodos demanda cubiertos    : 21985
+  Prob demanda cubierta      : 4506.0880
+  Nodos demanda NO cubiertos : 477
+  Prob demanda NO cubierta   : 89.6155
+  % de nodos cubiertos       : 97.88%
+  % de probabilidad cubierta : 98.05%
+
+Instancia: cam_40264_IZTAPALAPA.dat
+  R = 200.0
+  AEDs (flag = 1)            : 2230
+  Nodos demanda totales      : 38034
+  Prob demanda total         : 7662.4950
+  Nodos demanda cubiertos    : 36741
+  Prob demanda cubierta      : 7398.6824
+  Nodos demanda NO cubiertos : 1293
+  Prob demanda NO cubierta   : 263.8126
+  % de nodos cubiertos       : 96.60%
+  % de probabilidad cubierta : 96.56%
+
+Instancia: drp_657_STATEN_ISLAND.dat
+  R = 100.0
+  AEDs (flag = 1)            : 350
+  Nodos demanda totales      : 307
+  Prob demanda total         : 1.0000003
+  Nodos demanda cubiertos    : 7
+  Prob demanda cubierta      : 0.0183368
+  Nodos demanda NO cubiertos : 300
+  Prob demanda NO cubierta   : 0.9816635
+  % de nodos cubiertos       : 2.28%
+  % de probabilidad cubierta : 1.83%
+
+Instancia: drp_2151_BRONX.dat
+  R = 100.0
+  AEDs (flag = 1)            : 1028
+  Nodos demanda totales      : 1123
+  Prob demanda total         : 0.9999999
+  Nodos demanda cubiertos    : 214
+  Prob demanda cubierta      : 0.2073115
+  Nodos demanda NO cubiertos : 909
+  Prob demanda NO cubierta   : 0.7926884
+  % de nodos cubiertos       : 19.06%
+  % de probabilidad cubierta : 20.73%
+
+Instancia: drp_2885_QUEENS.dat
+  R = 100.0
+  AEDs (flag = 1)            : 1191
+  Nodos demanda totales      : 1694
+  Prob demanda total         : 0.9999989
+  Nodos demanda cubiertos    : 146
+  Prob demanda cubierta      : 0.0898449
+  Nodos demanda NO cubiertos : 1548
+  Prob demanda NO cubierta   : 0.9101540
+  % de nodos cubiertos       : 8.62%
+  % de probabilidad cubierta : 8.98%
+
+Instancia: drp_3442_BROOKLYN.dat
+  R = 100.0
+  AEDs (flag = 1)            : 1399
+  Nodos demanda totales      : 2043
+  Prob demanda total         : 0.9999984
+  Nodos demanda cubiertos    : 276
+  Prob demanda cubierta      : 0.1278460
+  Nodos demanda NO cubiertos : 1767
+  Prob demanda NO cubierta   : 0.8721524
+  % de nodos cubiertos       : 13.51%
+  % de probabilidad cubierta : 12.78%
+
+Instancia: drp_4432_MANHATTAN.dat
+  R = 100.0
+  AEDs (flag = 1)            : 3347
+  Nodos demanda totales      : 1085
+  Prob demanda total         : 1.0000004
+  Nodos demanda cubiertos    : 458
+  Prob demanda cubierta      : 0.4077388
+  Nodos demanda NO cubiertos : 627
+  Prob demanda NO cubierta   : 0.5922616
+  % de nodos cubiertos       : 42.21%
+  % de probabilidad cubierta : 40.77%
+
+Instancia: drp_13567_NEW_YORK_CITY.dat
+  R = 100.0
+  AEDs (flag = 1)            : 7315
+  Nodos demanda totales      : 6252
+  Prob demanda total         : 4.9999979
+  Nodos demanda cubiertos    : 1101
+  Prob demanda cubierta      : 0.8510780
+  Nodos demanda NO cubiertos : 5151
+  Prob demanda NO cubierta   : 4.1489199
+  % de nodos cubiertos       : 17.61%
+  % de probabilidad cubierta : 17.02%
+

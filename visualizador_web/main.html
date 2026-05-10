@@ -373,6 +373,10 @@
       gap: 1.25rem;
     }
 
+    .split-view.map-hidden {
+      grid-template-columns: 1fr;
+    }
+
     .plot-box {
       background: white;
       border: 1px solid var(--border);
@@ -472,6 +476,56 @@
     .preview-item b {
       font-weight: 600;
       margin-right: 0.35rem;
+    }
+
+    /* Top 3 */
+    .top3-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .top3-box {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .top3-box.rank-1 { border-color: #f59e0b; }
+    .top3-box.rank-2 { border-color: #94a3b8; }
+    .top3-box.rank-3 { border-color: #b45309; }
+
+    .top3-medal { font-size: 1.75rem; line-height: 1; }
+
+    .top3-hv {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0.3rem 0 0.1rem;
+    }
+
+    .top3-sublabel {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+
+    .top3-params {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+      text-align: left;
+      margin-bottom: 0.75rem;
+    }
+
+    .top3-date {
+      font-size: 0.72rem;
+      color: var(--muted);
     }
   </style>
 </head>
@@ -750,6 +804,15 @@
           </div>
         </div>
 
+        <!-- Top 3 Mejores Ejecuciones -->
+        <div class="card" id="top3-card" style="display:none;">
+          <div class="card-header">
+            <h3 class="card-title">Top 3 Mejores Ejecuciones</h3>
+            <span style="font-size:0.85rem; color:var(--muted);">por HV final</span>
+          </div>
+          <div id="top3-container" class="top3-grid"></div>
+        </div>
+
         <!-- Tabla de Historial (Mejorada) -->
         <div class="card">
           <div class="card-header">
@@ -784,7 +847,7 @@
         </div>
 
         <!-- Gráficos Principales -->
-        <div class="split-view">
+        <div id="main-split-view" class="split-view map-hidden">
           <!-- Gráfico de Pareto -->
           <div class="card">
             <div class="card-header">
@@ -801,11 +864,12 @@
           </div>
 
           <!-- Mapa Interactivo -->
-          <div class="card" style="display:flex; flex-direction:column;">
+          <div id="map-card" class="card" style="display:none; flex-direction:column;">
             <div class="card-header">
               <h3 class="card-title">Mapa de Solución</h3>
-              <div class="map-tabs">
+              <div class="map-tabs" style="display:flex; gap:0.5rem; align-items:center;">
                 <button id="btn-toggle-map" class="btn btn-sm hidden">Ver Interactivo</button>
+                <button class="btn btn-sm" onclick="APP.ui.hideMapCard()" title="Cerrar mapa">✕</button>
               </div>
             </div>
 
@@ -1400,6 +1464,7 @@
         APP.ui.initSlider(st.frames.length - 1);
         APP.ui.renderHVPlot(hvMode);
         APP.ui.renderHistoryPlot();
+        APP.ui.renderTop3();
         APP.ui.updateSummaryStats();
         APP.ui.renderGeneration(0); // Mostrar la primera
       },
@@ -1476,7 +1541,8 @@
         if (!inst) return;
         const history = await APP.api.get(`/list_run_stats?inst=${inst}`);
         APP.state.runHistory = history || [];
-        APP.ui.renderHistoryTable(4); // Mostrar últimos 20 por defecto
+        APP.ui.renderTop3();
+        APP.ui.renderHistoryTable(4);
       },
 
       async loadAmpl() {
@@ -1798,8 +1864,8 @@
           hovermode: 'closest',
           showlegend: true,
           xaxis: { title: 'f1 (Cobertura)', tickformat: tickFmt(xDec) },
-          yaxis: { title: 'f2 (Costo)', tickformat: tickFmt(yDec) }
-
+          yaxis: { title: 'f2 (Costo)', tickformat: tickFmt(yDec) },
+          autosize: true
         };
 
         // Escala Fija
@@ -1820,7 +1886,7 @@
           });
         }
 
-        Plotly.react('plot', data, layout).then(gd => {
+        Plotly.react('plot', data, layout, { responsive: true }).then(gd => {
           gd.removeAllListeners('plotly_click');
           gd.on('plotly_click', d => this.handlePointClick(d.points[0]));
 
@@ -1853,6 +1919,12 @@
         const inst = APP.dom['instancia'].value;
         const showProb = APP.dom['toggle-prob'].checked;
 
+        // Mostrar map-card y ajustar grid
+        const mapCard = document.getElementById('map-card');
+        mapCard.style.display = 'flex';
+        document.getElementById('main-split-view').classList.remove('map-hidden');
+        setTimeout(() => Plotly.Plots.resize(document.getElementById('plot')), 50);
+
         // UI Reset
         APP.dom['map-image-container'].classList.add('hidden');
         APP.dom['map-plot-container'].classList.add('hidden');
@@ -1879,6 +1951,12 @@
           APP.state.currentMapData = null;
           APP.state.lastClicked = { inst, ids, showProb, x: pt.x, y: pt.y };
         });
+      },
+
+      hideMapCard() {
+        document.getElementById('map-card').style.display = 'none';
+        document.getElementById('main-split-view').classList.add('map-hidden');
+        setTimeout(() => Plotly.Plots.resize(document.getElementById('plot')), 50);
       },
 
       toggleMapMode() {
@@ -1973,6 +2051,40 @@
           xaxis: { title: 'f1', tickformat: tickFmt(xDec) },
           yaxis: { title: 'f2', tickformat: tickFmt(yDec) }
         });
+      },
+
+      renderTop3() {
+        const hist = APP.state.runHistory;
+        const card = document.getElementById('top3-card');
+        const container = document.getElementById('top3-container');
+        if (!hist || hist.length === 0) { card.style.display = 'none'; return; }
+
+        const sorted = [...hist]
+          .filter(r => r.hv_final != null)
+          .sort((a, b) => b.hv_final - a.hv_final);
+        const top = sorted.slice(0, 3);
+        const medals = ['🥇', '🥈', '🥉'];
+        const rankClass = ['rank-1', 'rank-2', 'rank-3'];
+
+        container.innerHTML = top.map((r, i) => `
+          <div class="top3-box ${rankClass[i]}">
+            <div class="top3-medal">${medals[i]}</div>
+            <div class="top3-hv">${r.hv_final.toFixed(4)}</div>
+            <div class="top3-sublabel">HV Final</div>
+            <div class="top3-params">
+              <span>Eval: <b>${r.neval ?? '-'}</b></span>
+              <span>Pop: <b>${r.pop ?? '-'}</b></span>
+              <span>Vec: <b>${r.neighbor ?? '-'}</b></span>
+              <span>Mut: <b>${r.mut ?? '-'}</b></span>
+              <span>Cross: <b>${r.cross ?? '-'}</b></span>
+              <span>Op1: <b>${r.op1 ?? '-'}</b></span>
+              <span>T: <b>${r.time_s ? r.time_s.toFixed(1)+'s' : '-'}</b></span>
+            </div>
+            <div class="top3-date">${(r.ts || '').replace('T', ' ').split('.')[0]}</div>
+          </div>
+        `).join('');
+
+        card.style.display = 'block';
       },
 
       renderHistoryTable(limit) {
@@ -2385,6 +2497,12 @@
         document.getElementById('ib-save').onclick = () => this.save();
         document.getElementById('ib-clear').onclick = () => { this.points = []; this.draw(); this.renderTable(); };
         document.getElementById('ib-undo').onclick = () => { this.points.pop(); this.draw(); this.renderTable(); };
+        window.addEventListener('resize', () => {
+          ['plot', 'hv-plot', 'history-plot'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el._fullLayout) Plotly.Plots.resize(el);
+          });
+        });
       },
       draw() {
         this.ctx.clearRect(0, 0, 900, 600);
