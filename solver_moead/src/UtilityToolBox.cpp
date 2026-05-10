@@ -573,45 +573,84 @@ void CUtilityToolBox::RepararPresupuesto(vector<double> &x_var, ProblemInstance 
 }
 
 void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, ProblemInstance* instance)
-{
+{   
     int max_P = instance->getP();
     double c1 = instance->getC1();
     double c2 = instance->getC2();
-
     const auto &nodos = instance->getNodes();
     int n = x_var.size();
 
-    //1) Contar moved_out y entradas_no_base
-    int moved_out = 0;     // cuantos fueron movidos y eran preinstaldos
-    int entradas_no_base = 0;   // cuantos nodos sin equipos original terminaron con AED. movidos + compras nuevas
-
+    //1) Listas iniciales
     std::vector<int> activos_no_base;
     std::vector<int> bases_vacias;
-    std::vector<int> lugares_libres;
-
     activos_no_base.reserve(n);
     bases_vacias.reserve(n);
-    lugares_libres.reserve(n);
 
+    int moved_out = 0;     // cuantos fueron movidos y eran preinstaldos
     for(int i = 0; i< n; ++i) {
-        bool xi = (x_var[i] > 0.5);
+        bool xi      = (x_var[i] > 0.5);
         bool es_base = (nodos[i]->getFlag() == 1);
-
 		if (es_base && !xi) {
             moved_out++;                 //Liberamos un equipo preinstalado
             bases_vacias.push_back(i);
         } else if (!es_base && xi){
             activos_no_base.push_back(i);  // aqui pusimos un equipo (o es movido o es comprado)
-        } else if (!es_base && !xi){
-            lugares_libres.push_back(i);   // lugar sin equipo
         }
 	}
 
-    std::random_shuffle(lugares_libres.begin(), lugares_libres.end());
     std::random_shuffle(bases_vacias.begin(), bases_vacias.end());
+    
+    int activos_count = (int)activos_no_base.size();
+    
+    // 2 recalcular gasto desde el estado actual.
+    auto calcularGasto = [&]() {
+        int n_reubicados = std::min(moved_out, activos_count); // cuantos de los activos no base vienen de reubicacion (moved_out) y cuantos son nuevos (instalados)
+        int n_instalados = std::max(0, activos_count - moved_out);
+        return c2 * n_reubicados + c1 * n_instalados;
+    };
+    
+    double gasto = calcularGasto();
+    printf("\nGasto inicial: %f    con %d activos no base y %d moved_out\n", gasto, activos_count, moved_out);
+    if (gasto <= max_P) return; // Si ya estamos dentro del presupuesto, no hacer nada.
 
+    // 3 Calcular aporte de cada activo no base
+    std::vector<std::pair<double, int>> calidad;
+    calidad.reserve(activos_no_base.size());
+
+    for(int idx : activos_no_base) {
+        double aporte = 0.0;
+        // Obtenemos los vecinos que cubre este nodo
+        const auto& vecinos = instance->getNodosCubiertosPor(idx);
+        for(int v : vecinos) {
+            aporte += nodos[v]->getProbOhca();
+        }
+        calidad.push_back({aporte, idx});
+    }
+    // ordenar menor a mayor calidad
+    std::sort(calidad.begin(), calidad.end());
+
+    // 4 eliminar de peor a mejor hasta cumplir presupuesto
+    for(int k=0; k<(int)calidad.size(); ++k) {
+        if (gasto <= max_P) break;
+
+        x_var[calidad[k].second] = 0.0;
+        activos_count--;
+
+        if (moved_out > activos_count && !bases_vacias.empty()){
+            int base_idx = bases_vacias.back();
+            bases_vacias.pop_back();
+            x_var[base_idx] = 1.0; // Reinstalamos el equipo liberado en su base original
+            moved_out--;
+            }
+        gasto = calcularGasto();
+        printf("\nGasto tras eliminar activo %d: %f\n", calidad[k].second, gasto);
+    }
+
+    
+
+    // work in progress:
     // movi 6 preinstalados, pero solo instale 4, entonces los 2 equipos restantes se tienen que volver a poner en sus bases originales
-    while (bases_vacias.size() > activos_no_base.size()) 
+    /* while (bases_vacias.size() > activos_no_base.size()) 
     {   
         //printf("\nReparando presupuesto por reubicacion: bases vacias %d > activos no base %d\n", (int)bases_vacias.size(), (int)activos_no_base.size());
         // Elegir una base vacía al azar
@@ -635,9 +674,9 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
             moved_out--;
             }
         }
-    }
+    } */
 
-    int total_nuevos_sitios = activos_no_base.size();
+    /* int total_nuevos_sitios = activos_no_base.size();
 
     int n_instalados = std::max(0, total_nuevos_sitios - moved_out);
 
@@ -648,7 +687,7 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
 
 	if (gasto > max_P) {
         //printf("\n%f    %d", gasto, max_P);
-        printf("aaa\n");
+        //printf("aaa\n");
 
         std::vector<std::pair<double, int>> calidad;
         calidad.reserve(activos_no_base.size());
@@ -689,7 +728,8 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
                 }
             }
         }
-	}
+	} */
+
 }
 
 
