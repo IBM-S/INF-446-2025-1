@@ -195,9 +195,10 @@ static std::string CrossName(int crossType, bool isReloc){
 // Distribucion inicial
 static std::string InitDistName(int initDist){
     switch(initDist){
-        case 0: return "Random puro";
-        case 1: return "Random con extremos (0 y max)";
-        case 2: return "Curva exponencial + ruido";
+        case 0: return "Aleatoria Uniforme - U(0, P)";
+        case 1: return "Aleatoria Normal - N(P/2, P/6) truncada a [0, P]";
+        case 2: return "Aleatoria Normal con extremos anclados a 0 y P";
+        case 3: return "Curva exponencial + ruido";
         default: return "Desconocida";
     }
 }
@@ -205,7 +206,7 @@ static std::string InitDistName(int initDist){
 static std::vector<std::string> InitDistParamsLines(int initDist, double powerExp, double noisePct){
     std::vector<std::string> L;
     L.push_back("Estrategia (initDist): " + std::to_string(initDist) + " (" + InitDistName(initDist) + ")");
-    if (initDist == 2){
+    if (initDist == 3){
         L.push_back("powerExp       : " + dbl(powerExp, 3));
         L.push_back("noisePct       : " + pct(noisePct));
     }
@@ -218,15 +219,16 @@ static std::string InitRelocName(int t){
         case 1: return "OnlyMove (deterministico)";
         case 2: return "OnlyBuy (deterministico)";
         case 3: return "Choose Move/Buy (probMoveRelocation)";
-        case 4: return "HybridSplit (splitPctRelocation)";
-        case 5: return "OnlyMove (aleatorio)";
-        case 6: return "OnlyBuy (aleatorio)";
-        case 7: return "Choose Move/Buy (aleatorio) (probMoveRelocation)";
-        case 8: return "HybridSplit (aleatorio) (splitPctRelocation)";
-        case 9: return "Random instala pre mas una cantidad aleatoria";
-        case 10: return "Random instala de 0 a total nodos incremental";
-        case 11: return "BalancedQuantity incremental (splitPctRelocation)";
-        case 12: return "Greedy incremental (factor aleatoriedad)";
+        case 4: return "HybridCount (splitPctRelocation)";
+        case 5: return "HybridSplit (splitPctRelocation)";
+        case 6: return "OnlyMove (aleatorio)";
+        case 7: return "OnlyBuy (aleatorio)";
+        case 8: return "Choose Move/Buy (aleatorio) (probMoveRelocation)";
+        case 9: return "HybridSplit (aleatorio) (splitPctRelocation)";
+        case 10: return "Random instala pre mas una cantidad aleatoria";
+        case 11: return "Random instala de 0 a total nodos incremental";
+        case 12: return "BalancedQuantity incremental (splitPctRelocation)";
+        case 13: return "Greedy incremental (factor aleatoriedad)";
         default: return "DEFAULT -> OnlyBuy (deterministico)";
     }
 }
@@ -235,10 +237,10 @@ static std::vector<std::string> InitRelocParamsLines(int t, double probMoveReloc
     std::vector<std::string> L;
     L.push_back("initTypeRelocation      : " + std::to_string(t) + " (" + InitRelocName(t) + ")");
 
-    if (t == 3 || t == 7){
+    if (t == 3 || t == 8){
         L.push_back("probMoveRelocation     : " + pct(probMoveRelocation));
     }
-    if (t == 4 || t == 8 || t == 11){
+    if (t == 4 || t == 5 || t == 9 || t == 12){
         L.push_back("splitPctRelocation     : " + pct(splitPctRelocation));
     }
     return L;
@@ -327,9 +329,9 @@ int main(int argc, char *argv[])
     // Parámetros Algoritmo
     double bitFlipProb = 0.001; // Default: 1% probabilidad para BitFlip Fijo
     double crossoverRate = 0.8;
-    int crossType = 3;    // Default: Inteligente
+    int crossType = 7;    // Default: Inteligente
     int initDist = 2;
-    int initTypeRelocation = 11;           // Default: Solo Mover (o el que prefieras como base)
+    int initTypeRelocation = 3;           // Default: Solo Mover (o el que prefieras como base)
     double mutationRate = 0.9;
 
     double mutPct = 0.4; // Default: 5% intensidad para operadores porcentuales
@@ -337,11 +339,11 @@ int main(int argc, char *argv[])
     double userMutPctSwap = 0.4;   // 0 = usar default
 
     double userMutProbSwap = 0.15;
-    int mutType = 5;     // Default: Híbrida
+    int mutType = 12;     // Default: Híbrida
     double userNeighborPct = 0.0; // 0 = usar archivo, >0 usar porcentaje
     double noisePct = 0.1;
     double op1Prob = 0.5; // 20% delete, 80% swap (por ejemplo)
-    double powerExp = 6.0;
+    double powerExp = 1.0;
     double probMoveRelocation = 0.4;      // Default: 50%
     double splitPctRelocation = 0.5;      // Default: 50% split
 

@@ -2,6 +2,7 @@
 #include <string.h>
 #include <cmath>
 #include <iomanip>
+#include <random>
 
 CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 {
@@ -270,9 +271,10 @@ void CALG_EMO_MOEAD::InitializePopulation()
 	int huecos_disponibles = total_nodos - aeds_preinstalados;
 
 	// Configuracion estrategia de distribucion
-	// 0: random puro
-	// 1: random con extremos fijos
-	// 2: exponencial con ruido
+	// 0: Aleatorio Uniforme entre 0 y max permitido
+	// 1: Aleatoria Normal N(mu = max/2, sigma = max/6) 
+	// 2: Normal con extremos anclados (0 y max)
+	// 3: exponencial con ruido
 	//int m_InitDistributionStrategy = 2;
 	//double m_PowerExp = 5.0;   //(1.0 linspace, 3.0, curva agresiva)
 	//double m_NoisePct = 0.20;  // Para el ruido
@@ -310,16 +312,42 @@ void CALG_EMO_MOEAD::InitializePopulation()
 		int nums_AEDs_instalar = 0;
 
 		if (m_InitDistributionStrategy == 0){
+			// Una cantidad aleatoria entre 0 y el máximo permitido
 			nums_AEDs_instalar = rand() % (max_limit + 1);
+
 		} else if (m_InitDistributionStrategy == 1) {
+			// Normal sin extremos: N(mu = P/2, sigma = P/6) pero con extremos fijos en 0 y max_limit
+			std::mt19937 rng(rand());
+			std::normal_distribution<double> dist((double)max_limit / 2.0, (double)max_limit / 6.0);
+			double muestra;
+			int intentos = 0;
+			do {
+				muestra = dist(rng);
+				intentos++;
+			} while ((muestra < 0 || muestra > max_limit) && intentos < 100); 
+			muestra = std::max(0.0, std::min((double)max_limit, muestra)); // Clamping final 
+			nums_AEDs_instalar = (int)std::round(muestra);
+			
+		} else if (m_InitDistributionStrategy == 2){
+			// Normal con extremos anclados
 			if (i == 0) {
 				nums_AEDs_instalar = 0;
 			} else if (i == s_PopulationSize - 1) {
 				nums_AEDs_instalar = max_limit;
 			} else {
-				nums_AEDs_instalar = rand() % (max_limit + 1);
+				std::mt19937 rng(rand());
+				std::normal_distribution<double> dist((double)max_limit / 2.0, (double)max_limit / 6.0);
+				double muestra;
+				int intentos = 0;
+				do {
+					muestra = dist(rng);
+					intentos++;
+				} while ((muestra < 0 || muestra > max_limit) && intentos < 100); 
+				muestra = std::max(0.0, std::min((double) max_limit, muestra)); // Clamping final 
+				nums_AEDs_instalar = (int)std::round(muestra);
 			}
-		} else if (m_InitDistributionStrategy == 2) {
+		} else if (m_InitDistributionStrategy == 3) {
+			// Exponencial con ruido, pero con extremos fijos en 0 y max_limit
 			if (i == 0) {
 				nums_AEDs_instalar = 0;
 			} else if (i == s_PopulationSize - 1) {
@@ -362,41 +390,46 @@ void CALG_EMO_MOEAD::InitializePopulation()
 					if (log_initialization) printf("3    relocation initialization\n");
 					break;
 				case 4:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_HybridSplit(nums_AEDs_instalar, this->m_SplitPctRelocation);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_HybridCount(nums_AEDs_instalar, this->m_SplitPctRelocation);
 					if (log_initialization) printf("4    relocation initialization\n");
 					break;
+				// Las siguientes son funciones de prueba que ya no se utilizan en los experimentos finales, pero las dejo por si quiero hacer debug o análisis adicionales.
 				case 5:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyMove_Aleatorio(nums_AEDs_instalar);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_HybridSplit(nums_AEDs_instalar, this->m_SplitPctRelocation);
 					if (log_initialization) printf("5    relocation initialization\n");
 					break;
 				case 6:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyBuy_Aleatorio(nums_AEDs_instalar);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyMove_Aleatorio(nums_AEDs_instalar);
 					if (log_initialization) printf("6    relocation initialization\n");
 					break;
 				case 7:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_Choose_Move_or_Buy_Aleatorio(nums_AEDs_instalar, this->m_ProbChooseMoveRelocation);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyBuy_Aleatorio(nums_AEDs_instalar);
 					if (log_initialization) printf("7    relocation initialization\n");
 					break;
 				case 8:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_HybridSplit_Aleatorio(nums_AEDs_instalar, this->m_SplitPctRelocation);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_Choose_Move_or_Buy_Aleatorio(nums_AEDs_instalar, this->m_ProbChooseMoveRelocation);
 					if (log_initialization) printf("8    relocation initialization\n");
 					break;
 				case 9:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Random(nums_AEDs_instalar, aeds_preinstalados);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_HybridSplit_Aleatorio(nums_AEDs_instalar, this->m_SplitPctRelocation);
 					if (log_initialization) printf("9    relocation initialization\n");
 					break;
 				case 10:
-					SP.m_BestIndividual.GenerateRandomFullRange(nums_AEDs_instalar);
+					SP.m_BestIndividual.GenerateSimpleFeasible_Random(nums_AEDs_instalar, aeds_preinstalados);
 					if (log_initialization) printf("10    relocation initialization\n");
 					break;
 				case 11:
-					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_BalancedQuantity(nums_AEDs_instalar, this->m_SplitPctRelocation);
+					SP.m_BestIndividual.GenerateRandomFullRange(nums_AEDs_instalar);
 					if (log_initialization) printf("11    relocation initialization\n");
 					break;
-				case 12: {
+				case 12:
+					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_BalancedQuantity(nums_AEDs_instalar, this->m_SplitPctRelocation);
+					if (log_initialization) printf("12    relocation initialization\n");
+					break;
+				case 13: {
 					double factor = 0.15; // 15% de aleatoriedad
 					SP.m_BestIndividual.GenerateGreedyFeasibleSolution(nums_AEDs_instalar, factor);
-					if (log_initialization) printf("12    relocation initialization\n");
+					if (log_initialization) printf("13    relocation initialization\n");
 					break;}
 				default:
 					SP.m_BestIndividual.GenerateSimpleFeasible_Reloc_OnlyBuy(nums_AEDs_instalar);

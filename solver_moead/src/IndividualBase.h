@@ -33,6 +33,7 @@ public:
 	void GenerateSimpleFeasible_Reloc_OnlyBuy(double presupuesto_disponible);
 	void GenerateSimpleFeasible_Reloc_Choose_Move_or_Buy(double presupuesto_disponible, double prob_choose_move);
 	void GenerateSimpleFeasible_Reloc_HybridSplit(double presupuesto_disponible, double split_pct);
+	void GenerateSimpleFeasible_Reloc_HybridCount(double alpha, double alpha_split);
 
 	void InstalarEnHuecosLibres(int cantidad_a_instalar);
 

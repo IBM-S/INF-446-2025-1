@@ -279,6 +279,33 @@ void CIndividualBase::GenerateSimpleFeasible_Reloc_HybridSplit(double presupuest
     InstalarEnHuecosLibres(total_to_place);
 }
 
+
+void CIndividualBase::GenerateSimpleFeasible_Reloc_HybridCount(double alpha, double alpha_split)
+{
+    std::fill(x_var.begin(), x_var.end(), 0.0);
+    const auto &nodos = problemInstance->getNodes();
+    int n = x_var.size();
+
+    std::vector<int> pre;
+    for(int i=0; i<n; ++i) if(nodos[i]->getFlag() == 1) pre.push_back(i);
+    int total_pre = pre.size();
+
+    // Calcular  alpha move y alpha buy directamente
+    int alpha_move = (int)std::round((double)alpha * alpha_split);
+    int alpha_buy = alpha - alpha_move;
+
+    
+    alpha_move = std::min(alpha_move, total_pre);
+
+    std::random_shuffle(pre.begin(), pre.end());
+    int keep = total_pre - alpha_move;
+    for(int i=0; i<keep; ++i) x_var[pre[i]] = 1.0;
+
+    InstalarEnHuecosLibres(alpha_buy + alpha_buy);
+}
+
+
+
 void CIndividualBase::GenerateSimpleFeasible_Reloc_HybridSplit_Aleatorio(double presupuesto_disponible, double split_pct)
 {
     std::fill(x_var.begin(), x_var.end(), 0.0);
