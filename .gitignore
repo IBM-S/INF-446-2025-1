@@ -11,6 +11,8 @@ ampl/resultados_gurobi/
 ampl/results_ampl/
 ampl/venv/
 
+Codigo_original/
+
 datos/geo/
 datos/res/
 datos/inst_old/
