@@ -96,7 +96,7 @@ double CUtilityToolBox::ScalarizingFunction(vector<double> &y_obj,
 	{
 		for (n = 0; n < nobj; n++)
 		{
-			diff = fabs(y_obj[n] - referencepoint[n] + 0.01);
+			diff = fabs(y_obj[n] - referencepoint[n]) + 1e-8;
 			if (namda[n] == 0)
 				feval = 0.001 * diff;
 			else
@@ -610,7 +610,7 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
     };
     
     double gasto = calcularGasto();
-    printf("\nGasto inicial: %f    con %d activos no base y %d moved_out\n", gasto, activos_count, moved_out);
+    //printf("\nGasto inicial: %f    con %d activos no base y %d moved_out\n", gasto, activos_count, moved_out);
     if (gasto <= max_P) return; // Si ya estamos dentro del presupuesto, no hacer nada.
 
     // 3 Calcular aporte de cada activo no base
@@ -1795,4 +1795,112 @@ void CUtilityToolBox::MutacionHibridaReloc(std::vector<double>& x, double mutati
     RepararPresupuesto_Relocation(x, inst);
 }
 
+void CUtilityToolBox::AplicarMutacionReloc(
+    int op_id,
+    vector<double>& x_var,
+    double mutation_rate, 
+    int populationSize,
+    double bit_prob,
+    double prob_op1_delete,
+    double delete_ratio,
+    double swap_ratio,
+    double MutProbSwap,
+    ProblemInstance* inst)
+{
+    switch (op_id)
+    {
+        case MUT_BITFLIP_1_N:
+            MutacionBitFlip_Relocation(x_var, mutation_rate, 1.0 / x_var.size(), inst);
+            break;
+        case MUT_BITFLIP_1_M:
+            MutacionBitFlip_Relocation(x_var, mutation_rate, 1.0 / (double)populationSize, inst);
+            break;
+        case MUT_BITFLIP_FIJO:
+            MutacionBitFlip_Relocation(x_var, mutation_rate, bit_prob, inst);
+            break;
+        case MUT_PERTURBACION:
+            MutacionModificada_con_reubicacion(x_var, mutation_rate, prob_op1_delete, inst);
+            break;
+        case MUT_ELIMINACION:
+            MutacionDeletePorcentualReloc(x_var, mutation_rate, delete_ratio, inst);
+            break;
+        case MUT_REUBICACION:
+            MutacionSwapPorcentualReloc(x_var, mutation_rate, swap_ratio, inst);
+            break;
+        case MUT_INTERCAMBIO:
+            MutacionSwapProbabilisticoReloc(x_var, mutation_rate, MutProbSwap, inst);
+            break;
+    }
+}
 
+
+void CUtilityToolBox::MutacionHibrida_Reloc_General(
+    int op1_id, int op2_id, double pop1,
+    vector<double>& x_var, 
+    double mutation_rate, 
+    int populationSize, 
+    double bit_prob,
+    double prob_op1_delete,
+    double delete_ratio,
+    double swap_ratio,
+    double MutProbSwap,
+    ProblemInstance* inst)
+{
+    int op =(Get_Random_Number() <= pop1) ? op1_id : op2_id;
+
+    AplicarMutacionReloc(op, x_var, mutation_rate, populationSize, bit_prob, prob_op1_delete, delete_ratio, swap_ratio, MutProbSwap, inst);
+}
+
+
+void CUtilityToolBox::AplicarMutacionLoc(
+    int op_id,
+    vector<double>& x_var,
+    double mutation_rate, 
+    int populationSize,
+    double bit_prob,
+    double prob_op1_delete,
+    double delete_ratio,
+    double swap_ratio,
+    double MutProbSwap,
+    ProblemInstance* inst)
+{
+    switch (op_id)
+    {
+        case MUT_LOC_BITFLIP_1_N:
+            MutacionBitFlip_1_N(x_var, mutation_rate, inst);
+            break;
+        case MUT_LOC_BITFLIP_1_M:
+            MutacionBitFlip_1_M(x_var, mutation_rate, populationSize, inst);
+            break;
+        case MUT_LOC_BITFLIP_FIJO:
+            MutacionBitFlip_Fijo(x_var, mutation_rate, bit_prob, inst);
+            break;
+        case MUT_LOC_PERTURBACION:
+            MutacionModificada_sin_reubicacion(x_var, mutation_rate, prob_op1_delete, inst);
+            break;
+        case MUT_LOC_ELIMINACION:
+            MutacionDeletePorcentual(x_var, mutation_rate, delete_ratio, inst);
+            break;
+        case MUT_LOC_REUBICACION:
+            MutacionSwapPorcentual(x_var, mutation_rate, swap_ratio, inst);
+            break;
+        case MUT_LOC_INTERCAMBIO:
+            MutacionSwapProbabilistico(x_var, mutation_rate, MutProbSwap, inst);
+            break;
+    }
+}
+
+
+void CUtilityToolBox::MutacionHibrida_Loc_General(
+    int op1_id, int op2_id, double pop1,
+    vector<double>& x_var,
+    double mutation_rate, int populationSize,
+    double bit_prob, double prob_op1_delete,
+    double delete_ratio, double swap_ratio,
+    double MutProbSwap, ProblemInstance* inst)
+{
+    int op = (Get_Random_Number() <= pop1) ? op1_id : op2_id;
+    AplicarMutacionLoc(op, x_var, mutation_rate, populationSize,
+        bit_prob, prob_op1_delete, delete_ratio, swap_ratio,
+        MutProbSwap, inst);
+}

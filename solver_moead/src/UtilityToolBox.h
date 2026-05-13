@@ -142,6 +142,77 @@ public:
 
 
 
+	enum MutacionReloc {
+		MUT_BITFLIP_1_N  = 0,
+		MUT_BITFLIP_1_M  = 1,
+		MUT_BITFLIP_FIJO = 2,
+		MUT_PERTURBACION = 3,
+		MUT_ELIMINACION  = 4,
+		MUT_REUBICACION  = 5,
+		MUT_INTERCAMBIO  = 6
+	};
+
+	void AplicarMutacionReloc(
+    int op_id,
+    vector<double>& x_var,
+    double mutation_rate, 
+    int    populationSize,
+    double bit_prob,
+    double prob_op1_delete,
+    double delete_ratio,
+    double swap_ratio,
+    double MutProbSwap,
+    ProblemInstance* inst);
+
+	void MutacionHibrida_Reloc_General(
+    int op1_id, int op2_id, double pop1,
+    vector<double>& x_var, 
+    double mutation_rate, 
+    int    populationSize, 
+    double bit_prob,
+    double prob_op1_delete,
+    double delete_ratio,
+    double swap_ratio,
+    double MutProbSwap,
+    ProblemInstance* inst);
+
+
+	enum MutacionLoc {
+		MUT_LOC_BITFLIP_1_N   = 0,
+		MUT_LOC_BITFLIP_1_M   = 1,
+		MUT_LOC_BITFLIP_FIJO  = 2,
+		MUT_LOC_PERTURBACION  = 3,
+		MUT_LOC_ELIMINACION   = 4,
+		MUT_LOC_REUBICACION   = 5,
+		MUT_LOC_INTERCAMBIO   = 6
+	};
+
+	void AplicarMutacionLoc(
+		int op_id,
+		vector<double>& x_var,
+		double mutation_rate,
+		int    populationSize,
+		double bit_prob,
+		double prob_op1_delete,
+		double delete_ratio,
+		double swap_ratio,
+		double MutProbSwap,
+		ProblemInstance* inst);
+
+	void MutacionHibrida_Loc_General(
+		int op1_id, int op2_id, double pop1,
+		vector<double>& x_var,
+		double mutation_rate,
+		int    populationSize,
+		double bit_prob,
+		double prob_op1_delete,
+		double delete_ratio,
+		double swap_ratio,
+		double MutProbSwap,
+		ProblemInstance* inst);
+
+
+
 	int GetWeightNumber(int nobj, int H);
 
 	double DistanceVectorNorm1(vector<double> &vec1, vector<double> &vec2);
