@@ -32,6 +32,8 @@ POWEREXP=1.0
 PROBMOVERELOCATION=0.5
 SPLITPCTRELOCATION=0.4 # No se ocupa
 
+HYBRID_SPLIT=0.5      # No se ocupa
+
 NEVALS=150000    # Criterio de parada por evaluaciones
 MAX_TIME=3600      # Criterio de parada por tiempo (0 = desactivado)
 SAVE=0
