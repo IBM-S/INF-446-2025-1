@@ -51,6 +51,10 @@ public:
 	void SetMutPctSwap   (double pct) { m_MutPctSwap = pct; }
 	void SetMutProbSwap (double prob) { m_MutProbSwap = prob;}
 
+	void SetMutHybridSplit(double split) { m_MutHybridSplit = split; }
+	void SetMutOp1(int op) { m_MutOp1 = op; }
+	void SetMutOp2(int op) { m_MutOp2 = op; }
+
 	void SetInitializationTypeRelocation(int type) { m_InitializationTypeRelocation = type; }
     void SetProbChooseMoveRelocation(double prob) { m_ProbChooseMoveRelocation = prob; }
     void SetSplitPctRelocation(double pct) { m_SplitPctRelocation = pct; }
@@ -79,6 +83,7 @@ protected:
 	void SelectMatingPool(vector<unsigned> &pool, unsigned sp_id, unsigned selected_size);
 	void UpdateProblem_original(CIndividualBase &child, unsigned sp_id);
 	void UpdateProblem_modificado(CIndividualBase &child, unsigned sp_id);
+	void UpdateProblem_modificado_v2(CIndividualBase &child, unsigned sp_id);
 
 	bool IsTerminated();
 	void SaveObjSpace(char saveFilename[1024]);
@@ -116,6 +121,10 @@ protected:
 	double m_MutPctDelete;
 	double m_MutPctSwap;
 	double m_MutProbSwap;
+
+	double m_MutHybridSplit;
+	int m_MutOp1;
+	int m_MutOp2;
 
 	int m_InitializationTypeRelocation;
     double m_ProbChooseMoveRelocation;

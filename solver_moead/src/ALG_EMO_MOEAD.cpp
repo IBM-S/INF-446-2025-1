@@ -24,11 +24,15 @@ CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 
 	m_MutPctDelete = 0.25; // 5% por defecto
 	m_MutPctSwap   = 0.40; // 5% por defecto
-	m_MutProbSwap  = 0.15;
+	m_MutProbSwap  = 0.40;
+
+	m_MutHybridSplit = 0.5;
+	m_MutOp1 = 0;
+	m_MutOp2 = 4;
 
 	m_NeighborhoodSizePct = 0.0;
 
-	m_InitDistributionStrategy = 2;
+	m_InitDistributionStrategy = 4;
 	m_PowerExp = 1.0;
 	m_NoisePct = 0.1;
 }
@@ -287,10 +291,7 @@ void CALG_EMO_MOEAD::InitializePopulation()
 		CSubProblemBase SP;
 		SP.m_BestIndividual.problemInstance = this->problemInstance;
 
-		
-
-		int max_limit = 0;
-		
+		int max_limit = 0;		
 		
 		if (useFullRange) {
 			// Modo full range: desde 0 hasta todos los nodos
@@ -311,11 +312,11 @@ void CALG_EMO_MOEAD::InitializePopulation()
 		// Calcular la cantidad a usar
 		int nums_AEDs_instalar = 0;
 
-		if (m_InitDistributionStrategy == 0){
+		if (m_InitDistributionStrategy == 1){
 			// Una cantidad aleatoria entre 0 y el máximo permitido
 			nums_AEDs_instalar = rand() % (max_limit + 1);
 
-		} else if (m_InitDistributionStrategy == 1) {
+		} else if (m_InitDistributionStrategy == 2) {
 			// Normal sin extremos: N(mu = P/2, sigma = P/6) pero con extremos fijos en 0 y max_limit
 			std::mt19937 rng(rand());
 			std::normal_distribution<double> dist((double)max_limit / 2.0, (double)max_limit / 6.0);
@@ -328,7 +329,7 @@ void CALG_EMO_MOEAD::InitializePopulation()
 			muestra = std::max(0.0, std::min((double)max_limit, muestra)); // Clamping final 
 			nums_AEDs_instalar = (int)std::round(muestra);
 			
-		} else if (m_InitDistributionStrategy == 2){
+		} else if (m_InitDistributionStrategy == 3){
 			// Normal con extremos anclados
 			if (i == 0) {
 				nums_AEDs_instalar = 0;
@@ -346,7 +347,7 @@ void CALG_EMO_MOEAD::InitializePopulation()
 				muestra = std::max(0.0, std::min((double) max_limit, muestra)); // Clamping final 
 				nums_AEDs_instalar = (int)std::round(muestra);
 			}
-		} else if (m_InitDistributionStrategy == 3) {
+		} else if (m_InitDistributionStrategy == 4) {
 			// Exponencial con ruido, pero con extremos fijos en 0 y max_limit
 			if (i == 0) {
 				nums_AEDs_instalar = 0;
@@ -607,6 +608,62 @@ void CALG_EMO_MOEAD::UpdateProblem_modificado(CIndividualBase &child,
 		}
 	}
 }
+
+
+void CALG_EMO_MOEAD::UpdateProblem_modificado_v2(CIndividualBase &child,
+									   unsigned sp_id)
+{
+	double f1, f2;
+
+	int id1 = sp_id, id2;
+
+	vector<double> norm_child(NumberOfObjectives);
+	for (int k = 0; k < NumberOfObjectives; k++)
+	{
+		double range = v_NadirPoint[k] - v_IdealPoint[k];
+		if (range < 1.0e-6) range = 1.0e-6;
+		norm_child[k] = (child.f_obj[k] - v_IdealPoint[k]) / range;
+	}
+
+	vector<double> zero_point(NumberOfObjectives, 0);
+
+	// Peso minimo: evita que un objetivo con w=0 sea completamente ignorado.
+	// Con w=[1,0] dos soluciones con misma cobertura pero diferente costo son
+	// indistinguibles para TCH. Con MIN_W el costo tiene influencia minima
+	// (1:10000 respecto al objetivo principal) y el extremo puede mejorar.
+	const double MIN_W = 1e-7;
+
+	for (int i = 0; i < s_NeighborhoodSize; i++)
+	{
+		id2 = m_PopulationSOP[id1].v_Neighbor_Index[i];
+
+		vector<double> w_eps = m_PopulationSOP[id2].v_Weight_Vector;
+		double sum_w = 0.0;
+		for (int k = 0; k < NumberOfObjectives; k++)
+		{
+			w_eps[k] = std::max(w_eps[k], MIN_W);
+			sum_w += w_eps[k];
+		}
+		for (int k = 0; k < NumberOfObjectives; k++)
+			w_eps[k] /= sum_w;
+
+		vector<double> norm_parent(NumberOfObjectives);
+		for (int k = 0; k < NumberOfObjectives; k++)
+		{
+			double range = v_NadirPoint[k] - v_IdealPoint[k];
+			if (range < 1.0e-6) range = 1.0e-6;
+			norm_parent[k] = (m_PopulationSOP[id2].m_BestIndividual.f_obj[k] - v_IdealPoint[k]) / range;
+		}
+
+		f1 = UtilityToolBox.ScalarizingFunction(norm_parent, w_eps, zero_point, s_PBI_type);
+		f2 = UtilityToolBox.ScalarizingFunction(norm_child,  w_eps, zero_point, s_PBI_type);
+
+		if (f2 < f1)
+			m_PopulationSOP[id2].m_BestIndividual = child;
+	}
+}
+
+
 
 void CALG_EMO_MOEAD::UpdateProblem_original(CIndividualBase &child,
 								   unsigned sp_id)
@@ -961,52 +1018,142 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		if (m_IsRelocation) {
 			switch (m_MutationType)
 			{	
-				case 12:
+				case 29:
 					UtilityToolBox.MutacionModificada_con_reubicacion(child.x_var, m_MutationRate, m_Op1MutationProb, this->problemInstance);
-					if (log_mut) printf("12 relocation mut\n");
+					if (log_mut) printf("29 relocation mut\n");
 					break;
-				case 13:
+				case 30:
 					UtilityToolBox.MutacionSwapProbabilisticoReloc(child.x_var, m_MutationRate, m_MutProbSwap, this->problemInstance);
-					if (log_mut) printf("13 relocation mut\n");
+					if (log_mut) printf("30 relocation mut\n");
 					break;
-				case 14:
+				case 31:
 					UtilityToolBox.MutacionSwapPorcentualReloc(child.x_var, m_MutationRate, m_MutPctSwap, this->problemInstance);
-					if (log_mut) printf("14 relocation mut\n");
+					if (log_mut) printf("31 relocation mut\n");
 					break;
-				case 15:
+				case 32:
 					UtilityToolBox.MutacionDeletePorcentualReloc(child.x_var, m_MutationRate, m_MutPctDelete, this->problemInstance);
-					if (log_mut) printf("15 relocation mut\n");
+					if (log_mut) printf("32 relocation mut\n");
 					break;
-				case 16:{
+				case 33:{
 					double p = 1.0 / (double)child.x_var.size();
 					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, p, this->problemInstance);
-					if (log_mut) printf("16 relocation mut\n");
+					if (log_mut) printf("33 relocation mut\n");
 					break;}
-				case 17:{
+				case 34:{
 					double p = 1.0 / (double)s_PopulationSize;
 					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, p, this->problemInstance);
-					if (log_mut) printf("17 relocation mut\n");
+					if (log_mut) printf("34 relocation mut\n");
 					break;}
-				case 18:
+				case 35:
 					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
-					if (log_mut) printf("18 relocation mut\n");
+					if (log_mut) printf("35 relocation mut\n");
 					break;
-				case 19:
+
+
+				case 36:
+					UtilityToolBox.MutacionHibrida_Reloc_General(0, 1, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("36 relocation mut hibrida general\n");
+					break;
+				case 37:
+					UtilityToolBox.MutacionHibrida_Reloc_General(0, 2, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("37 relocation mut hibrida general\n");
+					break;
+				case 38:
+					UtilityToolBox.MutacionHibrida_Reloc_General(0, 3, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("38 relocation mut hibrida general\n");
+					break;
+				case 39:
+					UtilityToolBox.MutacionHibrida_Reloc_General(0, 4, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("39 relocation mut hibrida general\n");
+					break;
+				case 40:
+					UtilityToolBox.MutacionHibrida_Reloc_General(0, 5, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("40 relocation mut hibrida general\n");
+					break;
+				case 41:
+					UtilityToolBox.MutacionHibrida_Reloc_General(0, 6, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("41 relocation mut hibrida general\n");
+					break;
+				case 42:
+					UtilityToolBox.MutacionHibrida_Reloc_General(1, 2, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("42 relocation mut hibrida general\n");
+					break;
+				case 43:
+					UtilityToolBox.MutacionHibrida_Reloc_General(1, 3, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("43 relocation mut hibrida general\n");
+					break;
+				case 44:
+					UtilityToolBox.MutacionHibrida_Reloc_General(1, 4, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("44 relocation mut hibrida general\n");
+					break;
+				case 45:
+					UtilityToolBox.MutacionHibrida_Reloc_General(1, 5, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("45 relocation mut hibrida general\n");
+					break;
+				case 46:
+					UtilityToolBox.MutacionHibrida_Reloc_General(1, 6, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("46 relocation mut hibrida general\n");
+					break;
+				case 47:
+					UtilityToolBox.MutacionHibrida_Reloc_General(2, 3, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("47 relocation mut hibrida general\n");
+					break;
+				case 48:
+					UtilityToolBox.MutacionHibrida_Reloc_General(2, 4, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("48 relocation mut hibrida general\n");
+					break;
+				case 49:
+					UtilityToolBox.MutacionHibrida_Reloc_General(2, 5, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("49 relocation mut hibrida general\n");
+					break;
+				case 50:
+					UtilityToolBox.MutacionHibrida_Reloc_General(2, 6, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("50 relocation mut hibrida general\n");
+					break;
+				case 51:
+					UtilityToolBox.MutacionHibrida_Reloc_General(3, 4, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("51 relocation mut hibrida general\n");
+					break;
+				case 52:
+					UtilityToolBox.MutacionHibrida_Reloc_General(3, 5, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("52 relocation mut hibrida general\n");
+					break;
+				case 53:
+					UtilityToolBox.MutacionHibrida_Reloc_General(3, 6, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("53 relocation mut hibrida general\n");
+					break;
+				case 54:
+					UtilityToolBox.MutacionHibrida_Reloc_General(4, 5, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("54 relocation mut hibrida general\n");
+					break;
+				case 55:
+					UtilityToolBox.MutacionHibrida_Reloc_General(4, 6, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("55 relocation mut hibrida general\n");
+					break;
+				case 56:
+					UtilityToolBox.MutacionHibrida_Reloc_General(5, 6, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("56 relocation mut hibrida general\n");
+					break;
+
+				//////////////////////////////////////////
+				// funciones antiguas:
+				case 100:
 					UtilityToolBox.Mutacion_Reloc_Fusion_1_N(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctSwap, this->problemInstance);
 					if (log_mut) printf("19 relocation fusion 1/N\n");
 					break;
-				case 20:
+				case 101:
 					UtilityToolBox.Mutacion_Reloc_Fusion_1_M(child.x_var, m_MutationRate, m_Op1MutationProb, s_PopulationSize, m_MutPctSwap, this->problemInstance);
     				if (log_mut) printf("20 relocation fusion 1/M\n");
 					break;
-				case 21:
+				case 102:
 					UtilityToolBox.Mutacion_Reloc_Fusion_Fijo(child.x_var, m_MutationRate, m_Op1MutationProb, m_BitFlipProb, m_MutPctSwap, this->problemInstance);
     				if (log_mut) printf("21 relocation fusion Fixed\n");
 					break;
-				case 22:
+				case 103:
 					UtilityToolBox.MutacionHibridaReloc(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
 					if (log_mut) printf("22 relocation mut\n");
 					break;
+				/////////////////////////////////////////
 				default:{
 					double p = 1.0 / (double)s_PopulationSize;
 					UtilityToolBox.MutacionBitFlip_Relocation(child.x_var, m_MutationRate, p, this->problemInstance);
@@ -1101,21 +1248,109 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 					if (log_mut) printf("7 location mut\n");
 					break;
 				case 8:
+					UtilityToolBox.MutacionHibrida_Loc_General(0, 1, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("8 location mut hibrida general\n");
+					break;
+				case 9:
+					UtilityToolBox.MutacionHibrida_Loc_General(0, 2, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("9 location mut hibrida general\n");
+					break;
+				case 10:
+					UtilityToolBox.MutacionHibrida_Loc_General(0, 3, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("10 location mut hibrida general\n");
+					break;
+				case 11:
+					UtilityToolBox.MutacionHibrida_Loc_General(0, 4, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("11 location mut hibrida general\n");
+					break;
+				case 12:
+					UtilityToolBox.MutacionHibrida_Loc_General(0, 5, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("12 location mut hibrida general\n");
+					break;
+				case 13:
+					UtilityToolBox.MutacionHibrida_Loc_General(0, 6, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("13 location mut hibrida general\n");
+					break;
+				case 14:
+					UtilityToolBox.MutacionHibrida_Loc_General(1, 2, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("14 location mut hibrida general\n");
+					break;
+				case 15:
+					UtilityToolBox.MutacionHibrida_Loc_General(1, 3, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("15 location mut hibrida general\n");
+					break;
+				case 16:
+					UtilityToolBox.MutacionHibrida_Loc_General(1, 4, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("16 location mut hibrida general\n");
+					break;
+				case 17:
+					UtilityToolBox.MutacionHibrida_Loc_General(1, 5, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("17 location mut hibrida general\n");
+					break;
+				case 18:
+					UtilityToolBox.MutacionHibrida_Loc_General(1, 6, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("18 location mut hibrida general\n");
+					break;
+				case 19:
+					UtilityToolBox.MutacionHibrida_Loc_General(2, 3, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("19 location mut hibrida general\n");
+					break;
+				case 20:
+					UtilityToolBox.MutacionHibrida_Loc_General(2, 4, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("20 location mut hibrida general\n");
+					break;
+				case 21:
+					UtilityToolBox.MutacionHibrida_Loc_General(2, 5, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("21 location mut hibrida general\n");
+					break;
+				case 22:
+					UtilityToolBox.MutacionHibrida_Loc_General(2, 6, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("22 location mut hibrida general\n");
+					break;
+				case 23:
+					UtilityToolBox.MutacionHibrida_Loc_General(3, 4, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("23 location mut hibrida general\n");
+					break;
+				case 24:
+					UtilityToolBox.MutacionHibrida_Loc_General(3, 5, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("24 location mut hibrida general\n");
+					break;
+				case 25:
+					UtilityToolBox.MutacionHibrida_Loc_General(3, 6, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("25 location mut hibrida general\n");
+					break;
+				case 26:	
+					UtilityToolBox.MutacionHibrida_Loc_General(4, 5, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("26 location mut hibrida general\n");
+					break;
+				case 27:
+					UtilityToolBox.MutacionHibrida_Loc_General(4, 6, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("27 location mut hibrida general\n");
+					break;
+				case 28:
+					UtilityToolBox.MutacionHibrida_Loc_General(5, 6, m_MutHybridSplit, child.x_var, m_MutationRate, s_PopulationSize, m_BitFlipProb, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, m_MutProbSwap, this->problemInstance);
+					if (log_mut) printf("28 location mut hibrida general\n");
+					break;
+
+				///////////////////////////////////////
+				// codigo antiguo de mutaciones:
+				case 1008:
 					UtilityToolBox.Mutacion_Swap_Porcentual_1_N(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctSwap, this->problemInstance);
 					if (log_mut) printf("8 location mut\n");
 					break;
-				case 9:
+				case 1009:
 					UtilityToolBox.Mutacion_Swap_Porcentual_1_M(child.x_var, m_MutationRate, m_Op1MutationProb, s_PopulationSize, m_MutPctSwap, this->problemInstance);
 					if (log_mut) printf("9 location mut\n");
 					break;
-				case 10:
+				case 1010:
 					UtilityToolBox.Mutacion_Swap_Porcentual_Fijo(child.x_var, m_MutationRate, m_Op1MutationProb, m_BitFlipProb, m_MutPctSwap, this->problemInstance);
 					if (log_mut) printf("10 location mut\n");
 					break;
-				case 11:
+				case 1011:
 					UtilityToolBox.MutacionHibrida_location(child.x_var, m_MutationRate, m_Op1MutationProb, m_MutPctDelete, m_MutPctSwap, this->problemInstance);
 					if (log_mut) printf("11 location mut\n");
 					break;
+				///////////////////////////////////
 				default:
 					UtilityToolBox.MutacionBitFlip_Fijo(child.x_var, m_MutationRate, m_BitFlipProb, this->problemInstance);
 					if (log_mut) printf("default location mut\n");

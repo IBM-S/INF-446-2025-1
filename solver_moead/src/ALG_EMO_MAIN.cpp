@@ -80,33 +80,86 @@ static std::string dbl(double x, int prec=6) {
 // Mutation
 static std::string MutName(int mutType, bool isReloc){
     if (!isReloc) {
-        switch(mutType){
-            case 1: return "Mutacion modificada (sin reubicacion) (op1)";
-            case 2: return "SwapBitFlip (p = ProbSwap)";
-            case 3: return "Swap% (mutPctSwap)";
-            case 4: return "Delete% (mutPctDelete)";
-            case 5: return "BitFlip (p = 1/N)";
-            case 6: return "BitFlip (p = 1/M)";
-            case 7: return "BitFlip (p = fijo = bitprob)";
-            case 8: return "Fusion (Swap% + BitFlip p = 1/N) (op1)";
-            case 9: return "Fusion (Swap% + BitFlip p = 1/M) (op1)";
-            case 10: return "Fusion (Swap% + BitFlip p = fijo) (op1)";
-            case 11: return "Hibrida (Delete%/Swap%) (op1)";
+        switch(mutType){ // Location: Loc
+            case 1: return "Loc Mutacion modificada (sin reubicacion) (op1)";
+            case 2: return "Loc SwapBitFlip (p = ProbSwap)";
+            case 3: return "Loc Swap% (mutPctSwap)";
+            case 4: return "Loc Delete% (mutPctDelete)";
+            case 5: return "Loc BitFlip (p = 1/N)";
+            case 6: return "Loc BitFlip (p = 1/M)";
+            case 7: return "Loc BitFlip (p = fijo = bitprob)";
+            
+            case 8: return "Fusion Loc (BitFlip Reloc p = 1/N + BitFlip Reloc p = 1/M) (Split Hybrid)";
+            case 9: return "Fusion Loc (BitFlip Reloc p = 1/N + BitFlip Reloc p = fijo) (Split Hybrid)";
+            case 10: return "Fusion Loc (BitFlip Reloc p = 1/N + Mut op1) (Split Hybrid)";
+            case 11: return "Fusion Loc (BitFlip Reloc p = 1/N + Delete% Reloc) (Split Hybrid)";
+            case 12: return "Fusion Loc (BitFlip Reloc p = 1/N + Swap% Reloc) (Split Hybrid)";
+            case 13: return "Fusion Loc (BitFlip Reloc p = 1/N + SwapBitFlip Reloc (p = ProbSwap)) (Split Hybrid)";
+
+            case 14: return "Fusion Loc (BitFlip Reloc p = 1/M + BitFlip Reloc p = fijo) (Split Hybrid)";
+            case 15: return "Fusion Loc (BitFlip Reloc p = 1/M + Mut op1) (Split Hybrid)";
+            case 16: return "Fusion Loc (BitFlip Reloc p = 1/M + Delete% Reloc) (Split Hybrid)";
+            case 17: return "Fusion Loc (BitFlip Reloc p = 1/M + Swap% Reloc) (Split Hybrid)";
+            case 18: return "Fusion Loc (BitFlip Reloc p = 1/M + SwapBitFlip Reloc (p = ProbSwap)) (Split Hybrid)";
+
+            case 19: return "Fusion Loc (BitFlip Reloc p = fijo + Mut op1) (Split Hybrid)";
+            case 20: return "Fusion Loc (BitFlip Reloc p = fijo + Delete% Reloc) (Split Hybrid)";
+            case 21: return "Fusion Loc (BitFlip Reloc p = fijo + Swap% Reloc) (Split Hybrid)";
+            case 22: return "Fusion Loc (BitFlip Reloc p = fijo + SwapBitFlip Reloc (p = ProbSwap)) (Split Hybrid)";
+
+            case 23: return "Fusion Loc (Mut op1 + Delete% Reloc) (Split Hybrid)";
+            case 24: return "Fusion Loc (Mut op1 + Swap% Reloc) (Split Hybrid)";
+            case 25: return "Fusion Loc (Mut op1 + SwapBitFlip Reloc (p = ProbSwap)) (Split Hybrid)";
+
+            case 26: return "Fusion Loc (Delete% Reloc + Swap% Reloc) (Split Hybrid)";
+            case 27: return "Fusion Loc (Delete% Reloc + SwapBitFlip Reloc (p = ProbSwap)) (Split Hybrid)";
+
+            case 28: return "Fusion Loc (Swap% Reloc + SwapBitFlip Reloc (p = ProbSwap)) (Split Hybrid)";
+
             default: return "DEFAULT -> BitFlip (p = fijo)";
         }
     } else {
-        switch(mutType) {
-            case 12: return "Mutacion modificada (con reubicacion) (op1)";
-            case 13: return "SwapBitFlip Reloc (p = ProbSwap)";
-            case 14: return "Swap% Reloc (mutPctSwap)";
-            case 15: return "Delete% Reloc (mutPctDelete)";
-            case 16: return "BitFlip Reloc (p = 1/N)";
-            case 17: return "BitFlip Reloc (p = 1/M)";
-            case 18: return "BitFlip Reloc (p = fijo = bitprob)";
-            case 19: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = 1/N) (op1)";
-            case 20: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = 1/M) (op1)";
-            case 21: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = fijo) (op1)";
-            case 22: return "Hibrida Reloc (Delete% Reloc/Swap% Reloc) (op1)";
+    switch(mutType) { // Relocation: Reloc
+            case 29: return "Mutacion modificada (con reubicacion) (op1)";
+            case 30: return "SwapBitFlip Reloc (p = ProbSwap)";
+            case 31: return "Swap% Reloc (mutPctSwap)";
+            case 32: return "Delete% Reloc (mutPctDelete)";
+            case 33: return "BitFlip Reloc (p = 1/N)";
+            case 34: return "BitFlip Reloc (p = 1/M)";
+            case 35: return "BitFlip Reloc (p = fijo = bitprob)";
+
+            case 36: return "Fusion Reloc (BitFlip Reloc p = 1/N + BitFlip Reloc p = 1/M) (Split Hybrid)";
+            case 37: return "Fusion Reloc (BitFlip Reloc p = 1/N + BitFlip Reloc p = fijo) (Split Hybrid)";
+            case 38: return "Fusion Reloc (BitFlip Reloc p = 1/N + Mut op1) (Split Hybrid)";
+            case 39: return "Fusion Reloc (BitFlip Reloc p = 1/N + Delete% Reloc) (Split Hybrid)";
+            case 40: return "Fusion Reloc (BitFlip Reloc p = 1/N + Swap% Reloc) (Split Hybrid)";
+            case 41: return "Fusion Reloc (BitFlip Reloc p = 1/N + SwapBitFlip Reloc (p = ProbSwap)) (Split Hybrid)";
+
+            case 42: return "Fusion Reloc (BitFlip Reloc p = 1/M + BitFlip Reloc p = fijo) (Split Hybrid)";
+            case 43: return "Fusion Reloc (BitFlip Reloc p = 1/M + Mut op1) (Split Hybrid)";
+            case 44: return "Fusion Reloc (BitFlip Reloc p = 1/M + Delete% Reloc) (Split Hybrid)";
+            case 45: return "Fusion Reloc (BitFlip Reloc p = 1/M + Swap% Reloc) (Split Hybrid)";
+            case 46: return "Fusion Reloc (BitFlip Reloc p = 1/M + SwapBitFlip Reloc (p = ProbSwap)) (Split Hybrid)";
+
+            case 47: return "Fusion Reloc (BitFlip Reloc p = fijo + Mut op1) (Split Hybrid)";
+            case 48: return "Fusion Reloc (BitFlip Reloc p = fijo + Delete% Reloc) (Split Hybrid)";
+            case 49: return "Fusion Reloc (BitFlip Reloc p = fijo + Swap% Reloc) (Split Hybrid)";
+            case 50: return "Fusion Reloc (BitFlip Reloc p = fijo + SwapBitFlip Reloc (p = ProbSwap)) (Split Hybrid)";
+
+            case 51: return "Fusion Reloc (Mut op1 + Delete% Reloc) (Split Hybrid)";
+            case 52: return "Fusion Reloc (Mut op1 + Swap% Reloc) (Split Hybrid)";
+            case 53: return "Fusion Reloc (Mut op1 + SwapBitFlip Reloc (p = ProbSwap)) (Split Hybrid)";
+
+            case 54: return "Fusion Reloc (Delete% Reloc + Swap% Reloc) (Split Hybrid)";
+            case 55: return "Fusion Reloc (Delete% Reloc + SwapBitFlip Reloc (p = ProbSwap)) (Split Hybrid)";
+
+            case 56: return "Fusion Reloc (Swap% Reloc + SwapBitFlip Reloc (p = ProbSwap)) (Split Hybrid)";
+
+
+            case 100: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = 1/N) (op1)";
+            case 101: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = 1/M) (op1)";
+            case 102: return "Fusion Reloc (Swap% Reloc + BitFlip Reloc p = fijo) (op1)";
+            case 103: return "Hibrida Reloc (Delete% Reloc/Swap% Reloc) (op1)";
             default: return "DEFAULT -> BitFlip Reloc (p = 1/M)";
         }
     }
@@ -114,7 +167,7 @@ static std::string MutName(int mutType, bool isReloc){
 
 static std::vector<std::string> MutParamsLines(
     int mutType, bool isReloc, double mutationRate, double op1Prob, double mutPctDelete, double mutPctSwap,
-    double ProbSwap, double bitFlipProb, int popSize, int nVars
+    double ProbSwap, double bitFlipProb, double userHybridSplit,  int popSize, int nVars
 ){
     std::vector<std::string> L;
     L.push_back("Tasa global (mut)       : " + pct(mutationRate));
@@ -131,6 +184,7 @@ static std::vector<std::string> MutParamsLines(
     auto add_p_1M      = [&](){
         double p = (popSize > 0) ? (1.0 / (double)popSize) : 0.0; 
         L.push_back("p usado     : 1/M = " + dbl(p, 10) + " (M=" + std::to_string(popSize) + ")"); };
+    auto add_hybrid_split = [&](){ L.push_back("HybridSplit (splitPctHybrid): " + pct(userHybridSplit)); };
 
     if (!isReloc) {
         switch(mutType) {
@@ -141,25 +195,72 @@ static std::vector<std::string> MutParamsLines(
             case 5: add_p_1N(); break;
             case 6: add_p_1M(); break;
             case 7: add_bit(); break;
-            case 8: add_op1(); add_pct_swap(); add_p_1N(); break;
-            case 9: add_op1(); add_pct_swap(); add_p_1M(); break;
-            case 10: add_op1(); add_pct_swap(); add_bit(); break;
-            case 11: add_op1(); add_pct_del(); add_pct_swap(); break;
+
+            case 8: add_hybrid_split(); add_p_1N(); add_p_1M(); break;
+            case 9: add_hybrid_split(); add_p_1N(); add_bit(); break;
+            case 10: add_hybrid_split(); add_p_1N(); add_op1(); break;
+            case 11: add_hybrid_split(); add_p_1N(); add_pct_del(); break;
+            case 12: add_hybrid_split(); add_p_1N(); add_pct_swap(); break;
+            case 13: add_hybrid_split(); add_p_1N(); add_prob_swap(); break;
+
+            case 14: add_hybrid_split(); add_p_1M(); add_bit(); break;
+            case 15: add_hybrid_split(); add_p_1M(); add_op1(); break;
+            case 16: add_hybrid_split(); add_p_1M(); add_pct_del(); break;
+            case 17: add_hybrid_split(); add_p_1M(); add_pct_swap(); break;
+            case 18: add_hybrid_split(); add_p_1M(); add_prob_swap(); break;
+
+            case 19: add_hybrid_split(); add_bit(); add_op1(); break;
+            case 20: add_hybrid_split(); add_bit(); add_pct_del(); break;
+            case 21: add_hybrid_split(); add_bit(); add_pct_swap(); break;
+            case 22: add_hybrid_split(); add_bit(); add_prob_swap(); break;
+
+            case 23: add_hybrid_split(); add_op1(); add_pct_del(); break;
+            case 24: add_hybrid_split(); add_op1(); add_pct_swap(); break;
+            case 25: add_hybrid_split(); add_op1(); add_prob_swap(); break;
+
+            case 26: add_hybrid_split(); add_pct_del(); add_pct_swap(); break;
+            case 27: add_hybrid_split(); add_pct_del(); add_prob_swap(); break;
+
+            case 28: add_hybrid_split(); add_pct_swap(); add_prob_swap(); break;
+
             default: add_bit(); break;
         }
     } else {
         switch(mutType) {
-            case 12: add_op1(); break;
-            case 13: add_prob_swap(); break;
-            case 14: add_pct_swap(); break;
-            case 15: add_pct_del(); break;
-            case 16: add_p_1N(); break;
-            case 17: add_p_1M(); break;
-            case 18: add_bit(); break;
-            case 19: add_op1(); add_pct_swap(); add_p_1N(); break;
-            case 20: add_op1(); add_pct_swap(); add_p_1M(); break;
-            case 21: add_op1(); add_pct_swap(); add_bit(); break;
-            case 22: add_op1(); add_pct_del(); add_pct_swap(); break;
+            case 29: add_op1(); break;  // 3
+            case 30: add_prob_swap(); break; // 6
+            case 31: add_pct_swap(); break; // 5
+            case 32: add_pct_del(); break; // 4
+            case 33: add_p_1N(); break; // 0 
+            case 34: add_p_1M(); break; // 1
+            case 35: add_bit(); break; // 2
+
+            case 36: add_hybrid_split(); add_p_1N(); add_p_1M(); break;
+            case 37: add_hybrid_split(); add_p_1N(); add_bit(); break;
+            case 38: add_hybrid_split(); add_p_1N(); add_op1(); break;
+            case 39: add_hybrid_split(); add_p_1N(); add_pct_del(); break;
+            case 40: add_hybrid_split(); add_p_1N(); add_pct_swap(); break;
+            case 41: add_hybrid_split(); add_p_1N(); add_prob_swap(); break;
+
+            case 42: add_hybrid_split(); add_p_1M(); add_bit(); break;
+            case 43: add_hybrid_split(); add_p_1M(); add_op1(); break;
+            case 44: add_hybrid_split(); add_p_1M(); add_pct_del(); break;
+            case 45: add_hybrid_split(); add_p_1M(); add_pct_swap(); break;
+            case 46: add_hybrid_split(); add_p_1M(); add_prob_swap(); break;
+
+            case 47: add_hybrid_split(); add_bit(); add_op1(); break;
+            case 48: add_hybrid_split(); add_bit(); add_pct_del(); break;
+            case 49: add_hybrid_split(); add_bit(); add_pct_swap(); break;
+            case 50: add_hybrid_split(); add_bit(); add_prob_swap(); break;
+
+            case 51: add_hybrid_split(); add_op1(); add_pct_del(); break;
+            case 52: add_hybrid_split(); add_op1(); add_pct_swap(); break;
+            case 53: add_hybrid_split(); add_op1(); add_prob_swap(); break;
+
+            case 54: add_hybrid_split(); add_pct_del(); add_pct_swap(); break;
+            case 55: add_hybrid_split(); add_pct_del(); add_prob_swap(); break;
+
+            case 56: add_hybrid_split(); add_pct_swap(); add_prob_swap(); break;
             default: add_p_1M(); break;
         }
     }
@@ -195,10 +296,10 @@ static std::string CrossName(int crossType, bool isReloc){
 // Distribucion inicial
 static std::string InitDistName(int initDist){
     switch(initDist){
-        case 0: return "Aleatoria Uniforme - U(0, P)";
-        case 1: return "Aleatoria Normal - N(P/2, P/6) truncada a [0, P]";
-        case 2: return "Aleatoria Normal con extremos anclados a 0 y P";
-        case 3: return "Curva exponencial + ruido";
+        case 1: return "Aleatoria Uniforme - U(0, P)";
+        case 2: return "Aleatoria Normal - N(P/2, P/6) truncada a [0, P]";
+        case 3: return "Aleatoria Normal con extremos anclados a 0 y P";
+        case 4: return "Curva exponencial + ruido";
         default: return "Desconocida";
     }
 }
@@ -206,7 +307,7 @@ static std::string InitDistName(int initDist){
 static std::vector<std::string> InitDistParamsLines(int initDist, double powerExp, double noisePct){
     std::vector<std::string> L;
     L.push_back("Estrategia (initDist): " + std::to_string(initDist) + " (" + InitDistName(initDist) + ")");
-    if (initDist == 3){
+    if (initDist == 4){
         L.push_back("powerExp       : " + dbl(powerExp, 3));
         L.push_back("noisePct       : " + pct(noisePct));
     }
@@ -220,6 +321,7 @@ static std::string InitRelocName(int t){
         case 2: return "OnlyBuy (deterministico)";
         case 3: return "Choose Move/Buy (probMoveRelocation)";
         case 4: return "HybridCount (splitPctRelocation)";
+
         case 5: return "HybridSplit (splitPctRelocation)";
         case 6: return "OnlyMove (aleatorio)";
         case 7: return "OnlyBuy (aleatorio)";
@@ -287,9 +389,9 @@ void PrintUsage() {
     std::cout << "  -bitprob <double> : Prob. BitFlip individual (Def: 0.01)" << std::endl;
 
     std::cout << "\n--- Parámetros Distribución Inicial de Recursos ---" << std::endl;
-    std::cout << "  -initDist <int>   : Estrategia Distribución (0:Rand, 1:Extremos, 2:Curva+Ruido) (Def: 2)" << std::endl;
-    std::cout << "  -powerExp <dbl>   : Exponente para la curva en Estrategia 2 (Def: 5.0)" << std::endl;
-    std::cout << "  -noisePct <dbl>   : Porcentaje de ruido en Estrategia 2 (0.0 - 1.0) (Def: 0.20)" << std::endl;
+    std::cout << "  -initDist <int>   : Estrategia Distribución (1:Rand Uniforme, 2: Rand Normal, 3: Rand Normal con Extremos, 4:Curva+Ruido) (Def: 2)" << std::endl;
+    std::cout << "  -powerExp <dbl>   : Exponente para la curva en Estrategia 4 (Def: 5.0)" << std::endl;
+    std::cout << "  -noisePct <dbl>   : Porcentaje de ruido en Estrategia 4 (0.0 - 1.0) (Def: 0.20)" << std::endl;
 
     std::cout << "\n--- Parámetros de Inicialización (Relocación) ---" << std::endl;
     std::cout << "  -initTypeRelocation <int>   : Estrategia: 1:Orig, 2:Mix, 3:Move, 4:Buy, 5:M/B, 6:Hyb, 7:M/B_Rnd, 8:Hyb_Rnd (Def: 3)" << std::endl;
@@ -307,49 +409,75 @@ void ResetRandSeed();
 int main(int argc, char *argv[])
 {
 	set_exe_path(argv[0]);
-	// --- VALORES POR DEFECTO --- 
-    int userPop = 0;
-    int userNeighbor = 0;
-
-    std::string instancePath = "";
-    rnd_uni_seed = 123;
-    NumberOfVariables = 324;
-    
-	NumberOfObjectives = 2;
-    NumberOfFuncEvals = 40000; 
 
     std::string variant = "location"; // o "relocation"
     std::string problemType = "cam";  // o "drp"
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];        
+        if      (arg == "-variant") { if (i + 1 < argc) variant = argv[++i]; }
+        else if (arg == "-type"   ) { if (i + 1 < argc) problemType = argv[++i]; }
+    }
+        
+    // Defaults:
     std::string algName = "MOEAD";
-
-    double maxTime = 0; 
-
+    std::string instancePath = "";
     std::string userOutputDir = ""; 
 
-    // Parámetros Algoritmo
-    double bitFlipProb = 0.001; // Default: 1% probabilidad para BitFlip Fijo
-    double crossoverRate = 0.8;
-    int crossType = 7;    // Default: Inteligente
-    int initDist = 2;
-    int initTypeRelocation = 3;           // Default: Solo Mover (o el que prefieras como base)
-    double mutationRate = 0.9;
+    rnd_uni_seed       = 123;
+	NumberOfObjectives = 2;
+    NumberOfVariables  = 324;
+    NumberOfFuncEvals  = 40000; 
+    double maxTime     = 0; 
 
-    double mutPct = 0.4; // Default: 5% intensidad para operadores porcentuales
-    double userMutPctDelete = 0.25; // 0 = usar default
-    double userMutPctSwap = 0.4;   // 0 = usar default
-
-    double userMutProbSwap = 0.15;
-    int mutType = 12;     // Default: Híbrida
+    int userPop            = 0;
+    int userNeighbor       = 0;
     double userNeighborPct = 0.0; // 0 = usar archivo, >0 usar porcentaje
-    double noisePct = 0.1;
+    int decompType         = 1;   // 1 por defecto (Tchebycheff)
+    int saveInterval       = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
+
+    // Parámetros Operadores
+    double mutationRate  = 0.4;
+    double crossoverRate = 0.8;
+    
+    // Intensidad mutacion
     double op1Prob = 0.5; // 20% delete, 80% swap (por ejemplo)
-    double powerExp = 1.0;
-    double probMoveRelocation = 0.4;      // Default: 50%
-    double splitPctRelocation = 0.5;      // Default: 50% split
+    double bitFlipProb = 0.01; // Default: 1% probabilidad para BitFlip Fijo
+    double mutPct = 0.3; // Default: 5% intensidad para operadores porcentuales
+    double userMutPctDelete = 0.2; // 0 = usar default
+    double userMutPctSwap = 0.2;   // 0 = usar default
+    double userMutProbSwap = 0.2;
+    
+    double userHybridSplit = 0.5; // Default: 50% split en híbridos (ej: Delete% vs Swap%)
+    int userMutOp1 = 0; // Para mutaciones híbridas, 0 = usar default, 1 = Delete%, 2 = Swap%, 3 = BitFlip
+    int userMutOp2 = 4; // Para mutaciones híbridas, 0 = usar default, 1 = Delete%, 2 = Swap%, 3 = BitFlip
+    
+    
+    // Distribucion inicial
+    int initDist = 4;
+    double noisePct = 0.1;
+    double powerExp = 6.0;
+    
+    int mutType = 0;     // 
+    int initTypeRelocation = 0;           //
+    double probMoveRelocation = 0.0;      //
+    double splitPctRelocation = 0.0;      //
+    int crossType        = 0;    // Default: Inteligente
 
 
-    int decompType = 1;   // 1 por defecto (Tchebycheff)
-    int saveInterval = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
+    if (problemType == "cam"){
+        mutType = 5;     // Default: Híbrida
+        initTypeRelocation = 1;           // Default: Solo Mover (o el que prefieras como base)
+        probMoveRelocation = 0.5;      // Default: 50%
+        splitPctRelocation = 0.5;      // Default: 50% split
+        crossType          = 3;
+    } else {
+        mutType = 33;     // Default: Híbrida
+        initTypeRelocation = 3;           // Default: Solo Mover (o el que prefieras como base)
+        probMoveRelocation = 0.5;      // Default: 50%
+        splitPctRelocation = 0.5;      // Default: 50% split
+        crossType          = 7;
+    }
+
 
     if (argc < 2) {
         PrintUsage();
@@ -379,6 +507,10 @@ int main(int argc, char *argv[])
         else if (arg == "-mut") { if (i + 1 < argc) mutationRate = atof(argv[++i]); }
         else if (arg == "-cross") { if (i + 1 < argc) crossoverRate = atof(argv[++i]); }
         else if (arg == "-op1") { if (i + 1 < argc) op1Prob = atof(argv[++i]); }
+
+        else if (arg == "-mutOp1") { if (i + 1 < argc) userMutOp1 = atoi(argv[++i]); }
+        else if (arg == "-mutOp2") { if (i + 1 < argc) userMutOp2 = atoi(argv[++i]); }
+        else if (arg == "-hybridSplit") { if (i + 1 < argc) userHybridSplit = atof(argv[++i]); }
 
         // Tipos
         else if (arg == "-variant") { if (i + 1 < argc) variant = argv[++i]; }
@@ -514,7 +646,7 @@ int main(int argc, char *argv[])
     
     auto mutLines = MutParamsLines(
         mutType, isRelocation, mutationRate, op1Prob, userMutPctDelete, userMutPctSwap, userMutProbSwap,
-        bitFlipProb, finalPop, NumberOfVariables
+        bitFlipProb, userHybridSplit, finalPop, NumberOfVariables
     );
     for (const auto &ln : mutLines) {
         std::cout << "      - " << ln << std::endl;
@@ -568,7 +700,11 @@ int main(int argc, char *argv[])
         MOEAD.SetMutPctDelete(userMutPctDelete);
         MOEAD.SetMutPctSwap(userMutPctSwap);
         MOEAD.SetMutProbSwap(userMutProbSwap);
-        MOEAD.SetNeighborhoodSizePct(userNeighborPct);
+        //MOEAD.SetNeighborhoodSizePct(userNeighborPct);
+
+        MOEAD.SetMutOp1(userMutOp1);
+        MOEAD.SetMutOp2(userMutOp2);
+        MOEAD.SetMutHybridSplit(userHybridSplit);
 
         MOEAD.SetInitializationTypeRelocation(initTypeRelocation);
         MOEAD.SetProbChooseMoveRelocation(probMoveRelocation);
@@ -610,6 +746,7 @@ int main(int argc, char *argv[])
               << finalPop << "," << finalNeighbor << "," << NumberOfVariables << ","
               << NumberOfFuncEvals << "," << maxTime << "," << rnd_uni_seed << "," 
               << mutationRate << "," << op1Prob << "," << crossoverRate << "," 
+              << crossType << "," << mutType << "," << ","
               << decompType << "," << saveInterval << ","
               << duration << "," << rutaSalida << std::endl;
 	fout_time.close();
