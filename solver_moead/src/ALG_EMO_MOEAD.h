@@ -63,6 +63,9 @@ public:
     void SetPowerExp(double exp) { m_PowerExp = exp; }
     void SetNoisePct(double pct) { m_NoisePct = pct; }
 
+	void SetDelta(double delta) { m_Delta = delta; }
+	void SetNr(int nr) { m_Nr = nr; }
+
 	int s_PopulationSize;
 	int s_NeighborhoodSize;
 	ProblemInstance *problemInstance;
@@ -133,6 +136,9 @@ protected:
 	int m_InitDistributionStrategy;
     double m_PowerExp;
     double m_NoisePct;
+
+	double m_Delta; // Probabilidad de elegir padres del vecindario vs toda la población
+	int m_Nr;       // Máximo número de reemplazos por solución generada
 	
 	double m_MaxTimeSeconds; // Tiempo máximo en segundos (0 = sin límite)
 	int m_SaveInterval;

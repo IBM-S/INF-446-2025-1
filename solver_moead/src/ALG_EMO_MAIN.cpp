@@ -436,26 +436,26 @@ int main(int argc, char *argv[])
     int saveInterval       = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
     // Parámetros Operadores
-    double mutationRate  = 0.4;
+    double mutationRate  = 0.1;
     double crossoverRate = 0.8;
     
     // Intensidad mutacion
-    double op1Prob = 0.5; // 20% delete, 80% swap (por ejemplo)
-    double bitFlipProb = 0.01; // Default: 1% probabilidad para BitFlip Fijo
+    double op1Prob = 0.6; // 20% delete, 80% swap (por ejemplo)
+    double bitFlipProb = 0.005; // Default: 1% probabilidad para BitFlip Fijo
     double mutPct = 0.3; // Default: 5% intensidad para operadores porcentuales
-    double userMutPctDelete = 0.2; // 0 = usar default
-    double userMutPctSwap = 0.2;   // 0 = usar default
+    double userMutPctDelete = 0.35; // 0 = usar default
+    double userMutPctSwap = 0.05;   // 0 = usar default
     double userMutProbSwap = 0.2;
     
-    double userHybridSplit = 0.5; // Default: 50% split en híbridos (ej: Delete% vs Swap%)
+    double userHybridSplit = 0.7; // Default: 50% split en híbridos (ej: Delete% vs Swap%)
     int userMutOp1 = 0; // Para mutaciones híbridas, 0 = usar default, 1 = Delete%, 2 = Swap%, 3 = BitFlip
     int userMutOp2 = 4; // Para mutaciones híbridas, 0 = usar default, 1 = Delete%, 2 = Swap%, 3 = BitFlip
     
     
     // Distribucion inicial
     int initDist = 4;
-    double noisePct = 0.1;
-    double powerExp = 6.0;
+    double noisePct = 0.25;
+    double powerExp = 7.0;
     
     int mutType = 0;     // 
     int initTypeRelocation = 0;           //
@@ -463,19 +463,41 @@ int main(int argc, char *argv[])
     double splitPctRelocation = 0.0;      //
     int crossType        = 0;    // Default: Inteligente
 
+    double userDelta = 1.0;
+    int userNr = 0;
+
 
     if (problemType == "cam"){
-        mutType = 5;     // Default: Híbrida
-        initTypeRelocation = 1;           // Default: Solo Mover (o el que prefieras como base)
-        probMoveRelocation = 0.5;      // Default: 50%
-        splitPctRelocation = 0.5;      // Default: 50% split
-        crossType          = 3;
+        // Parámetros Operadores
+        mutationRate  = 0.9;
+        crossoverRate = 0.8;
+
+        op1Prob = 0.5; // 20% delete, 80% swap (por ejemplo)
+        bitFlipProb = 0.01; // Default: 1% probabilidad para BitFlip Fijo
+        mutPct = 0.3; // Default: 5% intensidad para operadores porcentuales
+        userMutPctDelete = 0.2; // 0 = usar default
+        userMutPctSwap = 0.2;   // 0 = usar default
+        userMutProbSwap = 0.2;
+
+        userHybridSplit = 0.5; // Default: 50% split en híbridos (ej: Delete% vs Swap%)
+
+
+        mutType            = 5;        // MutacionBitFlip_1_N
+        initTypeRelocation = 1;        // No lo utiliza 
+        probMoveRelocation = 0.5;      // No lo utiliza
+        splitPctRelocation = 0.5;      // No lo utiliza
+        crossType          = 3;        // CruzamientoUniforme
+
+        initDist = 4;    // Curva exponencial + ruido
+        noisePct = 0.1;  // ruido
+        powerExp = 6.0;  // Exponente para la curva (mayor valor = más concentración en nodos con menor índice)
+
     } else {
-        mutType = 33;     // Default: Híbrida
-        initTypeRelocation = 3;           // Default: Solo Mover (o el que prefieras como base)
-        probMoveRelocation = 0.5;      // Default: 50%
-        splitPctRelocation = 0.5;      // Default: 50% split
-        crossType          = 7;
+        mutType = 51;     // Default: MutacionHibrida_Reloc_General
+        initTypeRelocation = 4;        // GenerateSimpleFeasible_Reloc_HybridCount
+        probMoveRelocation = 0.4;      // Lo utiliza el initTypeRelocation = 3 
+        splitPctRelocation = 0.3;      // Lo utiliza el initTypeRelocation = 4
+        crossType          = 7;        // CruzamientoUniformeInteligente_Relocation
     }
 
 
@@ -533,6 +555,9 @@ int main(int argc, char *argv[])
         else if (arg == "-initDist") { if (i + 1 < argc) initDist = atoi(argv[++i]); }
         else if (arg == "-powerExp") { if (i + 1 < argc) powerExp = atof(argv[++i]); }
         else if (arg == "-noisePct") { if (i + 1 < argc) noisePct = atof(argv[++i]); }
+
+        else if (arg == "-delta") { if (i + 1 < argc) userDelta = atof(argv[++i]); }
+        else if (arg == "-nr")    { if (i + 1 < argc) userNr    = atoi(argv[++i]); }
     }
 
     if (userMutPctDelete < 0) userMutPctDelete = mutPct;
@@ -674,6 +699,9 @@ int main(int argc, char *argv[])
     for (const auto &ln : initDistLines) {
         std::cout << "     " << ln << std::endl;
     }
+    std::cout << "\n [8] PARÁMETROS MOEA/D" << std::endl;
+    std::cout << "     Delta (prob. vecindario): " << userDelta << std::endl;
+    std::cout << "     Nr    (max reemplazos)  : " << userNr << std::endl;
     std::cout << "==========================================================\n" << std::endl;
 
 	clock_t start, temp, finish;
@@ -710,7 +738,8 @@ int main(int argc, char *argv[])
         MOEAD.SetProbChooseMoveRelocation(probMoveRelocation);
         MOEAD.SetSplitPctRelocation(splitPctRelocation);
 
-    
+        MOEAD.SetDelta(userDelta);
+        MOEAD.SetNr(userNr);    
 
         
 		MOEAD.Execute(1); // Se ejecuta solo una vez

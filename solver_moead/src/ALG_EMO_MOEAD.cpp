@@ -35,6 +35,9 @@ CALG_EMO_MOEAD::CALG_EMO_MOEAD(void)
 	m_InitDistributionStrategy = 4;
 	m_PowerExp = 1.0;
 	m_NoisePct = 0.1;
+
+	m_Delta = 1.0;
+	m_Nr = 0;
 }
 
 CALG_EMO_MOEAD::~CALG_EMO_MOEAD(void)
@@ -569,7 +572,7 @@ void CALG_EMO_MOEAD::UpdateProblem_modificado(CIndividualBase &child,
 	vector<double> zero_point(NumberOfObjectives, 0);
 
 
-
+	//int replacements = 0;
 	for (int i = 0; i < s_NeighborhoodSize; i++)
 	{
 
@@ -601,10 +604,11 @@ void CALG_EMO_MOEAD::UpdateProblem_modificado(CIndividualBase &child,
 		//printf("ideal point: %f  %f\n", zero_point[0], zero_point[1]);
 		//printf("f1 parent: %f  f2 child: %f\n", f1, f2);
 
-		if (f2 < f1)
-		{	
+		if (f2 < f1){
 			//printf("  Reemplazando en subproblema %d: f1=%f  f2=%f\n", id2, f1, f2);
 			m_PopulationSOP[id2].m_BestIndividual = child;
+			//replacements++;
+			//if (replacements >= m_Nr) break;
 		}
 	}
 }
@@ -852,6 +856,17 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		unsigned int id_c = order[s];
 
 		// 2 Seleccion de padres
+		/* if (UtilityToolBox.Get_Random_Number() <= m_Delta) {
+			SelectMatingPool(mating_pool, id_c, 2);       // del vecindario
+		} else {
+			while (mating_pool.size() < 2) {              // de toda la población
+				int r = (int)(s_PopulationSize * UtilityToolBox.Get_Random_Number());
+				bool repetido = false;
+				for (unsigned i = 0; i < mating_pool.size(); i++)
+					if ((int)mating_pool[i] == r) { repetido = true; break; }
+				if (!repetido) mating_pool.push_back(r);
+			}
+		} */
 		SelectMatingPool(mating_pool, id_c, 2);
 		p1 = mating_pool[0];
 		p2 = mating_pool[1];
@@ -1425,14 +1440,14 @@ void CALG_EMO_MOEAD::EvolvePopulation()
 		// child.Show(0); getchar();
 
 		UpdateReference(child.f_obj);
-		UpdateNadirPoint(child.f_obj);
+		//UpdateNadirPoint(child.f_obj);
 		UpdateProblem_modificado(child, id_c);
 
 		if (IsTerminated())
 			break;
 	}
 
-	this->FindNadirPoint();
+	//this->FindNadirPoint();
 
 	// if(s_PBI_type==3)  this->NormalizeWeight();
 }

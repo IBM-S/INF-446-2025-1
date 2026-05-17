@@ -96,9 +96,9 @@ double CUtilityToolBox::ScalarizingFunction(vector<double> &y_obj,
 	{
 		for (n = 0; n < nobj; n++)
 		{
-			diff = fabs(y_obj[n] - referencepoint[n]) + 1e-8;
+			diff = fabs(y_obj[n] - referencepoint[n]);
 			if (namda[n] == 0)
-				feval = 0.001 * diff;
+				feval = 0.0001 * diff;
 			else
 				feval = namda[n] * diff;
 
