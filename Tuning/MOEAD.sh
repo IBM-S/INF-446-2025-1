@@ -35,6 +35,9 @@ noisePct=0
 
 hybridSplit=0
 
+delta=0
+nr=0
+
 instance=""
 execution_params=()
 
@@ -81,6 +84,10 @@ while [ $# -gt 0 ]; do
         -noisePct) noisePct="$2"; shift 2 ;;
 
         -hybridSplit) hybridSplit="$2"; shift 2 ;;
+
+        -delta) delta="$2"; shift 2 ;;
+        -nr) nr="$2"; shift 2 ;;
+
         *)
             # Si el argumento es numérico o una cadena vacía, lo añadimos a la lista de parámetros de ejecución
             if [[ "$flag" =~ ^[0-9]+(\.[0-9]+)?$ ]] || [ "$flag" = "" ]; then
@@ -96,7 +103,7 @@ done
 
 # Calcular mi, número de objetivos y parámetros
 no=2 # número de objetivos
-params="-type ${type} -variant ${variant} -neval ${evaluaciones} -pop ${pop} -neighborPct ${neighborPct} -mut ${mut} -cross ${cross} -mutType ${mutType} -crossType ${crossType} -op1 ${op1} -bitprob ${bitprob} -mutPctDelete ${mutPctDelete} -mutPctSwap ${mutPctSwap} -mutProbSwap ${mutProbSwap} -initDist ${initDist} -powerExp ${powerExp} -noisePct ${noisePct} -hybridSplit ${hybridSplit} "
+params="-type ${type} -variant ${variant} -neval ${evaluaciones} -pop ${pop} -neighborPct ${neighborPct} -mut ${mut} -cross ${cross} -mutType ${mutType} -crossType ${crossType} -op1 ${op1} -bitprob ${bitprob} -mutPctDelete ${mutPctDelete} -mutPctSwap ${mutPctSwap} -mutProbSwap ${mutProbSwap} -initDist ${initDist} -powerExp ${powerExp} -noisePct ${noisePct} -hybridSplit ${hybridSplit} -delta ${delta} -nr ${nr} "
 echo "Parámetros: ${params}"
 
 screen="salida_consola.txt"
