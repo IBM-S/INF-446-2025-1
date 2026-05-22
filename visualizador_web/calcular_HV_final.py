@@ -94,7 +94,7 @@ def filter_nondominated(points):
         if t not in seen:
             unique_points.append(p)
             seen.add(t)
-    return unique_points
+    return sorted(unique_points, key=lambda x: x[0])
 
 def get_max_values_and_points(file_list):
     max_x, max_y = -1e30, -1e30
@@ -327,6 +327,8 @@ def procesar_instancias(problem_type="cam", target_instance=None, args=None):
     path_ampl_base = os.path.join(DIR_AMPL, problem_type)
     moead_folder = args.moead_subdir if args.moead_subdir else problem_type
     path_moead_base = os.path.join(DIR_MOEAD, moead_folder)
+
+    suffix = f"{args.moead_subdir}" if args.moead_subdir else ""
     
     insts_ampl = []
     if os.path.exists(path_ampl_base):
@@ -356,7 +358,7 @@ def procesar_instancias(problem_type="cam", target_instance=None, args=None):
         return
 
     # Reporte global (en el mismo directorio donde está este script)
-    report_path = os.path.join(BASE_DIR, f"final_reporte_{problem_type}_resumen.txt")
+    report_path = os.path.join(BASE_DIR, f"final_reporte_{problem_type}_resumen_{suffix}.txt")
     # Si estás analizando todas las instancias, lo reiniciamos
     if target_instance is None:
         with open(report_path, "w", encoding="utf-8") as rf:
@@ -392,7 +394,7 @@ def procesar_instancias(problem_type="cam", target_instance=None, args=None):
         if target_instance and inst != target_instance: continue
         
         print(f"\n>>> Procesando: {inst}")
-        out_dir = os.path.join(DIR_ANALISIS, problem_type, inst)
+        out_dir = os.path.join(DIR_ANALISIS, moead_folder, inst)
         os.makedirs(out_dir, exist_ok=True)
 
         # ---------------------------------------------------------
