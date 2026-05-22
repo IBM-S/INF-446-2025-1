@@ -15,22 +15,22 @@ NUM_RUNS=10
 
 # Parámetros Algoritmo
 BITPROB=0.001          # No se ocupa
-CROSSOVER=0.7
+CROSSOVER=0.8
 CROSSTYPE=7            # Cruzamiento uniforme inteligente
-INITDIST=2             # Distribucion Estructurada
+INITDIST=4             # Distribucion Estructurada
 INITTYPERELOCATION=3   # Choose Move or Buy puro (usan ProbMoveRelocation)
 MUTATION=0.4
-MUTPCTDELETE=0.25      # No se ocupa
-MUTPCTSWAP=0.4         # No se ocupa
-MUTPROBSWAP=0.15       # No se ocupa
-MUTTYPE=12             # Mutacion modificada con reubicacion
-NEIGHBORPCT=0.25
+MUTPCTDELETE=0.2      # No se ocupa
+MUTPCTSWAP=0.2         # No se ocupa
+MUTPROBSWAP=0.2       # No se ocupa
+MUTTYPE=33             # Mutacion modificada con reubicacion
+NEIGHBORPCT=0.1
 NOISEPCT=0.1    
 OP1_PROB=0.5           
 POPULATION=500
-POWEREXP=1.0
-PROBMOVERELOCATION=0.5
-SPLITPCTRELOCATION=0.4 # No se ocupa
+POWEREXP=6.0
+PROBMOVERELOCATION=0.3
+SPLITPCTRELOCATION=0.1 # No se ocupa
 
 HYBRID_SPLIT=0.5      # No se ocupa
 
@@ -132,6 +132,8 @@ for instanceFile in "${INSTANCE_ORDER[@]}"; do
             -initDist "${INITDIST}"
             -powerExp "${POWEREXP}"
             -noisePct "${NOISEPCT}"
+
+            -hybridSplit "${HYBRID_SPLIT}"
 
             -outDir "${subFolder}"
         )
