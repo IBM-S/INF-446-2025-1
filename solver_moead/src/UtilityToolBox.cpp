@@ -96,9 +96,12 @@ double CUtilityToolBox::ScalarizingFunction(vector<double> &y_obj,
 	{
 		for (n = 0; n < nobj; n++)
 		{
-			diff = fabs(y_obj[n] - referencepoint[n]);
+            // DRP
+			diff = fabs(y_obj[n] - referencepoint[n]) + 1e-8;
+            // CAM
+            //diff = fabs(y_obj[n] - referencepoint[n]) + 1e-2;
 			if (namda[n] == 0)
-				feval = 0.0001 * diff;
+				feval = 1e-3 * diff;
 			else
 				feval = namda[n] * diff;
 
@@ -643,7 +646,7 @@ void CUtilityToolBox::RepararPresupuesto_Relocation(vector<double> &x_var, Probl
             moved_out--;
             }
         gasto = calcularGasto();
-        printf("\nGasto tras eliminar activo %d: %f\n", calidad[k].second, gasto);
+        //printf("\nGasto tras eliminar activo %d: %f\n", calidad[k].second, gasto);
     }
 
     
@@ -1805,7 +1808,8 @@ void CUtilityToolBox::AplicarMutacionReloc(
     double delete_ratio,
     double swap_ratio,
     double MutProbSwap,
-    ProblemInstance* inst)
+    ProblemInstance* inst,
+    double mutation_rate_hibrida)
 {
     switch (op_id)
     {
@@ -1819,13 +1823,19 @@ void CUtilityToolBox::AplicarMutacionReloc(
             MutacionBitFlip_Relocation(x_var, mutation_rate, bit_prob, inst);
             break;
         case MUT_PERTURBACION:
+            if (Get_Random_Number() <= mutation_rate_hibrida) {
             MutacionModificada_con_reubicacion(x_var, mutation_rate, prob_op1_delete, inst);
+            }
             break;
         case MUT_ELIMINACION:
-            MutacionDeletePorcentualReloc(x_var, mutation_rate, delete_ratio, inst);
+            if (Get_Random_Number() <= mutation_rate_hibrida) {
+                MutacionDeletePorcentualReloc(x_var, mutation_rate, delete_ratio, inst);
+            }
             break;
         case MUT_REUBICACION:
-            MutacionSwapPorcentualReloc(x_var, mutation_rate, swap_ratio, inst);
+            if (Get_Random_Number() <= mutation_rate_hibrida) {
+                MutacionSwapPorcentualReloc(x_var, mutation_rate, swap_ratio, inst);
+            }
             break;
         case MUT_INTERCAMBIO:
             MutacionSwapProbabilisticoReloc(x_var, mutation_rate, MutProbSwap, inst);
@@ -1835,7 +1845,7 @@ void CUtilityToolBox::AplicarMutacionReloc(
 
 
 void CUtilityToolBox::MutacionHibrida_Reloc_General(
-    int op1_id, int op2_id, double pop1,
+    int op1_id, int op2_id, double HybridSplit,
     vector<double>& x_var, 
     double mutation_rate, 
     int populationSize, 
@@ -1844,11 +1854,12 @@ void CUtilityToolBox::MutacionHibrida_Reloc_General(
     double delete_ratio,
     double swap_ratio,
     double MutProbSwap,
-    ProblemInstance* inst)
+    ProblemInstance* inst,
+    double mutation_rate_hibrida)
 {
-    int op =(Get_Random_Number() <= pop1) ? op1_id : op2_id;
+    int op =(Get_Random_Number() <= HybridSplit) ? op1_id : op2_id;
 
-    AplicarMutacionReloc(op, x_var, mutation_rate, populationSize, bit_prob, prob_op1_delete, delete_ratio, swap_ratio, MutProbSwap, inst);
+    AplicarMutacionReloc(op, x_var, mutation_rate, populationSize, bit_prob, prob_op1_delete, delete_ratio, swap_ratio, MutProbSwap, inst, mutation_rate_hibrida);
 }
 
 
@@ -1862,7 +1873,8 @@ void CUtilityToolBox::AplicarMutacionLoc(
     double delete_ratio,
     double swap_ratio,
     double MutProbSwap,
-    ProblemInstance* inst)
+    ProblemInstance* inst,
+    double mutation_rate_hibrida)
 {
     switch (op_id)
     {
@@ -1876,13 +1888,19 @@ void CUtilityToolBox::AplicarMutacionLoc(
             MutacionBitFlip_Fijo(x_var, mutation_rate, bit_prob, inst);
             break;
         case MUT_LOC_PERTURBACION:
-            MutacionModificada_sin_reubicacion(x_var, mutation_rate, prob_op1_delete, inst);
+            if (Get_Random_Number() <= mutation_rate_hibrida) {
+                MutacionModificada_sin_reubicacion(x_var, mutation_rate, prob_op1_delete, inst);
+            }
             break;
         case MUT_LOC_ELIMINACION:
+            if (Get_Random_Number() <= mutation_rate_hibrida) {
             MutacionDeletePorcentual(x_var, mutation_rate, delete_ratio, inst);
+            }
             break;
         case MUT_LOC_REUBICACION:
-            MutacionSwapPorcentual(x_var, mutation_rate, swap_ratio, inst);
+            if (Get_Random_Number() <= mutation_rate_hibrida) {
+                MutacionSwapPorcentual(x_var, mutation_rate, swap_ratio, inst);
+            }
             break;
         case MUT_LOC_INTERCAMBIO:
             MutacionSwapProbabilistico(x_var, mutation_rate, MutProbSwap, inst);
@@ -1892,15 +1910,15 @@ void CUtilityToolBox::AplicarMutacionLoc(
 
 
 void CUtilityToolBox::MutacionHibrida_Loc_General(
-    int op1_id, int op2_id, double pop1,
+    int op1_id, int op2_id, double HybridSplit,
     vector<double>& x_var,
     double mutation_rate, int populationSize,
     double bit_prob, double prob_op1_delete,
     double delete_ratio, double swap_ratio,
-    double MutProbSwap, ProblemInstance* inst)
+    double MutProbSwap, ProblemInstance* inst, double mutation_rate_hibrida)
 {
-    int op = (Get_Random_Number() <= pop1) ? op1_id : op2_id;
+    int op = (Get_Random_Number() <= HybridSplit) ? op1_id : op2_id;
     AplicarMutacionLoc(op, x_var, mutation_rate, populationSize,
         bit_prob, prob_op1_delete, delete_ratio, swap_ratio,
-        MutProbSwap, inst);
+        MutProbSwap, inst, mutation_rate_hibrida);
 }

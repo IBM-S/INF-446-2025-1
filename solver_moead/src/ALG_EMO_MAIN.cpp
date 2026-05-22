@@ -436,16 +436,16 @@ int main(int argc, char *argv[])
     int saveInterval       = 0; // 0 por defecto (Solo guarda Gen 0 y Gen Final)
 
     // Parámetros Operadores
-    double mutationRate  = 0.1;
+    double mutationRate  = 0.7;
     double crossoverRate = 0.8;
     
     // Intensidad mutacion
-    double op1Prob = 0.6; // 20% delete, 80% swap (por ejemplo)
+    double op1Prob = 0.4; // 20% delete, 80% swap (por ejemplo)
     double bitFlipProb = 0.005; // Default: 1% probabilidad para BitFlip Fijo
     double mutPct = 0.3; // Default: 5% intensidad para operadores porcentuales
-    double userMutPctDelete = 0.35; // 0 = usar default
-    double userMutPctSwap = 0.05;   // 0 = usar default
-    double userMutProbSwap = 0.2;
+    double userMutPctDelete = 0.05; // 0 = usar default
+    double userMutPctSwap = 0.15;   // 0 = usar default
+    double userMutProbSwap = 0.35;
     
     double userHybridSplit = 0.7; // Default: 50% split en híbridos (ej: Delete% vs Swap%)
     int userMutOp1 = 0; // Para mutaciones híbridas, 0 = usar default, 1 = Delete%, 2 = Swap%, 3 = BitFlip
@@ -493,11 +493,22 @@ int main(int argc, char *argv[])
         powerExp = 6.0;  // Exponente para la curva (mayor valor = más concentración en nodos con menor índice)
 
     } else {
-        mutType = 51;     // Default: MutacionHibrida_Reloc_General
-        initTypeRelocation = 4;        // GenerateSimpleFeasible_Reloc_HybridCount
-        probMoveRelocation = 0.4;      // Lo utiliza el initTypeRelocation = 3 
-        splitPctRelocation = 0.3;      // Lo utiliza el initTypeRelocation = 4
+        bitFlipProb        = 0.005; // Default: 1% probabilidad para BitFlip Fijo
+        crossoverRate      = 0.9;
         crossType          = 7;        // CruzamientoUniformeInteligente_Relocation
+        userHybridSplit    = 0.5; // Default: 50% split en híbridos (ej: Delete% vs Swap%)
+        initDist           = 3;    // Curva exponencial + ruido
+        initTypeRelocation = 2;        // GenerateSimpleFeasible_Reloc_HybridCount
+        mutationRate       = 0.6;
+        userMutPctDelete   = 0.05; // 0 = usar default
+        userMutPctSwap     = 0.2;   // 0 = usar default
+        userMutProbSwap    = 0.15;
+        mutType            = 47;        // MutacionBitFlip_1_N
+        noisePct           = 0.2;  // ruido
+        op1Prob            = 0.4; // 20% delete, 80% swap (por ejemplo)
+        powerExp           = 8.0;  // Exponente para la curva (mayor valor = más concentración en nodos con menor índice)
+        probMoveRelocation = 0.3;      // Lo utiliza el initTypeRelocation = 3
+        splitPctRelocation = 0.1;     // Lo utiliza el initTypeRelocation = 4
     }
 
 

@@ -162,10 +162,11 @@ public:
     double delete_ratio,
     double swap_ratio,
     double MutProbSwap,
-    ProblemInstance* inst);
+    ProblemInstance* inst,
+    double mutation_rate_hibrida);
 
 	void MutacionHibrida_Reloc_General(
-    int op1_id, int op2_id, double pop1,
+    int op1_id, int op2_id, double HybridSplit,
     vector<double>& x_var, 
     double mutation_rate, 
     int    populationSize, 
@@ -174,7 +175,8 @@ public:
     double delete_ratio,
     double swap_ratio,
     double MutProbSwap,
-    ProblemInstance* inst);
+    ProblemInstance* inst,
+	double mutation_rate_hibrida);
 
 
 	enum MutacionLoc {
@@ -197,10 +199,11 @@ public:
 		double delete_ratio,
 		double swap_ratio,
 		double MutProbSwap,
-		ProblemInstance* inst);
+		ProblemInstance* inst,
+		double mutation_rate_hibrida);
 
 	void MutacionHibrida_Loc_General(
-		int op1_id, int op2_id, double pop1,
+		int op1_id, int op2_id, double HybridSplit,
 		vector<double>& x_var,
 		double mutation_rate,
 		int    populationSize,
@@ -209,7 +212,8 @@ public:
 		double delete_ratio,
 		double swap_ratio,
 		double MutProbSwap,
-		ProblemInstance* inst);
+		ProblemInstance* inst,
+		double mutation_rate_hibrida);
 
 
 
