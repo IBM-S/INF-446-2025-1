@@ -1,0 +1,4079 @@
+{
+  "objectIdFieldName" : "OBJECTID", 
+  "uniqueIdField" : 
+  {
+    "name" : "OBJECTID", 
+    "isSystemMaintained" : true
+  }, 
+  "globalIdFieldName" : "", 
+  "geometryType" : "esriGeometryPolygon", 
+  "spatialReference" : {
+    "wkid" : 4326, 
+    "latestWkid" : 4326
+  }, 
+  "fields" : [
+    {
+      "name" : "COUNTY", 
+      "type" : "esriFieldTypeString", 
+      "alias" : "County", 
+      "sqlType" : "sqlTypeOther", 
+      "length" : 3, 
+      "domain" : null, 
+      "defaultValue" : null
+    }, 
+    {
+      "name" : "GEOID10", 
+      "type" : "esriFieldTypeString", 
+      "alias" : "GEOID10", 
+      "sqlType" : "sqlTypeOther", 
+      "length" : 12, 
+      "domain" : null, 
+      "defaultValue" : null
+    }, 
+    {
+      "name" : "TOTPOP10", 
+      "type" : "esriFieldTypeInteger", 
+      "alias" : "2010 Total Population (U.S. Census)", 
+      "sqlType" : "sqlTypeOther", 
+      "domain" : null, 
+      "defaultValue" : null
+    }, 
+    {
+      "name" : "POPDENS10", 
+      "type" : "esriFieldTypeDouble", 
+      "alias" : "2010 Population Density (Pop per Square Mile) (U.S. Census)", 
+      "sqlType" : "sqlTypeOther", 
+      "domain" : null, 
+      "defaultValue" : null
+    }, 
+    {
+      "name" : "STATE_NAME", 
+      "type" : "esriFieldTypeString", 
+      "alias" : "STATE_NAME", 
+      "sqlType" : "sqlTypeOther", 
+      "length" : 20, 
+      "domain" : null, 
+      "defaultValue" : null
+    }
+  ], 
+  "features" : [
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050238001", 
+        "TOTPOP10" : 92, 
+        "POPDENS10" : 1158.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.859955098119741, 
+        "y" : 40.842996347074447
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050238002", 
+        "TOTPOP10" : 1211, 
+        "POPDENS10" : 44686.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.861259629787057, 
+        "y" : 40.845309805187092
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050238003", 
+        "TOTPOP10" : 1312, 
+        "POPDENS10" : 51857.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.864399265092, 
+        "y" : 40.844270248678889
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050429013", 
+        "TOTPOP10" : 963, 
+        "POPDENS10" : 160500, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.875709944099711, 
+        "y" : 40.874369459682192
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050429023", 
+        "TOTPOP10" : 850, 
+        "POPDENS10" : 137096.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.875456709752427, 
+        "y" : 40.87617844588371
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050430002", 
+        "TOTPOP10" : 746, 
+        "POPDENS10" : 33755.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.850133530635972, 
+        "y" : 40.89472199924603
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050430003", 
+        "TOTPOP10" : 894, 
+        "POPDENS10" : 42775.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.852866133811077, 
+        "y" : 40.893385071429371
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050431001", 
+        "TOTPOP10" : 844, 
+        "POPDENS10" : 187555.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8782387315574, 
+        "y" : 40.884182577351162
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050431006", 
+        "TOTPOP10" : 1269, 
+        "POPDENS10" : 162692.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.879436432803871, 
+        "y" : 40.882754997417408
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050431007", 
+        "TOTPOP10" : 2076, 
+        "POPDENS10" : 162187.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.878292521394414, 
+        "y" : 40.882115083840738
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050431008", 
+        "TOTPOP10" : 1347, 
+        "POPDENS10" : 122454.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.876477703441651, 
+        "y" : 40.8810421083883
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050434002", 
+        "TOTPOP10" : 940, 
+        "POPDENS10" : 59872.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.853298511110211, 
+        "y" : 40.897412172864264
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050434003", 
+        "TOTPOP10" : 675, 
+        "POPDENS10" : 43548.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.85446657614709, 
+        "y" : 40.896155014151944
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050435001", 
+        "TOTPOP10" : 39, 
+        "POPDENS10" : 15, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8820046469768, 
+        "y" : 40.894560043236361
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050442003", 
+        "TOTPOP10" : 694, 
+        "POPDENS10" : 40115.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.845452169688414, 
+        "y" : 40.904599489024179
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050442004", 
+        "TOTPOP10" : 753, 
+        "POPDENS10" : 32179.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.843469926074263, 
+        "y" : 40.903000187788855
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050442005", 
+        "TOTPOP10" : 673, 
+        "POPDENS10" : 26706.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8476202330656, 
+        "y" : 40.903009525123963
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050456002", 
+        "TOTPOP10" : 1027, 
+        "POPDENS10" : 10565.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.829286678916, 
+        "y" : 40.890031460879719
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050456003", 
+        "TOTPOP10" : 868, 
+        "POPDENS10" : 4649.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.814414196718062, 
+        "y" : 40.887557403786019
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050458002", 
+        "TOTPOP10" : 1409, 
+        "POPDENS10" : 126936.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.844642206748233, 
+        "y" : 40.886524707703231
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050458003", 
+        "TOTPOP10" : 107, 
+        "POPDENS10" : 24318.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8453503953128, 
+        "y" : 40.885673447273959
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050458004", 
+        "TOTPOP10" : 2908, 
+        "POPDENS10" : 64336.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8464654858595, 
+        "y" : 40.884858602113646
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050462013", 
+        "TOTPOP10" : 9487, 
+        "POPDENS10" : 140340.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.830650098108933, 
+        "y" : 40.876914694934413
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050125001", 
+        "TOTPOP10" : 2386, 
+        "POPDENS10" : 62135.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.892646042703319, 
+        "y" : 40.828116397218196
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050371001", 
+        "TOTPOP10" : 1197, 
+        "POPDENS10" : 47880, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.88576258507203, 
+        "y" : 40.848209758081495
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050428001", 
+        "TOTPOP10" : 875, 
+        "POPDENS10" : 27689.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8455413448233, 
+        "y" : 40.895334191215504
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050421002", 
+        "TOTPOP10" : 921, 
+        "POPDENS10" : 91188.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.882859450282027, 
+        "y" : 40.88188528231067
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050266021", 
+        "TOTPOP10" : 1424, 
+        "POPDENS10" : 50857.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.828568067086053, 
+        "y" : 40.845358151064609
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050161001", 
+        "TOTPOP10" : 967, 
+        "POPDENS10" : 17974, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.884617627056883, 
+        "y" : 40.837803809725138
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050062001", 
+        "TOTPOP10" : 1282, 
+        "POPDENS10" : 44206.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.87487988777599, 
+        "y" : 40.833556573000109
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050343001", 
+        "TOTPOP10" : 832, 
+        "POPDENS10" : 35555.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.898129138020607, 
+        "y" : 40.908601156495415
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050363004", 
+        "TOTPOP10" : 1300, 
+        "POPDENS10" : 47445.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8837550691818, 
+        "y" : 40.842961988586978
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050379003", 
+        "TOTPOP10" : 679, 
+        "POPDENS10" : 80833.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.899496181651372, 
+        "y" : 40.851568304155215
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050390001", 
+        "TOTPOP10" : 1558, 
+        "POPDENS10" : 45290.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.859273550259488, 
+        "y" : 40.880806044032077
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050365022", 
+        "TOTPOP10" : 1165, 
+        "POPDENS10" : 57389.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.888694616257879, 
+        "y" : 40.842937751609533
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050251004", 
+        "TOTPOP10" : 755, 
+        "POPDENS10" : 85795.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.908568930170318, 
+        "y" : 40.856102989168804
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050391003", 
+        "TOTPOP10" : 1461, 
+        "POPDENS10" : 116880, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.888664641625411, 
+        "y" : 40.852183207877189
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050393001", 
+        "TOTPOP10" : 1982, 
+        "POPDENS10" : 85431, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.882008914386361, 
+        "y" : 40.855313641587635
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050056001", 
+        "TOTPOP10" : 895, 
+        "POPDENS10" : 38744.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.877717422753264, 
+        "y" : 40.832573396208851
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050264002", 
+        "TOTPOP10" : 999, 
+        "POPDENS10" : 28461.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.831380344774374, 
+        "y" : 40.841935906095713
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050250002", 
+        "TOTPOP10" : 1023, 
+        "POPDENS10" : 33431.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.857755773815768, 
+        "y" : 40.851391291483864
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050212001", 
+        "TOTPOP10" : 894, 
+        "POPDENS10" : 133432.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8603950681496, 
+        "y" : 40.836376703749721
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050263001", 
+        "TOTPOP10" : 1243, 
+        "POPDENS10" : 57814, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.905302602761964, 
+        "y" : 40.863337145851879
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050399011", 
+        "TOTPOP10" : 1128, 
+        "POPDENS10" : 67951.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.895291251825057, 
+        "y" : 40.863038124439228
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050145003", 
+        "TOTPOP10" : 1130, 
+        "POPDENS10" : 75333.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.906505846885707, 
+        "y" : 40.832250027078167
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050130001", 
+        "TOTPOP10" : 1032, 
+        "POPDENS10" : 23035.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8147425161746, 
+        "y" : 40.81932052253606
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050264003", 
+        "TOTPOP10" : 1251, 
+        "POPDENS10" : 27800, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.83457798782149, 
+        "y" : 40.840060239202636
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050184004", 
+        "TOTPOP10" : 1014, 
+        "POPDENS10" : 23691.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.831730127714934, 
+        "y" : 40.83848229825913
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050193001", 
+        "TOTPOP10" : 1904, 
+        "POPDENS10" : 148750, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.925685897041674, 
+        "y" : 40.83391596800714
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050141003", 
+        "TOTPOP10" : 1945, 
+        "POPDENS10" : 68485.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.9135007337311, 
+        "y" : 40.823401716738516
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050132004", 
+        "TOTPOP10" : 1219, 
+        "POPDENS10" : 24527.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.818600642613575, 
+        "y" : 40.818496752335356
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050254001", 
+        "TOTPOP10" : 1053, 
+        "POPDENS10" : 28770.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8534008094911, 
+        "y" : 40.849448094957062
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050162001", 
+        "TOTPOP10" : 923, 
+        "POPDENS10" : 27717.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8208776804213, 
+        "y" : 40.827919647267933
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050027022", 
+        "TOTPOP10" : 886, 
+        "POPDENS10" : 67121.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.913414438694517, 
+        "y" : 40.805194046845
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050239003", 
+        "TOTPOP10" : 1490, 
+        "POPDENS10" : 117322.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.904175092996155, 
+        "y" : 40.856199715731528
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050239004", 
+        "TOTPOP10" : 1868, 
+        "POPDENS10" : 125369.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.90410685252678, 
+        "y" : 40.858997652725385
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050241002", 
+        "TOTPOP10" : 1018, 
+        "POPDENS10" : 74306.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.906572791791845, 
+        "y" : 40.854012676353094
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050241003", 
+        "TOTPOP10" : 1151, 
+        "POPDENS10" : 88538.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.90577310088986, 
+        "y" : 40.853597173279852
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050245011", 
+        "TOTPOP10" : 1512, 
+        "POPDENS10" : 98181.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.91431029729435, 
+        "y" : 40.852388468681951
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050245021", 
+        "TOTPOP10" : 1570, 
+        "POPDENS10" : 80927.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.913598759262442, 
+        "y" : 40.855584592073015
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050251005", 
+        "TOTPOP10" : 1790, 
+        "POPDENS10" : 84037.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.907823693634711, 
+        "y" : 40.85789678906373
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050252002", 
+        "TOTPOP10" : 1185, 
+        "POPDENS10" : 33954.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8536789123247, 
+        "y" : 40.845513050116104
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050266022", 
+        "TOTPOP10" : 1125, 
+        "POPDENS10" : 41360.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.830522236147587, 
+        "y" : 40.847034638544187
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050266023", 
+        "TOTPOP10" : 1307, 
+        "POPDENS10" : 31646.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.833165151724373, 
+        "y" : 40.844720555755487
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050267011", 
+        "TOTPOP10" : 1565, 
+        "POPDENS10" : 133760.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.901146438110686, 
+        "y" : 40.869405834358972
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050267021", 
+        "TOTPOP10" : 1939, 
+        "POPDENS10" : 100989.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.899419702180168, 
+        "y" : 40.872988677237288
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050267023", 
+        "TOTPOP10" : 1131, 
+        "POPDENS10" : 87674.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.901017446364435, 
+        "y" : 40.873937143248462
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050274013", 
+        "TOTPOP10" : 1828, 
+        "POPDENS10" : 17782.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8224015097941, 
+        "y" : 40.840595862949613
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050279004", 
+        "TOTPOP10" : 1383, 
+        "POPDENS10" : 71288.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.895188568674129, 
+        "y" : 40.883179582983594
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050281002", 
+        "TOTPOP10" : 772, 
+        "POPDENS10" : 91904.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.89311417527864, 
+        "y" : 40.88475117495036
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050281003", 
+        "TOTPOP10" : 1564, 
+        "POPDENS10" : 66271.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.889101582721651, 
+        "y" : 40.88350435648853
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050288002", 
+        "TOTPOP10" : 843, 
+        "POPDENS10" : 20071.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.850032112105154, 
+        "y" : 40.852311757210394
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050293011", 
+        "TOTPOP10" : 951, 
+        "POPDENS10" : 11485.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.92167003609454, 
+        "y" : 40.882921672483725
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050293022", 
+        "TOTPOP10" : 925, 
+        "POPDENS10" : 36274.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.9184051097015, 
+        "y" : 40.878721129237277
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050293024", 
+        "TOTPOP10" : 1506, 
+        "POPDENS10" : 25141.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.915322624472822, 
+        "y" : 40.88113643963
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050300002", 
+        "TOTPOP10" : 1285, 
+        "POPDENS10" : 32367.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.831970610047321, 
+        "y" : 40.853203262405628
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050326001", 
+        "TOTPOP10" : 1362, 
+        "POPDENS10" : 26092, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.857014870202661, 
+        "y" : 40.862640130506485
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050326002", 
+        "TOTPOP10" : 1098, 
+        "POPDENS10" : 23663.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.854346283089271, 
+        "y" : 40.86326645818157
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050326003", 
+        "TOTPOP10" : 694, 
+        "POPDENS10" : 23767.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.854533155351447, 
+        "y" : 40.859711169407987
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050332011", 
+        "TOTPOP10" : 1184, 
+        "POPDENS10" : 82797.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.86948680075038, 
+        "y" : 40.858228143977676
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050335002", 
+        "TOTPOP10" : 736, 
+        "POPDENS10" : 6097.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.905502390184878, 
+        "y" : 40.890977675472584
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050335003", 
+        "TOTPOP10" : 1080, 
+        "POPDENS10" : 120000, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.904399455181164, 
+        "y" : 40.888333414074175
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050462014", 
+        "TOTPOP10" : 3089, 
+        "POPDENS10" : 48190.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.826107827062245, 
+        "y" : 40.8768840612076
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050462015", 
+        "TOTPOP10" : 2333, 
+        "POPDENS10" : 127486.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.82524745341486, 
+        "y" : 40.87383769266075
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050462016", 
+        "TOTPOP10" : 3606, 
+        "POPDENS10" : 159557.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.826430405148471, 
+        "y" : 40.871755200608739
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050462017", 
+        "TOTPOP10" : 2597, 
+        "POPDENS10" : 141912.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.829616060247133, 
+        "y" : 40.872046023467078
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050462018", 
+        "TOTPOP10" : 173, 
+        "POPDENS10" : 1635.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.831945441588459, 
+        "y" : 40.873874708069472
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050462019", 
+        "TOTPOP10" : 1808, 
+        "POPDENS10" : 81441.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.831795226609927, 
+        "y" : 40.870860548582016
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050462023", 
+        "TOTPOP10" : 1538, 
+        "POPDENS10" : 19743.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.835317466056068, 
+        "y" : 40.873010662000347
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050462024", 
+        "TOTPOP10" : 1138, 
+        "POPDENS10" : 27960.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.835702999212913, 
+        "y" : 40.880214535206008
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050462026", 
+        "TOTPOP10" : 669, 
+        "POPDENS10" : 21238.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.834355463518136, 
+        "y" : 40.881864609174073
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050484003", 
+        "TOTPOP10" : 330, 
+        "POPDENS10" : 3771.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.837999702941133, 
+        "y" : 40.887064552735126
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050484004", 
+        "TOTPOP10" : 1349, 
+        "POPDENS10" : 25942.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.837665846625654, 
+        "y" : 40.883560413023751
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050229011", 
+        "TOTPOP10" : 1002, 
+        "POPDENS10" : 87894.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.909231422226554, 
+        "y" : 40.8457428457679
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050255001", 
+        "TOTPOP10" : 2259, 
+        "POPDENS10" : 99078.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.90780129401908, 
+        "y" : 40.860229072169354
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050385001", 
+        "TOTPOP10" : 1363, 
+        "POPDENS10" : 54087.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.891848193718459, 
+        "y" : 40.858354514456614
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050166001", 
+        "TOTPOP10" : 1372, 
+        "POPDENS10" : 23097.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8285816905776, 
+        "y" : 40.830412820462151
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050199002", 
+        "TOTPOP10" : 1735, 
+        "POPDENS10" : 247857.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.9241615500915, 
+        "y" : 40.835619230098487
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050002002", 
+        "TOTPOP10" : 1974, 
+        "POPDENS10" : 27227.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.860644955129629, 
+        "y" : 40.811980085571584
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050201003", 
+        "TOTPOP10" : 1193, 
+        "POPDENS10" : 79006.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.926442696311781, 
+        "y" : 40.840133019369489
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050225004", 
+        "TOTPOP10" : 797, 
+        "POPDENS10" : 43551.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.911812634191492, 
+        "y" : 40.839217673407163
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050297001", 
+        "TOTPOP10" : 1247, 
+        "POPDENS10" : 36568.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.910967062400246, 
+        "y" : 40.887247719075596
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050201002", 
+        "TOTPOP10" : 1247, 
+        "POPDENS10" : 95923.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.9248771653578, 
+        "y" : 40.842035539170944
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050297003", 
+        "TOTPOP10" : 996, 
+        "POPDENS10" : 51076.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.913376441168467, 
+        "y" : 40.884364662789615
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050039004", 
+        "TOTPOP10" : 1093, 
+        "POPDENS10" : 106116.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.919984366517255, 
+        "y" : 40.809993710771856
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050189003", 
+        "TOTPOP10" : 2205, 
+        "POPDENS10" : 113659.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.929014206638939, 
+        "y" : 40.831488943334207
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050040011", 
+        "TOTPOP10" : 1420, 
+        "POPDENS10" : 29894.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8583373795819, 
+        "y" : 40.828280269663196
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050199001", 
+        "TOTPOP10" : 937, 
+        "POPDENS10" : 100752.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.922907470562436, 
+        "y" : 40.836828978790756
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050121012", 
+        "TOTPOP10" : 1798, 
+        "POPDENS10" : 68888.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.889753567834376, 
+        "y" : 40.828512000198252
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050295001", 
+        "TOTPOP10" : 1620, 
+        "POPDENS10" : 56055.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.908368812381781, 
+        "y" : 40.886919700033083
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050350002", 
+        "TOTPOP10" : 937, 
+        "POPDENS10" : 30721.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.849036840273428, 
+        "y" : 40.867719218893342
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050244002", 
+        "TOTPOP10" : 1203, 
+        "POPDENS10" : 30150.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.856567251921959, 
+        "y" : 40.845205227409956
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050216021", 
+        "TOTPOP10" : 267, 
+        "POPDENS10" : 25673.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8634989524695, 
+        "y" : 40.83975918435727
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050086002", 
+        "TOTPOP10" : 1685, 
+        "POPDENS10" : 69917, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.849315563970322, 
+        "y" : 40.817766598202716
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050243002", 
+        "TOTPOP10" : 1518, 
+        "POPDENS10" : 56014.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.912609511785718, 
+        "y" : 40.852509813822614
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050241001", 
+        "TOTPOP10" : 1447, 
+        "POPDENS10" : 123675.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.9076283726174, 
+        "y" : 40.85155874057476
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050300001", 
+        "TOTPOP10" : 1090, 
+        "POPDENS10" : 30110.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.829155435315329, 
+        "y" : 40.850743764919294
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050092001", 
+        "TOTPOP10" : 739, 
+        "POPDENS10" : 26205.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.856442974460663, 
+        "y" : 40.832831478478504
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050365021", 
+        "TOTPOP10" : 1258, 
+        "POPDENS10" : 71477.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.886822684323874, 
+        "y" : 40.841760546145494
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050429021", 
+        "TOTPOP10" : 1936, 
+        "POPDENS10" : 81344.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.873385985046966, 
+        "y" : 40.877144804822024
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050229022", 
+        "TOTPOP10" : 945, 
+        "POPDENS10" : 78750, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.9062488710545, 
+        "y" : 40.844204958475544
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050225002", 
+        "TOTPOP10" : 2001, 
+        "POPDENS10" : 120542.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.909758155680279, 
+        "y" : 40.840500614779096
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050173002", 
+        "TOTPOP10" : 914, 
+        "POPDENS10" : 90495, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.916150524858423, 
+        "y" : 40.827451808091716
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050233012", 
+        "TOTPOP10" : 1551, 
+        "POPDENS10" : 155100, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.907482117450655, 
+        "y" : 40.848774097186791
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050337003", 
+        "TOTPOP10" : 1067, 
+        "POPDENS10" : 9434.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.903039374279388, 
+        "y" : 40.904312052326318
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050348002", 
+        "TOTPOP10" : 2432, 
+        "POPDENS10" : 82440.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.852243555783971, 
+        "y" : 40.8703208465829
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050348003", 
+        "TOTPOP10" : 1417, 
+        "POPDENS10" : 32351.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.853165674190222, 
+        "y" : 40.868807727911395
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050348004", 
+        "TOTPOP10" : 1387, 
+        "POPDENS10" : 30021.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.852891626704789, 
+        "y" : 40.866515223200246
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050360001", 
+        "TOTPOP10" : 770, 
+        "POPDENS10" : 30196.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.844680510287219, 
+        "y" : 40.868388093015284
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050360002", 
+        "TOTPOP10" : 1018, 
+        "POPDENS10" : 31227, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.845184828500109, 
+        "y" : 40.866406401656207
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050360003", 
+        "TOTPOP10" : 918, 
+        "POPDENS10" : 20536.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.840720479920932, 
+        "y" : 40.866300615375835
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050361002", 
+        "TOTPOP10" : 1622, 
+        "POPDENS10" : 111862.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.880981222045108, 
+        "y" : 40.841703810098146
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050361003", 
+        "TOTPOP10" : 1214, 
+        "POPDENS10" : 62901.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8790278255647, 
+        "y" : 40.841111500460208
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050363005", 
+        "TOTPOP10" : 1121, 
+        "POPDENS10" : 95000, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.88393594217186, 
+        "y" : 40.844932596920152
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050363006", 
+        "TOTPOP10" : 1533, 
+        "POPDENS10" : 78615.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.882766583946264, 
+        "y" : 40.846464194212778
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050371003", 
+        "TOTPOP10" : 1085, 
+        "POPDENS10" : 74315.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.888334232094351, 
+        "y" : 40.846946753395926
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050375041", 
+        "TOTPOP10" : 746, 
+        "POPDENS10" : 17268.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.891659385299789, 
+        "y" : 40.85207873317875
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050375042", 
+        "TOTPOP10" : 1117, 
+        "POPDENS10" : 41992.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.892950326371647, 
+        "y" : 40.849726665753153
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050375043", 
+        "TOTPOP10" : 1814, 
+        "POPDENS10" : 79911.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.89430786728704, 
+        "y" : 40.847582820962629
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050382002", 
+        "TOTPOP10" : 1151, 
+        "POPDENS10" : 39417.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.852493375906676, 
+        "y" : 40.877107142409947
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050383011", 
+        "TOTPOP10" : 1420, 
+        "POPDENS10" : 125663.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.899426347539887, 
+        "y" : 40.856404274925517
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050383012", 
+        "TOTPOP10" : 1733, 
+        "POPDENS10" : 145630.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.897586016232552, 
+        "y" : 40.857038386206504
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050383013", 
+        "TOTPOP10" : 1644, 
+        "POPDENS10" : 121777.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.898588331207051, 
+        "y" : 40.858072662088809
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050383021", 
+        "TOTPOP10" : 2514, 
+        "POPDENS10" : 93806, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.893726524782238, 
+        "y" : 40.858152871045228
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050389003", 
+        "TOTPOP10" : 1194, 
+        "POPDENS10" : 51244.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.886426370264516, 
+        "y" : 40.85704757209438
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050395001", 
+        "TOTPOP10" : 1038, 
+        "POPDENS10" : 37071.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.895125911454286, 
+        "y" : 40.852898053961056
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050395002", 
+        "TOTPOP10" : 974, 
+        "POPDENS10" : 33937.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.896011793739135, 
+        "y" : 40.850205242435578
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050395003", 
+        "TOTPOP10" : 1187, 
+        "POPDENS10" : 37682.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.897511986338117, 
+        "y" : 40.848288304415647
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050398002", 
+        "TOTPOP10" : 1193, 
+        "POPDENS10" : 51645, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.855180739764847, 
+        "y" : 40.882409491188
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050398003", 
+        "TOTPOP10" : 725, 
+        "POPDENS10" : 45031.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.854149779011749, 
+        "y" : 40.884150239237407
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050405011", 
+        "TOTPOP10" : 2237, 
+        "POPDENS10" : 158652.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.891874749914763, 
+        "y" : 40.86605111675452
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050338003", 
+        "TOTPOP10" : 825, 
+        "POPDENS10" : 69915.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.864884566170744, 
+        "y" : 40.867220418074567
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050338004", 
+        "TOTPOP10" : 1240, 
+        "POPDENS10" : 43205.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.866341779221486, 
+        "y" : 40.867496927157653
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050340004", 
+        "TOTPOP10" : 833, 
+        "POPDENS10" : 51739.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.862513173990223, 
+        "y" : 40.866672726052506
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050342002", 
+        "TOTPOP10" : 847, 
+        "POPDENS10" : 19976.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.860054896353049, 
+        "y" : 40.86755872857583
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050504001", 
+        "TOTPOP10" : 39, 
+        "POPDENS10" : 14, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.803666302227811, 
+        "y" : 40.871338921990294
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050324002", 
+        "TOTPOP10" : 1190, 
+        "POPDENS10" : 47791.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.860159684778111, 
+        "y" : 40.864192544605707
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050248001", 
+        "TOTPOP10" : 1183, 
+        "POPDENS10" : 23196.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8582908717287, 
+        "y" : 40.856627943590574
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050144005", 
+        "TOTPOP10" : 1778, 
+        "POPDENS10" : 46062.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.822924823731555, 
+        "y" : 40.818969786311975
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050381001", 
+        "TOTPOP10" : 691, 
+        "POPDENS10" : 138200, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.899510183392522, 
+        "y" : 40.8548564554662
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050385002", 
+        "TOTPOP10" : 594, 
+        "POPDENS10" : 50339, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8934426256353, 
+        "y" : 40.856454808088934
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050399023", 
+        "TOTPOP10" : 1584, 
+        "POPDENS10" : 160000, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.895286874918881, 
+        "y" : 40.8595398017019
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050344001", 
+        "TOTPOP10" : 743, 
+        "POPDENS10" : 31752.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.85719174595863, 
+        "y" : 40.866594144041514
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050229012", 
+        "TOTPOP10" : 1261, 
+        "POPDENS10" : 128673.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.905279911981665, 
+        "y" : 40.845990984445521
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050233022", 
+        "TOTPOP10" : 1917, 
+        "POPDENS10" : 197628.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.905480672648224, 
+        "y" : 40.847886716070271
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050236001", 
+        "TOTPOP10" : 900, 
+        "POPDENS10" : 49723.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.867566088292392, 
+        "y" : 40.846090655131881
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050243001", 
+        "TOTPOP10" : 1431, 
+        "POPDENS10" : 105220.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.909145026730911, 
+        "y" : 40.852933761721566
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050246001", 
+        "TOTPOP10" : 1101, 
+        "POPDENS10" : 39747.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8613056155448, 
+        "y" : 40.853499343555434
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050396004", 
+        "TOTPOP10" : 663, 
+        "POPDENS10" : 38546.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.859812704318045, 
+        "y" : 40.885946650064042
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050213011", 
+        "TOTPOP10" : 376, 
+        "POPDENS10" : 43720.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.918060342184035, 
+        "y" : 40.845701705496879
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050396001", 
+        "TOTPOP10" : 813, 
+        "POPDENS10" : 46994.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.856937156487476, 
+        "y" : 40.885032729068143
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050423001", 
+        "TOTPOP10" : 1214, 
+        "POPDENS10" : 178529.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8759719302549, 
+        "y" : 40.879413774293525
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050211003", 
+        "TOTPOP10" : 1391, 
+        "POPDENS10" : 85864.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.924429488415043, 
+        "y" : 40.839111000521505
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050215023", 
+        "TOTPOP10" : 1158, 
+        "POPDENS10" : 83913, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.917469346509, 
+        "y" : 40.847189529099218
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050364001", 
+        "TOTPOP10" : 1026, 
+        "POPDENS10" : 31962.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.848159053018023, 
+        "y" : 40.872543804021284
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050059021", 
+        "TOTPOP10" : 888, 
+        "POPDENS10" : 104470.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.922365037574977, 
+        "y" : 40.8259367508455
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050425002", 
+        "TOTPOP10" : 1269, 
+        "POPDENS10" : 160632.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.878949370272167, 
+        "y" : 40.871510408842333
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050411001", 
+        "TOTPOP10" : 1007, 
+        "POPDENS10" : 58208.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.886120105417319, 
+        "y" : 40.877258551011217
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050484002", 
+        "TOTPOP10" : 923, 
+        "POPDENS10" : 8707.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.830308529493081, 
+        "y" : 40.887212310138288
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050286001", 
+        "TOTPOP10" : 530, 
+        "POPDENS10" : 10664, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8475859523711, 
+        "y" : 40.849819827224643
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050286002", 
+        "TOTPOP10" : 661, 
+        "POPDENS10" : 27090.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.848421331783527, 
+        "y" : 40.8478876547291
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050365013", 
+        "TOTPOP10" : 1055, 
+        "POPDENS10" : 81153.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.887118461831278, 
+        "y" : 40.844002092713318
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050379002", 
+        "TOTPOP10" : 1293, 
+        "POPDENS10" : 198923.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.900141594348156, 
+        "y" : 40.850146172596787
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050052001", 
+        "TOTPOP10" : 717, 
+        "POPDENS10" : 11696.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.882619640609462, 
+        "y" : 40.825434924012676
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050351002", 
+        "TOTPOP10" : 1050, 
+        "POPDENS10" : 21212.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.898689517261531, 
+        "y" : 40.894352319043982
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050287001", 
+        "TOTPOP10" : 1364, 
+        "POPDENS10" : 34185.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.90523740945963, 
+        "y" : 40.883099292993627
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050277001", 
+        "TOTPOP10" : 1176, 
+        "POPDENS10" : 78926.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.902146484430773, 
+        "y" : 40.877199227091154
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050419001", 
+        "TOTPOP10" : 1239, 
+        "POPDENS10" : 49362.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8802274988009, 
+        "y" : 40.8790197888945
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050318001", 
+        "TOTPOP10" : 689, 
+        "POPDENS10" : 26914.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.851474526998345, 
+        "y" : 40.864172087854378
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050343002", 
+        "TOTPOP10" : 817, 
+        "POPDENS10" : 34914.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.898212276026214, 
+        "y" : 40.910747170051181
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050344002", 
+        "TOTPOP10" : 993, 
+        "POPDENS10" : 26693.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.857096876075985, 
+        "y" : 40.869489787717505
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050345003", 
+        "TOTPOP10" : 845, 
+        "POPDENS10" : 69834.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.900481380998158, 
+        "y" : 40.902453190008053
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050351003", 
+        "TOTPOP10" : 948, 
+        "POPDENS10" : 8061.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.900497688311987, 
+        "y" : 40.897164875783638
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050356002", 
+        "TOTPOP10" : 1034, 
+        "POPDENS10" : 8573.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.834839264390681, 
+        "y" : 40.866172212589952
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050358004", 
+        "TOTPOP10" : 916, 
+        "POPDENS10" : 32714.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.841962681374312, 
+        "y" : 40.872966034987577
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050358005", 
+        "TOTPOP10" : 755, 
+        "POPDENS10" : 27060.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.841327593262761, 
+        "y" : 40.870915254664133
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050358006", 
+        "TOTPOP10" : 1137, 
+        "POPDENS10" : 37524.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.846196751082772, 
+        "y" : 40.874770316847936
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050358007", 
+        "TOTPOP10" : 711, 
+        "POPDENS10" : 21809.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8447598244752, 
+        "y" : 40.871100060922892
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050361004", 
+        "TOTPOP10" : 841, 
+        "POPDENS10" : 215641, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.878889350095548, 
+        "y" : 40.844643912635675
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050361005", 
+        "TOTPOP10" : 1042, 
+        "POPDENS10" : 89827.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.878798555843247, 
+        "y" : 40.843740814306813
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050364002", 
+        "TOTPOP10" : 745, 
+        "POPDENS10" : 44345.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.848408505445036, 
+        "y" : 40.8750353021528
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050364003", 
+        "TOTPOP10" : 786, 
+        "POPDENS10" : 26917.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.850899759087085, 
+        "y" : 40.874054258834796
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050369022", 
+        "TOTPOP10" : 1187, 
+        "POPDENS10" : 67828.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.892340493758681, 
+        "y" : 40.84239383918846
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050370003", 
+        "TOTPOP10" : 719, 
+        "POPDENS10" : 34075.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.859788387779389, 
+        "y" : 40.874124249105357
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050374003", 
+        "TOTPOP10" : 875, 
+        "POPDENS10" : 112179.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.865345955187507, 
+        "y" : 40.875949930946085
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050374004", 
+        "TOTPOP10" : 875, 
+        "POPDENS10" : 113636.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.86634384194852, 
+        "y" : 40.876165562358288
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050376002", 
+        "TOTPOP10" : 1066, 
+        "POPDENS10" : 30988.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.869158238237461, 
+        "y" : 40.875497346211056
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050378003", 
+        "TOTPOP10" : 844, 
+        "POPDENS10" : 53758, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8667745531907, 
+        "y" : 40.878584559253454
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050379004", 
+        "TOTPOP10" : 1315, 
+        "POPDENS10" : 166455.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.899069365954432, 
+        "y" : 40.853777544938161
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050379005", 
+        "TOTPOP10" : 771, 
+        "POPDENS10" : 57111.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8979550376868, 
+        "y" : 40.853544684974096
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050380003", 
+        "TOTPOP10" : 1118, 
+        "POPDENS10" : 58842.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.863248112305868, 
+        "y" : 40.879428348160836
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050380004", 
+        "TOTPOP10" : 1549, 
+        "POPDENS10" : 46656.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.863745840832408, 
+        "y" : 40.877648517936834
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050381004", 
+        "TOTPOP10" : 965, 
+        "POPDENS10" : 74230.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.900466473677284, 
+        "y" : 40.85242972406742
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050381005", 
+        "TOTPOP10" : 724, 
+        "POPDENS10" : 88292.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.901707389599707, 
+        "y" : 40.852058208548243
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050381006", 
+        "TOTPOP10" : 1784, 
+        "POPDENS10" : 87881.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.901988121115721, 
+        "y" : 40.84980408710517
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050383022", 
+        "TOTPOP10" : 1720, 
+        "POPDENS10" : 116216.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.896899804246, 
+        "y" : 40.855773687863525
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050383023", 
+        "TOTPOP10" : 1872, 
+        "POPDENS10" : 130000, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.895446868466692, 
+        "y" : 40.85790583097068
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050386006", 
+        "TOTPOP10" : 854, 
+        "POPDENS10" : 88041.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.847497214335078, 
+        "y" : 40.878095333839724
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050386007", 
+        "TOTPOP10" : 1115, 
+        "POPDENS10" : 75850.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.849586084288745, 
+        "y" : 40.877207732564422
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050386008", 
+        "TOTPOP10" : 789, 
+        "POPDENS10" : 91744.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.848387037471625, 
+        "y" : 40.877733220163094
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050387003", 
+        "TOTPOP10" : 1138, 
+        "POPDENS10" : 81285.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.888397208301356, 
+        "y" : 40.857322241058931
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050239001", 
+        "TOTPOP10" : 1532, 
+        "POPDENS10" : 97579.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.901023874030585, 
+        "y" : 40.861359042839
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050420001", 
+        "TOTPOP10" : 1207, 
+        "POPDENS10" : 49876, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.860240232282777, 
+        "y" : 40.893806086730208
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050078001", 
+        "TOTPOP10" : 1480, 
+        "POPDENS10" : 38144.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.852969097718812, 
+        "y" : 40.829393799898106
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050429012", 
+        "TOTPOP10" : 908, 
+        "POPDENS10" : 165090.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.876563587248967, 
+        "y" : 40.874676233283068
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050160002", 
+        "TOTPOP10" : 709, 
+        "POPDENS10" : 12638.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.820483108837749, 
+        "y" : 40.832276364756744
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050288001", 
+        "TOTPOP10" : 854, 
+        "POPDENS10" : 19722.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8513819573597, 
+        "y" : 40.854302481000609
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050396002", 
+        "TOTPOP10" : 1058, 
+        "POPDENS10" : 40849.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.857914890462808, 
+        "y" : 40.883268386674892
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050422002", 
+        "TOTPOP10" : 1487, 
+        "POPDENS10" : 57413.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.856882858253016, 
+        "y" : 40.891241444445768
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050373001", 
+        "TOTPOP10" : 1586, 
+        "POPDENS10" : 76618.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.888562427248843, 
+        "y" : 40.85041422231172
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050373004", 
+        "TOTPOP10" : 1294, 
+        "POPDENS10" : 104354.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.891153948715569, 
+        "y" : 40.848964942866765
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050374002", 
+        "TOTPOP10" : 1130, 
+        "POPDENS10" : 29274.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.867121736925412, 
+        "y" : 40.874571774858907
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050396003", 
+        "TOTPOP10" : 1222, 
+        "POPDENS10" : 47364.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.860790157876934, 
+        "y" : 40.884185505784323
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050307012", 
+        "TOTPOP10" : 2252, 
+        "POPDENS10" : 54134.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.910449780705392, 
+        "y" : 40.891114577843851
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050386004", 
+        "TOTPOP10" : 808, 
+        "POPDENS10" : 34237.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.849787935386885, 
+        "y" : 40.8794904043275
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050407021", 
+        "TOTPOP10" : 926, 
+        "POPDENS10" : 105227.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.884750275947184, 
+        "y" : 40.867497215684025
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050273004", 
+        "TOTPOP10" : 2367, 
+        "POPDENS10" : 110607.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.903530623779574, 
+        "y" : 40.87329449652001
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050442001", 
+        "TOTPOP10" : 741, 
+        "POPDENS10" : 100135.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.848201423691791, 
+        "y" : 40.905978454808491
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050403021", 
+        "TOTPOP10" : 2597, 
+        "POPDENS10" : 179103.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.892853049468314, 
+        "y" : 40.867052880021653
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050062003", 
+        "TOTPOP10" : 2009, 
+        "POPDENS10" : 131307.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.875989018986914, 
+        "y" : 40.834848861452848
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050430001", 
+        "TOTPOP10" : 1258, 
+        "POPDENS10" : 34371.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.849716971546371, 
+        "y" : 40.892759145882131
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050426001", 
+        "TOTPOP10" : 1449, 
+        "POPDENS10" : 31568.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.843250174875578, 
+        "y" : 40.890595340610389
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050389002", 
+        "TOTPOP10" : 897, 
+        "POPDENS10" : 83055.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.885203782945709, 
+        "y" : 40.856601644365888
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050462012", 
+        "TOTPOP10" : 2248, 
+        "POPDENS10" : 204363.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.823825053032351, 
+        "y" : 40.87916242886714
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050406001", 
+        "TOTPOP10" : 1657, 
+        "POPDENS10" : 38445.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.855570700083277, 
+        "y" : 40.887500537634466
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050424001", 
+        "TOTPOP10" : 1257, 
+        "POPDENS10" : 37747.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.848092964655521, 
+        "y" : 40.888819039230327
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050516005", 
+        "TOTPOP10" : 0, 
+        "POPDENS10" : 0, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.771144424316034, 
+        "y" : 40.854248646111856
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050054002", 
+        "TOTPOP10" : 2717, 
+        "POPDENS10" : 100258.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.879969352889376, 
+        "y" : 40.829858310698867
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050385003", 
+        "TOTPOP10" : 1248, 
+        "POPDENS10" : 95267.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.891581445558259, 
+        "y" : 40.855342003696471
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050391005", 
+        "TOTPOP10" : 743, 
+        "POPDENS10" : 76597.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.888896921896148, 
+        "y" : 40.85475251973
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050423002", 
+        "TOTPOP10" : 1589, 
+        "POPDENS10" : 32830.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.877273681773588, 
+        "y" : 40.877333301356089
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050389004", 
+        "TOTPOP10" : 1060, 
+        "POPDENS10" : 160606.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.883519619588753, 
+        "y" : 40.855005990525576
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050389005", 
+        "TOTPOP10" : 713, 
+        "POPDENS10" : 104852.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.885052953728845, 
+        "y" : 40.854952070723826
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050391006", 
+        "TOTPOP10" : 1096, 
+        "POPDENS10" : 138734.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8868806274298, 
+        "y" : 40.85470469840498
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050392002", 
+        "TOTPOP10" : 779, 
+        "POPDENS10" : 36401.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.864071339623735, 
+        "y" : 40.883396351799234
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050393004", 
+        "TOTPOP10" : 1470, 
+        "POPDENS10" : 183750, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.88372317943724, 
+        "y" : 40.852712312352367
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050393005", 
+        "TOTPOP10" : 623, 
+        "POPDENS10" : 102131.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.882862047779724, 
+        "y" : 40.851821499389715
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050393006", 
+        "TOTPOP10" : 1140, 
+        "POPDENS10" : 101785.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.883354515499732, 
+        "y" : 40.850390908044474
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050394003", 
+        "TOTPOP10" : 1078, 
+        "POPDENS10" : 138205.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.865495636997053, 
+        "y" : 40.885717782775508
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050394004", 
+        "TOTPOP10" : 882, 
+        "POPDENS10" : 51279.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.863461739726645, 
+        "y" : 40.885452513159592
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050395004", 
+        "TOTPOP10" : 947, 
+        "POPDENS10" : 13490, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.897285909715137, 
+        "y" : 40.845466766315916
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050397002", 
+        "TOTPOP10" : 770, 
+        "POPDENS10" : 77000, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.889819612749022, 
+        "y" : 40.863314610697991
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050399013", 
+        "TOTPOP10" : 1039, 
+        "POPDENS10" : 100873.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.891517143229891, 
+        "y" : 40.862937301040226
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050399014", 
+        "TOTPOP10" : 1400, 
+        "POPDENS10" : 95890.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8941819626574, 
+        "y" : 40.864743172851732
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050399015", 
+        "TOTPOP10" : 881, 
+        "POPDENS10" : 89898, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.893238304508742, 
+        "y" : 40.863513451921705
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050399024", 
+        "TOTPOP10" : 1021, 
+        "POPDENS10" : 189074.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.895625062074245, 
+        "y" : 40.861521931765921
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050399025", 
+        "TOTPOP10" : 862, 
+        "POPDENS10" : 89791.7, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.896378058996646, 
+        "y" : 40.859729613182004
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050401003", 
+        "TOTPOP10" : 730, 
+        "POPDENS10" : 73737.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.899606743702776, 
+        "y" : 40.862885803380848
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050401004", 
+        "TOTPOP10" : 723, 
+        "POPDENS10" : 164318.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.898332065118908, 
+        "y" : 40.863497315630184
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050401005", 
+        "TOTPOP10" : 1056, 
+        "POPDENS10" : 114782.6, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.897021363661139, 
+        "y" : 40.863485933010416
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050403041", 
+        "TOTPOP10" : 1084, 
+        "POPDENS10" : 119120.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.89618246807683, 
+        "y" : 40.868135406803319
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050403042", 
+        "TOTPOP10" : 1501, 
+        "POPDENS10" : 208472.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8952297256988, 
+        "y" : 40.867688427384756
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050403043", 
+        "TOTPOP10" : 1209, 
+        "POPDENS10" : 124639.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8942352725138, 
+        "y" : 40.867248355903762
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050403031", 
+        "TOTPOP10" : 1431, 
+        "POPDENS10" : 115403.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.892582873596069, 
+        "y" : 40.869293345850359
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050403032", 
+        "TOTPOP10" : 1558, 
+        "POPDENS10" : 133162.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.893422862036232, 
+        "y" : 40.869962974524796
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050403033", 
+        "TOTPOP10" : 1489, 
+        "POPDENS10" : 158404.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.89465175624116, 
+        "y" : 40.869868402570027
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050404003", 
+        "TOTPOP10" : 828, 
+        "POPDENS10" : 31969.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.852304938129038, 
+        "y" : 40.887294234594712
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050405012", 
+        "TOTPOP10" : 984, 
+        "POPDENS10" : 178909.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.890816116083769, 
+        "y" : 40.867926375624648
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050405013", 
+        "TOTPOP10" : 1176, 
+        "POPDENS10" : 100512.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.889757276246641, 
+        "y" : 40.868129062591791
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050405021", 
+        "TOTPOP10" : 1133, 
+        "POPDENS10" : 145256.4, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.890104299970687, 
+        "y" : 40.864416718798061
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050405022", 
+        "TOTPOP10" : 1702, 
+        "POPDENS10" : 163653.8, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.8907260583073, 
+        "y" : 40.865380359578346
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050405023", 
+        "TOTPOP10" : 1109, 
+        "POPDENS10" : 105619, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.888208137980982, 
+        "y" : 40.86594174722169
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050405024", 
+        "TOTPOP10" : 1043, 
+        "POPDENS10" : 112150.5, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.887402427618156, 
+        "y" : 40.865446358880995
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050405025", 
+        "TOTPOP10" : 665, 
+        "POPDENS10" : 130392.2, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.889387803631635, 
+        "y" : 40.866519684744766
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050405026", 
+        "TOTPOP10" : 1211, 
+        "POPDENS10" : 107168.1, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.888327466468539, 
+        "y" : 40.867396386263344
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050406003", 
+        "TOTPOP10" : 985, 
+        "POPDENS10" : 38030.9, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.858834648892241, 
+        "y" : 40.887714219855859
+      }
+    }, 
+    {
+      "attributes" : {
+        "COUNTY" : "005", 
+        "GEOID10" : "360050407012", 
+        "TOTPOP10" : 666, 
+        "POPDENS10" : 105714.3, 
+        "STATE_NAME" : "New York"
+      }, 
+      "centroid" : 
+      {
+        "x" : -73.888915305556608, 
+        "y" : 40.872381204711559
+      }
+    }
+  ]
+}
