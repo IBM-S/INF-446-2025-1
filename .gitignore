@@ -17,6 +17,13 @@ datos/geo/
 datos/res/
 datos/inst_old/
 
+drp_inst/__pycache__/
+drp_inst/cam/
+drp_inst/drp/
+drp_inst/figures/
+drp_inst/maps/
+
+.claude/
 
 solver_moead/venv/
 solver_moead/obj/
